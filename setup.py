@@ -33,9 +33,8 @@ setuptools.setup(
         'Environment :: Win32 (MS Windows)',
         'Environment :: Console',
         'Programming Language :: Python :: 3',
-        'License :: OSI Approved :: BSD 3 License',
-        'Topic :: Utilities :: GPS'
-        'Topic :: Utilities :: UBX'
+        'License :: OSI Approved :: BSD License',
+        'Topic :: Utilities'
     ],
     python_requires='>=3.6',
 )
