@@ -1,0 +1,15 @@
+.DS_Store
+.dropbox
+.project
+.pydevproject
+/.settings
+/build
+/dist
+/pyubx2_*
+/pyubx2-*
+/__pycache__
+/.dbeaver
+/pygpsclient/__pycache__
+*.pyc
+/tests/ubx_tester.py
+build.xml
