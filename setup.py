@@ -11,7 +11,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="pyubx2-semuadmin",
+    name="pyubx2",
     version=__version__,
     author="semuadmin",
     author_email="semuadmin@semuconsulting.com",

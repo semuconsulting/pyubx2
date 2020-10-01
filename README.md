@@ -9,7 +9,7 @@ is readily extensible for later generations.
 
 The structure and functionality of `pyubx2` broadly mirrors that of [Knio's pynmea2](https://github.com/Knio/pynmea2) library for NMEA protocols, but the code is entirely original.
 
-The `pyubx2` homepage is located at http://github.com/semuadmin/pyubx2.
+The `pyubx2` homepage is located at [http://github.com/semuconsulting/pyubx2](http://github.com/semuconsulting/pyubx2).
 
 This is a personal project and I am in no way affiliated with u-blox.
 
