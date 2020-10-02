@@ -11,7 +11,7 @@ The `pyubx2` homepage is located at [http://github.com/semuconsulting/pyubx2](ht
 
 This is a personal project and I am in no way affiliated with u-blox.
 
-###Current Status
+### Current Status
 
 Alpha. Implements the full range of UBX Generation 6 protocol messages *with the exception of* a handful of message classes which
 require non-standard processing (see release notes on Github for details). These are in hand.
@@ -29,10 +29,10 @@ The recommended way to install `pyubx2` is with
 
 `pip install pyubx2`
 
-[![PyPI version](https://img.shields.io/pypi/v/pyubx2.svg?style=flat)] (https://pypi.org/project/pyubx2/)
-[![PyPI downloads](https://img.shields.io/pypi/dm/pyubx2.svg?style=flat)] (https://pypi.org/project/pyubx2/)
+![PyPI version](https://img.shields.io/pypi/v/pyubx2.svg?style=flat)
+![PyPI downloads](https://img.shields.io/pypi/dm/pyubx2.svg?style=flat)
 
-##Reading (Streaming)
+## Reading (Streaming)
 
 You can create a `UBXReader` object by calling the constructor with an active stream object. 
 The stream object can be any data stream which supports a `read(n) -> bytes` method (e.g. File or Serial, with 
@@ -42,7 +42,7 @@ Individual UBX messages can then be read using the `UBXReader.read()` function, 
 data (as bytes) and the parsed data (as a UBXMessage object). The function is thread-safe in so far as the incoming
 data stream object is thread-safe.
 
-##Parsing
+## Parsing
 
 You can parse individual UBX messages using the `UBXMessage.parse(data, validate=False)` function, which takes a bytes array containing a
 binary UBX message and returns a `UBXMessage` object.
@@ -77,7 +77,7 @@ e.g. the `NAV-POSLLH` message has the following properties:
 37.844
 ```
 
-##Generating
+## Generating
 
 You can create a `UBXMessage` object by calling the constructor with message class, message id, payload and inout parameters.
 
@@ -107,7 +107,7 @@ The constructor also supports plain text representations of the message class an
 <UBX(CFG-MSG, msgClass=NMEA-Proprietary, msgID=UBX-03)>
 ```
 
-##Examples
+## Examples
 
 The following examples can be found in the `\examples` folder:
 
@@ -117,7 +117,7 @@ The following examples can be found in the `\examples` folder:
 protocol data. Some development devices only output NMEA data by default; note that a proprietary NMEA 
 `PUBX` message type is *not* the same as a UBX protocol message).
 
-##Extensibility
+## Extensibility
 
 
 The UBX protocol is principally defined in the modules `ubxtypes_*.py` as a series of dictionaries. Additional message types 
