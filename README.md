@@ -79,7 +79,7 @@ e.g. the `NAV-POSLLH` message has the following properties:
 
 ## Generating
 
-You can create a `UBXMessage` object by calling the constructor with message class, message id, payload and inout parameters.
+You can create a `UBXMessage` object by calling the constructor with message class, message id, payload and mode parameters.
 
 The 'mode' parameter is an integer flag signifying whether the message payload refers to a: 
 * GET message (i.e. *from* the receiver - the default)
@@ -93,6 +93,7 @@ e.g. to generate a outgoing CFG-MSG which polls the 'VTG' NMEA message rate on t
 
 ```python
 >>> import pyubx2
+>>> POLL = 2
 >>> msg = pyubx2.UBXMessage(b'\x06', b'\x01', b'\xF0\x05', POLL)
 >>> msg
 <UBX(CFG-MSG, msgClass=NMEA-Standard, msgID=VTG)>
@@ -115,7 +116,7 @@ The following examples can be found in the `\examples` folder:
 
 **NB:** If you don't see any incoming data, ensure that your receiver device is configured to output UBX 
 protocol data. Some development devices only output NMEA data by default; note that a proprietary NMEA 
-`PUBX` message type is *not* the same as a UBX protocol message).
+`PUBX` message type is *not* the same as a UBX protocol message.
 
 ## Extensibility
 
