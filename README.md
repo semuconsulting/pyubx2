@@ -1,24 +1,26 @@
 pyubx2
 =======
 
-`pyubx2` is a python library for the UBX protocol. 
+`pyubx2` is an original python library for the UBX protocol. 
 
 UBX is a proprietary binary protocol implemented on u-blox &copy; GPS/GNSS receiver modules. At time of writing the library is based
 on the [u-blox generation 6 protocol](https://www.u-blox.com/sites/default/files/products/documents/u-blox6_ReceiverDescrProtSpec_%28GPS.G6-SW-10018%29_Public.pdf) but
 is readily extensible for later generations.
 
-The structure and functionality of `pyubx2` broadly mirrors that of [Knio's pynmea2](https://github.com/Knio/pynmea2) library for NMEA protocols, but the code is entirely original.
-
 The `pyubx2` homepage is located at [http://github.com/semuconsulting/pyubx2](http://github.com/semuconsulting/pyubx2).
 
 This is a personal project and I am in no way affiliated with u-blox.
 
-**Build Status:** Under Development
+###Current Status
+
+Alpha. Implements the full range of UBX Generation 6 protocol messages *with the exception of* a handful of message classes which
+require non-standard processing (AID-ALP, CFG-INF, CFG-RINV, ESF-MEAS). These are in hand.
 
 ### Compatibility
 
-`pyubx2` is compatible with Python 3.6+ and has no external library dependencies.
+`pyubx2` is compatible with Python 3.6+ and has no third-party library dependencies.
 
+![Python version](https://img.shields.io/pypi/pyversions/pyubx2.svg?style=flat)
 
 ### Installation
 
@@ -27,8 +29,20 @@ The recommended way to install `pyubx2` is with
 
 `pip install pyubx2`
 
-Parsing
--------
+[![PyPI version](https://img.shields.io/pypi/v/pyubx2.svg?style=flat)] (https://pypi.org/project/pyubx2/)
+[![PyPI downloads](https://img.shields.io/pypi/dm/pyubx2.svg?style=flat)] (https://pypi.org/project/pyubx2/)
+
+##Reading (Streaming)
+
+You can create a `UBXReader` object by calling the constructor with an active stream object. 
+The stream object can be any data stream which supports a `read(n) -> bytes` method (e.g. File or Serial, with 
+or without a buffer wrapper).
+
+Individual UBX messages can then be read using the `UBXReader.read()` function, which returns both the raw binary
+data (as bytes) and the parsed data (as a UBXMessage object). The function is thread-safe in so far as the incoming
+data stream object is thread-safe.
+
+##Parsing
 
 You can parse individual UBX messages using the `UBXMessage.parse(data, validate=False)` function, which takes a bytes array containing a
 binary UBX message and returns a `UBXMessage` object.
@@ -37,7 +51,7 @@ If the optional 'validate' parameter is set to `True`, `parse` will validate the
 If any of these are not consistent with the message content, it will raise a `UBXParseError`. Otherwise, the function will automatically
 generate the appropriate payload length and checksum.
 
-Examples:
+Example:
 
 ```python
 >>> import pyubx2
@@ -57,24 +71,29 @@ e.g. the `NAV-POSLLH` message has the following properties:
 <UBX(NAV-POSLLH, iTOW=403667000, lon=-21601284, lat=526206345, height=86327, hMSL=37844, HAcc=38885, vAcc=16557)>
 >>>msg.identity
 'NAV-POSLLH'
->>>msg.lat, msg.lon
-526206345, -21601284
+>>>msg.lat/10**7, msg.lon/10**7
+(52.6206345, -2.1601284)
+>>>msg.hMSL/10**3
+37.844
 ```
 
-Generating
-----------
+##Generating
 
 You can create a `UBXMessage` object by calling the constructor with message class, message id, payload and inout parameters.
 
-The 'inout' parameter is a boolean signifying whether the message payload is for an output message (*to* the receiver) or an input
-message (*from* the receiver) - the distinction is necessary because the UBX protocol uses the same message class and id
-for both input and output messages, though with different payloads.
+The 'mode' parameter is an integer flag signifying whether the message payload refers to a: 
+* GET message (i.e. *from* the receiver - the default)
+* SET message (i.e. *to* the receiver)
+* POLL message (i.e. *to* the receiver in anticipation of a response back)
+
+The distinction is necessary because the UBX protocol uses the same message class and id
+for all three modes, but with different payloads.
 
 e.g. to generate a outgoing CFG-MSG which polls the 'VTG' NMEA message rate on the current port:
 
 ```python
 >>> import pyubx2
->>> msg = pyubx2.UBXMessage(b'\x06', b'\x01', b'\xF0\x05', True)
+>>> msg = pyubx2.UBXMessage(b'\x06', b'\x01', b'\xF0\x05', POLL)
 >>> msg
 <UBX(CFG-MSG, msgClass=NMEA-Standard, msgID=VTG)>
 ```
@@ -83,12 +102,38 @@ The constructor also supports plain text representations of the message class an
 
 ```python
 >>> import pyubx2
->>> msg = pyubx2.UBXMessage('CFG','CFG-MSG', b'x\F0x\05x')
+>>> msg = pyubx2.UBXMessage('CFG','CFG-MSG', b'\xF1\x03', True)
+>>> msg
+<UBX(CFG-MSG, msgClass=NMEA-Proprietary, msgID=UBX-03)>
 ```
+
+##Examples
+
+The following examples can be found in the `\examples` folder:
+
+1. `ubxreaderx.py` illustrates how to implement a threaded serial reader for UBX messages using pyubx2. 
+
+**NB:** If you don't see any incoming data, ensure that your receiver device is configured to output UBX 
+protocol data. Some development devices only output NMEA data by default; note that a proprietary NMEA 
+`PUBX` message type is *not* the same as a UBX protocol message).
+
+##Extensibility
+
+
+The UBX protocol is principally defined in the modules `ubxtypes_*.py` as a series of dictionaries. Additional message types 
+can be readily added to the appropriate dictionary. Message payload definitions must conform to the following rules:
+* attribute names must be unique within each message class
+* attribute types must be one of the valid types (I1, U1, etc.)
+* repeating groups are defined as nested dicts and must be preceded by an attribute which contains the number of
+repeats (see NAV-SVINFO by way of example). If this attribute is named 'numCh', the code will identity it automatically; 
+if the attribute is given a different name, ubxmessage.py will need to be modified to identify it explicitly. If such
+an attribute is *not* present, the code will need to be modified to handle this particular message type as an exception to
+the norm e.g. deduce the number of repeats from the payload length.
+* repeating attribute names are suffixed with a two-digit index (svid_01, svid_02, etc.)
 
 ## Graphical Client
 
-A free, open-source python/tkinter graphical GPS client which supports both NMEA and UBX protocols (via pynmea2 and pyubx2 
+A python/tkinter graphical GPS client which supports both NMEA and UBX protocols (via pynmea2 and pyubx2 
 respectively) is under development at: 
 
 [http://github.com/semuconsulting/PyGPSClient](http://github.com/semuconsulting/PyGPSClient)

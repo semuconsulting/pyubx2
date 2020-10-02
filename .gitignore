@@ -7,6 +7,7 @@
 /dist
 /pyubx2_*
 /pyubx2-*
+/pyubx2.egg*
 /__pycache__
 /.dbeaver
 /pygpsclient/__pycache__

@@ -9,10 +9,10 @@ Created on 26 Sep 2020
 import struct
 
 import pyubx2.exceptions as ube
-import pyubx2.ubxtypes as ubt
-
-INPUT = 0
-OUTPUT = 1
+import pyubx2.ubxtypes_core as ubt
+import pyubx2.ubxtypes_get as ubg
+import pyubx2.ubxtypes_set as ubs
+import pyubx2.ubxtypes_poll as ubp
 
 
 class UBXMessage():
@@ -20,7 +20,7 @@ class UBXMessage():
     UBX Message Class.
     '''
 
-    def __init__(self, ubx_class, ubx_id, payload=b'', inout=INPUT):
+    def __init__(self, ubx_class, ubx_id, payload=b'', mode=ubt.GET):
         '''
         Constructor.
 
@@ -38,7 +38,7 @@ class UBXMessage():
         self._length = self.len2bytes(len(payload))
         self._checksum = self.calc_checksum(self._ubx_class + self._ubx_id +
                                             self._length + payload)
-        self._inout = inout
+        self._mode = mode
 
         if payload:
             self.payload = payload
@@ -248,11 +248,13 @@ class UBXMessage():
         self._index = 0
         try:
 
-            # lookup attributes from the relevant input/output dictionary
-            if self._inout == INPUT:
-                pdict = ubt.UBX_PAYLOADS_INPUT[self.identity]
+            # lookup attributes from the relevant get/set/poll dictionary
+            if self._mode == ubt.POLL:
+                pdict = ubp.UBX_PAYLOADS_POLL[self.identity]
+            elif self._mode in (ubt.OUTPUT, ubt.SET):
+                pdict = ubs.UBX_PAYLOADS_SET[self.identity]
             else:
-                pdict = ubt.UBX_PAYLOADS_OUTPUT[self.identity]
+                pdict = ubg.UBX_PAYLOADS_GET[self.identity]
             # parse each attribute
             for key in pdict.keys():
                 (offset, att) = self._payload_attr(payload, offset, pdict, key)
@@ -278,8 +280,10 @@ class UBXMessage():
         if isinstance(att, dict):  # attribute is a dict i.e. a nested repeating group
             # get preceding attribute containing number of items in this repeating group
             # assumed to be 'numCh' unless otherwise specified in UBX_PAYLOADS
-            if self.identity in 'TODO-OTHER-IDENTITIES-WITH-REPEATING-GROUPS':  # TODO
-                rng = self.numCh  # or whatever
+            if self.identity == 'AID-ALPSRV':
+                rng = self.dataSize
+#             elif self.identity == 'AN-OTHER'
+#                 rng = self.whatever # whatever name is given to the attribute
             else:
                 rng = self.numCh
             for i in range(rng):
@@ -309,17 +313,3 @@ class UBXMessage():
             offset += atts
 
         return (offset, att)
-
-
-# Quick test routine
-if __name__ == "__main__":
-
-    t = UBXMessage(b'\x06', b'\x01', b'\xf0\x03\x00\x01\x01\x01\x00\x00')
-    print(t)
-    t = UBXMessage('CFG', 'CFG-MSG', b'\xf1\x04\x00\x01\x01\x01\x00\x00')
-    print(t)
-    t = UBXMessage('INF', 'INF-NOTICE', 'Now is the time for all good men to come to the aid of the party')
-    print(t)
-    t = UBXMessage.parse(b'\xb5\x62\x05\x01\x02\x00\x06\x01\x0f\x38', False)
-    print(t)
-    t = UBXMessage.parse(b'\xb5\x62\x04\x02\x02\x00\x06\x01\x0f\x38', True)  # should produce UBXParseError

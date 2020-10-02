@@ -1,6 +1,6 @@
 # pylint: disable=fixme, line-too-long
 '''
-UBX Protocol globals and constants, including payload definitions
+UBX Protocol core globals and constants
 
 Based on u-blox 6 receiver datasheet:
 https://www.u-blox.com/sites/default/files/products/documents/u-blox6_ReceiverDescrProtSpec_%28GPS.G6-SW-10018%29_Public.pdf
@@ -12,6 +12,11 @@ Created on 27 Sep 2020
 
 UBX_HDR = b'\xB5\x62'
 NMEA_HDR = b'\x24'  # '$'
+INPUT = 0
+OUTPUT = 1
+GET = 0
+SET = 1
+POLL = 2
 
 '''
 THESE ARE THE UBX PROTOCOL PAYLOAD ATTRIBUTE TYPES
@@ -26,13 +31,14 @@ U4 = 'U04'  # Unsigned Long 4
 I4 = 'I04'  # Signed Long 4 2's complement
 X4 = 'X04'  # Bitfield 4
 R4 = 'R04'  # Float (IEEE 754) Single Precision 4
+X6 = 'X06'  # Bitfield 6
 R8 = 'R08'  # Float (IEEE 754) Double Precision 8
 C06 = 'C06'  # ASCII / ISO 8859.1 Encoding 6
 C10 = 'C10'  # ASCII / ISO 8859.1 Encoding 10
 C30 = 'C30'  # ASCII / ISO 8859.1 Encoding 30
 C32 = 'C32'  # ASCII / ISO 8859.1 Encoding 32
 CH = 'CH'  # ASCII / ISO 8859.1 Encoding Variable Length
-VALID_TYPES = (U1, I1, X1, U2, I2, X2, U4, I4 , X4 , R4 , R8 , C06, C10, C30, C32, CH)
+VALID_TYPES = (U1, I1, X1, U2, I2, X2, U4, I4 , X4 , R4 , R8 , X6, C06, C10, C30, C32, CH)
 
 '''
 THESE ARE THE UBX PROTOCOL MESSAGE CLASSES
@@ -50,7 +56,8 @@ b'\x0D':'TIM',  # Timing Messages: Timepulse Output, Timemark Results
 b'\x66':'BAD'}  # Non-existent class for error testing
 
 '''
-THESE ARE THE UBX PROTOCOL MESSAGE IDENTITIES
+THESE ARE THE UBX PROTOCOL CORE MESSAGE IDENTITIES
+Payloads for each of these identities are defined in the ubxtypes_* modules
 '''
 UBX_MSGIDS = {
 # ACK
@@ -200,265 +207,4 @@ b'\xF0\x0E': 'THS',  # TRUE Heading and Status
 b'\xF0\x41': 'TXT',  # Text Transmission
 b'\xF0\x05': 'VTG',  # Course over ground and Groundspeed
 b'\xF0\x08': 'ZDA',  # Time and Date
-}
-
-'''
-THESE ARE THE PAYLOAD DEFINITIONS FOR _INPUT_ MESSAGES _FROM_ THE RECEIVER
-(i.e. Navigation Status, Get or Info messages)
-
-NB: Attribute names must be unique within each message class/id
-'''
-# TODO add the rest as and when I can be bothered
-UBX_PAYLOADS_INPUT = {
-'ACK-ACK': {
-'clsID': U1,
-'msgID': U1
-},
-'ACK-NAK': {
-'clsID': U1,
-'msgID': U1
-},
-'CFG-DAT':{
-'datumNum': U2,
-'datumName': C06,
-'majA': R8,
-'flat': R8,
-'dX': R4,
-'dY': R4,
-'dZ': R4,
-'rotX': R4,
-'rotY': R4,
-'rotZ': R4,
-'scale': R4
-},
-'CFG-INF': {
-'ProtocolID': U1,
-'reserved0': U1,
-'reserved1': U2,
-'infMsgMaskDDC': X1,
-'infMsgMaskUART1': X1,
-'infMsgMaskUART2': X1,
-'infMsgMaskUSB': X1,
-'infMsgMaskSPI': X1,
-'reserved3': X1
-},
-'CFG-MSG': {
-'msgClass': U1,
-'msgID': U1,
-'rateDDC': U1,
-'rateUART1': U1,
-'rateUART2': U1,
-'rateUSB': U1,
-'rateSPI': U1,
-'reserved': U1
-},
-'CFG-PRT': {
-'PortID': U1,
-'reserved0': U1,
-'txReady': X2,
-'mode': X4,
-'baudRate': U4,
-'inProtoMask': X2,
-'outProtoMask': X2,
-'reserved4': U2,
-'reserved5': U2
-},
-'INF-DEBUG': {
-'message': CH
-},
-'INF-ERROR': {
-'message': CH
-},
-'INF-NOTICE': {
-'message': CH
-},
-'INF-TEST': {
-'message': CH
-},
-'INF-WARNING': {
-'message': CH
-},
-'NAV-AOPSTATUS': {
-'iTOW': U4,
-'config': U1,
-'status': U1,
-'reserved0': U1,
-'reserved1': U1,
-'avail': U4,
-'reserved2': U4,
-'reserved3': U4
-},
-'NAV-CLOCK': {
-'iTOW': U4,
-'clkB': I4,
-'clkD': I4,
-'tAcc': U4,
-'fAcc': U4
-},
-'NAV-DGPS': {
-'iTOW': U4,
-'age': I4,
-'baseId': I2,
-'baseHealth': I2,
-'numCh': U1,
-'status': U1,
-'reserved1': U2,
-'channels' : {  # repeating group
-'svid' : U1,
-'flags': U1,
-'ageC' : U2,
-'prc': R4,
-'prrc': R4
-}
-},
-'NAV-DOP': {
-'iTOW': U4,
-'gDOP': U2,
-'pDOP': U2,
-'tDOP': U2,
-'vDOP': U2,
-'hDOP': U2,
-'nDOP': U2,
-'eDOP': U2
-},
-'NAV-EKFSTATUS': {
-'pulses': I4,
-'period': I4,
-'gyroMean': U4,
-'temperature': I2,
-'direction': I1
-},
-'NAV-POSECEF': {
-'iTOW': U4,
-'ecefX': I4,
-'ecefY': I4,
-'ecefZ': I4,
-'pAcc': U4
-},
-'NAV-POSLLH': {
-'iTOW': U4,
-'lon': I4,
-'lat': I4,
-'height': I4,
-'hMSL': I4,
-'HAcc': U4,
-'vAcc': U4
-},
-'NAV-SBAS': {
-'iTOW': U4,
-'geo' : U1,
-'mode:' : U1,
-'sys': I1,
-'service': X1,
-'numCh': U1,
-'reserved01': U1,
-'reserved02': U1,
-'reserved03': U1,
-'channels': {  # repeating group
-'svid': U1,
-'flags': U1,
-'udre': U1,
-'svSys': U1,
-'svService': U1,
-'reserved1': U1,
-'prc': I2,
-'reserved2': U2,
-'ic': I2
-}
-},
-'NAV-SOL': {
-'iTOW': U4,
-'fTOW': I4,
-'week': I2,
-'gpsFix': U1,
-'flags': X1,
-'ecefX': I4,
-'ecefY': I4,
-'ecefZ': I4,
-'pAcc': U4,
-'ecefVX': I4,
-'ecefVY': I4,
-'ecefVZ': I4,
-'sAcc': U4,
-'pDOP': U2,
-'reserved1': U1,
-'numSV': U1,
-'reserved2': U4
-},
-'NAV-STATUS': {
-'iTOW': U4,
-'gpsFix': U1,
-'flags': X1,
-'fixStat': X1,
-'flags2': X1,
-'ttff': U4,
-'msss': U4
-},
-'NAV-SVINFO': {
-'iTOW': U4,
-'numCh': U1,
-'globalFlags': X1,
-'reserved2': U2,
-'channels': {  # repeating group
-'chn': U1,
-'svid': U1,
-'flags': X1,
-'quality': X1,
-'cno': U1,
-'elev': I1,
-'azim': I2,
-'prRes': I4}
-},
-'NAV-TIMEGPS': {
-'iTOW': U4,
-'fTOW': I4,
-'week': I2,
-'leapS': I1,
-'valid': X1,
-'tAcc': U4
-},
-'NAV-TIMEUTC': {
-'iTOW': U4,
-'tAcc': U1,
-'nano': I4,
-'year': U2,
-'month': U1,
-'day': U1,
-'hour': U1,
-'min': U1,
-'sec': U1,
-'validflags': X1
-},
-'NAV-VELECEF': {
-'iTOW': U4,
-'ecefVX': I4,
-'ecefVY': I4,
-'ecefVZ': I4,
-'sAcc': U4
-},
-'NAV-VELNED': {
-'iTOW': U4,
-'velN': I4,
-'velE': I4,
-'velD': I4,
-'speed': U4,
-'gSpeed': U4,
-'heading': I4,
-'sAcc': U4,
-'cAcc': U4
-}
-}
-
-'''
-THESE ARE THE PAYLOAD DEFINITIONS FOR _OUTPUT_ MESSAGES _TO_ THE RECEIVER
-(i.e. Poll or Set messages)
-
-NB: Attribute names must be unique within each message class/id
-'''
-# TODO add the rest as and when I can be bothered
-UBX_PAYLOADS_OUTPUT = {
-'CFG-MSG': {
-'msgClass': U1,
-'msgID': U1
-}
 }
