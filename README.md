@@ -39,7 +39,7 @@ The stream object can be any data stream which supports a `read(n) -> bytes` met
 or without a buffer wrapper).
 
 Individual UBX messages can then be read using the `UBXReader.read()` function, which returns both the raw binary
-data (as bytes) and the parsed data (as a UBXMessage object). The function is thread-safe in so far as the incoming
+data (as bytes) and the parsed data (as a `UBXMessage` object). The function is thread-safe in so far as the incoming
 data stream object is thread-safe.
 
 ## Parsing
@@ -105,6 +105,23 @@ The constructor also supports plain text representations of the message class an
 >>> msg = UBXMessage('CFG','CFG-MSG', b'\xF1\x03', POLL)
 >>> msg
 <UBX(CFG-MSG, msgClass=NMEA-Proprietary, msgID=UBX-03)>
+```
+
+### Serializing
+
+The `UBXMessage` class implements a `serialize()` method to convert a `UBXMessage` object to a bytes array suitable for writing to an output stream.
+
+e.g. to create and send a `CFG-MSG` message which sets the NMEA GLL message rate to '1' on the receiver's UART and USB ports (assuming an output serial stream has been created as `serialOut`):
+
+```python
+>>> from pyubx2 import UBXMessage, SET
+>>> msg = UBXMessage('CFG','CFG-MSG', b'\xF0\x01\x00\x01\x01\x01\x00\x00', SET)
+>>> msg
+<UBX(CFG-MSG, msgClass=NMEA-Standard, msgID=GLL, rateDDC=0, rateUART1=1, rateUART2=1, rateUSB=1, rateSPI=0, reserved=0)>
+>>> output = msg.serialize()
+>>> output
+b'\xb5b\x06\x01\x08\x00\xf0\x01\x00\x01\x01\x01\x00\x00\x036'
+>>> serialOut.write(output)
 ```
 
 ## Examples
