@@ -20,7 +20,7 @@ class UBXStreamer():
     UBXStreamer class.
     '''
 
-    def __init__(self, port, baudrate, timeout=1):
+    def __init__(self, port, baudrate, timeout=5):
         '''
         Constructor.
         '''
@@ -33,6 +33,14 @@ class UBXStreamer():
         self._port = port
         self._baudrate = baudrate
         self._timeout = timeout
+
+    def __del__(self):
+        '''
+        Destructor.
+        '''
+
+        self.stop_read_thread()
+        self.disconnect()
 
     def connect(self):
         '''
@@ -55,7 +63,6 @@ class UBXStreamer():
 
         if self._connected and self._serial_object:
             try:
-                self._reading = False
                 self._serial_object.close()
             except (SerialException, SerialTimeoutException) as err:
                 print(f"Error disconnecting from serial port {err}")
@@ -78,7 +85,7 @@ class UBXStreamer():
 
         if self._serial_thread is not None:
             self._reading = False
-            self._serial_thread = None
+            self._serial_thread.join()
 
     def _read_thread(self):
         '''
@@ -101,17 +108,20 @@ class UBXStreamer():
 
 if __name__ == "__main__":
 
-    PORT = 'COM6'  # set this to whatever serial port your receiver is using
-    BAUDRATE = 9600  # set this to whatever baud rate your receiver is using
+    # set PORT, BAUDRATE and TIMEOUT as appropriate
+#     PORT = 'COM6'
+    PORT = '/dev/tty.usbmodem14101'
+    BAUDRATE = 9600
+    TIMEOUT = 1
     RUNTIME = 60
 
     print("Instantiating UBXStreamer class...")
-    ubp = UBXStreamer(PORT, BAUDRATE)
+    ubp = UBXStreamer(PORT, BAUDRATE, TIMEOUT)
     print(f"Connecting to serial port {PORT} at {BAUDRATE} baud...")
     ubp.connect()
     print(f"Starting reader thread, which will run for {RUNTIME} seconds...\n\n")
     ubp.start_read_thread()
-    sleep(RUNTIME)  # sleep for a while; reader thread will continue in background
+    sleep(RUNTIME)  # do other stuff; reader thread will continue in background
     print("\n\nStopping reader thread...")
     ubp.stop_read_thread()
     print("Disconnecting from serial port...")

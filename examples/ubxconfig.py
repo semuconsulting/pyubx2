@@ -35,7 +35,7 @@ class UBXSetter():
     UBXSetter class.
     '''
 
-    def __init__(self, port, baudrate, timeout=3):
+    def __init__(self, port, baudrate, timeout=5):
         '''
         Constructor.
         '''
@@ -115,13 +115,16 @@ class UBXSetter():
 
 if __name__ == "__main__":
 
-    PORT = 'COM6'  # set this to whatever serial port your receiver is using
-    BAUDRATE = 9600  # set this to whatever baud rate your receiver is using
+    # set PORT, BAUDRATE and TIMEOUT as appropriate
+#     PORT = 'COM6'
+    PORT = '/dev/tty.usbmodem14101'
+    BAUDRATE = 9600
+    TIMEOUT = 5
     ON = True
     OFF = False
 
     print("Instantiating UBXConfig class...")
-    ubs = UBXSetter(PORT, BAUDRATE)
+    ubs = UBXSetter(PORT, BAUDRATE, TIMEOUT)
     print(f"Connecting to serial port {PORT} at {BAUDRATE} baud...")
     ubs.connect()
     print("Sending configuration messages to receiver...")
