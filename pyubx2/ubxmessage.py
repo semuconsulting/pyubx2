@@ -45,20 +45,13 @@ class UBXMessage():
 
     def __str__(self) -> str:
         '''
-        String representation.
-        '''
-
-        return repr(self)
-
-    def __repr__(self) -> str:
-        '''
         Human readable representation.
         '''
 
         clsid = None
 
         umsg_name = self.identity
-        rep = f"<UBX({umsg_name}, "
+        stg = f"<UBX({umsg_name}, "
         for i, att in enumerate(self.__dict__):
             if att[0] != '_':  # only show public attributes
                 val = self.__dict__[att]
@@ -81,11 +74,19 @@ class UBXMessage():
                             val = ubt.UBX_CONFIG_MESSAGES[clsid + val]
                 except KeyError:
                     pass  # ignore any dictionary lookup errors and just show original binary value
-                rep += att + '=' + str(val)
+                stg += att + '=' + str(val)
                 if i < len(self.__dict__) - 1:
-                    rep += ", "
-        rep += ")>"
-        return rep
+                    stg += ", "
+        stg += ")"
+
+        return stg
+
+    def __repr__(self) -> str:
+        '''
+        Machine readable representation.
+        '''
+
+        return f"'UBXMessage({self._ubx_class}, {self._ubx_id}, {self._payload})'"
 
     def serialize(self) -> bytes:
         '''
