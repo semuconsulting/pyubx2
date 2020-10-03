@@ -95,14 +95,15 @@ class UBXSetter():
                 if val[0:3] == 'NAV' and val not in ('NAV-POSECEF', 'NAV-VELECEF', 'HPPOSECEF'):
                     msgs.append(key)
 
+            # each of 6 config bytes corresponds to a receiver port
+            # the UART and USB ports are bytes 2, 3 and 4
+            if msgon:  # turn them on
+                config = b'\x00\x01\x01\x01\x00\x00'
+            else:  # turn them off
+                config = b'\x00\x00\x00\x00\x00\x00'
+
             # send each UBX-NAV config message in turn
             for msgtype in msgs:
-                # each of 6 config bytes corresponds to a receiver port
-                # the UART and USB ports are bytes 2, 3 and 4
-                if msgon:  # turn them on
-                    config = b'\x00\x01\x01\x01\x00\x00'
-                else:  # turn them off
-                    config = b'\x00\x00\x00\x00\x00\x00'
                 payload = msgtype + config
                 msg = UBXMessage('CFG', 'CFG-MSG', payload, SET)
                 print(f"Sending {msg}")

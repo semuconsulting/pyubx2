@@ -14,7 +14,9 @@ This is a personal project and I am in no way affiliated with u-blox.
 ### Current Status
 
 Alpha. Implements the full range of UBX Generation 6 protocol messages *with the exception of* a handful of message classes which
-require non-standard processing (see release notes on Github for details). These are in hand.
+require non-standard processing (see release notes on GitHub for details). These are in hand.
+
+Constructive feedback and feature requests welcome.
 
 ### Compatibility
 
