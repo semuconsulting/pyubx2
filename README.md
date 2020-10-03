@@ -54,11 +54,11 @@ generate the appropriate payload length and checksum.
 Example:
 
 ```python
->>> import pyubx2
->>> msg = pyubx2.UBXMessage.parse(b'\xb5b\x05\x00\x02\x00\x06\x01\x0e3', True)
+>>> from pyubx2 import UBXMessage
+>>> msg = UBXMessage.parse(b'\xb5b\x05\x00\x02\x00\x06\x01\x0e3', True)
 >>> msg
 <UBX(ACK-ACK, clsID=CFG, msgID=CFG-MSG)>
->>> msg = pyubx2.UBXMessage.parse(b'\xb5b\x01\x12$\x000D\n\x18\xfd\xff\xff\xff\xf1\xff\xff\xff\xfc\xff\xff\xff\x10\x00\x00\x00\x0f\x00\x00\x00\x83\xf5\x01\x00A\x00\x00\x00\xf0\xdfz\x00\xd0\xa6')
+>>> msg = UBXMessage.parse(b'\xb5b\x01\x12$\x000D\n\x18\xfd\xff\xff\xff\xf1\xff\xff\xff\xfc\xff\xff\xff\x10\x00\x00\x00\x0f\x00\x00\x00\x83\xf5\x01\x00A\x00\x00\x00\xf0\xdfz\x00\xd0\xa6')
 >>> msg
 <UBX(NAV-VELNED, iTOW=403327000, velN=-1, velE=-21, velD=-4, speed=22, gSpeed=21, heading=128387, sAcc=67, cAcc=8056455)>
 ```
@@ -92,9 +92,8 @@ for all three modes, but with different payloads.
 e.g. to generate a outgoing CFG-MSG which polls the 'VTG' NMEA message rate on the current port:
 
 ```python
->>> import pyubx2
->>> POLL = 2
->>> msg = pyubx2.UBXMessage(b'\x06', b'\x01', b'\xF0\x05', POLL)
+>>> from pyubx2 import UBXMessage, POLL
+>>> msg = UBXMessage(b'\x06', b'\x01', b'\xF0\x05', POLL)
 >>> msg
 <UBX(CFG-MSG, msgClass=NMEA-Standard, msgID=VTG)>
 ```
@@ -102,8 +101,8 @@ e.g. to generate a outgoing CFG-MSG which polls the 'VTG' NMEA message rate on t
 The constructor also supports plain text representations of the message class and id, e.g.
 
 ```python
->>> import pyubx2
->>> msg = pyubx2.UBXMessage('CFG','CFG-MSG', b'\xF1\x03', True)
+>>> from pyubx2 import UBXMessage, POLL
+>>> msg = UBXMessage('CFG','CFG-MSG', b'\xF1\x03', POLL)
 >>> msg
 <UBX(CFG-MSG, msgClass=NMEA-Proprietary, msgID=UBX-03)>
 ```

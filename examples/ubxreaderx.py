@@ -12,6 +12,7 @@ from time import sleep
 
 from serial import Serial, SerialException, SerialTimeoutException
 from pyubx2.ubxreader import UBXReader
+import pyubx2.exceptions as ube
 
 
 class UBXStreamer():
@@ -87,20 +88,24 @@ class UBXStreamer():
 
         while self._reading and self._serial_object:
             if self._serial_object.in_waiting:
-                (raw_data, parsed_data) = self._ubxreader.read()
-                if raw_data:
-                    print(raw_data)
-                if parsed_data:
-                    print(parsed_data)
+                try:
+                    (raw_data, parsed_data) = self._ubxreader.read()
+                    if raw_data:
+                        print(raw_data)
+                    if parsed_data:
+                        print(parsed_data)
+                except (ube.UBXMessageError, ube.UBXTypeError, ube.UBXParseError) as err:
+                    print(f"Something went wrong {err}")
+                    continue
 
 
 if __name__ == "__main__":
 
     PORT = 'COM6'
     BAUDRATE = 9600
-    RUNTIME = 120
+    RUNTIME = 60
 
-    print("Instantiating UBXReaderExample class...")
+    print("Instantiating UBXStreamer class...")
     ubp = UBXStreamer(PORT, BAUDRATE)
     print(f"Connecting to serial port {PORT} at {BAUDRATE} baud...")
     ubp.connect()
