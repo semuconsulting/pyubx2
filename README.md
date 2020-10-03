@@ -128,7 +128,10 @@ b'\xb5b\x06\x01\x08\x00\xf0\x01\x00\x01\x01\x01\x00\x00\x036'
 
 The following examples can be found in the `\examples` folder:
 
-1. `ubxreaderx.py` illustrates how to implement a threaded serial reader for UBX messages using pyubx2. 
+1. `ubxstreamer.py` illustrates how to implement a threaded serial reader for UBX messages using pyubx2. 
+
+1. `ubxconfig.py` illustrates how to implement a configuration utility which sets output UBX-NAV message rates on the 
+receiver's UART and USB ports. You can see the results using `ubxstreamer.py`.
 
 **NB:** If you don't see any incoming data, ensure that your receiver device is configured to output UBX 
 protocol data. Some development devices only output NMEA data by default; note that a proprietary NMEA 
