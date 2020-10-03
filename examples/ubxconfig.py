@@ -1,14 +1,23 @@
 '''
-Example implementation of a UBX receiver configuration utility
+Example implementation of a simple UBX receiver configuration utility
 
 This example sets the message rate for all UBX-NAV message types
 - these are the ones that provide principal navigation data -
 to '0' (off) or '1' (on, i.e. one message per navigation solution) on
 the receiver's UART and USB ports.
 
-**NOTE THAT** some UBX-NAV message combinations are unsupported or
-mutually exclusive (e.g. NAV-POSLLH & NAV-POSECEF) on some receivers,
-so you won't necessarily receive each and every type on the input stream.
+**NOTE:**
+
+1.  Some UBX-NAV message combinations are unsupported or mutually
+    exclusive (e.g. NAV-POSLLH & NAV-POSECEF) on some receivers,
+    so you won't necessarily receive each and every type on the input stream.
+
+2.  The configuration set here is volatile and will be reset after a receiver
+    power cycle or CFG-RST. To make the configuration permanent, you'd need to
+    send a CFG-CFG message - **caveat emptor!**.
+
+3.  In a production implementation, it may be prudent to check for an
+    explicit acknowledgement (ACK-ACK message) to each configuration message.
 
 Created on 3 Oct 2020
 
@@ -23,10 +32,10 @@ import pyubx2.exceptions as ube
 
 class UBXSetter():
     '''
-    UBXStreamer class.
+    UBXSetter class.
     '''
 
-    def __init__(self, port, baudrate, timeout=1):
+    def __init__(self, port, baudrate, timeout=3):
         '''
         Constructor.
         '''
@@ -80,8 +89,10 @@ class UBXSetter():
             msgs = []
 
             # compile (nearly) all the UBX-NAV config message types
+            # exclude the -ECEF (Earth-Centered, Earth-Fixed) message types as they
+            # can block 'conventional' nav messages like NAV-POSLLH and NAV-VELNED
             for key, val in UBX_CONFIG_MESSAGES.items():
-                if val[0:3] == 'NAV' and val != 'NAV-POSECEF':
+                if val[0:3] == 'NAV' and val not in ('NAV-POSECEF', 'NAV-VELECEF', 'HPPOSECEF'):
                     msgs.append(key)
 
             # send each UBX-NAV config message in turn
@@ -103,8 +114,8 @@ class UBXSetter():
 
 if __name__ == "__main__":
 
-    PORT = 'COM6'
-    BAUDRATE = 9600
+    PORT = 'COM6'  # set this to whatever serial port your receiver is using
+    BAUDRATE = 9600  # set this to whatever baud rate your receiver is using
     ON = True
     OFF = False
 

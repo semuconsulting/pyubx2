@@ -101,8 +101,8 @@ class UBXStreamer():
 
 if __name__ == "__main__":
 
-    PORT = 'COM6'
-    BAUDRATE = 9600
+    PORT = 'COM6'  # set this to whatever serial port your receiver is using
+    BAUDRATE = 9600  # set this to whatever baud rate your receiver is using
     RUNTIME = 60
 
     print("Instantiating UBXStreamer class...")
