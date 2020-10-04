@@ -77,7 +77,7 @@ class UBXMessage():
                 stg += att + '=' + str(val)
                 if i < len(self.__dict__) - 1:
                     stg += ", "
-        stg += ")"
+        stg += ")>"
 
         return stg
 

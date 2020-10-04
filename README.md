@@ -13,26 +13,33 @@ This is a personal project and I am in no way affiliated with u-blox.
 
 ### Current Status
 
-Alpha. Implements the full range of UBX Generation 6 protocol messages *with the exception of* a handful of message classes which
+![Status](https://img.shields.io/pypi/status/pyubx2)
+![Release](https://img.shields.io/github/v/release/semuconsulting/pyubx2?include_prereleases)
+![Release Date](https://img.shields.io/github/release-date-pre/semuconsulting/pyubx2)
+![Last Commit](https://img.shields.io/github/last-commit/semuconsulting/pyubx2)
+![Contributors](https://img.shields.io/github/contributors/semuconsulting/pyubx2.svg)
+![Open Issues](https://img.shields.io/github/issues-raw/semuconsulting/pyubx2)
+
+Implements the full range of UBX Generation 6 protocol messages *with the exception of* a handful of message classes which
 require non-standard processing (see release notes on GitHub for details). These are in hand.
 
 Constructive feedback and feature requests welcome.
 
 ### Compatibility
 
-`pyubx2` is compatible with Python 3.6+ and has no third-party library dependencies.
-
 ![Python version](https://img.shields.io/pypi/pyversions/pyubx2.svg?style=flat)
 
+`pyubx2` is compatible with Python 3.6+ and has no third-party library dependencies.
+
 ### Installation
+
+[![PyPI version](https://img.shields.io/pypi/v/pyubx2.svg?style=flat)](https://pypi.org/project/pyubx2/)
+![PyPI downloads](https://img.shields.io/pypi/dm/pyubx2.svg?style=flat)
 
 The recommended way to install `pyubx2` is with
 [pip](http://pypi.python.org/pypi/pip/):
 
 `pip install pyubx2`
-
-![PyPI version](https://img.shields.io/pypi/v/pyubx2.svg?style=flat)
-![PyPI downloads](https://img.shields.io/pypi/dm/pyubx2.svg?style=flat)
 
 ## Reading (Streaming)
 
@@ -57,7 +64,7 @@ Example:
 
 ```python
 >>> from pyubx2 import UBXMessage
->>> msg = UBXMessage.parse(b'\xb5b\x05\x00\x02\x00\x06\x01\x0e3', True)
+>>> msg = UBXMessage.parse(b'\xb5b\x05\x01\x02\x00\x06\x01\x0f\x38', True)
 >>> msg
 <UBX(ACK-ACK, clsID=CFG, msgID=CFG-MSG)>
 >>> msg = UBXMessage.parse(b'\xb5b\x01\x12$\x000D\n\x18\xfd\xff\xff\xff\xf1\xff\xff\xff\xfc\xff\xff\xff\x10\x00\x00\x00\x0f\x00\x00\x00\x83\xf5\x01\x00A\x00\x00\x00\xf0\xdfz\x00\xd0\xa6')
@@ -160,6 +167,8 @@ respectively) is under development at:
 [http://github.com/semuconsulting/PyGPSClient](http://github.com/semuconsulting/PyGPSClient)
 
 ## Author Information
+
+![License](https://img.shields.io/github/license/semuconsulting/pyubx2.svg)
 
 semuadmin@semuconsulting.com
  

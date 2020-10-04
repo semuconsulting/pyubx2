@@ -5,14 +5,14 @@ Created on 1 Oct 2020
 '''
 import setuptools
 
-from pyubx2._version import __version__
+from version import VERSION
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name="pyubx2",
-    version=__version__,
+    version=VERSION,
     author="semuadmin",
     author_email="semuadmin@semuconsulting.com",
     description="UBX Protocol Parser",
