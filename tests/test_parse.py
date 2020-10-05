@@ -18,6 +18,7 @@ class ParseTest(unittest.TestCase):
         self.ack_ack = b'\xb5b\x05\x01\x02\x00\x06\x01\x0f\x38'
         self.ack_ack_badck = b'\xb5b\x05\x01\x02\x00\x06\x01\x0f\x37'
         self.cfg_msg = b'\xb5b\x06\x01\x08\x00\xf0\x01\x00\x01\x01\x01\x00\x00\x036'
+        self.cfg_prt = b'\xb5b\x06\x00\x00\x00\x06\x18'
         self.nav_velned = b'\xb5b\x01\x12$\x000D\n\x18\xfd\xff\xff\xff\xf1\xff\xff\xff\xfc\xff\xff\xff\x10\x00\x00\x00\x0f\x00\x00\x00\x83\xf5\x01\x00A\x00\x00\x00\xf0\xdfz\x00\xd0\xa6'
         self.nav_svinfo = b''
 
@@ -94,6 +95,22 @@ class ParseTest(unittest.TestCase):
     def testNavVelNedProp2(self):
         res = pyubx2.UBXMessage.parse(self.nav_velned, True)
         self.assertEqual(res.cAcc, 8052720)
+
+    def testCfgPrt(self): # POLL example with null payload
+        res = pyubx2.UBXMessage.parse(self.cfg_prt, True)
+        self.assertIsInstance(res, pyubx2.UBXMessage)
+
+    def testCfgPrtID(self):
+        res = pyubx2.UBXMessage.parse(self.cfg_prt, True)
+        self.assertEqual(res.identity, 'CFG-PRT')
+
+    def testCfgPrtStr(self):
+        res = pyubx2.UBXMessage.parse(self.cfg_prt, True)
+        self.assertEqual(str(res), '<UBX(CFG-PRT)>')
+
+    def testCfgPrtRepr(self):
+        res = pyubx2.UBXMessage.parse(self.cfg_prt, True)
+        self.assertEqual(repr(res), "'UBXMessage(b'\\x06', b'\\x00')'")
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']

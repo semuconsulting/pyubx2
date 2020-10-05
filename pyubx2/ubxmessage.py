@@ -20,7 +20,7 @@ class UBXMessage():
     UBX Message Class.
     '''
 
-    def __init__(self, ubx_class, ubx_id, payload=b'', mode=ubt.GET):
+    def __init__(self, ubx_class, ubx_id, payload=None, mode=ubt.GET):
         '''
         Constructor.
 
@@ -28,20 +28,23 @@ class UBXMessage():
         '''
 
         self._header = ubt.UBX_HDR
+        self._mode = mode
         if isinstance(ubx_class, str) and isinstance(ubx_id, str):  # e.g. 'CFG, CFG-PRT'
             (self._ubx_class, self._ubx_id) = self.ubx_str2bytes(ubx_class, ubx_id)
         else:  # e.g. b'\x06', b'\x01'
             self._ubx_class = ubx_class
             self._ubx_id = ubx_id
-        if isinstance(payload, str):
-            payload = bytes(payload, 'utf-8')
-        self._length = self.len2bytes(len(payload))
-        self._checksum = self.calc_checksum(self._ubx_class + self._ubx_id +
+        if payload is None:
+            self._length = self.len2bytes(0)
+            self._checksum = self.calc_checksum(self._ubx_class + self._ubx_id +
+                                                self._length)
+        else:
+            if isinstance(payload, str):
+                payload = bytes(payload, 'utf-8')
+            self._length = self.len2bytes(len(payload))
+            self._checksum = self.calc_checksum(self._ubx_class + self._ubx_id +
                                             self._length + payload)
-        self._mode = mode
-
-        if payload:
-            self.payload = payload
+        self.payload = payload
 
     def __str__(self) -> str:
         '''
@@ -51,6 +54,9 @@ class UBXMessage():
         clsid = None
 
         umsg_name = self.identity
+        if self.payload is None:
+            return f"<UBX({umsg_name})>"
+
         stg = f"<UBX({umsg_name}, "
         for i, att in enumerate(self.__dict__):
             if att[0] != '_':  # only show public attributes
@@ -86,15 +92,22 @@ class UBXMessage():
         Machine readable representation.
         '''
 
-        return f"'UBXMessage({self._ubx_class}, {self._ubx_id}, {self._payload})'"
+        if self._payload is not None:
+            return f"'UBXMessage({self._ubx_class}, {self._ubx_id}, {self._payload})'"
+        else:
+            return f"'UBXMessage({self._ubx_class}, {self._ubx_id})'" 
 
     def serialize(self) -> bytes:
         '''
         Return message content as byte array suitable for writing to a stream.
         '''
 
-        return (ubt.UBX_HDR + self._ubx_class + self._ubx_id + self._length
-                +self._payload + self._checksum)
+        if self._payload is not None:
+            return (ubt.UBX_HDR + self._ubx_class + self._ubx_id + self._length
+                    + self._payload + self._checksum)
+        else:
+            return (ubt.UBX_HDR + self._ubx_class + self._ubx_id + self._length
+                    + self._checksum)           
 
     @staticmethod
     def parse(message: bytes, validate: bool=False) -> object:
@@ -110,10 +123,17 @@ class UBXMessage():
         clsid = message[2:3]
         msgid = message[3:4]
         lenb = message[4:6]
-        payload = message[6:lenm - 2]
-        leni = len(payload)
+        if lenb == b'\x00\x00':
+            payload = None
+            leni = 0
+        else:
+            payload = message[6:lenm - 2]
+            leni = len(payload)
         ckm = message[lenm - 2:lenm]
-        ckv = UBXMessage.calc_checksum(clsid + msgid + lenb + payload)
+        if payload is not None:
+            ckv = UBXMessage.calc_checksum(clsid + msgid + lenb + payload)
+        else:
+            ckv = UBXMessage.calc_checksum(clsid + msgid + lenb)
         if validate:
             if hdr != ubt.UBX_HDR:
                 raise ube.UBXParseError(f"Invalid message header {hdr} - should be {ubt.UBX_HDR}")
@@ -244,7 +264,11 @@ class UBXMessage():
         '''
 
         self._payload = payload
-        self._length = self.len2bytes(len(self._payload))
+        lng = 0 if payload is None else len(payload)
+        self._length = self.len2bytes(lng)
+        if payload is None:
+            return
+
         offset = 0
         self._index = 0
         try:

@@ -12,6 +12,7 @@ from time import sleep
 
 from serial import Serial, SerialException, SerialTimeoutException
 from pyubx2.ubxreader import UBXReader
+from pyubx2 import UBXMessage, POLL, SET
 import pyubx2.exceptions as ube
 
 
@@ -87,6 +88,13 @@ class UBXStreamer():
             self._reading = False
             self._serial_thread.join()
 
+    def send(self, data):
+        '''
+        Send data to serial connection.
+        '''
+
+        self._serial_object.write(data)
+
     def _read_thread(self):
         '''
         THREADED PROCESS
@@ -114,14 +122,33 @@ if __name__ == "__main__":
     BAUDRATE = 9600
     TIMEOUT = 1
     RUNTIME = 60
+    NMEA = 0
+    UBX = 1
+    BOTH = 2
 
     print("Instantiating UBXStreamer class...")
     ubp = UBXStreamer(PORT, BAUDRATE, TIMEOUT)
     print(f"Connecting to serial port {PORT} at {BAUDRATE} baud...")
     ubp.connect()
-    print(f"Starting reader thread, which will run for {RUNTIME} seconds...\n\n")
+    print(f"Starting reader thread, which will run for about {RUNTIME} seconds...\n\n")
     ubp.start_read_thread()
-    sleep(RUNTIME)  # do other stuff; reader thread will continue in background
+
+    # with the reader running in the background,
+    # send a series of poll messages to the receiver.
+    # you should see the poll responses in the input stream
+    # (along with any other UBX data the receiver is pumping out)
+    for i in range(int(RUNTIME / 8)):
+        # poll various receiver configs
+        for msgtype in ('CFG-PRT', 'CFG-USB', 'CFG-NMEA', 'CFG-NAV5'):
+            msg = UBXMessage('CFG', msgtype, None, POLL)
+            ubp.send(msg.serialize())
+            sleep(1)
+        # poll various NMEA message rates
+        for msgpayload in (b'\xF0\x01', b'\xF0\x02', b'\xF0\x03', b'\xF0\x04', b'\xF0\x05',):
+            msg = UBXMessage('CFG', 'CFG-MSG', msgpayload, POLL)
+            ubp.send(msg.serialize())
+            sleep(1)
+
     print("\n\nStopping reader thread...")
     ubp.stop_read_thread()
     print("Disconnecting from serial port...")
