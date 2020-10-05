@@ -139,12 +139,11 @@ The following examples can be found in the `\examples` folder:
 
 1. `ubxstreamer.py` illustrates how to implement a threaded serial reader for UBX messages using pyubx2. 
 
-1. `ubxconfig.py` illustrates how to implement a simple configuration utility which sets output UBX-NAV message 
-rates on the  receiver's UART and USB ports (on a non-permanent basis). You can see the results using `ubxstreamer.py`.
+1. `ubxconfig.py` illustrates how to implement a simple configuration utility which sets output UBX-NAV message  rates on the  receiver's UART and USB ports (on a non-permanent basis). You can see the results using `ubxstreamer.py`.
 
-**NB:** If you don't see any incoming data, ensure that your receiver device is configured to output UBX 
-protocol data. Some development devices only output NMEA data by default; note that a proprietary NMEA 
-`PUBX` message type is *not* the same as a UBX protocol message.
+1. `ubxprotocol.py` illustrates how to set the outbound protocols on the receiver's USB port 
+to NMEA, UBX or both (on a non-permanent basis). You can see the results using `ubxstreamer.py`.
+
 
 ## Extensibility
 
