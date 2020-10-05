@@ -4,7 +4,7 @@ Created on 27 Sep 2020
 @author: semuadmin
 '''
 
-from version import VERSION
+from ._version import VERSION
 
 from .ubxmessage import UBXMessage
 from .exceptions import UBXMessageError, UBXParseError, UBXTypeError
