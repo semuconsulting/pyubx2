@@ -69,18 +69,24 @@ class UBXSetter():
 
         self._serial_object.write(data)
 
-    def send_configuration(self, protocol):
+    def send_configuration(self, outProtoMask):
         '''
         Creates a CFG-PRT configuration message and
-        sends them to the receiver.
+        sends it to the receiver.
         '''
 
-        port = b'\x03'  # port 3 is normally USB
-        payla = b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x07\x00'
-        paylb = b'\x00\x00\x00\x00'
+        portID = b'\x03'  # USB port
+        reserved0 = b'\x00'
+        txReady = b'\x00\x00'
+        mode = b'\x00\x00\x00\x00'  # not used for USB port
+        baudRate = b'\x00\x00\x00\x00'  # not used for USB port
+        inProtoMask = b'\x07\x00'  # NMEA + UBX + RTCM3
+        reserved4 = b'\x00\x00'
+        reserved5 = b'\x00\x00'
+        payload = portID + reserved0 + txReady + mode + baudRate + inProtoMask \
+                  +outProtoMask + reserved4 + reserved5
 
         try:
-            payload = port + payla + protocol + paylb
             msg = UBXMessage('CFG', 'CFG-PRT', payload, SET)
             print(f"Sending {msg}")
             self._send(msg.serialize())
@@ -91,20 +97,20 @@ class UBXSetter():
 if __name__ == "__main__":
 
     # set PORT, BAUDRATE and TIMEOUT as appropriate
-#     PORT = 'COM6'
-    PORT = '/dev/tty.usbmodem14101'
+    PORT = 'COM6'
+    # PORT = '/dev/tty.usbmodem14101'
     BAUDRATE = 9600
     TIMEOUT = 5
-    NMEA = b'\x02'
-    UBX = b'\x01'
-    BOTH = b'\x03'
+    NMEA = b'\x02\x00'
+    UBX = b'\x01\x00'
+    BOTH = b'\x03\x00'
 
     print("Instantiating UBXConfig class...")
     ubs = UBXSetter(PORT, BAUDRATE, TIMEOUT)
     print(f"Connecting to serial port {PORT} at {BAUDRATE} baud...")
     ubs.connect()
     print("Sending configuration message to receiver...")
-    ubs.send_configuration(BOTH)
+    ubs.send_configuration(BOTH)  # NMEA, UBX or BOTH
     print("Disconnecting from serial port...")
     ubs.disconnect()
     print("Test Complete")
