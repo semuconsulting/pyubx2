@@ -92,22 +92,20 @@ class UBXMessage():
         Machine readable representation.
         '''
 
-        if self._payload is not None:
-            return f"'UBXMessage({self._ubx_class}, {self._ubx_id}, {self._payload})'"
-        else:
-            return f"'UBXMessage({self._ubx_class}, {self._ubx_id})'" 
+        if self._payload is None:
+            return f"'UBXMessage({self._ubx_class}, {self._ubx_id})'"
+        return f"'UBXMessage({self._ubx_class}, {self._ubx_id}, {self._payload})'"
 
     def serialize(self) -> bytes:
         '''
         Return message content as byte array suitable for writing to a stream.
         '''
 
-        if self._payload is not None:
+        if self._payload is None:
             return (ubt.UBX_HDR + self._ubx_class + self._ubx_id + self._length
-                    + self._payload + self._checksum)
-        else:
-            return (ubt.UBX_HDR + self._ubx_class + self._ubx_id + self._length
-                    + self._checksum)           
+                    +self._checksum)
+        return (ubt.UBX_HDR + self._ubx_class + self._ubx_id + self._length
+                +self._payload + self._checksum)
 
     @staticmethod
     def parse(message: bytes, validate: bool=False) -> object:
@@ -303,9 +301,14 @@ class UBXMessage():
         # print(f" _PAYLOAD_ATTR - identity={self.identity}, key = {key}")
         att = pdict[key]  # get attribute type
         if isinstance(att, dict):  # attribute is a dict i.e. a nested repeating group
+            # no 'numCh' attribute for these message types so need to deduce
+            if self.identity in ('AID-ALM', 'CFG-RINV', 'MON-VER', 'RXM-ALM'):
+                rng = self._get_repeats(att, payload, offset)
+            elif self.identity in ('ESF-MEAS', 'RXM-EPH'):
+                rng = self._get_optionals(att, payload, offset)
             # get preceding attribute containing number of items in this repeating group
             # assumed to be 'numCh' unless otherwise specified in UBX_PAYLOADS
-            if self.identity == 'AID-ALPSRV':
+            elif self.identity == 'AID-ALPSRV':
                 rng = self.dataSize
 #             elif self.identity == 'AN-OTHER'
 #                 rng = self.whatever # whatever name is given to the attribute
@@ -338,3 +341,29 @@ class UBXMessage():
             offset += atts
 
         return (offset, att)
+
+    def _get_repeats(self, att, payload : bytes, offset: int) -> int:
+        '''
+        Returns number of items in repeating group
+        where this isn't specified by a 'numCh' attribute
+        
+        NB: this assumes the indeterminate repeating group is 
+        always at the end of the payload
+        '''
+
+        # get length of remaining payload
+        plen = len(payload) - offset
+        # calculate length of each item in group
+        lng = 0
+        for _, val in att.items():
+            lng += int(val[1:3])
+        # deduce number of repeating items in remaining payload
+        return int(plen / lng)
+
+    def _get_optionals(self, att, payload : bytes, offset: int) -> int:
+        '''
+        Returns number of items in optional repeating groups
+        '''
+
+        # TODO - not yet implemented
+        return 0

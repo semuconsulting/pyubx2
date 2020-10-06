@@ -2,13 +2,13 @@
 Example implementation of a simple UBX receiver configuration utility
 
 This example sets the protocol(s) which will transmitted on the
-receiver's USB port (port 0x03) to NMEA, UBX or both
+receiver's USB port to NMEA, UBX or both
 
 **NOTE:**
 
 1.  The configuration set here is volatile and will be reset after a receiver
     power cycle or CFG-RST. To make the configuration permanent, you'd need to
-    send a CFG-CFG message - **caveat emptor!**.
+    send a CFG-CFG message - **caveat emptor**.
 
 Created on 3 Oct 2020
 
@@ -74,20 +74,16 @@ class UBXSetter():
         Creates a CFG-PRT configuration message and
         sends them to the receiver.
         '''
-    
+
+        port = b'\x03'  # port 3 is normally USB
+        payla = b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x07\x00'
+        paylb = b'\x00\x00\x00\x00'
+
         try:
-
-            if protocol == NMEAONLY:  # turn on just the NMEA protocol
-                config = b'\x03\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x07\x00\x02\x00\x00\x00\x00\x00'
-            elif protocol == UBXONLY:  # turn on just the UBX protocol
-                config = b'\x03\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x07\x00\x01\x00\x00\x00\x00\x00'
-            else:  # turn on both NMEA and UBX protocols
-                config = b'\x03\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x07\x00\x03\x00\x00\x00\x00\x00'
-
-            msg = UBXMessage('CFG', 'CFG-PRT', config, SET)
+            payload = port + payla + protocol + paylb
+            msg = UBXMessage('CFG', 'CFG-PRT', payload, SET)
             print(f"Sending {msg}")
             self._send(msg.serialize())
-
         except (ube.UBXMessageError, ube.UBXTypeError, ube.UBXParseError) as err:
             print(f"Something went wrong {err}")
 
@@ -99,15 +95,15 @@ if __name__ == "__main__":
     PORT = '/dev/tty.usbmodem14101'
     BAUDRATE = 9600
     TIMEOUT = 5
-    NMEAONLY = 0
-    UBXONLY = 1
-    BOTH = 2
+    NMEA = b'\x02'
+    UBX = b'\x01'
+    BOTH = b'\x03'
 
     print("Instantiating UBXConfig class...")
     ubs = UBXSetter(PORT, BAUDRATE, TIMEOUT)
     print(f"Connecting to serial port {PORT} at {BAUDRATE} baud...")
     ubs.connect()
-    print("Sending configuration messages to receiver...")
+    print("Sending configuration message to receiver...")
     ubs.send_configuration(BOTH)
     print("Disconnecting from serial port...")
     ubs.disconnect()

@@ -26,7 +26,7 @@ UBX_PAYLOADS_GET = {
 'AID-ALM': {
 'svid': U4,
 'week': U4,
-'optBlock': {  # TODO repeating group but optional and no index so how to handle?
+'optBlock': {
 'dwrd': U4
 }},
 'AID-ALPSRV': {
@@ -233,7 +233,7 @@ UBX_PAYLOADS_GET = {
 'minAcqTime': U2
 },
 'CFG-PRT': {
-'PortID': U1,
+'portID': U1,
 'reserved0': U1,
 'txReady': X2,
 'mode': X4,
@@ -250,7 +250,7 @@ UBX_PAYLOADS_GET = {
 },
 'CFG-RINV': {
 'flags': X1,
-'group': {  # TODO repeating group but no index so how to handle?
+'group': {
 'data': U1
 }},
 'CFG-RXM': {
@@ -316,7 +316,7 @@ UBX_PAYLOADS_GET = {
 'timeTag': U4,
 'flags': X2,
 'id': U2,
-'datagroup': {  # TODO repeating group but no index so how to handle?
+'datagroup': {
 'data': X4
 },
 'calibgroup': {  # TODO repeating group but optional and no index so how to handle?
@@ -512,7 +512,7 @@ UBX_PAYLOADS_GET = {
 'swVersion': C30,
 'hwVersion': C30,
 'romVersion': C30,
-'group': {  # TODO repeating group but no index so how to handle?
+'group': {
 'extension': C30
 }},
 'NAV-AOPSTATUS': {
@@ -577,7 +577,7 @@ UBX_PAYLOADS_GET = {
 'lat': I4,
 'height': I4,
 'hMSL': I4,
-'HAcc': U4,
+'hAcc': U4,
 'vAcc': U4
 },
 'NAV-SBAS': {
@@ -685,19 +685,19 @@ UBX_PAYLOADS_GET = {
 'RXM-ALM': {
 'svid': U4,
 'week': U4,
-'group': {  # TODO repeating group but no index so how to handle?
+'group': {
 'dwrd': U4
 }},
 'RXM-EPH': {
 'svid': U4,
 'how': U4,
-'group': {  # TODO repeating group but no index so how to handle?
+'group': {  # TODO multiple repeating groups so how to handle?
 'sf1d': U4
 },
-'group2': {  # TODO repeating group but no index so how to handle?
+'group2': {  # TODO multiple repeating groups so how to handle?
 'sf2d': U4
 },
-'group3': {  # TODO repeating group but no index so how to handle?
+'group3': {  # TODO multiple repeating groups so how to handle?
 'sf3d': U4
 }},
 'RXM-RAW': {

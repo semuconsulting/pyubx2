@@ -1,6 +1,15 @@
 '''
 Example implementation of a threaded UBXMessage streamer
 
+Connects to the receiver's serial port and sets up a
+threaded UBXReader process. With the reader process running
+in the  background, it sends a series of poll messages to
+the receiver.
+
+You should see the poll responses in the input stream,
+or an ACK-NAK (Not Acknowledged) message if that
+particular CFG-MSG type is not supported by the receiver.
+
 Created on 2 Oct 2020
 
 @author: semuadmin
@@ -10,9 +19,10 @@ from io import BufferedReader
 from threading import Thread
 from time import sleep
 
-from serial import Serial, SerialException, SerialTimeoutException
+from pyubx2 import UBXMessage, POLL, SET, UBX_CONFIG_MESSAGES
 from pyubx2.ubxreader import UBXReader
-from pyubx2 import UBXMessage, POLL, SET
+from serial import Serial, SerialException, SerialTimeoutException
+
 import pyubx2.exceptions as ube
 
 
@@ -95,6 +105,20 @@ class UBXStreamer():
 
         self._serial_object.write(data)
 
+    def flush(self):
+        '''
+        Flush input buffer
+        '''
+        
+        self._serial_object.reset_input_buffer()
+        
+    def waiting(self):
+        '''
+        Check if any messages remaining in the input buffer
+        '''
+
+        return self._serial_object.in_waiting
+
     def _read_thread(self):
         '''
         THREADED PROCESS
@@ -105,8 +129,8 @@ class UBXStreamer():
             if self._serial_object.in_waiting:
                 try:
                     (raw_data, parsed_data) = self._ubxreader.read()
-                    if raw_data:
-                        print(raw_data)
+#                     if raw_data:
+#                         print(raw_data)
                     if parsed_data:
                         print(parsed_data)
                 except (ube.UBXMessageError, ube.UBXTypeError, ube.UBXParseError) as err:
@@ -121,7 +145,6 @@ if __name__ == "__main__":
     PORT = '/dev/tty.usbmodem14101'
     BAUDRATE = 9600
     TIMEOUT = 1
-    RUNTIME = 60
     NMEA = 0
     UBX = 1
     BOTH = 2
@@ -130,24 +153,29 @@ if __name__ == "__main__":
     ubp = UBXStreamer(PORT, BAUDRATE, TIMEOUT)
     print(f"Connecting to serial port {PORT} at {BAUDRATE} baud...")
     ubp.connect()
-    print(f"Starting reader thread, which will run for about {RUNTIME} seconds...\n\n")
+    print("Starting reader thread...")
     ubp.start_read_thread()
 
-    # with the reader running in the background,
-    # send a series of poll messages to the receiver.
-    # you should see the poll responses in the input stream
-    # (along with any other UBX data the receiver is pumping out)
-    for i in range(int(RUNTIME / 8)):
-        # poll various receiver configs
-        for msgtype in ('CFG-PRT', 'CFG-USB', 'CFG-NMEA', 'CFG-NAV5'):
-            msg = UBXMessage('CFG', msgtype, None, POLL)
-            ubp.send(msg.serialize())
-            sleep(1)
-        # poll various NMEA message rates
-        for msgpayload in (b'\xF0\x01', b'\xF0\x02', b'\xF0\x03', b'\xF0\x04', b'\xF0\x05',):
-            msg = UBXMessage('CFG', 'CFG-MSG', msgpayload, POLL)
-            ubp.send(msg.serialize())
-            sleep(1)
+    print("\nPolling receiver...\n\n")
+    # poll the receiver configuration
+    for msgtype in ('CFG-PRT', 'CFG-USB', 'CFG-NMEA', 'CFG-NAV5'):
+        msg = UBXMessage('CFG', msgtype, None, POLL)
+        ubp.send(msg.serialize())
+        sleep(1)
+    sleep(3)
+
+    # poll all the current message rates
+    for payload in UBX_CONFIG_MESSAGES:
+        msg = UBXMessage('CFG', 'CFG-MSG', payload, POLL)
+        ubp.send(msg.serialize())
+        sleep(1)
+    print("\n\nPolling complete, waiting for final responses...", end="")
+
+    sleep(5)
+    # ... or wait for the input buffer to clear - this will only work
+    # if the receiver is not pumping out unsolicited UBX messages
+#     while ubp.waiting():
+#         print(".", end="")
 
     print("\n\nStopping reader thread...")
     ubp.stop_read_thread()

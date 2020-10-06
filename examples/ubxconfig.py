@@ -14,7 +14,7 @@ the receiver's UART and USB ports.
 
 2.  The configuration set here is volatile and will be reset after a receiver
     power cycle or CFG-RST. To make the configuration permanent, you'd need to
-    send a CFG-CFG message - **caveat emptor!**.
+    send a CFG-CFG message - **caveat emptor**.
 
 3.  In a production implementation, it may be prudent to check for an
     explicit acknowledgement (ACK-ACK message) to each configuration message.
@@ -78,7 +78,7 @@ class UBXSetter():
 
         self._serial_object.write(data)
 
-    def send_configuration(self, msgon):
+    def send_configuration(self, config):
         '''
         Creates a series of CFG-MSG configuration messages and
         sends them to the receiver.
@@ -94,13 +94,6 @@ class UBXSetter():
             for key, val in UBX_CONFIG_MESSAGES.items():
                 if val[0:3] == 'NAV' and val not in ('NAV-POSECEF', 'NAV-VELECEF', 'HPPOSECEF'):
                     msgs.append(key)
-
-            # each of 6 config bytes corresponds to a receiver port
-            # the UART and USB ports are bytes 2, 3 and 4
-            if msgon:  # turn them on
-                config = b'\x00\x01\x01\x01\x00\x00'
-            else:  # turn them off
-                config = b'\x00\x00\x00\x00\x00\x00'
 
             # send each UBX-NAV config message in turn
             for msgtype in msgs:
@@ -120,8 +113,11 @@ if __name__ == "__main__":
     PORT = '/dev/tty.usbmodem14101'
     BAUDRATE = 9600
     TIMEOUT = 5
-    ON = True
-    OFF = False
+
+    # each of 6 config bytes corresponds to a receiver port
+    # the UART and USB ports are bytes 2, 3 and 4
+    ON = b'\x00\x01\x01\x01\x00\x00'
+    OFF = b'\x00\x00\x00\x00\x00\x00'
 
     print("Instantiating UBXConfig class...")
     ubs = UBXSetter(PORT, BAUDRATE, TIMEOUT)
