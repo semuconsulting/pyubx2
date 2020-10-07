@@ -77,7 +77,7 @@ e.g. the `NAV-POSLLH` message has the following properties:
 
 ```python
 >>> msg
-<UBX(NAV-POSLLH, iTOW=403667000, lon=-21601284, lat=526206345, height=86327, hMSL=37844, HAcc=38885, vAcc=16557)>
+<UBX(NAV-POSLLH, iTOW=403667000, lon=-21601284, lat=526206345, height=86327, hMSL=37844, hAcc=38885, vAcc=16557)>
 >>>msg.identity
 'NAV-POSLLH'
 >>>msg.lat/10**7, msg.lon/10**7
