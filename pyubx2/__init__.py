@@ -7,6 +7,7 @@ Created on 27 Sep 2020
 from ._version import VERSION
 
 from .ubxmessage import UBXMessage
+from .ubxreader import UBXReader
 from .exceptions import UBXMessageError, UBXParseError, UBXTypeError
 from .ubxtypes_core import *
 from .ubxtypes_get import *

@@ -11,7 +11,6 @@ Created on 27 Sep 2020
 '''
 
 UBX_HDR = b'\xB5\x62'
-NMEA_HDR = b'\x24'  # '$'
 INPUT = 0
 OUTPUT = 1
 GET = 0

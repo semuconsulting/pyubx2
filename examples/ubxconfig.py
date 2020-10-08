@@ -24,6 +24,7 @@ Created on 3 Oct 2020
 @author: semuadmin
 '''
 
+from time import sleep
 from serial import Serial, SerialException, SerialTimeoutException
 
 from pyubx2 import UBXMessage, SET, UBX_CONFIG_MESSAGES
@@ -93,6 +94,7 @@ class UBXSetter():
             # can block 'conventional' nav messages like NAV-POSLLH and NAV-VELNED
             for key, val in UBX_CONFIG_MESSAGES.items():
                 if val[0:3] == 'NAV' and val not in ('NAV-POSECEF', 'NAV-VELECEF', 'HPPOSECEF'):
+#                 if val[0:3] == 'NAV' and val in ('NAV-PVT'):
                     msgs.append(key)
 
             # send each UBX-NAV config message in turn
@@ -101,6 +103,7 @@ class UBXSetter():
                 msg = UBXMessage('CFG', 'CFG-MSG', payload, SET)
                 print(f"Sending {msg}")
                 self._send(msg.serialize())
+                sleep(1)
 
         except (ube.UBXMessageError, ube.UBXTypeError, ube.UBXParseError) as err:
             print(f"Something went wrong {err}")
@@ -119,7 +122,7 @@ if __name__ == "__main__":
     ON = b'\x00\x01\x01\x01\x00\x00'
     OFF = b'\x00\x00\x00\x00\x00\x00'
 
-    print("Instantiating UBXConfig class...")
+    print("Instantiating UBXSetter class...")
     ubs = UBXSetter(PORT, BAUDRATE, TIMEOUT)
     print(f"Connecting to serial port {PORT} at {BAUDRATE} baud...")
     ubs.connect()

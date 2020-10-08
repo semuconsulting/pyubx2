@@ -7,6 +7,7 @@ Static method tests for pyubx2.UBXMessage
 '''
 
 import unittest
+from datetime import datetime, timedelta
 
 import pyubx2
 
@@ -46,6 +47,24 @@ class StaticTest(unittest.TestCase):
     def testBadChecksum(self):
         res = pyubx2.UBXMessage.isvalid_checksum(b'\xb5b\x06\x01\x02\x00\xf0\x05\xfe\x15')
         self.assertFalse(res)
+
+    def testitow2utc(self):
+        res = str(pyubx2.UBXMessage.itow2utc(387092000))
+        self.assertEqual(res, '11:31:16')
+
+    def testgpsfix2str(self):
+        fixs = ['NO FIX', 'DR', '2D', '3D', 'GPS + DR', 'TIME ONLY']
+        for i, fix in enumerate(range (0, 6)):
+            res = pyubx2.UBXMessage.gpsfix2str(fix)
+            self.assertEqual(res, fixs[i])
+
+    def testdop2str(self):
+        dops = ['Ideal', 'Excellent', 'Good', 'Moderate', 'Fair', 'Poor']
+        i = 0
+        for dop in (1, 2, 5, 10, 20, 30):
+            res = pyubx2.UBXMessage.dop2str(dop)
+            self.assertEqual(res, dops[i])
+            i += 1
 
 
 if __name__ == "__main__":

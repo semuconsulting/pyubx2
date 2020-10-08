@@ -47,7 +47,7 @@ class ParseTest(unittest.TestCase):
     @unittest.expectedFailure
     def testAckCkT(self):
         pyubx2.UBXMessage.parse(self.ack_ack_badck, True)
-        
+
     def testCfg(self):
         res = pyubx2.UBXMessage.parse(self.ack_ack, True)
         self.assertIsInstance(res, pyubx2.UBXMessage)
@@ -82,7 +82,7 @@ class ParseTest(unittest.TestCase):
 
     def testNavVelNedStr(self):
         res = pyubx2.UBXMessage.parse(self.nav_velned, True)
-        self.assertEqual(str(res), '<UBX(NAV-VELNED, iTOW=403326000, velN=-3, velE=-15, velD=-4, speed=16, gSpeed=15, heading=128387, sAcc=65, cAcc=8052720)>')
+        self.assertEqual(str(res), '<UBX(NAV-VELNED, iTOW=16:01:50, velN=-3, velE=-15, velD=-4, speed=16, gSpeed=15, heading=128387, sAcc=65, cAcc=8052720)>')
 
     def testNavVelNedRepr(self):
         res = pyubx2.UBXMessage.parse(self.nav_velned, True)
@@ -96,7 +96,7 @@ class ParseTest(unittest.TestCase):
         res = pyubx2.UBXMessage.parse(self.nav_velned, True)
         self.assertEqual(res.cAcc, 8052720)
 
-    def testCfgPrt(self): # POLL example with null payload
+    def testCfgPrt(self):  # POLL example with null payload
         res = pyubx2.UBXMessage.parse(self.cfg_prt, True)
         self.assertIsInstance(res, pyubx2.UBXMessage)
 
@@ -111,6 +111,7 @@ class ParseTest(unittest.TestCase):
     def testCfgPrtRepr(self):
         res = pyubx2.UBXMessage.parse(self.cfg_prt, True)
         self.assertEqual(repr(res), "'UBXMessage(b'\\x06', b'\\x00')'")
+
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']

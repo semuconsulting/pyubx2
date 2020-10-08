@@ -7,6 +7,7 @@ Created on 26 Sep 2020
 '''
 
 import struct
+from datetime import datetime, timedelta
 
 import pyubx2.exceptions as ube
 import pyubx2.ubxtypes_core as ubt
@@ -64,6 +65,8 @@ class UBXMessage():
                 # if the attributes include a UBX class & id,
                 # show the ASCII lookup form rather than the binary
                 try:
+                    if att == "iTOW":
+                        val = self.itow2utc(val)
                     # if it's an ACK-ACK or ACK-NAK, we show what it's acknowledging in plain text
                     if self._ubx_class == b'\x05':  # ACK
                         if att == 'clsID':
@@ -199,6 +202,55 @@ class UBXMessage():
             return (clsid, msgid)
         except KeyError as err:
             raise ube.UBXMessageError(f"Undefined message, class {clsname}, id {msgname}") from err
+
+    @staticmethod
+    def itow2utc(iTOW: int) -> datetime.time:
+        '''
+        Convert UBX iTOW to UTC time
+        '''
+
+        utc = datetime(1980, 1, 6) + timedelta(seconds=(iTOW / 1000) - (35 - 19))
+        return utc.time()
+
+    @staticmethod
+    def gpsfix2str(fix: int) -> str:
+        '''
+        Converts GPS fix integer to string
+        '''
+
+        if fix == 5:
+            fixs = 'TIME ONLY'
+        elif fix == 4:
+            fixs = 'GPS + DR'
+        elif fix == 3:
+            fixs = '3D'
+        elif fix == 2:
+            fixs = '2D'
+        elif fix == 1:
+            fixs = 'DR'
+        else:
+            fixs = 'NO FIX'
+        return fixs
+
+    @staticmethod
+    def dop2str(dop: float) -> str:
+        '''
+        Converts DOP float to descriptive string
+        '''
+
+        if dop == 1:
+            dops = 'Ideal'
+        elif dop <= 2:
+            dops = 'Excellent'
+        elif dop <= 5:
+            dops = 'Good'
+        elif dop <= 10:
+            dops = 'Moderate'
+        elif dop <= 20:
+            dops = 'Fair'
+        else:
+            dops = 'Poor'
+        return dops
 
     @staticmethod
     def key_from_val(dictionary: dict, value):

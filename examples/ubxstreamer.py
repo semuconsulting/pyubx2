@@ -109,9 +109,9 @@ class UBXStreamer():
         '''
         Flush input buffer
         '''
-        
+
         self._serial_object.reset_input_buffer()
-        
+
     def waiting(self):
         '''
         Check if any messages remaining in the input buffer
@@ -171,7 +171,7 @@ if __name__ == "__main__":
         sleep(1)
     print("\n\nPolling complete, waiting for final responses...", end="")
 
-    sleep(5)
+    sleep(3)
     # ... or wait for the input buffer to clear - this will only work
     # if the receiver is not pumping out unsolicited UBX messages
 #     while ubp.waiting():

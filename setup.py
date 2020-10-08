@@ -20,6 +20,8 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/semuconsulting/pyubx2",
     packages=setuptools.find_packages(),
+    package_data={'': ['ubxlog.bin']},
+    include_package_data=True,
     license="BSD 3-Clause 'Modified' License",
     project_urls={
         "Bug Tracker": "https://github.com/semuconsulting/pyubx2",

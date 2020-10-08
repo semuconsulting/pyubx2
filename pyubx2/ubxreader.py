@@ -36,24 +36,21 @@ class UBXReader():
         reading = True
         raw_data = None
         parsed_data = None
-        byte1 = stm.read(1)  # read the first byte
+        byte1 = stm.read(2)  # read the first two bytes
 
         while reading:
-            if byte1 == ubt.UBX_HDR[0:1]:  # could be a UBX message
-                byte2 = stm.read(1)
-                if byte2 == ubt.UBX_HDR[1:2]:  # definitely a UBX message
-                    byten = stm.read(4)
-                    clsid = byten[0:1]
-                    msgid = byten[1:2]
-                    lenb = byten[2:4]
-                    leni = int.from_bytes(lenb, 'little', signed=False)
-                    byten = stm.read(leni + 2)
-                    plb = byten[0:leni]
-                    cksum = byten[leni:leni + 2]
-                    raw_data = ubt.UBX_HDR + clsid + msgid + lenb + plb + cksum
-                    parsed_data = UBXMessage.parse(raw_data)
-                else:
-                    reading = False
+            if byte1 == ubt.UBX_HDR:  # it's a UBX message
+                byten = stm.read(4)
+                clsid = byten[0:1]
+                msgid = byten[1:2]
+                lenb = byten[2:4]
+                leni = int.from_bytes(lenb, 'little', signed=False)
+                byten = stm.read(leni + 2)
+                plb = byten[0:leni]
+                cksum = byten[leni:leni + 2]
+                raw_data = ubt.UBX_HDR + clsid + msgid + lenb + plb + cksum
+                parsed_data = UBXMessage.parse(raw_data)
+                reading = False
             else:
                 reading = False
 

@@ -97,8 +97,8 @@ class UBXSetter():
 if __name__ == "__main__":
 
     # set PORT, BAUDRATE and TIMEOUT as appropriate
-    PORT = 'COM6'
-    # PORT = '/dev/tty.usbmodem14101'
+#     PORT = 'COM6'
+    PORT = '/dev/tty.usbmodem14101'
     BAUDRATE = 9600
     TIMEOUT = 5
     NMEA = b'\x02\x00'
