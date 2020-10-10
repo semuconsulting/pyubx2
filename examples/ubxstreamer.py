@@ -15,6 +15,7 @@ Created on 2 Oct 2020
 @author: semuadmin
 '''
 
+from sys import platform
 from io import BufferedReader
 from threading import Thread
 from time import sleep
@@ -141,8 +142,10 @@ class UBXStreamer():
 if __name__ == "__main__":
 
     # set PORT, BAUDRATE and TIMEOUT as appropriate
-#     PORT = 'COM6'
-    PORT = '/dev/tty.usbmodem14101'
+    if platform == 'win32':
+        PORT = 'COM6'
+    else:
+        PORT = '/dev/tty.usbmodem14101'
     BAUDRATE = 9600
     TIMEOUT = 1
     NMEA = 0
@@ -162,14 +165,13 @@ if __name__ == "__main__":
         msg = UBXMessage('CFG', msgtype, None, POLL)
         ubp.send(msg.serialize())
         sleep(1)
-    sleep(3)
 
     # poll all the current message rates
     for payload in UBX_CONFIG_MESSAGES:
         msg = UBXMessage('CFG', 'CFG-MSG', payload, POLL)
         ubp.send(msg.serialize())
         sleep(1)
-    print("\n\nPolling complete, waiting for final responses...", end="")
+    print("\n\nPolling complete, waiting for final responses...\n\n")
 
     sleep(3)
     # ... or wait for the input buffer to clear - this will only work

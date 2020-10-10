@@ -24,6 +24,7 @@ Created on 3 Oct 2020
 @author: semuadmin
 '''
 
+from sys import platform
 from time import sleep
 from serial import Serial, SerialException, SerialTimeoutException
 
@@ -94,7 +95,6 @@ class UBXSetter():
             # can block 'conventional' nav messages like NAV-POSLLH and NAV-VELNED
             for key, val in UBX_CONFIG_MESSAGES.items():
                 if val[0:3] == 'NAV' and val not in ('NAV-POSECEF', 'NAV-VELECEF', 'HPPOSECEF'):
-#                 if val[0:3] == 'NAV' and val in ('NAV-PVT'):
                     msgs.append(key)
 
             # send each UBX-NAV config message in turn
@@ -112,8 +112,10 @@ class UBXSetter():
 if __name__ == "__main__":
 
     # set PORT, BAUDRATE and TIMEOUT as appropriate
-#     PORT = 'COM6'
-    PORT = '/dev/tty.usbmodem14101'
+    if platform == 'win32':
+        PORT = 'COM6'
+    else:
+        PORT = '/dev/tty.usbmodem14101'
     BAUDRATE = 9600
     TIMEOUT = 5
 

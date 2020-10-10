@@ -111,12 +111,11 @@ UBX_PAYLOADS_SET = {
 'reserved5': U4
 },
 'CFG-INF': {
-'group': {  # TODO repeating group but no index - how to handle?
 'protocolID': U1,
 'reserved0': U1,
 'reserved1': U2,
 'infMsgMask': X6
-}},
+},
 'CFG-ITFM': {
 'config': X4,
 'config2': X4

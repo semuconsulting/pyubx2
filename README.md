@@ -3,7 +3,7 @@ pyubx2
 
 `pyubx2` is an original python library for the UBX protocol. 
 
-UBX is a proprietary binary protocol implemented on u-blox &copy; GPS receiver modules.
+UBX is a proprietary binary protocol implemented on u-blox &copy; GPS/GNSS receiver modules.
 
 The `pyubx2` homepage is located at [http://github.com/semuconsulting/pyubx2](http://github.com/semuconsulting/pyubx2).
 
@@ -18,12 +18,9 @@ This is a personal project and I am in no way affiliated with u-blox.
 ![Contributors](https://img.shields.io/github/contributors/semuconsulting/pyubx2.svg)
 ![Open Issues](https://img.shields.io/github/issues-raw/semuconsulting/pyubx2)
 
-At time of writing the library is based on the [u-blox generation 6 protocol](https://www.u-blox.com/sites/default/files/products/documents/u-blox6_ReceiverDescrProtSpec_%28GPS.G6-SW-10018%29_Public.pdf) but
-is readily extensible for later generations.
+At time of writing the library is based on the [u-blox generation 8 protocol](https://www.u-blox.com/en/docs/UBX-13003221) but is readily extensible for later generations.
 
-Implements the full range of UBX Generation 6 protocol messages *with the exception of* a handful of message classes which
-require non-standard processing (see release notes on GitHub for details). These, along with a growing subset of Generation 8
-messages, are in hand.
+Implements an almost complete range of inbound and outbound UBX Generation 8 protocol messages *with the exception of* a handful of message classes which require non-standard processing (see release notes on GitHub for details). These are in hand.
 
 Constructive feedback and feature requests welcome.
 

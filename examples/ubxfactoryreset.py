@@ -1,16 +1,9 @@
 '''
 Example implementation of a simple UBX receiver configuration utility
 
-This example sets the protocol(s) which will transmitted on the
-receiver's USB port to NMEA, UBX or both
+This example resets the UBX receiver to its factory defaults
 
-**NOTE:**
-
-1.  The configuration set here is volatile and will be reset after a receiver
-    power cycle or CFG-RST. To make the configuration permanent, you'd need to
-    send a CFG-CFG message - **caveat emptor**.
-
-Created on 3 Oct 2020
+Created on 10 Oct 2020
 
 @author: semuadmin
 '''
@@ -22,7 +15,7 @@ from pyubx2 import UBXMessage, SET
 import pyubx2.exceptions as ube
 
 
-class UBXSetter():
+class UBXFactoryReset():
     '''
     UBXSetter class.
     '''
@@ -70,26 +63,19 @@ class UBXSetter():
 
         self._serial_object.write(data)
 
-    def send_configuration(self, outProtoMask):
+    def send_configuration(self):
         '''
-        Creates a CFG-PRT configuration message and
+        Creates a CFG-CFG configuration message and
         sends it to the receiver.
         '''
 
-        portID = b'\x03'  # USB port
-        reserved0 = b'\x00'
-        txReady = b'\x00\x00'
-        mode = b'\x00\x00\x00\x00'  # not used for USB port
-        baudRate = b'\x00\x00\x00\x00'  # not used for USB port
-        inProtoMask = b'\x07\x00'  # NMEA + UBX + RTCM3
-        reserved4 = b'\x00\x00'
-        reserved5 = b'\x00\x00'
-        payload = portID + reserved0 + txReady + mode + baudRate + inProtoMask \
-                  +outProtoMask + reserved4 + reserved5
-
         try:
-            msg = UBXMessage('CFG', 'CFG-PRT', payload, SET)
-            print(f"Sending {msg}")
+            clearMask = b'\x07\x00\x00\x00' # little-endian
+            saveMask = b'\x00\x00\x00\x00'
+            loadMask = b'\x07\x00\x00\x00'
+            devicerMask = b'\x01' # only target the battery-backed RAM
+            payload = clearMask + saveMask + loadMask + devicerMask
+            msg = UBXMessage('CFG', 'CFG-CFG', payload, SET)
             self._send(msg.serialize())
         except (ube.UBXMessageError, ube.UBXTypeError, ube.UBXParseError) as err:
             print(f"Something went wrong {err}")
@@ -104,16 +90,13 @@ if __name__ == "__main__":
         PORT = '/dev/tty.usbmodem14101'
     BAUDRATE = 9600
     TIMEOUT = 5
-    NMEA = b'\x02\x00'
-    UBX = b'\x01\x00'
-    BOTH = b'\x03\x00'
 
-    print("Instantiating UBXConfig class...")
-    ubs = UBXSetter(PORT, BAUDRATE, TIMEOUT)
+    print("Instantiating UBXFactoryReset class...")
+    ubs = UBXFactoryReset(PORT, BAUDRATE, TIMEOUT)
     print(f"Connecting to serial port {PORT} at {BAUDRATE} baud...")
     ubs.connect()
-    print("Sending configuration message to receiver...")
-    ubs.send_configuration(BOTH)  # NMEA, UBX or BOTH
+    print("Sending factory reset message to receiver...")
+    ubs.send_configuration()
     print("Disconnecting from serial port...")
     ubs.disconnect()
     print("Test Complete")

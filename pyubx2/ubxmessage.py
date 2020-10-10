@@ -362,6 +362,10 @@ class UBXMessage():
             # assumed to be 'numCh' unless otherwise specified in UBX_PAYLOADS
             elif self.identity == 'AID-ALPSRV':
                 rng = self.dataSize
+            elif self.identity == 'NAV-GEOFENCE':
+                rng = self.numFences
+            elif self.identity == 'MON-PATCH':
+                rng = self.nEntries
 #             elif self.identity == 'AN-OTHER'
 #                 rng = self.whatever # whatever name is given to the attribute
             else:

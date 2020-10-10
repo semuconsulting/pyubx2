@@ -12,7 +12,7 @@ Created on 27 Sep 2020
 @author: semuadmin
 '''
 
-from pyubx2.ubxtypes_core import U1, I1, X1, U2, I2, X2, U4, I4 , X4 , R4 , X6, R8 , C06, C10, C30, C32, CH
+from pyubx2.ubxtypes_core import U1, I1, X1, U2, I2, X2, U3, U4, I4 , X4 , R4 , X6, R8 , C06, C10, C30, C32, CH
 
 UBX_PAYLOADS_GET = {
 'ACK-ACK': {
@@ -131,15 +131,10 @@ UBX_PAYLOADS_GET = {
 'reserved5': U4
 },
 'CFG-INF': {
-'ProtocolID': U1,
+'protocolID': U1,
 'reserved0': U1,
 'reserved1': U2,
-'infMsgMaskDDC': X1,
-'infMsgMaskUART1': X1,
-'infMsgMaskUART2': X1,
-'infMsgMaskUSB': X1,
-'infMsgMaskSPI': X1,
-'reserved3': X1
+'infMsgMask': X6
 },
 'CFG-MSG': {
 'msgClass': U1,
@@ -353,6 +348,16 @@ UBX_PAYLOADS_GET = {
 'INF-WARNING': {
 'message': CH
 },
+'MON-GNSS': {
+'version': U1,
+'supported': X1,
+'default': X1,
+'enabled': X1,
+'simultaneous': U1,
+'reserved11': U1,
+'reserved12': U1,
+'reserved13': U1,
+},
 'MON-HW2': {
 'ofsI': I1,
 'magI': U1,
@@ -429,38 +434,64 @@ UBX_PAYLOADS_GET = {
 'msg13': U2,
 'msg14': U2,
 'msg15': U2,
+'msg16': U2,
+'msg17': U2,
 'msg20': U2,
 'msg21': U2,
 'msg22': U2,
 'msg23': U2,
 'msg24': U2,
 'msg25': U2,
+'msg26': U2,
+'msg27': U2,
 'msg30': U2,
 'msg31': U2,
 'msg32': U2,
 'msg33': U2,
 'msg34': U2,
 'msg35': U2,
+'msg36': U2,
+'msg37': U2,
 'msg40': U2,
 'msg41': U2,
 'msg42': U2,
 'msg43': U2,
 'msg44': U2,
 'msg45': U2,
+'msg46': U2,
+'msg47': U2,
 'msg50': U2,
 'msg51': U2,
 'msg52': U2,
 'msg53': U2,
 'msg54': U2,
 'msg55': U2,
+'msg56': U2,
+'msg57': U2,
 'msg60': U2,
 'msg61': U2,
 'msg62': U2,
 'msg63': U2,
 'msg64': U2,
 'msg65': U2,
-'skipped': U4
+'msg66': U2,
+'msg67': U2,
+'skipped1': U4,
+'skipped2': U4,
+'skipped3': U4,
+'skipped4': U4,
+'skipped5': U4,
+'skipped6': U4
 },
+'MON-PATCH': {
+'version': U2,
+'nEntries': U2,
+'group': { # repeating group
+'patchInfo': X4,
+'comparatorNumber': U4,
+'patchAddress': U4,
+'patchData': U4,
+}},
 'MON-RXBUF': {
 'pending0': U2,
 'pending1': U2,
@@ -483,6 +514,19 @@ UBX_PAYLOADS_GET = {
 },
 'MON-RXR': {
 'flags': U1
+},
+'MON-SMGR': {
+'version': U1,
+'reserved11': U1,
+'reserved12': U1,
+'reserved13': U1,
+'iTOW': U4,
+'intOsc': X2,
+'extOsc': X2,
+'discSrc': U1,
+'gnss': X1,
+'extInt0': X1,
+'extInt1': X1
 },
 'MON-TXBUF': {
 'pending0': U2,
@@ -564,6 +608,43 @@ UBX_PAYLOADS_GET = {
 'temperature': I2,
 'direction': I1
 },
+'NAV-EOE': {
+'iTOW': U4
+},
+'NAV-GEOFENCE': {
+'iTOW': U4,
+'version' : U1,
+'status' : U1,
+'numFences': U1,
+'combState': U1,
+'group': { # repeating group
+'state': U1,
+'reserved1': U1
+}},
+'NAV-ODO' : {
+'version' : U1,
+'reserved11': U1,
+'reserved12': U1,
+'reserved13': U1,
+'iTOW': U4,
+'distance' : U4,
+'totalDistance' : U4,
+'distanceStd' : U4
+},
+'NAV-ORB' : {
+'iTOW': U4,
+'version' : U1,
+'numCh' : U1,
+'reserved11': U1,
+'reserved12': U1,
+'group' : {
+'gnssId': U1,
+'svId': U1,
+'svFlag': X1,
+'eph': X1,
+'alm': X1,
+'otherOrb': X1
+}},
 'NAV-POSECEF': {
 'iTOW': U4,
 'ecefX': I4,
@@ -619,6 +700,21 @@ UBX_PAYLOADS_GET = {
 'magDec': I2,
 'magAcc': U2
 },
+'NAV-SAT': {
+'iTOW': U4,
+'version' : U1,
+'numCh' : U1,
+'reserved11': I1,
+'reserved12': I1,
+'group': {
+'gnssId': U1,
+'svId': U1,
+'cno': U1,
+'elev': I1,
+'azim': I2,
+'prRes': I2,
+'flags': X4
+}},
 'NAV-SBAS': {
 'iTOW': U4,
 'geo' : U1,
@@ -683,6 +779,33 @@ UBX_PAYLOADS_GET = {
 'azim': I2,
 'prRes': I4
 }},
+'NAV-TIMEBDS': {
+'iTOW': U4,
+'SOW': U4,
+'fSOW': I4,
+'week': I2,
+'leapS': I1,
+'valid': X1,
+'tAcc': U4
+},
+'NAV-TIMEGAL': {
+'iTOW': U4,
+'galTow': U4,
+'fGalTow': I4,
+'galWno': I2,
+'leapS': I1,
+'valid': X1,
+'tAcc': U4
+},
+'NAV-TIMEGLO': {
+'iTOW': U4,
+'TOD': U4,
+'fTOD': I4,
+'Nt': U2,
+'N4': U1,
+'valid': X1,
+'tAcc': U4
+},
 'NAV-TIMEGPS': {
 'iTOW': U4,
 'fTOW': I4,
@@ -690,6 +813,24 @@ UBX_PAYLOADS_GET = {
 'leapS': I1,
 'valid': X1,
 'tAcc': U4
+},
+'NAV-TIMELS': {
+'iTOW': U4,
+'version': U1,
+'reserved11': U1,
+'reserved12': U1,
+'reserved13': U1,
+'srcOfCurrLs': U1,
+'currLs': I1,
+'srcOfLsChange': U1,
+'lsChange': I1,
+'timeToLsEvent': I4,
+'dateOfLsGpsWn': U2,
+'dateOfLsGpsDn': U2,
+'reserved21': U1,
+'reserved22': U1,
+'reserved23': U1,
+'valid': X1
 },
 'NAV-TIMEUTC': {
 'iTOW': U4,
