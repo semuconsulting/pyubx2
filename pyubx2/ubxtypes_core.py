@@ -299,6 +299,13 @@ b'\x01\x27': 'NAV-TIMEQZSS',
 b'\x01\x21': 'NAV-TIMEUTC',
 b'\x01\x11': 'NAV-VELECEF',
 b'\x01\x12': 'NAV-VELNED',
+b'\x02\x61': 'RXM-IMES',
+b'\x02\x14': 'RXM-MEASX',
+b'\x02\x41': 'RXM-PMREQ',
+b'\x02\x15': 'RXM-RAWX',
+b'\x02\x59': 'RXM-RLM',
+b'\x02\x13': 'RXM-SFRBX',
+b'\x02\x20': 'RXM-SVSI',
 b'\xF1\x00': 'UBX-00',  # Lat/Long Position Data
 b'\xF1\x03': 'UBX-03',  # Satellite Status
 b'\xF1\x04': 'UBX-04',  # Time of Day and Clock Information

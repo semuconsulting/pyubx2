@@ -32,19 +32,6 @@ UBX_PAYLOADS_GET = {
 'optBlock': {
 'dwrd': U4
 }},
-'AID-ALPSRV': {
-'idSize': U1,
-'type': U1,
-'ofs': U2,
-'size': U2,
-'fileId': U2,
-'dataSize': U2,
-'id1': U1,
-'id2': U1,
-'id3': U1,
-'group': {  # repeating group
-'data': U2
-}},
 'AID-AOP' : {
 'gnssId': U1,
 'svId': U1,
@@ -282,7 +269,7 @@ UBX_PAYLOADS_GET = {
 },
 'CFG-RINV': {
 'flags': X1,
-'group': {
+'group': {  # repeating group
 'data': U1
 }},
 'CFG-RXM': {
@@ -349,7 +336,7 @@ UBX_PAYLOADS_GET = {
 'timeTag': U4,
 'flags': X2,
 'id': U2,
-'datagroup': {
+'datagroup': {  # repeating group
 'data': X4
 },
 'calibgroup': {  # TODO repeating group but optional and no index so how to handle?
@@ -365,7 +352,7 @@ UBX_PAYLOADS_GET = {
 'reserved4': U1,
 'reserved5': U1,
 'numCh': U1,
-'group': {  # repeating block
+'group': {  # repeating group * numCh
 'sensStatus1': X1,
 'sensStatus2': X2,
 'freq': U1,
@@ -510,7 +497,7 @@ UBX_PAYLOADS_GET = {
 'second': U1,
 'reserved2': U1,
 'byteCount': U2,
-'group': {
+'group': {  # repeating group * byteCount
 'data': U1
 }},
 # ********************************************************************
@@ -656,7 +643,7 @@ UBX_PAYLOADS_GET = {
 },
 'MGA-DBD': {
 'reserved1': U12,
-'group': {
+'group': {  # repeating group
 'data': U1
 }},
 'MGA-FLASH-DATA': {
@@ -664,7 +651,7 @@ UBX_PAYLOADS_GET = {
 'version': U1,
 'sequence': U2,
 'size': U2,
-'group': {
+'group': {  # repeating group * size
 'data': U1
 }},
 'MGA-FLASH-STOP': {
@@ -1203,7 +1190,7 @@ UBX_PAYLOADS_GET = {
 'MON-PATCH': {
 'version': U2,
 'nEntries': U2,
-'group': {  # repeating group
+'group': {  # repeating group * nEntries
 'patchInfo': X4,
 'comparatorNumber': U4,
 'patchAddress': U4,
@@ -1271,7 +1258,7 @@ UBX_PAYLOADS_GET = {
 'swVersion': C30,
 'hwVersion': C30,
 'romVersion': C30,
-'group': {
+'group': {  # repeating group
 'extension': C30
 }},
 # ********************************************************************
@@ -1300,7 +1287,7 @@ UBX_PAYLOADS_GET = {
 'numCh': U1,
 'status': U1,
 'reserved1': U2,
-'channels' : {  # repeating group
+'channels' : {  # repeating group * numCh
 'svid' : U1,
 'flags': U1,
 'ageC' : U2,
@@ -1333,7 +1320,7 @@ UBX_PAYLOADS_GET = {
 'status' : U1,
 'numFences': U1,
 'combState': U1,
-'group': {  # repeating group
+'group': {  # repeating group * numFences
 'state': U1,
 'reserved1': U1
 }},
@@ -1350,7 +1337,7 @@ UBX_PAYLOADS_GET = {
 'version' : U1,
 'numCh' : U1,
 'reserved1': U2,
-'group' : {
+'group' : {  # repeating group * numCh
 'gnssId': U1,
 'svId': U1,
 'svFlag': X1,
@@ -1414,7 +1401,7 @@ UBX_PAYLOADS_GET = {
 'numCh' : U1,
 'reserved11': I1,
 'reserved12': I1,
-'group': {
+'group': {  # repeating group * numCh
 'gnssId': U1,
 'svId': U1,
 'cno': U1,
@@ -1431,7 +1418,7 @@ UBX_PAYLOADS_GET = {
 'service': X1,
 'numCh': U1,
 'reserved0': U3,
-'channels': {  # repeating group
+'channels': {  # repeating group * numCh
 'svid': U1,
 'flags': U1,
 'udre': U1,
@@ -1475,7 +1462,7 @@ UBX_PAYLOADS_GET = {
 'numCh': U1,
 'globalFlags': X1,
 'reserved2': U2,
-'channels': {  # repeating group
+'channels': {  # repeating group * numCh
 'chn': U1,
 'svid': U1,
 'flags': X1,
@@ -1569,7 +1556,7 @@ UBX_PAYLOADS_GET = {
 'numTx': U1,
 'version': U1,
 'reserved1': U2,
-'group': {
+'group': {  # repeating group * numTx
 'reserved2': U1,
 'txId': U1,
 'reserved3': U3,
@@ -1601,7 +1588,7 @@ UBX_PAYLOADS_GET = {
 'numCh': U1,
 'flags': U1,
 'reserved4': U8,
-'group': {
+'group': {  # repeating group * numCh
 'gnssId': U1,
 'svId': U1,
 'cNo': U1,
@@ -1712,7 +1699,7 @@ UBX_PAYLOADS_GET = {
 'reserved1': U2,
 'iTOW': U4,
 'reserved2': U4,
-'group': {
+'group': {  # repeating group * numMeas
 'sourceId': U1,
 'flags': X1,
 'phaseOffsetFr': I1,

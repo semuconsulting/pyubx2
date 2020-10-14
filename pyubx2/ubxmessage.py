@@ -373,8 +373,12 @@ class UBXMessage():
                 rng = self.nEntries
             elif self.identity in ('TIM-SMEAS', 'RXM-RAWX'):
                 rng = self.numMeas
+            elif self.identity == 'RXM-IMES':
+                rng = self.numTx
             elif self.identity == 'LOG-RETRIEVESTRING':
                 rng = self.byteCount
+            elif self.identity == 'MGA-FLASH-DATA':
+                rng = self.size
 #             elif self.identity == 'AN-OTHER'
 #                 rng = self.whatever # whatever name is given to the attribute
             else:
