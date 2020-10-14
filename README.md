@@ -50,6 +50,29 @@ Individual UBX messages can then be read using the `UBXReader.read()` function, 
 data (as bytes) and the parsed data (as a `UBXMessage` object). The function is thread-safe in so far as the incoming
 data stream object is thread-safe.
 
+Examples:
+
+* Serial input
+
+```python
+>>> from serial import Serial
+>>> from pyubx2 import UBXReader
+>>> stream = Serial('COM6', 9600, timeout=3)
+>>> ubr = UBXReader(stream)
+>>> msg = ubr.read()
+```
+
+* File input
+
+```python
+>>> import os
+>>> from pyubx2 import UBXReader
+>>> file = os.path.join(os.path.dirname(__file__), 'ubxdata.bin')
+>>> stream = open(file, 'rb')
+>>> ubr = UBXReader(stream)
+>>> msg = ubr.read()
+```
+
 ## Parsing
 
 You can parse individual UBX messages using the `UBXMessage.parse(data, validate=False)` function, which takes a bytes array containing a
