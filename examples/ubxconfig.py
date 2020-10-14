@@ -113,7 +113,7 @@ if __name__ == "__main__":
 
     # set PORT, BAUDRATE and TIMEOUT as appropriate
     if platform == 'win32':
-        PORT = 'COM6'
+        PORT = 'COM7'
     else:
         PORT = '/dev/tty.usbmodem14101'
     BAUDRATE = 9600
@@ -121,7 +121,7 @@ if __name__ == "__main__":
 
     # each of 6 config bytes corresponds to a receiver port
     # the UART and USB ports are bytes 2, 3 and 4
-    ON = b'\x00\x01\x01\x01\x00\x00'
+    ON = b'\x01\x01\x01\x01\x01\x00'
     OFF = b'\x00\x00\x00\x00\x00\x00'
 
     print("Instantiating UBXSetter class...")

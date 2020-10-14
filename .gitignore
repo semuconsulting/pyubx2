@@ -14,4 +14,3 @@ Pipfile*.*
 /pygpsclient/__pycache__
 *.pyc
 /tests/ubx_tester.py
-build.xml

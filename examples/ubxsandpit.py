@@ -1,14 +1,5 @@
 '''
-Example implementation of a simple UBX receiver configuration utility
-
-This example sets the protocol(s) which will transmitted on the
-receiver's USB port to NMEA, UBX or both
-
-**NOTE:**
-
-1.  The configuration set here is volatile and will be reset after a receiver
-    power cycle or CFG-RST. To make the configuration permanent, you'd need to
-    send a CFG-CFG message - **caveat emptor**.
+My testing sandpit
 
 Created on 3 Oct 2020
 
@@ -18,11 +9,11 @@ Created on 3 Oct 2020
 from sys import platform
 from serial import Serial, SerialException, SerialTimeoutException
 
-from pyubx2 import UBXMessage, SET
+from pyubx2 import UBXMessage, SET, UBX_CONFIG_MESSAGES, UBXMessageError
 import pyubx2.exceptions as ube
 
 
-class UBXSetter():
+class UBXSandpit():
     '''
     UBXSetter class.
     '''
@@ -76,30 +67,21 @@ class UBXSetter():
         sends it to the receiver.
         '''
 
-        portID = b'\x03'  # USB port
-        reserved0 = b'\x00'
-        txReady = b'\x00\x00'
-        mode = b'\x00\x00\x00\x00'  # not used for USB port
-        baudRate = b'\x00\x00\x00\x00'  # not used for USB port
-        inProtoMask = b'\x07\x00'  # NMEA + UBX + RTCM3
-        reserved4 = b'\x00\x00'
-        reserved5 = b'\x00\x00'
-        payload = portID + reserved0 + txReady + mode + baudRate + inProtoMask \
-                  +outProtoMask + reserved4 + reserved5
-
-        try:
-            msg = UBXMessage('CFG', 'CFG-PRT', payload, SET)
-            print(f"Sending {msg}")
-            self._send(msg.serialize())
-        except (ube.UBXMessageError, ube.UBXTypeError, ube.UBXParseError) as err:
-            print(f"Something went wrong {err}")
-
+        for msg, val in UBX_CONFIG_MESSAGES.items():
+            try:
+                msgCls = msg[0:1]
+                msgId = msg[1:2]
+                m = UBXMessage(msgCls, msgId)
+                print(msg, val, m)
+            except UBXMessageError as err:
+                print(f'this one didnt work {err}')
+                continue
 
 if __name__ == "__main__":
 
     # set PORT, BAUDRATE and TIMEOUT as appropriate
     if platform == 'win32':
-        PORT = 'COM7'
+        PORT = 'COM6'
     else:
         PORT = '/dev/tty.usbmodem14101'
     BAUDRATE = 9600
@@ -108,12 +90,12 @@ if __name__ == "__main__":
     UBX = b'\x01\x00'
     BOTH = b'\x03\x00'
 
-    print("Instantiating UBXConfig class...")
-    ubs = UBXSetter(PORT, BAUDRATE, TIMEOUT)
-    print(f"Connecting to serial port {PORT} at {BAUDRATE} baud...")
-    ubs.connect()
-    print("Sending configuration message to receiver...")
+    print("Instantiating UBXSandpit class...")
+    ubs = UBXSandpit(PORT, BAUDRATE, TIMEOUT)
+#     print(f"Connecting to serial port {PORT} at {BAUDRATE} baud...")
+#     ubs.connect()
+#     print("Sending configuration message to receiver...")
     ubs.send_configuration(BOTH)  # NMEA, UBX or BOTH
-    print("Disconnecting from serial port...")
-    ubs.disconnect()
-    print("Test Complete")
+#     print("Disconnecting from serial port...")
+#     ubs.disconnect()
+#     print("Test Complete")

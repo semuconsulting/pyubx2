@@ -70,10 +70,10 @@ class UBXFactoryReset():
         '''
 
         try:
-            clearMask = b'\x07\x00\x00\x00' # little-endian
+            clearMask = b'\x07\x00\x00\x00'  # little-endian
             saveMask = b'\x00\x00\x00\x00'
             loadMask = b'\x07\x00\x00\x00'
-            devicerMask = b'\x01' # only target the battery-backed RAM
+            devicerMask = b'\x01'  # only target the battery-backed RAM
             payload = clearMask + saveMask + loadMask + devicerMask
             msg = UBXMessage('CFG', 'CFG-CFG', payload, SET)
             self._send(msg.serialize())
@@ -85,7 +85,7 @@ if __name__ == "__main__":
 
     # set PORT, BAUDRATE and TIMEOUT as appropriate
     if platform == 'win32':
-        PORT = 'COM6'
+        PORT = 'COM7'
     else:
         PORT = '/dev/tty.usbmodem14101'
     BAUDRATE = 9600

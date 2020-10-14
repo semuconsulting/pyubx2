@@ -10,7 +10,8 @@ Created on 27 Sep 2020
 
 @author: semuadmin
 '''
-from pyubx2.ubxtypes_core import  U1, I1, X1, U2, I2, X2, U4, I4 , X4 , R4 , X6, R8 , C06, C10, C30, C32, CH
+
+from pyubx2.ubxtypes_core import U1, I1, X1, U2, I2, X2, U3, U4, I4, U5, X4, R4, U6, X6, R8, C06, C10, C30, C32, CH
 
 UBX_PAYLOADS_SET = {
 'AID-ALM': {
@@ -112,9 +113,13 @@ UBX_PAYLOADS_SET = {
 },
 'CFG-INF': {
 'protocolID': U1,
-'reserved0': U1,
-'reserved1': U2,
-'infMsgMask': X6
+'reserved1': U3,
+'infMsgMaskDDC': X1,
+'infMsgMaskUART1': X1,
+'infMsgMaskUART2': X1,
+'infMsgMaskUSB': X1,
+'infMsgMaskSPI': X1,
+'reserved2': X1
 },
 'CFG-ITFM': {
 'config': X4,

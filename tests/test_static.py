@@ -7,7 +7,6 @@ Static method tests for pyubx2.UBXMessage
 '''
 
 import unittest
-from datetime import datetime, timedelta
 
 import pyubx2
 

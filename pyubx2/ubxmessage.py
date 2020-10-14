@@ -32,7 +32,7 @@ class UBXMessage():
         self._mode = mode
         if isinstance(ubx_class, str) and isinstance(ubx_id, str):  # e.g. 'CFG, CFG-PRT'
             (self._ubx_class, self._ubx_id) = self.ubx_str2bytes(ubx_class, ubx_id)
-        else:  # e.g. b'\x06', b'\x01'
+        else:  # e.g. b'\x06', b'\x06\x01'
             self._ubx_class = ubx_class
             self._ubx_id = ubx_id
         if payload is None:
@@ -73,7 +73,7 @@ class UBXMessage():
                             clsid = val
                             val = ubt.UBX_CLASSES[clsid]
                         if att == 'msgID' and clsid:
-                            val = ubt.UBX_MSGIDS[clsid][val]
+                            val = ubt.UBX_MSGIDS[clsid + val]
                     # if it's a CFG-MSG, we show what message class/id it refers to in plain text
                     if self._ubx_class == b'\x06' and self._ubx_id == b'\x01':  # CFG-MSG
                         if att == 'msgClass':
@@ -198,7 +198,7 @@ class UBXMessage():
 
         try:
             clsid = UBXMessage.key_from_val(ubt.UBX_CLASSES, clsname)
-            msgid = UBXMessage.key_from_val(ubt.UBX_MSGIDS[clsid], msgname)
+            msgid = UBXMessage.key_from_val(ubt.UBX_MSGIDS, msgname)[1:]
             return (clsid, msgid)
         except KeyError as err:
             raise ube.UBXMessageError(f"Undefined message, class {clsname}, id {msgname}") from err
@@ -272,9 +272,14 @@ class UBXMessage():
         '''
 
         try:
-            umsg_name = ubt.UBX_MSGIDS[self._ubx_class][self._ubx_id]
+            # all MGA messages except MGA-DBD need to be identified by the
+            # 'type' attribute - the first byte of the payload
+            if self._ubx_class == b'\x13' and self._ubx_id != b'\x80':
+                umsg_name = ubt.UBX_MSGIDS[self._ubx_class + self._ubx_id + self._payload[0:1]]
+            else:
+                umsg_name = ubt.UBX_MSGIDS[self._ubx_class + self._ubx_id]
         except KeyError as err:
-            raise ube.UBXMessageError(f"Message type {self._ubx_class},{self._ubx_id} not defined") from err
+            raise ube.UBXMessageError(f"Message type {self._ubx_class + self._ubx_id} not defined") from err
         return umsg_name
 
     @property
@@ -366,6 +371,10 @@ class UBXMessage():
                 rng = self.numFences
             elif self.identity == 'MON-PATCH':
                 rng = self.nEntries
+            elif self.identity in ('TIM-SMEAS', 'RXM-RAWX'):
+                rng = self.numMeas
+            elif self.identity == 'LOG-RETRIEVESTRING':
+                rng = self.byteCount
 #             elif self.identity == 'AN-OTHER'
 #                 rng = self.whatever # whatever name is given to the attribute
             else:
@@ -376,7 +385,7 @@ class UBXMessage():
                     (offset, _) = self._payload_attr(payload, offset, att, key1)
         elif att == ubt.CH:  # attribute is a single variable-length string (e.g. INF-NOTICE)
             atts = len(payload)
-            val = payload
+            val = payload.decode('utf-8', 'backslashreplace')
         elif att[0:1] == 'X' or key in ('clsID', 'msgClass', 'msgID'):  # attribute is a bitmask or a ubx msgcls/id
             atts = int(att[1:3])  # attribute size in bytes
             val = payload[offset:offset + atts]  # the raw value in bytes

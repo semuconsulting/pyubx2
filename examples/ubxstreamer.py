@@ -3,8 +3,8 @@ Example implementation of a threaded UBXMessage streamer
 
 Connects to the receiver's serial port and sets up a
 threaded UBXReader process. With the reader process running
-in the  background, it sends a series of poll messages to
-the receiver.
+in the background, it polls the current PRT, USB, NMEA and MSG
+configuration.
 
 You should see the poll responses in the input stream,
 or an ACK-NAK (Not Acknowledged) message if that
@@ -20,7 +20,7 @@ from io import BufferedReader
 from threading import Thread
 from time import sleep
 
-from pyubx2 import UBXMessage, POLL, SET, UBX_CONFIG_MESSAGES
+from pyubx2 import UBXMessage, POLL, UBX_CONFIG_MESSAGES
 from pyubx2.ubxreader import UBXReader
 from serial import Serial, SerialException, SerialTimeoutException
 
@@ -143,7 +143,7 @@ if __name__ == "__main__":
 
     # set PORT, BAUDRATE and TIMEOUT as appropriate
     if platform == 'win32':
-        PORT = 'COM6'
+        PORT = 'COM7'
     else:
         PORT = '/dev/tty.usbmodem14101'
     BAUDRATE = 9600
