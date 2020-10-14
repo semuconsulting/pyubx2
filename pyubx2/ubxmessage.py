@@ -253,6 +253,20 @@ class UBXMessage():
         return dops
 
     @staticmethod
+    def gnss2str(gnssId: int) -> str:
+        '''
+        Converts GNSS ID to descriptive string
+        '''
+
+        GNSS = {0: 'GPS', 1: 'SBAS', 2: 'Galileo', 3: 'BeiDou',
+                4: 'IMES', 5: 'QZSS', 6: 'GLONASS'}
+
+        try:
+            return GNSS[gnssId]
+        except KeyError:
+            return str(gnssId)
+
+    @staticmethod
     def key_from_val(dictionary: dict, value):
         '''
         Helper method - get dictionary key corresponding to (unique) value.
@@ -375,6 +389,8 @@ class UBXMessage():
                 rng = self.numMeas
             elif self.identity == 'RXM-IMES':
                 rng = self.numTx
+            elif self.identity == 'RXM-SFRBX':
+                rng = self.numWords
             elif self.identity == 'LOG-RETRIEVESTRING':
                 rng = self.byteCount
             elif self.identity == 'MGA-FLASH-DATA':
@@ -390,6 +406,11 @@ class UBXMessage():
         elif att == ubt.CH:  # attribute is a single variable-length string (e.g. INF-NOTICE)
             atts = len(payload)
             val = payload.decode('utf-8', 'backslashreplace')
+        elif key == 'gnssId':  # attribute is a GNSS iD
+            atts = int(att[1:3])
+            val = payload[offset:offset + atts]
+            gnssid = int.from_bytes(val, 'little', signed=False)
+            val = self.gnss2str(gnssid)
         elif att[0:1] == 'X' or key in ('clsID', 'msgClass', 'msgID'):  # attribute is a bitmask or a ubx msgcls/id
             atts = int(att[1:3])  # attribute size in bytes
             val = payload[offset:offset + atts]  # the raw value in bytes
