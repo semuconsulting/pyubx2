@@ -20,7 +20,7 @@ This is a personal project and I am in no way affiliated with u-blox.
 
 At time of writing the library is based on the [u-blox generation 8 protocol](https://www.u-blox.com/en/docs/UBX-13003221) but is readily extensible for later generations.
 
-Implements an almost complete range of inbound and outbound UBX Generation 8 protocol messages *with the exception of* a handful of message classes which require non-standard processing (see release notes on GitHub for details). These are in hand.
+Implements a complete range of inbound (GET) UBX Generation 8 protocol messages (see release notes on GitHub for details). A handful of remaining outbound (SET, POLL) Generation 8 commands are in hand.
 
 Constructive feedback and feature requests welcome.
 
