@@ -251,20 +251,6 @@ NB: Available messages will depend on the receiver
 # TODO add additional UBX message types for AID, RXM, ESF
 UBX_CONFIG_MESSAGES = {
 # b'\x0A\x36': 'MON-COMMS',
-b'\x0A\x28': 'MON-GNSS',
-b'\x0A\x09': 'MON-HW',
-b'\x0A\x0B': 'MON-HW2',
-# b'\x0A\x37': 'MON-HW3',
-b'\x0A\x02': 'MON-IO',
-b'\x0A\x06': 'MON-MSGPP',
-b'\x0A\x27': 'MON-PATCH',
-# b'\x0A\x38': 'MON-RF',
-b'\x0A\x07': 'MON-RXBUF',
-b'\x0A\x21': 'MON-RXR',
-b'\x0A\x2E': 'MON-SMGR',
-# b'\x0A\x31': 'MON-SPAN',
-b'\x0A\x08': 'MON-TXBUF',
-b'\x0A\x04': 'MON-VER',
 b'\x01\x60': 'NAV-AOPSTATUS',
 b'\x01\x05': 'NAV-ATT',
 b'\x01\x22': 'NAV-CLOCK',
@@ -306,13 +292,29 @@ b'\x02\x15': 'RXM-RAWX',
 b'\x02\x59': 'RXM-RLM',
 b'\x02\x13': 'RXM-SFRBX',
 b'\x02\x20': 'RXM-SVSI',
-b'\xF1\x00': 'UBX-00',  # Lat/Long Position Data
-b'\xF1\x03': 'UBX-03',  # Satellite Status
-b'\xF1\x04': 'UBX-04',  # Time of Day and Clock Information
-b'\xF1\x05': 'UBX-05',  # Lat/Long Position Data
-b'\xF1\x06': 'UBX-06',  # Lat/Long Position Data
-b'\xF1\x40': 'UBX-40',  # Set NMEA message output rate
-b'\xF1\x41': 'UBX-41',  # Set Protocols and Baudrate
+b'\x0A\x28': 'MON-GNSS',
+b'\x0A\x09': 'MON-HW',
+b'\x0A\x0B': 'MON-HW2',
+# b'\x0A\x37': 'MON-HW3',
+b'\x0A\x02': 'MON-IO',
+b'\x0A\x06': 'MON-MSGPP',
+b'\x0A\x27': 'MON-PATCH',
+# b'\x0A\x38': 'MON-RF',
+b'\x0A\x07': 'MON-RXBUF',
+b'\x0A\x21': 'MON-RXR',
+b'\x0A\x2E': 'MON-SMGR',
+# b'\x0A\x31': 'MON-SPAN',
+b'\x0A\x08': 'MON-TXBUF',
+b'\x0A\x04': 'MON-VER',
+b'\x21\x07': 'LOG-CREATE',
+b'\x21\x03': 'LOG-ERASE',
+b'\x21\x0E': 'LOG-FINDTIME',
+b'\x21\x08': 'LOG-INFO',
+b'\x21\x0f': 'LOG-RETRIEVEPOSEXTRA',
+b'\x21\x0b': 'LOG-RETRIEVEPOS',
+b'\x21\x0d': 'LOG-RETRIEVESTRING',
+b'\x21\x09': 'LOG-RETRIEVE',
+b'\x21\x04': 'LOG-STRING',
 b'\xF0\x0A': 'DTM',  # Datum Reference
 b'\xF0\x44': 'GBQ',  # Poll Standard Message - Talker ID GB (BeiDou)
 b'\xF0\x09': 'GBS',  # GNSS Satellite Fault Detection
@@ -332,4 +334,11 @@ b'\xF0\x41': 'TXT',  # Text Transmission
 b'\xF0\x0F': 'VLW',  # Dual Ground Water Distance
 b'\xF0\x05': 'VTG',  # Course over ground and Groundspeed
 b'\xF0\x08': 'ZDA',  # Time and Date
+b'\xF1\x00': 'UBX-00',  # Lat/Long Position Data
+b'\xF1\x03': 'UBX-03',  # Satellite Status
+b'\xF1\x04': 'UBX-04',  # Time of Day and Clock Information
+b'\xF1\x05': 'UBX-05',  # Lat/Long Position Data
+b'\xF1\x06': 'UBX-06',  # Lat/Long Position Data
+b'\xF1\x40': 'UBX-40',  # Set NMEA message output rate
+b'\xF1\x41': 'UBX-41'  # Set Protocols and Baudrate
 }
