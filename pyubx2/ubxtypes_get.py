@@ -1657,8 +1657,9 @@ UBX_PAYLOADS_GET = {
 'chn': U1,
 'version': U1,
 'reserved2': U1,
+'group' : { # repeating group * numWords
 'dwrd': U4
-},
+}},
 'RXM-SVSI': {
 'iTOW': U4,
 'week': I2,

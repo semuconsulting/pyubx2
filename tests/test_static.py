@@ -51,7 +51,14 @@ class StaticTest(unittest.TestCase):
         res = str(pyubx2.UBXMessage.itow2utc(387092000))
         self.assertEqual(res, '11:31:16')
 
-    def testgpsfix2str(self):
+    def testgnss2str(self):
+        GNSS = {0: 'GPS', 1: 'SBAS', 2: 'Galileo', 3: 'BeiDou',
+                4: 'IMES', 5: 'QZSS', 6: 'GLONASS'}
+        for i in range (0, 7):
+            res = pyubx2.UBXMessage.gnss2str(i)
+            self.assertEqual(res, GNSS[i])
+
+    def testgps2str(self):
         fixs = ['NO FIX', 'DR', '2D', '3D', 'GPS + DR', 'TIME ONLY']
         for i, fix in enumerate(range (0, 6)):
             res = pyubx2.UBXMessage.gpsfix2str(fix)
