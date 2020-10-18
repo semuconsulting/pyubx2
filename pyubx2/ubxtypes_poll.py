@@ -100,15 +100,15 @@ UBX_PAYLOADS_POLL = {
 },
 'CFG-TMODE2': {
 },
-'CFG-TMODE': {
-},
+# 'CFG-TMODE': {
+# },
 'CFG-TP5': {
 },
 'CFG-TP5-TPX': {
 'tIdx': U1
 },
-'CFG-TP': {
-},
+# 'CFG-TP': {
+# },
 'CFG-USB': {
 },
 'RXM-ALM': {

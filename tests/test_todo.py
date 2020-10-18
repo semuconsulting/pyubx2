@@ -22,14 +22,13 @@ class TodoTest(unittest.TestCase):
         i = 0
         print("\nChecking for missing GET payload definitions in UBX_PAYLOADS_GET ...\n")
         for _, val in pyubx2.UBX_MSGIDS.items():
-            if val[0:3] != 'CFG':
-                try:
-                    # print(f"key {key}, val {val}")
-                    pyubx2.UBX_PAYLOADS_GET[val]
-                except KeyError:
-                    i += 1
-                    print(f"{i} Check if {val} needs to be added to UBX_PAYLOADS_GET")
-                    continue
+            try:
+                # print(f"key {key}, val {val}")
+                pyubx2.UBX_PAYLOADS_GET[val]
+            except KeyError:
+                i += 1
+                print(f"{i} Check if {val} needs to be added to UBX_PAYLOADS_GET")
+                continue
         print("\nCheck complete.\n")
 
 

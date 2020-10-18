@@ -23,6 +23,8 @@ setuptools.setup(
     package_data={'': ['ubxlog.bin']},
     include_package_data=True,
     license="BSD 3-Clause 'Modified' License",
+    keywords="pyubx2 GNSS GPS UBX GIS u-blox",
+    platforms="Windows, MacOS, Linux",
     project_urls={
         "Bug Tracker": "https://github.com/semuconsulting/pyubx2",
         "Documentation": "https://github.com/semuconsulting/pyubx2",
@@ -33,10 +35,17 @@ setuptools.setup(
         'Development Status :: 3 - Alpha',
         'Environment :: MacOS X',
         'Environment :: Win32 (MS Windows)',
+        'Environment :: X11 Applications',
         'Environment :: Console',
+        'Intended Audience :: Developers',
+        'Intended Audience :: Science/Research',
+        'Intended Audience :: End Users/Desktop',
         'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.8',
         'License :: OSI Approved :: BSD License',
-        'Topic :: Utilities'
+        'Topic :: Utilities',
+        'Topic :: Software Development :: Libraries :: Python Modules',
+        'Topic :: Scientific/Engineering :: GIS'
     ],
     python_requires='>=3.6',
 )

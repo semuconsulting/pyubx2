@@ -108,6 +108,12 @@ UBX_PAYLOADS_GET = {
 'flags': X2,
 'pins': X2
 },
+'CFG-CFG': {
+'clearMask': X4,
+'saveMask' : X4,
+'loadMask': X4,
+'deviceMask': X1
+},
 'CFG-DAT':{
 'datumNum': U2,
 'datumName': C06,
@@ -121,35 +127,83 @@ UBX_PAYLOADS_GET = {
 'rotZ': R4,
 'scale': R4
 },
-'CFG-EKF': {
-'disableEkf': U1,
-'actionFlags': X1,
-'configFlags': U1,
-'inverseFlags': X1,
+'CFG-DOSC': {
+'version': U1,
+'numOsc': U1,
+'reserved1': U2,
+'group': {  # repeating group * numOsc
+'oscId': U1,
+'reserved2': U1,
+'flags': X2,
+'freq': U4,
+'phaseOffset': I4,
+'withTemp': U4,
+'withAge': U4,
+'timeToTemp': U2,
+'reserved3': U1[2],
+'gainVco': I4,
+'gainUncertainty': U1,
+'reserved4': U3
+}},
+'CFG-DYNSEED': {
+'version': U1,
+'reserved1': U3,
+'seedHi': U4,
+'seedLo': U4
+},
+'CFG-ESRC': {
+'version': U1,
+'numSources': U1,
+'reserved1': U2,
+'group': {  # repeating group * numSources
+'extInt': U1,
+'flags': X2,
+'freq': U4,
 'reserved2': U4,
-'nomPPDist': U2,
-'nomZero': U2,
-'nomSens': U1,
-'rmsTemp': U1,
-'tempUpdate': U2
-},
-'CFG-ESFGWT': {
-'flags':X2,
-'id': U2,
-'wtFactor': U4,
-'reserved1': U4,
-'wtQuantError': U4,
-'timeTagFactor': U4,
-'wtCountMax': U4,
-'timeTagMax': U4,
-'wtLatency': U2,
-'reserved2': U2,
-'wtFrequency': U1,
-'reserved3': U1,
-'speedDeadBand': U2,
-'reserved4': U4,
-'reserved5': U4
-},
+'withTemp': U4,
+'withAge': U4,
+'timeToTemp': U2,
+'maxDevLifeTim': U2,
+'offset': I4,
+'offsetUncertainty': U4,
+'jitter': U4
+}},
+'CFG-FIXSEED': {
+'version': U1,
+'length': U1,
+'reserved1': U2,
+'seedHi': U4,
+'seedLo': U4,
+'group': {  # repeating group * length
+'classId': U1,
+'msgId': U1
+}},
+'CFG-GEOFENCE': {
+'version': U1,
+'numFences': U1,
+'confLvl': U1,
+'reserved1': U1[1],
+'pioEnabled': U1,
+'pinPolarity': U1,
+'pin': U1,
+'reserved2': U1[1],
+'group': {  # repeating group * numFences
+'lat': I4,
+'lon': I4,
+'radius': U4
+}},
+'CFG-GNSS': {
+'msgVer': U1,
+'numTrkChHw': U1,
+'numTrkChUse': U1,
+'numConfigBlocks': U1,
+'group': {  # repeating group * numConfigBlocks
+'gnssId': U1,
+'resTrkCh': U1,
+'maxTrkCh': U1,
+'reserved1': U1,
+'flags': X4
+}},
 'CFG-INF': {
 'protocolID': U1,
 'reserved1': U3,
@@ -159,6 +213,18 @@ UBX_PAYLOADS_GET = {
 'infMsgMaskUSB': X1,
 'infMsgMaskSPI': X1,
 'reserved2': X1
+},
+'CFG-ITFM': {
+'config': X4,
+'config2': X4
+},
+'CFG-LOGFILTER': {
+'version': U1,
+'flags': X1,
+'minInterval': U2,
+'timeThreshold': U2,
+'speedThreshold': U2,
+'positionThreshold': U4
 },
 'CFG-MSG': {
 'msgClass': U1,
@@ -219,6 +285,48 @@ UBX_PAYLOADS_GET = {
 'numSV': U1,
 'flags': X1
 },
+'CFG-ODO': {
+'version': U1,
+'reserved1': U3,
+'flags': U1,
+'odoCfg': X1,
+'reserved2': U6,
+'cogMaxSpeed': U1,
+'cogMaxPosAcc': U1,
+'reserved3': U2,
+'velLpGain': U1,
+'cogLpGain': U1,
+'reserved4': U2
+},
+# 'CFG-EKF': {
+# 'disableEkf': U1,
+# 'actionFlags': X1,
+# 'configFlags': U1,
+# 'inverseFlags': X1,
+# 'reserved2': U4,
+# 'nomPPDist': U2,
+# 'nomZero': U2,
+# 'nomSens': U1,
+# 'rmsTemp': U1,
+# 'tempUpdate': U2
+# },
+# 'CFG-ESFGWT': {
+# 'flags':X2,
+# 'id': U2,
+# 'wtFactor': U4,
+# 'reserved1': U4,
+# 'wtQuantError': U4,
+# 'timeTagFactor': U4,
+# 'wtCountMax': U4,
+# 'timeTagMax': U4,
+# 'wtLatency': U2,
+# 'reserved2': U2,
+# 'wtFrequency': U1,
+# 'reserved3': U1,
+# 'speedDeadBand': U2,
+# 'reserved4': U4,
+# 'reserved5': U4
+# },
 'CFG-PM2': {
 'version': U1,
 'reserved1': U1,
@@ -239,17 +347,24 @@ UBX_PAYLOADS_GET = {
 'reserved10': U2,
 'reserved11': U4
 },
-'CFG-PM':{
+# 'CFG-PM':{
+# 'version': U1,
+# 'reserved1': U1,
+# 'reserved2': U1,
+# 'reserved3': U1,
+# 'flags': X4,
+# 'updatePeriod': U4,
+# 'searchPeriod': U4,
+# 'gridOffset': U4,
+# 'onTime': U2,
+# 'minAcqTime': U2
+# },
+'CFG-PMS': {
 'version': U1,
-'reserved1': U1,
-'reserved2': U1,
-'reserved3': U1,
-'flags': X4,
-'updatePeriod': U4,
-'searchPeriod': U4,
-'gridOffset': U4,
+'powerSetupValue': U1,
+'period': U2,
 'onTime': U2,
-'minAcqTime': U2
+'reserved1': U2
 },
 'CFG-PRT': {
 'portID': U1,
@@ -262,6 +377,11 @@ UBX_PAYLOADS_GET = {
 'reserved4': U2,
 'reserved5': U2
 },
+'CFG-PWR': {
+'version': U1,
+'reserved1': U3,
+'state': U4
+},
 'CFG-RATE': {
 'measRate': U2,
 'navRate': U2,
@@ -272,9 +392,32 @@ UBX_PAYLOADS_GET = {
 'group': {  # repeating group
 'data': U1
 }},
+'CFG-RST': {
+'navBbrMask': X2,
+'resetMode': U1,
+'reserved1': U1
+},
 'CFG-RXM': {
 'reserved1': U1,
 'lpMode': U1
+},
+'CFG-SBAS': {
+'mode': X1,
+'usage': X1,
+'maxSBAS': U1,
+'scanmode2': X1,
+'scanmode1': X4
+},
+'CFG-SMGR': {
+'minGNSSFix' : U1,
+'maxFreqChange': U2,
+'maxPhaseCorrRate': U2,
+'reserved1': U2,
+'freqTolerance' : U2,
+'timeTolerance': U2,
+'messageCfg': X2,
+'maxSlewRate': U2,
+'flags': X4
 },
 'CFG-TMODE2': {
 'timeMode': U1,
@@ -287,15 +430,15 @@ UBX_PAYLOADS_GET = {
 'svinMinDur': U4,
 'svinAccLimit': U4
 },
-'CFG-TMODE': {
-'timeMode': U4,
-'fixedPosX': I4,
-'fixedPosY': I4,
-'fixedPosZ': I4,
-'fixedPosVar': U4,
-'svinMinDur': U4,
-'svinAccLimit': U4
-},
+# 'CFG-TMODE': {
+# 'timeMode': U4,
+# 'fixedPosX': I4,
+# 'fixedPosY': I4,
+# 'fixedPosZ': I4,
+# 'fixedPosVar': U4,
+# 'svinMinDur': U4,
+# 'svinAccLimit': U4
+# },
 'CFG-TP5': {
 'tpIdx': U1,
 'reserved0': U1,
@@ -309,16 +452,25 @@ UBX_PAYLOADS_GET = {
 'userConfigDelay': I4,
 'flags': X4
 },
-'CFG-TP': {
-'internal': U4,
-'length': U4,
-'status': I1,
-'timeRef': U1,
-'flags': U1,
+# 'CFG-TP': {
+# 'internal': U4,
+# 'length': U4,
+# 'status': I1,
+# 'timeRef': U1,
+# 'flags': U1,
+# 'reserved1': U1,
+# 'antCableDelay': I2,
+# 'rfGroupDelay': I2,
+# 'userDelay': I4
+# },
+'CFG-TXSLOT': {
+'version': U1,
+'enable': X1,
+'refTp': U1,
 'reserved1': U1,
-'antCableDelay': I2,
-'rfGroupDelay': I2,
-'userDelay': I4
+'end1': U4,
+'end2': U4,
+'end3': U4
 },
 'CFG-USB': {
 'vendorID': U2,
@@ -332,16 +484,16 @@ UBX_PAYLOADS_GET = {
 'serialNumber': C32
 },
 # ********************************************************************
-'ESF-MEAS': {
-'timeTag': U4,
-'flags': X2,
-'id': U2,
-'datagroup': {  # repeating group
-'data': X4
-},
-'calibgroup': {  # TODO repeating group but optional and no index so how to handle?
-'calibtTag': U4
-}},
+# 'ESF-MEAS': {
+# 'timeTag': U4,
+# 'flags': X2,
+# 'id': U2,
+# 'datagroup': {  # repeating group
+# 'data': X4
+# },
+# 'calibgroup': {  # TODO repeating group but optional and no index so how to handle?
+# 'calibtTag': U4
+# }},
 'ESF-STATUS': {
 'iTOW': U4,
 'version': U1,
@@ -1657,7 +1809,7 @@ UBX_PAYLOADS_GET = {
 'chn': U1,
 'version': U1,
 'reserved2': U1,
-'group' : { # repeating group * numWords
+'group' : {  # repeating group * numWords
 'dwrd': U4
 }},
 'RXM-SVSI': {
