@@ -94,7 +94,7 @@ UBX_PAYLOADS_SET = {
 'version': U1,
 'numOsc': U1,
 'reserved1': U2,
-'group': ('numOsc',{  # repeating group * numOsc
+'group': ('numOsc', {  # repeating group * numOsc
 'oscId': U1,
 'reserved2': U1,
 'flags': X2,
@@ -103,7 +103,7 @@ UBX_PAYLOADS_SET = {
 'withTemp': U4,
 'withAge': U4,
 'timeToTemp': U2,
-'reserved3': U1[2],
+'reserved3': U2,
 'gainVco': I4,
 'gainUncertainty': U1,
 'reserved4': U3
@@ -118,7 +118,7 @@ UBX_PAYLOADS_SET = {
 'version': U1,
 'numSources': U1,
 'reserved1': U2,
-'group': ('numSources',{  # repeating group * numSources
+'group': ('numSources', {  # repeating group * numSources
 'extInt': U1,
 'flags': X2,
 'freq': U4,
@@ -137,7 +137,7 @@ UBX_PAYLOADS_SET = {
 'reserved1': U2,
 'seedHi': U4,
 'seedLo': U4,
-'group': ('length',{  # repeating group * length
+'group': ('length', {  # repeating group * length
 'classId': U1,
 'msgId': U1
 })},
@@ -145,12 +145,12 @@ UBX_PAYLOADS_SET = {
 'version': U1,
 'numFences': U1,
 'confLvl': U1,
-'reserved1': U1[1],
+'reserved1': U1,
 'pioEnabled': U1,
 'pinPolarity': U1,
 'pin': U1,
-'reserved2': U1[1],
-'group': ('numFences',{  # repeating group * numFences
+'reserved2': U1,
+'group': ('numFences', {  # repeating group * numFences
 'lat': I4,
 'lon': I4,
 'radius': U4
@@ -160,7 +160,7 @@ UBX_PAYLOADS_SET = {
 'numTrkChHw': U1,
 'numTrkChUse': U1,
 'numConfigBlocks': U1,
-'group': ('numConfigBlocks',{  # repeating group * numConfigBlocks
+'group': ('numConfigBlocks', {  # repeating group * numConfigBlocks
 'gnssId': U1,
 'resTrkCh': U1,
 'maxTrkCh': U1,
@@ -352,7 +352,7 @@ UBX_PAYLOADS_SET = {
 },
 'CFG-RINV': {
 'flags': X1,
-'group': ('None',{  # repeating group
+'group': ('None', {  # repeating group
 'data': U1
 })},
 'CFG-RST': {
@@ -466,7 +466,7 @@ UBX_PAYLOADS_SET = {
 'reserved': U3
 },
 'LOG-STRING': {
-'group': ('None',{  # repeating group
+'group': ('None', {  # repeating group
 'bytes': U1
 })},
 'NAV-RESETODO': {

@@ -172,11 +172,11 @@ to NMEA, UBX or both (on a non-permanent basis). You can see the results using `
 The UBX protocol is principally defined in the modules `ubxtypes_*.py` as a series of dictionaries. Additional message types 
 can be readily added to the appropriate dictionary. Message payload definitions must conform to the following rules:
 * attribute names must be unique within each message class
-* attribute types must be one of the valid types (I1, U1, etc.)
+* attribute types must be one of the valid types (I1, U2, X4, etc.)
 * repeating groups must be defined as a tuple ('numr', {dict}), where 'numr' is the name of
 the preceding attribute containing the number of repeats (or 'None' if there isn't one), 
 and {dict} is the nested dictionary of repeating items. See NAV-SVINFO by way of example.
-* repeating attribute names are parsed with a two-digit index (svid_01, svid_02, etc.)
+* repeating attribute names are parsed with a two-digit suffix (svid_01, svid_02, etc.)
 
 ## Graphical Client
 

@@ -138,7 +138,7 @@ UBX_PAYLOADS_GET = {
 'version': U1,
 'numOsc': U1,
 'reserved1': U2,
-'group': ('numOsc',{  # repeating group * numOsc
+'group': ('numOsc', {  # repeating group * numOsc
 'oscId': U1,
 'reserved2': U1,
 'flags': X2,
@@ -147,7 +147,7 @@ UBX_PAYLOADS_GET = {
 'withTemp': U4,
 'withAge': U4,
 'timeToTemp': U2,
-'reserved3': U1[2],
+'reserved3': U2,
 'gainVco': I4,
 'gainUncertainty': U1,
 'reserved4': U3
@@ -162,7 +162,7 @@ UBX_PAYLOADS_GET = {
 'version': U1,
 'numSources': U1,
 'reserved1': U2,
-'group': ('numSources',{  # repeating group * numSources
+'group': ('numSources', {  # repeating group * numSources
 'extInt': U1,
 'flags': X2,
 'freq': U4,
@@ -181,7 +181,7 @@ UBX_PAYLOADS_GET = {
 'reserved1': U2,
 'seedHi': U4,
 'seedLo': U4,
-'group': ('length',{  # repeating group * length
+'group': ('length', {  # repeating group * length
 'classId': U1,
 'msgId': U1
 })},
@@ -189,12 +189,12 @@ UBX_PAYLOADS_GET = {
 'version': U1,
 'numFences': U1,
 'confLvl': U1,
-'reserved1': U1[1],
+'reserved1': U1,
 'pioEnabled': U1,
 'pinPolarity': U1,
 'pin': U1,
-'reserved2': U1[1],
-'group': ('numFences',{  # repeating group * numFences
+'reserved2': U1,
+'group': ('numFences', {  # repeating group * numFences
 'lat': I4,
 'lon': I4,
 'radius': U4
@@ -396,7 +396,7 @@ UBX_PAYLOADS_GET = {
 },
 'CFG-RINV': {
 'flags': X1,
-'group': ('None',{  # repeating group
+'group': ('None', {  # repeating group
 'data': U1
 })},
 'CFG-RST': {
@@ -511,7 +511,7 @@ UBX_PAYLOADS_GET = {
 'reserved4': U1,
 'reserved5': U1,
 'numCh': U1,
-'group': ('numCh',{  # repeating group * numCh
+'group': ('numCh', {  # repeating group * numCh
 'sensStatus1': X1,
 'sensStatus2': X2,
 'freq': U1,
@@ -656,7 +656,7 @@ UBX_PAYLOADS_GET = {
 'second': U1,
 'reserved2': U1,
 'byteCount': U2,
-'group': ('byteCount',{  # repeating group * byteCount
+'group': ('byteCount', {  # repeating group * byteCount
 'data': U1
 })},
 # ********************************************************************
@@ -802,7 +802,7 @@ UBX_PAYLOADS_GET = {
 },
 'MGA-DBD': {
 'reserved1': U12,
-'group': ('None',{  # repeating group
+'group': ('None', {  # repeating group
 'data': U1
 })},
 'MGA-FLASH-DATA': {
@@ -810,7 +810,7 @@ UBX_PAYLOADS_GET = {
 'version': U1,
 'sequence': U2,
 'size': U2,
-'group': ('size',{  # repeating group * size
+'group': ('size', {  # repeating group * size
 'data': U1
 })},
 'MGA-FLASH-STOP': {
@@ -1349,7 +1349,7 @@ UBX_PAYLOADS_GET = {
 'MON-PATCH': {
 'version': U2,
 'nEntries': U2,
-'group': ('nEntries',{  # repeating group * nEntries
+'group': ('nEntries', {  # repeating group * nEntries
 'patchInfo': X4,
 'comparatorNumber': U4,
 'patchAddress': U4,
@@ -1417,7 +1417,7 @@ UBX_PAYLOADS_GET = {
 'swVersion': C30,
 'hwVersion': C30,
 'romVersion': C30,
-'group': ('None',{  # repeating group
+'group': ('None', {  # repeating group
 'extension': C30
 })},
 # ********************************************************************
@@ -1446,7 +1446,7 @@ UBX_PAYLOADS_GET = {
 'numCh': U1,
 'status': U1,
 'reserved1': U2,
-'channels' : ('numCh',{  # repeating group * numCh
+'channels' : ('numCh', {  # repeating group * numCh
 'svid' : U1,
 'flags': U1,
 'ageC' : U2,
@@ -1560,7 +1560,7 @@ UBX_PAYLOADS_GET = {
 'numCh' : U1,
 'reserved11': I1,
 'reserved12': I1,
-'group': ('numCh',{  # repeating group * numCh
+'group': ('numCh', {  # repeating group * numCh
 'gnssId': U1,
 'svId': U1,
 'cno': U1,
@@ -1577,7 +1577,7 @@ UBX_PAYLOADS_GET = {
 'service': X1,
 'numCh': U1,
 'reserved0': U3,
-'channels': ('numCh',{  # repeating group * numCh
+'channels': ('numCh', {  # repeating group * numCh
 'svid': U1,
 'flags': U1,
 'udre': U1,
@@ -1621,7 +1621,7 @@ UBX_PAYLOADS_GET = {
 'numCh': U1,
 'globalFlags': X1,
 'reserved2': U2,
-'channels': ('numCh',{  # repeating group * numCh
+'channels': ('numCh', {  # repeating group * numCh
 'chn': U1,
 'svid': U1,
 'flags': X1,
@@ -1715,7 +1715,7 @@ UBX_PAYLOADS_GET = {
 'numTx': U1,
 'version': U1,
 'reserved1': U2,
-'group': ('numTx',{  # repeating group * numTx
+'group': ('numTx', {  # repeating group * numTx
 'reserved2': U1,
 'txId': U1,
 'reserved3': U3,
@@ -1747,7 +1747,7 @@ UBX_PAYLOADS_GET = {
 'numCh': U1,
 'flags': U1,
 'reserved4': U8,
-'group': ('numCh',{  # repeating group * numCh
+'group': ('numCh', {  # repeating group * numCh
 'gnssId': U1,
 'svId': U1,
 'cNo': U1,
@@ -1816,7 +1816,7 @@ UBX_PAYLOADS_GET = {
 'chn': U1,
 'version': U1,
 'reserved2': U1,
-'group' : ('numWords',{  # repeating group * numWords
+'group' : ('numWords', {  # repeating group * numWords
 'dwrd': U4
 })},
 'RXM-SVSI': {
@@ -1859,7 +1859,7 @@ UBX_PAYLOADS_GET = {
 'reserved1': U2,
 'iTOW': U4,
 'reserved2': U4,
-'group': ('numMeas',{  # repeating group * numMeas
+'group': ('numMeas', {  # repeating group * numMeas
 'sourceId': U1,
 'flags': X1,
 'phaseOffsetFr': I1,
