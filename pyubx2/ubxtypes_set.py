@@ -10,6 +10,7 @@ Created on 27 Sep 2020
 
 @author: semuadmin
 '''
+# pylint: disable=line-too-long
 
 from pyubx2.ubxtypes_core import U1, I1, X1, U2, I2, X2, U3, U4, I4, U5, X4, R4, U6, X6, R8, C06, C10, C30, C32, CH
 
@@ -17,7 +18,7 @@ UBX_PAYLOADS_SET = {
 'AID-ALM': {
 'svid': U4,
 'week': U4,
-'optBlock': {  # TODO repeating group but optional and no index so how to handle?
+'optBlock': {  # TODO (deprecated) repeating group but optional and no index so how to handle?
 'dwrd': U4
 }},
 'AID-ALPSRV': {
@@ -31,11 +32,11 @@ UBX_PAYLOADS_SET = {
 'id2': U1,
 'id3': U1
 },
-# 'AID-ALP' : {  # TODO - need to review datasheet
+# 'AID-ALP' : {  # deprecated
 # },
-# 'AID-AOP' : {  # TODO - need to review datasheet
+# 'AID-AOP' : {  # deprecated
 # },
-# 'AID-EPH' : {  # TODO - need to review datasheet
+# 'AID-EPH' : {  # deprecated
 # },
 'AID-HUI': {
 'health': X4,

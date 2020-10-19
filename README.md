@@ -35,10 +35,10 @@ Constructive feedback and feature requests welcome.
 [![PyPI version](https://img.shields.io/pypi/v/pyubx2.svg?style=flat)](https://pypi.org/project/pyubx2/)
 ![PyPI downloads](https://img.shields.io/pypi/dm/pyubx2.svg?style=flat)
 
-The recommended way to install `pyubx2` is with
+The recommended way to install the latest version of `pyubx2` is with
 [pip](http://pypi.python.org/pypi/pip/):
 
-`pip install pyubx2`
+`pip install --upgrade pyubx2`
 
 ## Reading (Streaming)
 

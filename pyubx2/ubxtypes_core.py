@@ -2,8 +2,8 @@
 '''
 UBX Protocol core globals and constants
 
-Based on u-blox 6 receiver datasheet:
-https://www.u-blox.com/sites/default/files/products/documents/u-blox6_ReceiverDescrProtSpec_%28GPS.G6-SW-10018%29_Public.pdf
+Based on u-blox Generation 8 receiver datasheet:
+https://www.u-blox.com/en/docs/UBX-13003221
 
 Created on 27 Sep 2020
 
@@ -251,9 +251,7 @@ b'\xF5' : 'RTCM'
 THESE ARE THE CONFIG MESSAGE TYPES (CFG-MSG)
 NB: Available messages will depend on the receiver
 '''
-# TODO add additional UBX message types for AID, RXM, ESF
 UBX_CONFIG_MESSAGES = {
-# b'\x0A\x36': 'MON-COMMS',
 b'\x01\x60': 'NAV-AOPSTATUS',
 b'\x01\x05': 'NAV-ATT',
 b'\x01\x22': 'NAV-CLOCK',
