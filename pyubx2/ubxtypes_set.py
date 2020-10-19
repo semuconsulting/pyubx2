@@ -6,6 +6,13 @@ THESE ARE THE PAYLOAD DEFINITIONS FOR _SET_ MESSAGES _TO_ THE RECEIVER
 
 NB: Attribute names must be unique within each message class/id
 
+NB: Repeating groups must be defined as a tuple thus: 
+    'group': ('numr', {dict})
+    where 
+    - 'numr' is the name of the preceding attribute containing the number
+       of repeats, or 'None' if there isn't one
+    - {dict} is the nested dictionary containing the repeating attributes
+
 Created on 27 Sep 2020
 
 @author: semuadmin
@@ -87,7 +94,7 @@ UBX_PAYLOADS_SET = {
 'version': U1,
 'numOsc': U1,
 'reserved1': U2,
-'group': {  # repeating group * numOsc
+'group': ('numOsc',{  # repeating group * numOsc
 'oscId': U1,
 'reserved2': U1,
 'flags': X2,
@@ -100,7 +107,7 @@ UBX_PAYLOADS_SET = {
 'gainVco': I4,
 'gainUncertainty': U1,
 'reserved4': U3
-}},
+})},
 'CFG-DYNSEED': {
 'version': U1,
 'reserved1': U3,
@@ -111,7 +118,7 @@ UBX_PAYLOADS_SET = {
 'version': U1,
 'numSources': U1,
 'reserved1': U2,
-'group': {  # repeating group * numSources
+'group': ('numSources',{  # repeating group * numSources
 'extInt': U1,
 'flags': X2,
 'freq': U4,
@@ -123,17 +130,17 @@ UBX_PAYLOADS_SET = {
 'offset': I4,
 'offsetUncertainty': U4,
 'jitter': U4
-}},
+})},
 'CFG-FIXSEED': {
 'version': U1,
 'length': U1,
 'reserved1': U2,
 'seedHi': U4,
 'seedLo': U4,
-'group': {  # repeating group * length
+'group': ('length',{  # repeating group * length
 'classId': U1,
 'msgId': U1
-}},
+})},
 'CFG-GEOFENCE': {
 'version': U1,
 'numFences': U1,
@@ -143,23 +150,23 @@ UBX_PAYLOADS_SET = {
 'pinPolarity': U1,
 'pin': U1,
 'reserved2': U1[1],
-'group': {  # repeating group * numFences
+'group': ('numFences',{  # repeating group * numFences
 'lat': I4,
 'lon': I4,
 'radius': U4
-}},
+})},
 'CFG-GNSS': {
 'msgVer': U1,
 'numTrkChHw': U1,
 'numTrkChUse': U1,
 'numConfigBlocks': U1,
-'group': {  # repeating group * numConfigBlocks
+'group': ('numConfigBlocks',{  # repeating group * numConfigBlocks
 'gnssId': U1,
 'resTrkCh': U1,
 'maxTrkCh': U1,
 'reserved1': U1,
 'flags': X4
-}},
+})},
 'CFG-INF': {
 'protocolID': U1,
 'reserved1': U3,
@@ -345,9 +352,9 @@ UBX_PAYLOADS_SET = {
 },
 'CFG-RINV': {
 'flags': X1,
-'group': {  # repeating group
+'group': ('None',{  # repeating group
 'data': U1
-}},
+})},
 'CFG-RST': {
 'navBbrMask': X2,
 'resetMode': U1,
@@ -459,9 +466,9 @@ UBX_PAYLOADS_SET = {
 'reserved': U3
 },
 'LOG-STRING': {
-'group': {  # repeating group
+'group': ('None',{  # repeating group
 'bytes': U1
-}},
+})},
 'NAV-RESETODO': {
 },
 'RXM-PMREQ': {

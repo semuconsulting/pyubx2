@@ -173,12 +173,10 @@ The UBX protocol is principally defined in the modules `ubxtypes_*.py` as a seri
 can be readily added to the appropriate dictionary. Message payload definitions must conform to the following rules:
 * attribute names must be unique within each message class
 * attribute types must be one of the valid types (I1, U1, etc.)
-* repeating groups are defined as nested dicts and must be preceded by an attribute which contains the number of
-repeats (see NAV-SVINFO by way of example). If this attribute is named 'numCh', the code will identity it automatically; 
-if the attribute is given a different name, ubxmessage.py will need to be modified to identify it explicitly. If such
-an attribute is *not* present, the code will need to be modified to handle this particular message type as an exception to
-the norm e.g. deduce the number of repeats from the payload length.
-* repeating attribute names are suffixed with a two-digit index (svid_01, svid_02, etc.)
+* repeating groups must be defined as a tuple ('numr', {dict}), where 'numr' is the name of
+the preceding attribute containing the number of repeats (or 'None' if there isn't one), 
+and {dict} is the nested dictionary of repeating items. See NAV-SVINFO by way of example.
+* repeating attribute names are parsed with a two-digit index (svid_01, svid_02, etc.)
 
 ## Graphical Client
 

@@ -65,6 +65,8 @@ class UBXMessage():
                 # if the attributes include a UBX class & id,
                 # show the ASCII lookup form rather than the binary
                 try:
+                    if att[0:6] == 'gnssId':  # attribute is a GNSS ID
+                        val = self.gnss2str(val)  # get string representation e.g. 'GPS'
                     if att == "iTOW":
                         val = self.itow2utc(val)
                     # if it's an ACK-ACK or ACK-NAK, we show what it's acknowledging in plain text
@@ -362,26 +364,29 @@ class UBXMessage():
 
     def _payload_attr(self, payload : bytes, offset: int, pdict: dict, key: str):
         '''
-        Recursive routine to parse individual payload attributes to their appropriate types
+        Recursive routine to parse individual payload attributes to 
+        their appropriate types
         '''
         # pylint: disable=no-member
 
         # print(f" _PAYLOAD_ATTR - identity={self.identity}, key = {key}")
         att = pdict[key]  # get attribute type
-        if isinstance(att, dict):  # attribute is a dict i.e. a nested repeating group
-            rng = self._get_num_repeats(att, payload, offset)
+        if isinstance(att, tuple):  # attribute is a tuple i.e. a nested repeating group
+            # first value in tuple = name of attribute containing number of repeats,
+            # or 'None' if there isn't one, in which case we need to calculate it
+            # second value in tuple = the nested dictionary of repeating attributes
+            numr, attd = att
+            if numr == 'None':
+                rng = self._calc_num_repeats(attd, payload, offset)
+            else:
+                rng = getattr(self, numr)
             for i in range(rng):
                 self._index = i + 1
-                for key1 in att.keys():
-                    (offset, _) = self._payload_attr(payload, offset, att, key1)
+                for key1 in attd.keys():
+                    (offset, _) = self._payload_attr(payload, offset, attd, key1)
         elif att == ubt.CH:  # attribute is a single variable-length string (e.g. INF-NOTICE)
             atts = len(payload)
             val = payload.decode('utf-8', 'backslashreplace')
-        elif key == 'gnssId':  # attribute is a GNSS ID
-            atts = int(att[1:3])
-            val = payload[offset:offset + atts]
-            gnssid = int.from_bytes(val, 'little', signed=False)
-            val = self.gnss2str(gnssid)  # get string representation e.g. 'GPS'
         elif att[0:1] == 'X' or key in ('clsID', 'msgClass', 'msgID'):  # attribute is a bitmask or a ubx msgcls/id
             atts = int(att[1:3])  # attribute size in bytes
             val = payload[offset:offset + atts]  # the raw value in bytes
@@ -395,7 +400,7 @@ class UBXMessage():
             if att[0:1] == 'R':  # float
                 val = struct.pack('f', val)
 
-        if not isinstance(att, dict):
+        if not isinstance(att, tuple):
             if self._index > 0:  # add 2-digit suffix to repeating attribute names
                 key = key + "_{0:0=2d}".format(self._index)
             setattr(self, key, val)
@@ -403,56 +408,15 @@ class UBXMessage():
 
         return (offset, att)
 
-    def _get_num_repeats(self, att, payload : bytes, offset: int) -> int:
-        '''
-        Get number of items in repeating group
-        '''
-        # pylint: disable=no-member
-
-        if self.identity in ('AID-ALM', 'CFG-RINV', 'MON-VER', 'RXM-ALM'):
-            rng = self._calc_num_repeats(att, payload, offset)
-        elif self.identity in ('ESF-MEAS', 'RXM-EPH'):
-            rng = self._get_optionals(att, payload, offset)
-        elif self.identity == 'AID-ALPSRV':
-            rng = self.dataSize
-        elif self.identity == 'CFG-DOSC':
-            rng = self.numOsc
-        elif self.identity == 'CFG-ESRC':
-            rng = self.numSources
-        elif self.identity == 'CFG-FIXSEED':
-            rng = self.length
-        elif self.identity == 'CFG-GEOFENCE':
-            rng = self.numFences
-        elif self.identity == 'CFG-GNSS':
-            rng = self.numConfigBlocks
-        elif self.identity == 'MON-PATCH':
-            rng = self.nEntries
-        elif self.identity == 'NAV-GEOFENCE':
-            rng = self.numFences
-        elif self.identity == 'RXM-IMES':
-            rng = self.numTx
-        elif self.identity == 'RXM-SFRBX':
-            rng = self.numWords
-        elif self.identity == 'LOG-RETRIEVESTRING':
-            rng = self.byteCount
-        elif self.identity == 'MGA-FLASH-DATA':
-            rng = self.size
-        elif self.identity in ('TIM-SMEAS', 'RXM-RAWX'):
-            rng = self.numMeas
-#        elif self.identity == 'AN-OTHER'
-#            rng = self.whatever # whatever name is given to the attribute
-        else:
-            rng = self.numCh
-
-        return rng
-
     def _calc_num_repeats(self, att, payload : bytes, offset: int) -> int:
         '''
-        Deduce number of items in repeating group
-        where this isn't specified by a 'numCh' or equivalent attribute
+        Deduce number of items in repeating group, where this
+        isn't specified by a 'numCh' or equivalent attribute e.g. 
+        CFG-RINV or MON-VER.
 
-        NB: this assumes the repeating group is
-        always at the end of the payload
+        NB: this assumes the repeating group is always at the end of the 
+        payload, which is true for all currently supported message types
+        but may change in the future.
         '''
 
         # get length of remaining payload
@@ -463,11 +427,3 @@ class UBXMessage():
             lng += int(val[1:3])
         # deduce number of repeating items in remaining payload
         return int(plen / lng)
-
-    def _get_optionals(self, att, payload : bytes, offset: int) -> int:
-        '''
-        Returns number of items in optional repeating groups
-        '''
-
-        # TODO - not yet implemented
-        return 0
