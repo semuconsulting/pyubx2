@@ -244,7 +244,7 @@ UBX_PAYLOADS_SET = {
 },
 'CFG-NMEA': {
 'filter': X1,
-'version': U1,
+'nmeaVersion': U1,
 'numSV': U1,
 'flags': X1
 },

@@ -67,6 +67,8 @@ class UBXMessage():
                 try:
                     if att[0:6] == 'gnssId':  # attribute is a GNSS ID
                         val = self.gnss2str(val)  # get string representation e.g. 'GPS'
+                    if att == 'nmeaVersion':  # attribute is NMEA version
+                        val = self.nmeaver2str(val)
                     if att == "iTOW":
                         val = self.itow2utc(val)
                     # if it's an ACK-ACK or ACK-NAK, we show what it's acknowledging in plain text
@@ -264,6 +266,15 @@ class UBXMessage():
             return ubt.GNSSLIST[gnssId]
         except KeyError:
             return str(gnssId)
+
+    @staticmethod
+    def nmeaver2str(nmeaVersion: int) -> str:
+        '''
+        Converts NMEA version integer to readable string
+        '''
+
+        h = hex(nmeaVersion)
+        return h[2:3] + '.' + h[3:]
 
     @staticmethod
     def key_from_val(dictionary: dict, value):

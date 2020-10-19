@@ -288,7 +288,7 @@ UBX_PAYLOADS_GET = {
 },
 'CFG-NMEA': {
 'filter': X1,
-'version': U1,
+'nmeaVersion': U1,
 'numSV': U1,
 'flags': X1
 },
