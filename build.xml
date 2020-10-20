@@ -18,6 +18,7 @@
 			<fileset dir="build" />
 			<fileset dir="dist" />
 			<fileset dir="pyubx2.egg-info/" />
+			<fileset dir="pyubx2-*/" />
 			<fileset dir="pyubx2/__pycache__" includes="*.nbc, *.nbi, *.pyc" />
 		</delete>
 	</target>
