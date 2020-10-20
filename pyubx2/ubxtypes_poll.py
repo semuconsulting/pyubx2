@@ -1,6 +1,6 @@
 # pylint: disable=unused-import
 '''
-UBX Protocol payload definitions
+UBX Protocol Polling payload definitions
 
 THESE ARE THE PAYLOAD DEFINITIONS FOR _POLL_ MESSAGES _TO_ THE RECEIVER
 Response payloads are defined in UBX_PAYLOADS_GET
@@ -22,28 +22,6 @@ UBX_PAYLOADS_POLL = {
 'AID-ALM-SV': {
 'svid': U1
 },
-'AID-ALPSRV': {
-'idSize': U1,
-'type': U1,
-'ofs': U2,
-'size': U2,
-'fileId': U2,
-'dataSize': U2,
-'id1': U1,
-'id2': U1,
-'id3': U4
-},
-'AID-ALP': {
-'predTow': U4,
-'predDur': U4,
-'age': I4,
-'predWno': U2,
-'almWno': U2,
-'reserved1': U4,
-'svs': U1,
-'reserved2': U1,
-'reserved3': U2
-},
 'AID-AOP': {
 },
 'AID-AOP-SV': {
@@ -60,18 +38,29 @@ UBX_PAYLOADS_POLL = {
 },
 'AID-INI': {
 },
-'AID-REQ': {
-},
+# *************************************************
 'CFG-ANT': {
 },
 'CFG-DAT': {
 },
-'CFG-EKF': {
+'CFG-DOSC': {
 },
-'CFG-FXN': {
+'CFG-DYNSEED': {
+},
+'CFG-ESRC': {
+},
+'CFG-FIXSEED': {
+},
+'CFG-GEOFENCE': {
+},
+'CFG-GNSS': {
 },
 'CFG-INF': {
 'protocolID': U1
+},
+'CFG-ITFM': {
+},
+'CFG-LOGFILTER': {
 },
 'CFG-MSG': {
 'msgClass': U1,
@@ -83,14 +72,20 @@ UBX_PAYLOADS_POLL = {
 },
 'CFG-NMEA': {
 },
+'CFG-ODO': {
+},
 'CFG-PM2': {
 },
 'CFG-PM': {
+},
+'CFG-PMS': {
 },
 'CFG-PRT': {
 },
 'CFG-PRT-IO': {
 'portID': U1
+},
+'CFG-PWR': {
 },
 'CFG-RATE': {
 },
@@ -111,16 +106,61 @@ UBX_PAYLOADS_POLL = {
 },
 # 'CFG-TP': {
 # },
+'CFG-TXSLOT': {
+},
 'CFG-USB': {
 },
-'RXM-ALM': {
+# *************************************************
+'ESF-STATUS': {
 },
-'RXM-ALM-SV': {
-'svid': U1
+# *************************************************
+'LOG-INFO': {
 },
-'RXM-EPH': {
+# *************************************************
+'MGA-DBD': {
 },
-'RXM-EPH-SV': {
-'svid': U1
+# *************************************************
+'MON-GNSS': {
 },
+'MON-HW2': {
+},
+'MON-HW': {
+},
+'MON-IO': {
+},
+'MON-MGSPP': {
+},
+'MON-PATCH': {
+},
+'MON-RXBUF': {
+},
+'MON-SMGR': {
+},
+'MON-TXBUF': {
+},
+'MON-VER': {
+},
+# *************************************************
+'RXM-IMES': {
+},
+'RXM-RAWX': {
+},
+'RXM-SVSI': {
+},
+# *************************************************
+'TIM-FCHG': {
+},
+'TIM-SVIN': {
+},
+'TIM-TM2': {
+},
+'TIM-TP': {
+},
+'TIM-VCOCAL': {
+},
+'TIM-VRFY': {
+},
+# *************************************************
+'UPD-SOS': {
+}
 }

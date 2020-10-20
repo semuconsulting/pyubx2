@@ -18,19 +18,17 @@ This is a personal project and I am in no way affiliated with u-blox.
 ![Contributors](https://img.shields.io/github/contributors/semuconsulting/pyubx2.svg)
 ![Open Issues](https://img.shields.io/github/issues-raw/semuconsulting/pyubx2)
 
-At time of writing the library is based on the [u-blox generation 8 protocol](https://www.u-blox.com/en/docs/UBX-13003221) but is readily extensible for later generations.
-
-Implements a complete range of inbound (GET) UBX Generation 8 protocol messages (see release notes on GitHub for details). A handful of remaining outbound (SET, POLL) Generation 8 commands are in hand.
+At time of writing the library implements a complete set of inbound and outbound messages as defined in 
+the [u-blox generation 8 protocol](https://www.u-blox.com/en/docs/UBX-13003221), but is readily 
+[extensible](#extensibility) for later generations.
 
 Constructive feedback and feature requests welcome.
 
-### Compatibility
+## <a name="installation">Installation</a>
 
 ![Python version](https://img.shields.io/pypi/pyversions/pyubx2.svg?style=flat)
 
 `pyubx2` is compatible with Python 3.6+ and has no third-party library dependencies.
-
-### Installation
 
 [![PyPI version](https://img.shields.io/pypi/v/pyubx2.svg?style=flat)](https://pypi.org/project/pyubx2/)
 ![PyPI downloads](https://img.shields.io/pypi/dm/pyubx2.svg?style=flat)
@@ -38,7 +36,7 @@ Constructive feedback and feature requests welcome.
 The recommended way to install the latest version of `pyubx2` is with
 [pip](http://pypi.python.org/pypi/pip/):
 
-`pip install --upgrade pyubx2`
+`python -m pip install --upgrade pyubx2`
 
 ## Reading (Streaming)
 
@@ -167,7 +165,7 @@ The following examples can be found in the `\examples` folder:
 to NMEA, UBX or both (on a non-permanent basis). You can see the results using `ubxstreamer.py`.
 
 
-## Extensibility
+## <a name="extensibility">Extensibility</a>
 
 The UBX protocol is principally defined in the modules `ubxtypes_*.py` as a series of dictionaries. Additional message types 
 can be readily added to the appropriate dictionary. Message payload definitions must conform to the following rules:

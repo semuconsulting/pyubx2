@@ -1,5 +1,5 @@
 '''
-UBX Protocol payload definitions
+UBX Protocol Output payload definitions
 
 THESE ARE THE PAYLOAD DEFINITIONS FOR _GET_ MESSAGES _FROM_ THE RECEIVER
 (i.e. Periodic Navigation Data, Poll Responses, Info messages)
@@ -33,12 +33,16 @@ UBX_PAYLOADS_GET = {
 'msgID': U1
 },
 # ********************************************************************
+# AssistNow Aiding Messages: i.e. Ephemeris, Almanac, other A-GPS data input.
+# Messages in the AID class are used to send GPS aiding data to the receiver
+# AID messages are deprecated in favour of MGA messages in >=Gen8
+# AID messages are deprecated in favour of MGA messages in >=Gen8
 'AID-ALM': {
 'svid': U4,
 'week': U4,
-'optBlock': {
+'optBlock': ('None', {
 'dwrd': U4
-}},
+})},
 'AID-AOP' : {
 'gnssId': U1,
 'svId': U1,
@@ -48,7 +52,7 @@ UBX_PAYLOADS_GET = {
 'AID-EPH' : {
 'svid': U1,
 'how': U4,
-'optBlock': {
+'optBlock': ('None', {
 'sf1d1': U4,
 'sf1d2': U4,
 'sf1d3': U4,
@@ -73,7 +77,7 @@ UBX_PAYLOADS_GET = {
 'sf3d6': U4,
 'sf3d7': U4,
 'sf3d8': U4,
-}},
+})},
 'AID-HUI': {
 'health': X4,
 'utcA0': R8,
@@ -111,6 +115,10 @@ UBX_PAYLOADS_GET = {
 'flags': X4
 },
 # ********************************************************************
+# Configuration Input Messages: i.e. Set Dynamic Model, Set DOP Mask, Set Baud Rate, etc..
+# Messages in the CFG class are used to configure the receiver and read out current configuration values. Any
+# messages in the CFG class sent to the receiver are either acknowledged (with message UBX-ACK-ACK) if
+# processed successfully or rejected (with message UBX-ACK-NAK) if processing unsuccessfully.
 'CFG-ANT': {
 'flags': X2,
 'pins': X2
@@ -305,35 +313,6 @@ UBX_PAYLOADS_GET = {
 'cogLpGain': U1,
 'reserved4': U2
 },
-# 'CFG-EKF': {
-# 'disableEkf': U1,
-# 'actionFlags': X1,
-# 'configFlags': U1,
-# 'inverseFlags': X1,
-# 'reserved2': U4,
-# 'nomPPDist': U2,
-# 'nomZero': U2,
-# 'nomSens': U1,
-# 'rmsTemp': U1,
-# 'tempUpdate': U2
-# },
-# 'CFG-ESFGWT': {
-# 'flags':X2,
-# 'id': U2,
-# 'wtFactor': U4,
-# 'reserved1': U4,
-# 'wtQuantError': U4,
-# 'timeTagFactor': U4,
-# 'wtCountMax': U4,
-# 'timeTagMax': U4,
-# 'wtLatency': U2,
-# 'reserved2': U2,
-# 'wtFrequency': U1,
-# 'reserved3': U1,
-# 'speedDeadBand': U2,
-# 'reserved4': U4,
-# 'reserved5': U4
-# },
 'CFG-PM2': {
 'version': U1,
 'reserved1': U1,
@@ -354,18 +333,6 @@ UBX_PAYLOADS_GET = {
 'reserved10': U2,
 'reserved11': U4
 },
-# 'CFG-PM':{
-# 'version': U1,
-# 'reserved1': U1,
-# 'reserved2': U1,
-# 'reserved3': U1,
-# 'flags': X4,
-# 'updatePeriod': U4,
-# 'searchPeriod': U4,
-# 'gridOffset': U4,
-# 'onTime': U2,
-# 'minAcqTime': U2
-# },
 'CFG-PMS': {
 'version': U1,
 'powerSetupValue': U1,
@@ -437,15 +404,6 @@ UBX_PAYLOADS_GET = {
 'svinMinDur': U4,
 'svinAccLimit': U4
 },
-# 'CFG-TMODE': {
-# 'timeMode': U4,
-# 'fixedPosX': I4,
-# 'fixedPosY': I4,
-# 'fixedPosZ': I4,
-# 'fixedPosVar': U4,
-# 'svinMinDur': U4,
-# 'svinAccLimit': U4
-# },
 'CFG-TP5': {
 'tpIdx': U1,
 'reserved0': U1,
@@ -459,17 +417,6 @@ UBX_PAYLOADS_GET = {
 'userConfigDelay': I4,
 'flags': X4
 },
-# 'CFG-TP': {
-# 'internal': U4,
-# 'length': U4,
-# 'status': I1,
-# 'timeRef': U1,
-# 'flags': U1,
-# 'reserved1': U1,
-# 'antCableDelay': I2,
-# 'rfGroupDelay': I2,
-# 'userDelay': I4
-# },
 'CFG-TXSLOT': {
 'version': U1,
 'enable': X1,
@@ -491,16 +438,8 @@ UBX_PAYLOADS_GET = {
 'serialNumber': C32
 },
 # ********************************************************************
-# 'ESF-MEAS': {
-# 'timeTag': U4,
-# 'flags': X2,
-# 'id': U2,
-# 'datagroup': ('None',{  # repeating group
-# 'data': X4
-# }),
-# 'calibgroup': ('None',{  # repeating group
-# 'calibtTag': U4
-# })},
+# External Sensor Fusion Messages: i.e. External Sensor Measurements and Status Information.
+# Messages in the ESF class are used to output external sensor fusion information from the receiver.
 'ESF-STATUS': {
 'iTOW': U4,
 'version': U1,
@@ -518,6 +457,9 @@ UBX_PAYLOADS_GET = {
 'faults': X1,
 })},
 # ********************************************************************
+# Information Messages: i.e. Printf-Style Messages, with IDs such as Error, Warning, Notice.
+# Messages in the INF class are used to output strings in a printf style from the firmware or application code. All
+# INF messages have an associated type to indicate the kind of message.
 'INF-DEBUG': {
 'message': CH
 },
@@ -534,6 +476,8 @@ UBX_PAYLOADS_GET = {
 'message': CH
 },
 # ********************************************************************
+# Logging Messages: i.e. Log creation, deletion, info and retrieval.
+# Messages in the LOG class are used to configure and report status information of the logging feature.
 'LOG-BATCH': {
 'version': U1,
 'contentValid': X1,
@@ -660,6 +604,8 @@ UBX_PAYLOADS_GET = {
 'data': U1
 })},
 # ********************************************************************
+# Multiple GNSS Assistance Messages: i.e. Assistance data for various GNSS.
+# Messages in the MGA class are used for GNSS aiding information from and to the receiver.
 'MGA-ACK-DATA0': {
 'type': U1,
 'version': U1,
@@ -674,149 +620,11 @@ UBX_PAYLOADS_GET = {
 'msgId': U1,
 'msgPayloadStart': U4
 },
-'MGA-ANO': {
-'type': U1,
-'version': U1,
-'svId': U1,
-'gnssId': U1,
-'year': U1,
-'month': U1,
-'day': U1,
-'reserved1': U1,
-'data': U64,
-'reserved2': U4,
-},
-'MGA-BDS-EPH': {
-'type': U1,
-'version': U1,
-'svId': U1,
-'reserved1': U1,
-'SatH1': U1,
-'IODC': U1,
-'a2': I2,
-'a1': I4,
-'a0': I4,
-'toc': U4,
-'TGD1': I2,
-'URAI': U1,
-'IODE': U1,
-'toe': U4,
-'sqrtA': U4,
-'e': U4,
-'omega': I4,
-'Deltan': I2,
-'IDOT': I2,
-'M0': I4,
-'Omega0': I4,
-'OmegaDot': I4,
-'i0': I4,
-'Cuc': I4,
-'Cus': I4,
-'Crc': I4,
-'Crs': I4,
-'Cic': I4,
-'Cis': I4,
-'reserved2': U4
-},
-'MGA-BDS-ALM': {
-'type': U1,
-'version': U1,
-'svId': U1,
-'reserved1': U1,
-'Wna': U1,
-'toa': U1,
-'deltaI': I2,
-'sqrtA': U4,
-'e': U4,
-'omega': I4,
-'M0': I4,
-'Omega0': I4,
-'omegaDot': I4,
-'a0': I2,
-'a1': I2,
-'reserved2': U4
-},
-'MGA-BDS-HEALTH': {
-'type': U1,  # 0x04
-'version': U1,
-'reserved1': U2,
-'healthCode01': U2,
-'healthCode02': U2,
-'healthCode03': U2,
-'healthCode04': U2,
-'healthCode05': U2,
-'healthCode06': U2,
-'healthCode07': U2,
-'healthCode08': U2,
-'healthCode09': U2,
-'healthCode10': U2,
-'healthCode11': U2,
-'healthCode12': U2,
-'healthCode13': U2,
-'healthCode14': U2,
-'healthCode15': U2,
-'healthCode16': U2,
-'healthCode17': U2,
-'healthCode18': U2,
-'healthCode19': U2,
-'healthCode20': U2,
-'healthCode21': U2,
-'healthCode22': U2,
-'healthCode23': U2,
-'healthCode24': U2,
-'healthCode25': U2,
-'healthCode26': U2,
-'healthCode27': U2,
-'healthCode28': U2,
-'healthCode29': U2,
-'healthCode30': U2,
-'reserved2': U4
-},
-'MGA-BDS-UTC': {
-'type': U1,
-'version': U1,
-'reserved1': U2,
-'a0UTC': I4,
-'a1UTC': I4,
-'dtLS': I1,
-'reserved2': U1,
-'wnRec': U1,
-'wnLSF': U1,
-'dN': U1,
-'dtLSF': I1,
-'reserved3': U2
-},
-'MGA-BDS-IONO': {
-'type': U1,
-'version': U1,
-'reserved1': U2,
-'alpha0': I1,
-'alpha1': I1,
-'alpha2': I1,
-'alpha3': I1,
-'beta0': I1,
-'beta1': I1,
-'beta2': I1,
-'beta3': I1,
-'reserved2': U4
-},
 'MGA-DBD': {
 'reserved1': U12,
 'group': ('None', {  # repeating group
 'data': U1
 })},
-'MGA-FLASH-DATA': {
-'type': U1,
-'version': U1,
-'sequence': U2,
-'size': U2,
-'group': ('size', {  # repeating group * size
-'data': U1
-})},
-'MGA-FLASH-STOP': {
-'type': U1,
-'version': U1
-},
 'MGA-FLASH-ACK': {
 'type': U1,
 'version': U1,
@@ -824,397 +632,10 @@ UBX_PAYLOADS_GET = {
 'reserved1': U1,
 'sequence': U2
 },
-'MGA-GAL-EPH': {
-'type': U1,
-'version': U1,
-'svId': U1,
-'reserved1': U1,
-'iodNav': U2,
-'deltaN': I2,
-'m0': I4,
-'e': U4,
-'sqrtA': U4,
-'omega0': I4,
-'i0': I4,
-'omega': I4,
-'omegaDot': I4,
-'iDot': I2,
-'cuc': I2,
-'cus': I2,
-'crc': I2,
-'crs': I2,
-'cic': I2,
-'cis': I2,
-'toe': U2,
-'af0': I4,
-'af1': I4,
-'af2': I1,
-'sisaIndexE1E5b': U1,
-'toc': U2,
-'bgdE1E5b': I2,
-'reserved2': U2,
-'healthE1B': U1,
-'dataValidityE1B': U1,
-'healthE5b': U1,
-'dataValidityE5b': U1,
-'reserved3': U4
-},
-'MGA-GAL-ALM': {
-'type': U1,
-'version': U1,
-'svId': U1,
-'reserved1': U1,
-'ioda': U1,
-'almWNa': U1,
-'toa': U2,
-'deltaSqrtA': I2,
-'e': U2,
-'deltaI': I2,
-'omega0': I2,
-'omegaDot': I2,
-'omega': I2,
-'m0': I2,
-'af0': I2,
-'af1': I2,
-'healthE1B': U1,
-'healthE5b': U1,
-'reserved2': U4
-},
-'MGA-GAL-TIMEOFFSET': {
-'type': U1,
-'version': U1,
-'reserved1': U1[2],
-'a0G': I2,
-'a1G': I2,
-'t0G': U1,
-'wn0G': U1,
-'reserved2': U2
-},
-'MGA-GAL-UTC': {
-'type': U1,
-'version': U1,
-'reserved1': U2,
-'a0': I4,
-'a1': I4,
-'dtLS': I1,
-'tot': U1,
-'wnt': U1,
-'wnLSF': U1,
-'dN': U1,
-'dTLSF': I1,
-'reserved2': U2
-},
-'MGA-GLO-EPH': {
-'type': U1,
-'version': U1,
-'svId': U1,
-'reserved1': U1,
-'FT': U1,
-'B': U1,
-'M': U1,
-'H': I1,
-'x': I4,
-'y': I4,
-'z': I4,
-'dx': I4,
-'dy': I4,
-'dz': I4,
-'ddx': I1,
-'ddy': I1,
-'ddz': I1,
-'tb': U1,
-'gamma': I2,
-'E': U1,
-'deltaTau': I1,
-'tau': I4,
-'reserved2': U4
-},
-'MGA-GLO-ALM': {
-'type': U1,
-'version': U1,
-'svId': U1,
-'reserved1': U1,
-'N': U2,
-'M': U1,
-'C': U1,
-'tau': I2,
-'epsilon': U2,
-'lambda': I4,
-'deltaI': I4,
-'tLambda': U4,
-'deltaT': I4,
-'deltaDT': I1,
-'H': I1,
-'omega': I2,
-'reserved2': U4
-},
-'MGA-GLO-TIMEOFFSET': {
-'type': U1,
-'version': U1,
-'N': U2,
-'tauC': I4,
-'tauGps': I4,
-'B1': I2,
-'B2': I2,
-'reserved1': U4
-},
-'MGA-GPS-EPH': {
-'type': U1,
-'version': U1,
-'svId': U1,
-'reserved1': U1,
-'fitInterval': U1,
-'uraIndex': U1,
-'svHealth': U1,
-'tgd': I1,
-'iodc': U2,
-'toc': U2,
-'reserved2': U1,
-'af2': I1,
-'af1': I2,
-'af0': I4,
-'crs': I2,
-'deltaN': I2,
-'m0': I4,
-'cuc': I2,
-'cus': I2,
-'e': U4,
-'sqrtA': U4,
-'toe': U2,
-'cic': I2,
-'omega0': I4,
-'cis': I2,
-'crc': I2,
-'i0': I4,
-'omega': I4,
-'omegaDot': I4,
-'idot': I2,
-'reserved3': U4
-},
-'MGA-GPS-ALM': {
-'type': U1,
-'version': U1,
-'svId': U1,
-'svHealth': U1,
-'e': U2,
-'almWNa': U1,
-'toa': U1,
-'deltaI': I2,
-'omegaDot': I2,
-'sqrtA': U4,
-'omega0': I4,
-'omega': I4,
-'m0': I4,
-'af0': I2,
-'af1': I2,
-'reserved1': U4
-},
-'MGA-GPS-HEALTH': {
-'type': U1,
-'version': U1,
-'reserved1': U2,
-'healthCode01': U1,
-'healthCode02': U1,
-'healthCode03': U1,
-'healthCode04': U1,
-'healthCode05': U1,
-'healthCode06': U1,
-'healthCode07': U1,
-'healthCode08': U1,
-'healthCode09': U1,
-'healthCode10': U1,
-'healthCode11': U1,
-'healthCode12': U1,
-'healthCode13': U1,
-'healthCode14': U1,
-'healthCode15': U1,
-'healthCode16': U1,
-'healthCode17': U1,
-'healthCode18': U1,
-'healthCode19': U1,
-'healthCode20': U1,
-'healthCode21': U1,
-'healthCode22': U1,
-'healthCode23': U1,
-'healthCode24': U1,
-'healthCode25': U1,
-'healthCode26': U1,
-'healthCode27': U1,
-'healthCode28': U1,
-'healthCode29': U1,
-'healthCode30': U1,
-'healthCode31': U1,
-'healthCode32': U1,
-'reserved': U4,
-},
-'MGA-GPS-UTC': {
-'type': U1,
-'version': U1,
-'reserved1': U2,
-'utcA0': I4,
-'utcA1': I4,
-'utcDtLS': I1,
-'utcTot': U1,
-'utcWNt': U1,
-'utcWNlsf': U1,
-'utcDn': U1,
-'utcDtLSF': I1,
-'reserved2': U2
-},
-'MGA-GPS-IONO': {
-'type': U1,
-'version': U1,
-'reserved1': U2,
-'ionoAlpha0': I1,
-'ionoAlpha1': I1,
-'ionoAlpha2': I1,
-'ionoAlpha3': I1,
-'ionoBeta0': I1,
-'ionoBeta1': I1,
-'ionoBeta2': I1,
-'ionoBeta3': I1,
-'reserved2': U4
-},
-'MGA-INI-POS_XYZ': {
-'type': U1,
-'version': U1,
-'reserved1': U2,
-'ecefX': I4,
-'ecefY': I4,
-'ecefZ': I4,
-'posAcc': U4
-},
-'MGA-INI-POS_LLH': {
-'type': U1,
-'version': U1,
-'reserved1': U2,
-'lat': I4,
-'lon': I4,
-'alt': I4,
-'posAcc': U4
-},
-'MGA-INI-TIME_UTC': {
-'type': U1,
-'version': U1,
-'ref': X1,
-'leapSecs': I1,
-'year': U2,
-'month': U1,
-'day': U1,
-'hour': U1,
-'minute': U1,
-'second': U1,
-'reserved1': U1,
-'ns': U4,
-'tAccS': U2,
-'reserved2': U2,
-'tAccNs': U4
-},
-'MGA-INI-TIME_GNSS': {
-'type': U1,
-'version': U1,
-'ref': X1,
-'gnssId': U1,
-'reserved1': U2,
-'week': U2,
-'tow': U4,
-'ns': U4,
-'tAccS': U2,
-'reserved2': U2,
-'tAccNs': U4
-},
-'MGA-INI-CLKD': {
-'type': U1,
-'version': U1,
-'reserved1': U2,
-'clkD': I4,
-'clkDAcc': U4
-},
-'MGA-INI-FREQ': {
-'type': U1,
-'version': U1,
-'reserved1': U1,
-'flags': X1,
-'freq': I4,
-'freqAcc': U4
-},
-'MGA-INI-EOP': {
-'type': U1,
-'version': U1,
-'reserved1': U2,
-'d2kRef': U2,
-'d2kMax': U2,
-'xpP0': I4,
-'xpP1': I4,
-'ypP0': I4,
-'ypP1': I4,
-'dUT1': I4,
-'ddUT1': I4,
-'reserved2': U40
-},
-'MGA-QZSS-EPH': {
-'type': U1,
-'version': U1,
-'svId': U1,
-'reserved1': U1,
-'fitInterval': U1,
-'uraIndex': U1,
-'svHealth': U1,
-'tgd': I1,
-'iodc': U2,
-'toc': U2,
-'reserved2': U1,
-'af2': I1,
-'af1': I2,
-'af0': I4,
-'crs': I2,
-'deltaN': I2,
-'m0': I4,
-'cuc': I2,
-'cus': I2,
-'e': U4,
-'sqrtA': U4,
-'toe': U2,
-'cic': I2,
-'omega0': I4,
-'cis': I2,
-'crc': I2,
-'i0': I4,
-'omega': I4,
-'omegaDot': I4,
-'idot': I2,
-'reserved3': U2
-},
-'MGA-QZSS-ALM': {
-'type': U1,
-'version': U1,
-'svId': U1,
-'svHealth': U1,
-'e': U2,
-'almWNa': U1,
-'toa': U1,
-'deltaI': I2,
-'omegaDot': I2,
-'sqrtA': U4,
-'omega0': I4,
-'omega': I4,
-'m0': I4,
-'af0': I2,
-'af1': I2,
-'reserved1': U4
-},
-'MGA-QZSS-HEALTH': {
-'type': U1,
-'version': U1,
-'reserved1': U2,
-'healthCode1': U1,
-'healthCode2': U1,
-'healthCode3': U1,
-'healthCode4': U1,
-'healthCode5': U1,
-'reserved2': U3
-},
 # ********************************************************************
+# Monitoring Messages: i.e. Communication Status, CPU Load, Stack Usage, Task Status.
+# Messages in the MON class are used to report the receiver status, such as CPU load, stack usage, I/O subsystem
+# statistics etc.
 'MON-GNSS': {
 'version': U1,
 'supported': X1,
@@ -1421,6 +842,10 @@ UBX_PAYLOADS_GET = {
 'extension': C30
 })},
 # ********************************************************************
+# Navigation Results Messages: i.e. Position, Speed, Time, Acceleration, Heading, DOP, SVs used.
+# Messages in the NAV class are used to output navigation data such as position, altitude and velocity in a
+# number of formats. Additionally, status flags and accuracy figures are output. The messages are generated with
+# the configured navigation/measurement rate.
 'NAV-AOPSTATUS': {
 'iTOW': U4,
 'config': U1,
@@ -1711,6 +1136,9 @@ UBX_PAYLOADS_GET = {
 'cAcc': U4
 },
 # ********************************************************************
+# Receiver Manager Messages: i.e. Satellite Status, RTC Status.
+# Messages in the RXM class are used to output status and result data from the Receiver Manager. The output
+# rate is not bound to the navigation/measurement rate and messages can also be generated on events.
 'RXM-IMES': {
 'numTx': U1,
 'version': U1,
@@ -1831,12 +1259,17 @@ UBX_PAYLOADS_GET = {
 'age': X1
 },
 # ********************************************************************
+# Security Feature Messages
+# Messages in the SEC class are used for security features of the receiver.
 'SEC-UNIQID': {
 'version': U1,
 'reserved1': U3,
 'uniqueId': U5
 },
 # ********************************************************************
+# Timing Messages: i.e. Time Pulse Output, Time Mark Results.
+# Messages in the TIM class are used to output timing information from the receiver, like Time Pulse and Time
+# Mark measurements.
 'TIM-DOSC': {
 'version': U1,
 'reserved1': U3,
@@ -1942,6 +1375,8 @@ UBX_PAYLOADS_GET = {
 'reserved1': U1
 },
 # ********************************************************************
+# Firmware Update Messages: i.e. Memory/Flash erase/write, Reboot, Flash identification, etc..
+# Messages in the UPD class are used to update the firmware and identify any attached flash device.
 'UPD-SOS': {  # System restored from backup
 'cmd': U1,
 'reserved1': U3,
