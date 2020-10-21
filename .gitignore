@@ -6,7 +6,6 @@ Pipfile*.*
 /.settings
 /build
 /dist
-/tests
 /pyubx2_*
 /pyubx2-*
 /pyubx2.egg*

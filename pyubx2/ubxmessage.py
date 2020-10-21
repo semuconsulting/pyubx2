@@ -5,6 +5,7 @@ Created on 26 Sep 2020
 
 @author: semuadmin
 '''
+# pylint: disable=invalid-name
 
 import struct
 from datetime import datetime, timedelta
@@ -367,15 +368,13 @@ class UBXMessage():
                                                 +self._length + self._payload)
 
         except ube.UBXTypeError as err:
-            raise ube.UBXTypeError(f"Undefined attribute type {att} in message class {self.identity}") \
-                    from err
+            raise ube.UBXTypeError(f"Undefined attribute type {att} in message class {self.identity}") from err
         except KeyError as err:
-            raise ube.UBXMessageError(f"Undefined message class={self._ubx_class}, id={self._ubx_id}") \
-                    from err
+            raise ube.UBXMessageError(f"Undefined message class={self._ubx_class}, id={self._ubx_id}") from err
 
     def _payload_attr(self, payload : bytes, offset: int, pdict: dict, key: str):
         '''
-        Recursive routine to parse individual payload attributes to 
+        Recursive routine to parse individual payload attributes to
         their appropriate types
         '''
         # pylint: disable=no-member
@@ -398,7 +397,7 @@ class UBXMessage():
         elif att == ubt.CH:  # attribute is a single variable-length string (e.g. INF-NOTICE)
             atts = len(payload)
             val = payload.decode('utf-8', 'backslashreplace')
-        elif att[0:1] == 'X' or key in ('clsID', 'msgClass', 'msgID'):  # attribute is a bitmask or a ubx msgcls/id
+        elif att[0:1] == 'X' or key in ('clsID', 'msgClass', 'msgID'):  # attribute is a bitmask
             atts = int(att[1:3])  # attribute size in bytes
             val = payload[offset:offset + atts]  # the raw value in bytes
         else:  # attribute is an integer or float
@@ -422,10 +421,10 @@ class UBXMessage():
     def _calc_num_repeats(self, att, payload : bytes, offset: int) -> int:
         '''
         Deduce number of items in repeating group, where this
-        isn't specified by a 'numCh' or equivalent attribute e.g. 
+        isn't specified by a 'numCh' or equivalent attribute e.g.
         CFG-RINV or MON-VER.
 
-        NB: this assumes the repeating group is always at the end of the 
+        NB: this assumes the repeating group is always at the end of the
         payload, which is true for all currently supported message types
         but may change in the future.
         '''
