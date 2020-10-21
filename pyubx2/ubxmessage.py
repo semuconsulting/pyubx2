@@ -419,6 +419,89 @@ class UBXMessage():
 
         return (offset, att)
 
+    def fill(self):
+        '''
+        Populate 'empty' UBXMessage with nominal values
+        '''
+
+        offset = 0
+        self._index = 0
+        try:
+
+            # lookup attributes from the relevant get/set/poll dictionary
+            if self._mode == ubt.POLL:
+                pdict = ubp.UBX_PAYLOADS_POLL[self.identity]
+            elif self._mode in (ubt.OUTPUT, ubt.SET):
+                pdict = ubs.UBX_PAYLOADS_SET[self.identity]
+            else:
+                pdict = ubg.UBX_PAYLOADS_GET[self.identity]
+            # parse each attribute
+            for key in pdict.keys():
+                (offset, att) = self._payload_fill(offset, pdict, key)
+            # recalculate checksum based on payload content
+            if self._payload is None:
+                self._length = self.len2bytes(0)
+                self._checksum = self.calc_checksum(self._ubx_class + self._ubx_id
+                                                    +self._length)
+            else:
+                self._length = self.len2bytes(len(self._payload))
+                self._checksum = self.calc_checksum(self._ubx_class + self._ubx_id
+                                                    +self._length + self._payload)
+
+        except ube.UBXTypeError as err:
+            raise ube.UBXTypeError(f"Undefined attribute type {att} in message class {self.identity}") \
+                    from err
+        except KeyError as err:
+            raise ube.UBXMessageError(f"Undefined message class={self._ubx_class}, id={self._ubx_id}") \
+                    from err
+
+    def _payload_fill(self, offset: int, pdict: dict, key: str):
+        '''
+        Recursive routine to populate individual payload attributes
+        with nominal values
+        '''
+        # pylint: disable=no-member
+
+        if self._payload is None:
+            self._payload = b''
+
+        att = pdict[key]  # get attribute type
+        if isinstance(att, tuple):  # attribute is a tuple i.e. a nested repeating group
+            # first value in tuple = name of attribute containing number of repeats,
+            # or 'None' if there isn't one, in which case we need to calculate it
+            # second value in tuple = the nested dictionary of repeating attributes
+            numr, attd = att
+            if numr == 'None':
+                rng = 0
+            else:
+                rng = getattr(self, numr)
+            for i in range(rng):
+                self._index = i + 1
+                for key1 in attd.keys():
+                    (offset, _) = self._payload_fill(offset, attd, key1)
+        elif att == ubt.CH:  # attribute is a single variable-length string (e.g. INF-NOTICE)
+            val = b'NOMINAL INFO MESSAGE'
+            self._payload = val
+            atts = len(self._payload)
+        else:
+            atts = int(att[1:3])  # attribute size in bytes
+            val = b'\x00' * atts  # the raw value in bytes
+            self._payload += val
+            if att[0:1] == 'U':  # unsigned integer
+                val = int.from_bytes(val, 'little', signed=False)
+            if att[0:1] == 'I':  # signed integer
+                val = int.from_bytes(val, 'little', signed=True)
+            if att[0:1] == 'R':  # float
+                val = struct.pack('f', val)
+
+        if not isinstance(att, tuple):
+            if self._index > 0:  # add 2-digit suffix to repeating attribute names
+                key = key + "_{0:0=2d}".format(self._index)
+            setattr(self, key, val)
+            offset += atts
+
+        return (offset, att)
+
     def _calc_num_repeats(self, att, payload : bytes, offset: int) -> int:
         '''
         Deduce number of items in repeating group, where this
