@@ -19,16 +19,11 @@ class StreamTest(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
         dirname = os.path.dirname(__file__)
-        self.streamNAV = open(os.path.join(dirname, 'pygpsdata-NAV.log'), 'rb')
-        self.streamINF = open(os.path.join(dirname, 'pygpsdata-INF.log'), 'rb')
-        self.streamMON = open(os.path.join(dirname, 'pygpsdata-MON.log'), 'rb')
-        self.streamRXM = open(os.path.join(dirname, 'pygpsdata-RXM.log'), 'rb')
+        NAVLOG = os.path.join(dirname, 'pygpsdata-NAV.log')
+        self.streamNAV = open(NAVLOG, 'rb')
 
     def tearDown(self):
         self.streamNAV.close()
-        self.streamINF.close()
-        self.streamMON.close()
-        self.streamRXM.close()
 
     def testNAV(self):
         EXPECTED_RESULTS = (
@@ -61,76 +56,6 @@ class StreamTest(unittest.TestCase):
         i = 0
         raw = 0
         ubxreader = pyubx2.UBXReader(self.streamNAV)
-        print("\n")
-        while raw is not None:
-            (raw, parsed) = ubxreader.read()
-            if raw is not None:
-                print(f"Testing {str(parsed).split(',')[0][5:]}")
-                self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
-                i += 1
-        print("\n")
-
-    def testINF(self):
-        EXPECTED_RESULTS = (
-        "<UBX(INF-NOTICE, message=u-blox AG - www.u-blox.com)>",
-        "<UBX(INF-NOTICE, message=HW UBX-M8030 00080000)>",
-        "<UBX(INF-NOTICE, message=ROM CORE 3.01 (107888))>",
-        "<UBX(INF-NOTICE, message=FWVER=SPG 3.01)>",
-        "<UBX(INF-NOTICE, message=PROTVER=18.00)>",
-        "<UBX(INF-NOTICE, message=GPS;GLO;GAL;BDS)>",
-        "<UBX(INF-NOTICE, message=SBAS;IMES;QZSS)>",
-        "<UBX(INF-NOTICE, message=GNSS OTP=GPS;GLO)>",
-        "<UBX(INF-NOTICE, message=LLC=FFFFFFFF-FFFFFFFF-FFFFFFFF-FFFFFFFF-FFFFFFFD)>",
-        "<UBX(INF-NOTICE, message=ANTSUPERV=AC SD PDoS SR)>",
-        "<UBX(INF-NOTICE, message=ANTSTATUS=OK)>",
-        "<UBX(INF-NOTICE, message=PF=3FF)>"
-        )
-
-        i = 0
-        raw = 0
-        ubxreader = pyubx2.UBXReader(self.streamINF)
-        print("\n")
-        while raw is not None:
-            (raw, parsed) = ubxreader.read()
-            if raw is not None:
-                print(f"Testing {str(parsed).split(',')[0][5:]}")
-                self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
-                i += 1
-        print("\n")
-
-    def testMON(self):
-        EXPECTED_RESULTS = (
-        "<UBX(MON-MSGPP, msg10=0, msg11=0, msg12=0, msg13=0, msg14=0, msg15=0, msg16=0, msg17=0, msg20=0, msg21=0, msg22=0, msg23=0, msg24=0, msg25=0, msg26=0, msg27=0, msg30=0, msg31=0, msg32=0, msg33=0, msg34=0, msg35=0, msg36=0, msg37=0, msg40=69, msg41=0, msg42=0, msg43=0, msg44=0, msg45=0, msg46=0, msg47=0, msg50=0, msg51=0, msg52=0, msg53=0, msg54=0, msg55=0, msg56=0, msg57=0, msg60=0, msg61=0, msg62=0, msg63=0, msg64=0, msg65=0, msg66=0, msg67=0, skipped1=0, skipped2=0, skipped3=0, skipped4=0, skipped5=0, skipped6=0)>",
-        "<UBX(MON-TXBUF, pending0=0, pending1=0, pending2=0, pending3=0, pending4=0, pending5=0, usage0=0, usage1=2, usage2=0, usage3=0, usage4=0, usage5=0, peakUsage0=0, peakUsage1=12, peakUsage2=0, peakUsage3=25, peakUsage4=0, peakUsage5=0, tUsage=2, tPeakUsage=25, errors=b'\\x00', reserved1=0)>",
-        "<UBX(MON-RXBUF, pending0=0, pending1=0, pending2=0, pending3=0, pending4=0, pending5=0, usage0=0, usage1=0, usage2=0, usage3=0, usage4=0, usage5=0, peakUsage0=0, peakUsage1=0, peakUsage2=0, peakUsage3=2, peakUsage4=0, peakUsage5=0)>",
-        "<UBX(MON-IO, rxBytes=0, txBytes=0, parityErrs=0, framingErrs=0, overrunErrs=0, breakCond=0, rxBusy=0, txBusy=0, reserved1=0)>",
-        "<UBX(MON-HW, pinSel=b'\\x00\\xf4\\x01\\x00', pinBank=b'\\x00\\x00\\x00\\x00', pinDir=b'\\x00\\x00\\x01\\x00', pinVal=b'\\xef\\xf7\\x00\\x00', noisePerMS=87, agcCnt=3042, aStatus=2, aPower=1, flags=b'\\x01', reserved1=132, usedMask=b'\\xff\\xeb\\x01\\x00', VP01=b'\\n', VP02=b'\\x0b', VP03=b'\\x0c', VP04=b'\\r', VP05=b'\\x0e', VP06=b'\\x0f', VP07=b'\\x01', VP08=b'\\x00', VP09=b'\\x02', VP10=b'\\x03', VP11=b'\\xff', VP12=b'\\x10', VP13=b'\\xff', VP14=b'\\x12', VP15=b'\\x13', VP16=b'6', VP17=b'5', VP18=b'\\x05', VP19=b'\\xef', VP20=b'^', VP21=b'\\x00', VP22=b'\\x00', VP23=b'\\x00', VP24=b'\\x00', VP25=b'\\x80', jamInd=247, reserved3=0, pinIrq=b'\\x00\\x00\\x00\\x00', pullH=b'', pullL=b'')>",
-        "<UBX(MON-HW2, ofsI=4, magI=110, ofsQ=5, magQ=112, cfgSource=111, reserved0=1800, lowLevCfg=b'\\xff\\xff\\xff\\xff', reserved11=4294967295, reserved12=4294967295, postStatus=b'\\x00\\x00\\x00\\x00', reserved2=0)>"
-        )
-
-        i = 0
-        raw = 0
-        ubxreader = pyubx2.UBXReader(self.streamMON)
-        print("\n")
-        while raw is not None:
-            (raw, parsed) = ubxreader.read()
-            if raw is not None:
-                print(f"Testing {str(parsed).split(',')[0][5:]}")
-                self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
-                i += 1
-        print("\n")
-
-    def testRXM(self):
-        EXPECTED_RESULTS = (
-        "<UBX(RXM-MEASX, version=1, reserved1=0, gpsTOW=231234000, gloTOW=242016000, bdsTOW=231220000, reserved2=231234000, qzssTOW=1000, gpsTOWacc=0, gloTOWacc=0, bdsTOWacc=0, reserved3=0, qzssTOWacc=0, numCh=9, flags=46, reserved4=0, gnssId_01=QZSS, svId_01=1, cNo_01=12, mpathIndic_01=1, dopplerMS_01=11538, dopplerHz_01=12126, wholeChips_01=809, fracChips_01=24, codePhase_01=1658502, intCodePhase_01=0, pseuRangeRMSErr_01=52, reserved5_01=0, gnssId_02=GPS, svId_02=18, cNo_02=17, mpathIndic_02=1, dopplerMS_02=2646, dopplerHz_02=2781, wholeChips_02=858, fracChips_02=265, codePhase_02=1759434, intCodePhase_02=0, pseuRangeRMSErr_02=46, reserved5_02=0, gnssId_03=GPS, svId_03=28, cNo_03=18, mpathIndic_03=1, dopplerMS_03=10576, dopplerHz_03=11115, wholeChips_03=536, fracChips_03=533, codePhase_03=1099868, intCodePhase_03=0, pseuRangeRMSErr_03=46, reserved5_03=0, gnssId_04=GLONASS, svId_04=8, cNo_04=17, mpathIndic_04=1, dopplerMS_04=11949, dopplerHz_04=12797, wholeChips_04=55, fracChips_04=693, codePhase_04=228499, intCodePhase_04=0, pseuRangeRMSErr_04=46, reserved5_04=0, gnssId_05=GLONASS, svId_05=9, cNo_05=25, mpathIndic_05=1, dopplerMS_05=4320, dopplerHz_05=4614, wholeChips_05=279, fracChips_05=102, codePhase_05=1145429, intCodePhase_05=0, pseuRangeRMSErr_05=27, reserved5_05=0, gnssId_06=GLONASS, svId_06=7, cNo_06=24, mpathIndic_06=1, dopplerMS_06=-3672, dopplerHz_06=-3931, wholeChips_06=100, fracChips_06=156, codePhase_06=411030, intCodePhase_06=0, pseuRangeRMSErr_06=46, reserved5_06=0, gnssId_07=GPS, svId_07=7, cNo_07=13, mpathIndic_07=1, dopplerMS_07=-14783, dopplerHz_07=-15537, wholeChips_07=947, fracChips_07=989, codePhase_07=1943334, intCodePhase_07=0, pseuRangeRMSErr_07=52, reserved5_07=0, gnssId_08=GPS, svId_08=13, cNo_08=28, mpathIndic_08=1, dopplerMS_08=5649, dopplerHz_08=5937, wholeChips_08=239, fracChips_08=545, codePhase_08=491043, intCodePhase_08=0, pseuRangeRMSErr_08=15, reserved5_08=0, gnssId_09=GPS, svId_09=5, cNo_09=32, mpathIndic_09=1, dopplerMS_09=-9606, dopplerHz_09=-10096, wholeChips_09=220, fracChips_09=411, codePhase_09=451825, intCodePhase_09=0, pseuRangeRMSErr_09=18, reserved5_09=0)>",
-        "<UBX(RXM-SVSI, iTOW=16:13:38, week=2128, numVis=24, numSV=190, svid=1, svFlag=b'_', azim=82, elev=-49, age=b'\\xf2')>",
-        "<UBX(RXM-IMES, numTx=0, version=1, reserved1=0)>",
-        "<UBX(RXM-SFRBX, gnssId=GPS, svId=5, reserved1=0, freqId=0, numWords=10, chn=0, version=2, reserved2=0, dwrd_01=583028782, dwrd_02=2463198336, dwrd_03=394902765, dwrd_04=2566867280, dwrd_05=1062207503, dwrd_06=675481840, dwrd_07=616371498, dwrd_08=2740700967, dwrd_09=768066377, dwrd_10=3045061856)>"
-        )
-
-        i = 0
-        raw = 0
-        ubxreader = pyubx2.UBXReader(self.streamRXM)
         print("\n")
         while raw is not None:
             (raw, parsed) = ubxreader.read()
