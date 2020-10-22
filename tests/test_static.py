@@ -20,7 +20,7 @@ class StaticTest(unittest.TestCase):
         pass
 
     def testUBX2Bytes(self):
-        res = pyubx2.UBXMessage.ubx_str2bytes('CFG', 'CFG-MSG')
+        res = pyubx2.UBXMessage.msgstr2bytes('CFG', 'CFG-MSG')
         self.assertEqual(res, (b'\x06', b'\x01'))
 
     def testBytes2Len(self):

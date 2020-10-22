@@ -44,7 +44,7 @@ You can create a `UBXReader` object by calling the constructor with an active st
 The stream object can be any data stream which supports a `read(n) -> bytes` method (e.g. File or Serial, with 
 or without a buffer wrapper).
 
-Individual UBX messages can then be read using the `UBXReader.read()` function, which returns both the raw binary
+Individual input UBX messages can then be read using the `UBXReader.read()` function, which returns both the raw binary
 data (as bytes) and the parsed data (as a `UBXMessage` object). The function is thread-safe in so far as the incoming
 data stream object is thread-safe.
 
@@ -73,8 +73,7 @@ Examples:
 
 ## Parsing
 
-You can parse individual UBX messages using the `UBXMessage.parse(data, validate=False)` function, which takes a bytes array containing a
-binary UBX message and returns a `UBXMessage` object.
+You can parse individual UBX messages using the `UBXMessage.parse(data, validate=False)` function, which takes a bytes array containing a binary UBX message and returns a `UBXMessage` object.
 
 If the optional 'validate' parameter is set to `True`, `parse` will validate the supplied UBX message header, payload length and checksum. 
 If any of these are not consistent with the message content, it will raise a `UBXParseError`. Otherwise, the function will automatically
@@ -85,10 +84,10 @@ Example:
 ```python
 >>> from pyubx2 import UBXMessage
 >>> msg = UBXMessage.parse(b'\xb5b\x05\x01\x02\x00\x06\x01\x0f\x38', True)
->>> msg
+>>> print(msg)
 <UBX(ACK-ACK, clsID=CFG, msgID=CFG-MSG)>
 >>> msg = UBXMessage.parse(b'\xb5b\x01\x12$\x000D\n\x18\xfd\xff\xff\xff\xf1\xff\xff\xff\xfc\xff\xff\xff\x10\x00\x00\x00\x0f\x00\x00\x00\x83\xf5\x01\x00A\x00\x00\x00\xf0\xdfz\x00\xd0\xa6')
->>> msg
+>>> print(msg)
 <UBX(NAV-VELNED, iTOW=403327000, velN=-1, velE=-21, velD=-4, speed=22, gSpeed=21, heading=128387, sAcc=67, cAcc=8056455)>
 ```
 
@@ -108,45 +107,68 @@ e.g. the `NAV-POSLLH` message has the following properties:
 
 ## Generating
 
-You can create a `UBXMessage` object by calling the constructor with message class, message id, payload and mode parameters.
+**NB: The UBXMessage constructor format has been changed in pyubx2 v0.2.0 to accommodate keyword parameters - see [Release Notes](https://github.com/semuconsulting/pyubx2/releases) on GitHub for details.**
+
+You can create a `UBXMessage` object by calling the constructor with the following parameters:
+1. ubxClass
+2. ubxID
+3. mode
+4. (optional) a series of keyword parameters representing the message payload
 
 The 'mode' parameter is an integer flag signifying whether the message payload refers to a: 
-* GET message (i.e. *from* the receiver - the default)
-* SET message (i.e. *to* the receiver)
-* POLL message (i.e. *to* the receiver in anticipation of a response back)
+* GET message (i.e. output *from* the receiver) = 0
+* SET message (i.e. input *to* the receiver) = 1
+* POLL message (i.e. input *to* the receiver in anticipation of a response back) = 2
 
 The distinction is necessary because the UBX protocol uses the same message class and id
 for all three modes, but with different payloads.
 
-e.g. to generate a outgoing CFG-MSG which polls the 'VTG' NMEA message rate on the current port:
+The message payload can be defined via keyword parameters in one of three ways:
+1. A single keyword parameter of `payload` containing the full payload as a sequence of bytes.
+2. One or more attribute names corresponding to the message class/id in question. Any attributes not explicitly provided as keyword
+parameters will be defaulted to zeros.
+3. If no keyword parameters are passed, the payload is assumed to be null.
+
+The 'ubxClass' and 'ubxID' parameters may be passed as lookup strings, integers or bytes.
+
+e.g. to generate a CFG-MSG which polls the 'VTG' NMEA message rate on the current port, 
+any of the following constructor formats will work:
 
 ```python
 >>> from pyubx2 import UBXMessage, POLL
->>> msg = UBXMessage(b'\x06', b'\x01', b'\xF0\x05', POLL)
->>> msg
+>>> msg1 = UBXMessage(b'\x06', b'\x01', POLL, payload=b'\xf0\x05')
+>>> print(msg1)
 <UBX(CFG-MSG, msgClass=NMEA-Standard, msgID=VTG)>
 ```
 
-The constructor also supports plain text representations of the message class and id, e.g.
+```python
+>>> from pyubx2 import UBXMessage, POLL
+>>> msg2 = UBXMessage(6, 1, POLL, msgClass=240, msgID=5)
+>>> print(msg2)
+<UBX(CFG-MSG, msgClass=NMEA-Standard, msgID=VTG)>
+```
 
 ```python
 >>> from pyubx2 import UBXMessage, POLL
->>> msg = UBXMessage('CFG','CFG-MSG', b'\xF1\x03', POLL)
->>> msg
-<UBX(CFG-MSG, msgClass=NMEA-Proprietary, msgID=UBX-03)>
+>>> msg3 = UBXMessage('CFG','CFG-MSG', POLL, msgClass=240, msgID=0)
+>>> print(msg3)
+<UBX(CFG-MSG, msgClass=NMEA-Standard, msgID=VTG)>
 ```
+
+Typically one would only need to create input (i.e. SET or POLL) messages via the UBXMessage constructor; output (GET) messages would
+normally be generated from an incoming data stream via the UBXReader.read() or UBXMessage.parse() methods.
 
 ### Serializing
 
 The `UBXMessage` class implements a `serialize()` method to convert a `UBXMessage` object to a bytes array suitable for writing to an output stream.
 
-e.g. to create and send a `CFG-MSG` message which sets the NMEA GLL message rate to '1' on the receiver's UART and USB ports (assuming an output serial stream has been created as `serialOut`):
+e.g. to create and send a `CFG-MSG` message which sets the NMEA GLL message rate to '1' on the receiver's UART1 and USB ports (assuming an output serial stream has been created as `serialOut`):
 
 ```python
 >>> from pyubx2 import UBXMessage, SET
->>> msg = UBXMessage('CFG','CFG-MSG', b'\xF0\x01\x00\x01\x01\x01\x00\x00', SET)
->>> msg
-<UBX(CFG-MSG, msgClass=NMEA-Standard, msgID=GLL, rateDDC=0, rateUART1=1, rateUART2=1, rateUSB=1, rateSPI=0, reserved=0)>
+>>> msg = UBXMessage('CFG','CFG-MSG', SET, msgClass=240, msgID=1, rateUART2=1, rateUSB=1)
+>>> print(msg)
+<UBX(CFG-MSG, msgClass=NMEA-Standard, msgID=GLL, rateDDC=0, rateUART1=1, rateUSB=1, rateSPI=0, reserved=0)>
 >>> output = msg.serialize()
 >>> output
 b'\xb5b\x06\x01\x08\x00\xf0\x01\x00\x01\x01\x01\x00\x00\x036'

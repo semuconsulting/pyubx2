@@ -20,7 +20,7 @@ Created on 27 Sep 2020
 # pylint: disable=line-too-long
 
 from pyubx2.ubxtypes_core import U1, I1, X1, U2, I2, X2, U3, U4, I4, U5, \
-                                 X4, R4, U6, U40, U64, X6, R8, C06, C10, \
+                                 X4, R4, U6, U40, U64, X6, R8, C2, C6, C10, \
                                  C30, C32, CH
 
 UBX_PAYLOADS_SET = {
@@ -121,7 +121,7 @@ UBX_PAYLOADS_SET = {
 },
 'CFG-DAT':{
 'datumNum': U2,
-'datumName': C06,
+'datumName': C6,
 'majA': R8,
 'flat': R8,
 'dX': R4,
@@ -288,7 +288,14 @@ UBX_PAYLOADS_SET = {
 'filter': X1,
 'nmeaVersion': U1,
 'numSV': U1,
-'flags': X1
+'flags': X1,
+'gnssToFilter': X4,
+'svNumbering': U1,
+'mainTalkerId': U1,
+'gsvTalkerId': U1,
+'version': U1,
+'bdsTalkerId': C2,
+'reserved1': U6
 },
 'CFG-ODO': {
 'version': U1,

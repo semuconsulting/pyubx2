@@ -40,7 +40,7 @@ class ParseTest(unittest.TestCase):
 
     def testAckRepr(self):
         res = pyubx2.UBXMessage.parse(self.ack_ack, True)
-        self.assertEqual(repr(res), "'UBXMessage(b'\\x05', b'\\x01', b'\\x06\\x01')'")
+        self.assertEqual(repr(res), "'UBXMessage(b'\\x05', b'\\x01', 0, b'\\x06\\x01')'")
 
     def testAckCkF(self):
         pyubx2.UBXMessage.parse(self.ack_ack_badck, False)
@@ -63,7 +63,7 @@ class ParseTest(unittest.TestCase):
 
     def testCfgRepr(self):
         res = pyubx2.UBXMessage.parse(self.cfg_msg, True)
-        self.assertEqual(repr(res), "'UBXMessage(b'\\x06', b'\\x01', b'\\xf0\\x01\\x00\\x01\\x01\\x01\\x00\\x00')'")
+        self.assertEqual(repr(res), "'UBXMessage(b'\\x06', b'\\x01', 0, b'\\xf0\\x01\\x00\\x01\\x01\\x01\\x00\\x00')'")
 
     def testCfgProp1(self):
         res = pyubx2.UBXMessage.parse(self.cfg_msg, True)
@@ -87,7 +87,7 @@ class ParseTest(unittest.TestCase):
 
     def testNavVelNedRepr(self):
         res = pyubx2.UBXMessage.parse(self.nav_velned, True)
-        self.assertEqual(repr(res), "'UBXMessage(b'\\x01', b'\\x12', b'0D\\n\\x18\\xfd\\xff\\xff\\xff\\xf1\\xff\\xff\\xff\\xfc\\xff\\xff\\xff\\x10\\x00\\x00\\x00\\x0f\\x00\\x00\\x00\\x83\\xf5\\x01\\x00A\\x00\\x00\\x00\\xf0\\xdfz\\x00')'")
+        self.assertEqual(repr(res), "'UBXMessage(b'\\x01', b'\\x12', 0, b'0D\\n\\x18\\xfd\\xff\\xff\\xff\\xf1\\xff\\xff\\xff\\xfc\\xff\\xff\\xff\\x10\\x00\\x00\\x00\\x0f\\x00\\x00\\x00\\x83\\xf5\\x01\\x00A\\x00\\x00\\x00\\xf0\\xdfz\\x00')'")
 
     def testNavVelNedProp1(self):
         res = pyubx2.UBXMessage.parse(self.nav_velned, True)
@@ -111,7 +111,7 @@ class ParseTest(unittest.TestCase):
 
     def testCfgPrtRepr(self):
         res = pyubx2.UBXMessage.parse(self.cfg_prt, True)
-        self.assertEqual(repr(res), "'UBXMessage(b'\\x06', b'\\x00')'")
+        self.assertEqual(repr(res), "'UBXMessage(b'\\x06', b'\\x00', 0)'")
 
 
 if __name__ == "__main__":

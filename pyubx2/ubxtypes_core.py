@@ -11,8 +11,8 @@ Created on 27 Sep 2020
 '''
 
 UBX_HDR = b'\xB5\x62'
-INPUT = 0
-OUTPUT = 1
+INPUT = 1
+OUTPUT = 0
 GET = 0
 SET = 1
 POLL = 2
@@ -43,12 +43,13 @@ U8 = 'U08'  # Unsigned Long 8
 U12 = 'U12'  # Unsigned Long 12
 U40 = 'U40'  # Unsigned Long 40
 U64 = 'U64'  # Unsigned Long 64
-C06 = 'C06'  # ASCII / ISO 8859.1 Encoding 6
+C2 = 'C02'  # ASCII / ISO 8859.1 Encoding 2
+C6 = 'C06'  # ASCII / ISO 8859.1 Encoding 6
 C10 = 'C10'  # ASCII / ISO 8859.1 Encoding 10
 C30 = 'C30'  # ASCII / ISO 8859.1 Encoding 30
 C32 = 'C32'  # ASCII / ISO 8859.1 Encoding 32
 CH = 'CH'  # ASCII / ISO 8859.1 Encoding Variable Length
-VALID_TYPES = (U1, I1, X1, U2, I2, X2, U3, U4, I4, X4, R4, U5, R8, U6, X6, U12, U40, U64, C06, C10, C30, C32, CH)
+VALID_TYPES = (U1, I1, X1, U2, I2, X2, U3, U4, I4, X4, R4, U5, R8, U6, X6, U12, U40, U64, C2, C6, C10, C30, C32, CH)
 
 '''
 THESE ARE THE UBX PROTOCOL MESSAGE CLASSES
@@ -60,9 +61,9 @@ b'\x04':'INF',  # Information Messages: Printf-Style Messages, with IDs such as 
 b'\x05':'ACK',  # Ack/Nack Messages: as replies to CFG Input Messages
 b'\x06':'CFG',  # Configuration Input Messages: Set Dynamic Model, Set DOP Mask, Set Baud Rate, etc.
 b'\x09':'UPD',  # Firmware Update Messages: Memory/Flash erase/write, Reboot, Flash identification, etc.
-b'\x0A':'MON',  # Monitoring Messages: Communication Status, CPU Load, Stack Usage, Task Status
-b'\x0B':'AID',  # AssistNow Aiding Messages: Ephemeris, Almanac, other A-GPS data input
-b'\x0D':'TIM',  # Timing Messages: Timepulse Output, Timemark Results
+b'\x0a':'MON',  # Monitoring Messages: Communication Status, CPU Load, Stack Usage, Task Status
+b'\x0b':'AID',  # AssistNow Aiding Messages: Ephemeris, Almanac, other A-GPS data input
+b'\x0d':'TIM',  # Timing Messages: Timepulse Output, Timemark Results
 b'\x10':'ESF',  # External Sensor Fusion Messages: External sensor measurements and status information
 b'\x13':'MGA',  # Multiple GNSS Assistance Messages: Assistance data for various GNSS
 b'\x21':'LOG',  # Logging Messages: Log creation, deletion, info and retrieval
@@ -79,11 +80,11 @@ b'\x05\x00': 'ACK-NAK',
 # ***************************************************************
 # AID messages are deprecated since Gen 8 in favour of MGA
 # ***************************************************************
-b'\x0B\x30': 'AID-ALM',
-b'\x0B\x33': 'AID-AOP',
-b'\x0B\x31': 'AID-EPH',
-b'\x0B\x02': 'AID-HUI',
-b'\x0B\x01': 'AID-INI',
+b'\x0b\x30': 'AID-ALM',
+b'\x0b\x33': 'AID-AOP',
+b'\x0b\x31': 'AID-EPH',
+b'\x0b\x02': 'AID-HUI',
+b'\x0b\x01': 'AID-INI',
 b'\x06\x13': 'CFG-ANT',
 b'\x06\x09': 'CFG-CFG',
 b'\x06\x06': 'CFG-DAT',
@@ -92,7 +93,7 @@ b'\x06\x85': 'CFG-DYNSEED',
 b'\x06\x60': 'CFG-ESRC',
 b'\x06\x84': 'CFG-FIXSEED',
 b'\x06\x69': 'CFG-GEOFENCE',
-b'\x06\x3E': 'CFG-GNSS',
+b'\x06\x3e': 'CFG-GNSS',
 b'\x06\x02': 'CFG-INF',
 b'\x06\x39': 'CFG-ITFM',
 b'\x06\x47': 'CFG-LOGFILTER',
@@ -100,8 +101,8 @@ b'\x06\x01': 'CFG-MSG',
 b'\x06\x24': 'CFG-NAV5',
 b'\x06\x23': 'CFG-NAVX5',
 b'\x06\x17': 'CFG-NMEA',
-b'\x06\x1E': 'CFG-ODO',
-b'\x06\x3B': 'CFG-PM2',
+b'\x06\x1e': 'CFG-ODO',
+b'\x06\x3b': 'CFG-PM2',
 b'\x06\x86': 'CFG-PMS',
 b'\x06\x00': 'CFG-PRT',
 b'\x06\x57': 'CFG-PWR',
@@ -111,10 +112,10 @@ b'\x06\x04': 'CFG-RST',
 b'\x06\x11': 'CFG-RXM',
 b'\x06\x16': 'CFG-SBAS',
 b'\x06\x62': 'CFG-SMGR',
-b'\x06\x3D': 'CFG-TMODE2',
+b'\x06\x3d': 'CFG-TMODE2',
 b'\x06\x31': 'CFG-TP5',
 b'\x06\x53': 'CFG-TXSLOT',
-b'\x06\x1B': 'CFG-USB',
+b'\x06\x1b': 'CFG-USB',
 b'\x10\x10': 'ESF-STATUS',
 b'\x04\x04': 'INF-DEBUG',
 b'\x04\x00': 'INF-ERROR',
@@ -123,7 +124,7 @@ b'\x04\x03': 'INF-TEST',
 b'\x04\x01': 'INF-WARNING',
 b'\x21\x07': 'LOG-CREATE',
 b'\x21\x03': 'LOG-ERASE',
-b'\x21\x0E': 'LOG-FINDTIME',
+b'\x21\x0e': 'LOG-FINDTIME',
 b'\x21\x08': 'LOG-INFO',
 b'\x21\x0f': 'LOG-RETRIEVEPOSEXTRA',
 b'\x21\x0b': 'LOG-RETRIEVEPOS',
@@ -168,17 +169,17 @@ b'\x13\x40\x30': 'MGA-INI-EOP',
 b'\x13\x05\x01': 'MGA-QZSS-EPH',
 b'\x13\x05\x02': 'MGA-QZSS-ALM',
 b'\x13\x05\x04': 'MGA-QZSS-HEALTH',
-b'\x0A\x28': 'MON-GNSS',
-b'\x0A\x0B': 'MON-HW2',
-b'\x0A\x09': 'MON-HW',
-b'\x0A\x02': 'MON-IO',
-b'\x0A\x06': 'MON-MSGPP',
-b'\x0A\x27': 'MON-PATCH',
-b'\x0A\x07': 'MON-RXBUF',
-b'\x0A\x21': 'MON-RXR',
-b'\x0A\x2E': 'MON-SMGR',
-b'\x0A\x08': 'MON-TXBUF',
-b'\x0A\x04': 'MON-VER',
+b'\x0a\x28': 'MON-GNSS',
+b'\x0a\x0b': 'MON-HW2',
+b'\x0a\x09': 'MON-HW',
+b'\x0a\x02': 'MON-IO',
+b'\x0a\x06': 'MON-MSGPP',
+b'\x0a\x27': 'MON-PATCH',
+b'\x0a\x07': 'MON-RXBUF',
+b'\x0a\x21': 'MON-RXR',
+b'\x0a\x2e': 'MON-SMGR',
+b'\x0a\x08': 'MON-TXBUF',
+b'\x0a\x04': 'MON-VER',
 b'\x01\x60': 'NAV-AOPSTATUS',
 b'\x01\x22': 'NAV-CLOCK',
 b'\x01\x31': 'NAV-DGPS',
@@ -213,16 +214,16 @@ b'\x02\x13': 'RXM-SFRBX',
 b'\x02\x20': 'RXM-SVSI',
 b'\x27\x01': 'SEC-SIGN',
 b'\x27\x03': 'SEC-UNIQID',
-b'\x0D\x11': 'TIM-DOSC',
-b'\x0D\x16': 'TIM-FCHG',
-b'\x0D\x17': 'TIM-HOC',
-b'\x0D\x13': 'TIM-SMEAS',
-b'\x0D\x04': 'TIM-SVIN',
-b'\x0D\x03': 'TIM-TM2',
-b'\x0D\x12': 'TIM-TOS',
-b'\x0D\x01': 'TIM-TP',
-b'\x0D\x15': 'TIM-VCOCAL',
-b'\x0D\x06': 'TIM-VRFY',
+b'\x0d\x11': 'TIM-DOSC',
+b'\x0d\x16': 'TIM-FCHG',
+b'\x0d\x17': 'TIM-HOC',
+b'\x0d\x13': 'TIM-SMEAS',
+b'\x0d\x04': 'TIM-SVIN',
+b'\x0d\x03': 'TIM-TM2',
+b'\x0d\x12': 'TIM-TOS',
+b'\x0d\x01': 'TIM-TP',
+b'\x0d\x15': 'TIM-VCOCAL',
+b'\x0d\x06': 'TIM-VRFY',
 b'\x09\x14': 'UPD-SOS',
 }
 
@@ -234,17 +235,17 @@ b'\x01' : 'UBX-NAV',
 b'\x02' : 'UBX-RXM',
 b'\x05' : 'UBX-ACK',
 b'\x09' : 'UBX-ESF',
-b'\x0A' : 'UBX-MON',
-b'\x0B' : 'UBX-AID',
-b'\x0D' : 'UBX-TIM',
+b'\x0a' : 'UBX-MON',
+b'\x0b' : 'UBX-AID',
+b'\x0d' : 'UBX-TIM',
 b'\x10' : 'UBX-ESF',
 b'\x13' : 'UBX-MGA',
 b'\x21' : 'UBX-LOG',
 b'\x27' : 'UBX-SEC',
 b'\x28' : 'UBX-HNR',
-b'\xF0' : 'NMEA-Standard',
-b'\xF1' : 'NMEA-Proprietary',
-b'\xF5' : 'RTCM'
+b'\xf0' : 'NMEA-Standard',
+b'\xf1' : 'NMEA-Proprietary',
+b'\xf5' : 'RTCM'
 }
 
 '''
@@ -268,7 +269,7 @@ b'\x01\x34': 'NAV-ORB',
 b'\x01\x01': 'NAV-POSECEF',
 b'\x01\x02': 'NAV-POSLLH',
 b'\x01\x07': 'NAV-PVT',
-b'\x01\x3C': 'NAV-RELPOSNED',
+b'\x01\x3c': 'NAV-RELPOSNED',
 b'\x01\x35': 'NAV-SAT',
 b'\x01\x32': 'NAV-SBAS',
 b'\x01\x43': 'NAV-SIG',
@@ -276,7 +277,7 @@ b'\x01\x42': 'NAV-SLAS',
 b'\x01\x06': 'NAV-SOL',
 b'\x01\x03': 'NAV-STATUS',
 b'\x01\x30': 'NAV-SVINFO',
-b'\x01\x3B': 'NAV-SVIN',
+b'\x01\x3b': 'NAV-SVIN',
 b'\x01\x24': 'NAV-TIMEBDS',
 b'\x01\x25': 'NAV-TIMEGAL',
 b'\x01\x23': 'NAV-TIMEGLO',
@@ -293,53 +294,53 @@ b'\x02\x15': 'RXM-RAWX',
 b'\x02\x59': 'RXM-RLM',
 b'\x02\x13': 'RXM-SFRBX',
 b'\x02\x20': 'RXM-SVSI',
-b'\x0A\x28': 'MON-GNSS',
-b'\x0A\x09': 'MON-HW',
-b'\x0A\x0B': 'MON-HW2',
-# b'\x0A\x37': 'MON-HW3',
-b'\x0A\x02': 'MON-IO',
-b'\x0A\x06': 'MON-MSGPP',
-b'\x0A\x27': 'MON-PATCH',
-# b'\x0A\x38': 'MON-RF',
-b'\x0A\x07': 'MON-RXBUF',
-b'\x0A\x21': 'MON-RXR',
-b'\x0A\x2E': 'MON-SMGR',
-# b'\x0A\x31': 'MON-SPAN',
-b'\x0A\x08': 'MON-TXBUF',
-b'\x0A\x04': 'MON-VER',
+b'\x0a\x28': 'MON-GNSS',
+b'\x0a\x09': 'MON-HW',
+b'\x0a\x0b': 'MON-HW2',
+# b'\x0a\x37': 'MON-HW3',
+b'\x0a\x02': 'MON-IO',
+b'\x0a\x06': 'MON-MSGPP',
+b'\x0a\x27': 'MON-PATCH',
+# b'\x0a\x38': 'MON-RF',
+b'\x0a\x07': 'MON-RXBUF',
+b'\x0a\x21': 'MON-RXR',
+b'\x0a\x2e': 'MON-SMGR',
+# b'\x0a\x31': 'MON-SPAN',
+b'\x0a\x08': 'MON-TXBUF',
+b'\x0a\x04': 'MON-VER',
 b'\x21\x07': 'LOG-CREATE',
 b'\x21\x03': 'LOG-ERASE',
-b'\x21\x0E': 'LOG-FINDTIME',
+b'\x21\x0e': 'LOG-FINDTIME',
 b'\x21\x08': 'LOG-INFO',
 b'\x21\x0f': 'LOG-RETRIEVEPOSEXTRA',
 b'\x21\x0b': 'LOG-RETRIEVEPOS',
 b'\x21\x0d': 'LOG-RETRIEVESTRING',
 b'\x21\x09': 'LOG-RETRIEVE',
 b'\x21\x04': 'LOG-STRING',
-b'\xF0\x0A': 'DTM',  # Datum Reference
-b'\xF0\x44': 'GBQ',  # Poll Standard Message - Talker ID GB (BeiDou)
-b'\xF0\x09': 'GBS',  # GNSS Satellite Fault Detection
-b'\xF0\x00': 'GGA',  # Global positioning system fix data
-b'\xF0\x01': 'GLL',  # Latitude and longitude, with time of position fix and status
-b'\xF0\x43': 'GLQ',  # Poll Standard Message - Talker ID GL (GLONASS)
-b'\xF0\x42': 'GNQ',  # Poll Standard Message - Talker ID GN (Any GNSS)
-b'\xF0\x0D': 'GNS',  # GNSS Fix Data
-b'\xF0\x40': 'GPQ',  # Poll Standard Message - Talker ID GP (GPS, SBAS, QZSS)
-b'\xF0\x06': 'GRS',  # GNSS Range Residuals
-b'\xF0\x02': 'GSA',  # GNSS DOP and Active Satellites
-b'\xF0\x07': 'GST',  # GNSS Pseudo Range Error Statistics
-b'\xF0\x03': 'GSV',  # GNSS Satellites in View
-b'\xF0\x04': 'RMC',  # Recommended Minimum data
-b'\xF0\x0E': 'THS',  # TRUE Heading and Status
-b'\xF0\x41': 'TXT',  # Text Transmission
-b'\xF0\x0F': 'VLW',  # Dual Ground Water Distance
-b'\xF0\x05': 'VTG',  # Course over ground and Groundspeed
-b'\xF0\x08': 'ZDA',  # Time and Date
-b'\xF1\x00': 'UBX-00',  # Lat/Long Position Data
-b'\xF1\x03': 'UBX-03',  # Satellite Status
-b'\xF1\x04': 'UBX-04',  # Time of Day and Clock Information
-b'\xF1\x05': 'UBX-05',  # Lat/Long Position Data
-b'\xF1\x06': 'UBX-06',  # Lat/Long Position Data
-b'\xF1\x40': 'UBX-40',  # Set NMEA message output rate
-b'\xF1\x41': 'UBX-41'  # Set Protocols and Baudrate
+b'\xf0\x0a': 'DTM',  # Datum Reference
+b'\xf0\x44': 'GBQ',  # Poll Standard Message - Talker ID GB (BeiDou)
+b'\xf0\x09': 'GBS',  # GNSS Satellite Fault Detection
+b'\xf0\x00': 'GGA',  # Global positioning system fix data
+b'\xf0\x01': 'GLL',  # Latitude and longitude, with time of position fix and status
+b'\xf0\x43': 'GLQ',  # Poll Standard Message - Talker ID GL (GLONASS)
+b'\xf0\x42': 'GNQ',  # Poll Standard Message - Talker ID GN (Any GNSS)
+b'\xf0\x0d': 'GNS',  # GNSS Fix Data
+b'\xf0\x40': 'GPQ',  # Poll Standard Message - Talker ID GP (GPS, SBAS, QZSS)
+b'\xf0\x06': 'GRS',  # GNSS Range Residuals
+b'\xf0\x02': 'GSA',  # GNSS DOP and Active Satellites
+b'\xf0\x07': 'GST',  # GNSS Pseudo Range Error Statistics
+b'\xf0\x03': 'GSV',  # GNSS Satellites in View
+b'\xf0\x04': 'RMC',  # Recommended Minimum data
+b'\xf0\x0e': 'THS',  # TRUE Heading and Status
+b'\xf0\x41': 'TXT',  # Text Transmission
+b'\xf0\x0f': 'VLW',  # Dual Ground Water Distance
+b'\xf0\x05': 'VTG',  # Course over ground and Groundspeed
+b'\xf0\x08': 'ZDA',  # Time and Date
+b'\xf1\x00': 'UBX-00',  # Lat/Long Position Data
+b'\xf1\x03': 'UBX-03',  # Satellite Status
+b'\xf1\x04': 'UBX-04',  # Time of Day and Clock Information
+b'\xf1\x05': 'UBX-05',  # Lat/Long Position Data
+b'\xf1\x06': 'UBX-06',  # Lat/Long Position Data
+b'\xf1\x40': 'UBX-40',  # Set NMEA message output rate
+b'\xf1\x41': 'UBX-41'  # Set Protocols and Baudrate
 }
