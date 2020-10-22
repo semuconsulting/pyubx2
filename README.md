@@ -115,6 +115,8 @@ You can create a `UBXMessage` object by calling the constructor with the followi
 3. mode
 4. (optional) a series of keyword parameters representing the message payload
 
+The 'ubxClass' and 'ubxID' parameters may be passed as lookup strings, integers or bytes.
+
 The 'mode' parameter is an integer flag signifying whether the message payload refers to a: 
 * GET message (i.e. output *from* the receiver) = 0
 * SET message (i.e. input *to* the receiver) = 1
@@ -126,10 +128,8 @@ for all three modes, but with different payloads.
 The message payload can be defined via keyword parameters in one of three ways:
 1. A single keyword parameter of `payload` containing the full payload as a sequence of bytes.
 2. One or more attribute names corresponding to the message class/id in question. Any attributes not explicitly provided as keyword
-parameters will be defaulted to zeros.
+parameters will be set to a nominal value according to their type.
 3. If no keyword parameters are passed, the payload is assumed to be null.
-
-The 'ubxClass' and 'ubxID' parameters may be passed as lookup strings, integers or bytes.
 
 e.g. to generate a CFG-MSG which polls the 'VTG' NMEA message rate on the current port, 
 any of the following constructor formats will work:
@@ -150,7 +150,7 @@ any of the following constructor formats will work:
 
 ```python
 >>> from pyubx2 import UBXMessage, POLL
->>> msg3 = UBXMessage('CFG','CFG-MSG', POLL, msgClass=240, msgID=0)
+>>> msg3 = UBXMessage('CFG','CFG-MSG', POLL, msgClass=240, msgID=5)
 >>> print(msg3)
 <UBX(CFG-MSG, msgClass=NMEA-Standard, msgID=VTG)>
 ```
@@ -166,12 +166,12 @@ e.g. to create and send a `CFG-MSG` message which sets the NMEA GLL message rate
 
 ```python
 >>> from pyubx2 import UBXMessage, SET
->>> msg = UBXMessage('CFG','CFG-MSG', SET, msgClass=240, msgID=1, rateUART2=1, rateUSB=1)
+>>> msg = UBXMessage('CFG','CFG-MSG', SET, msgClass=240, msgID=1, rateUART1=1, rateUSB=1)
 >>> print(msg)
-<UBX(CFG-MSG, msgClass=NMEA-Standard, msgID=GLL, rateDDC=0, rateUART1=1, rateUSB=1, rateSPI=0, reserved=0)>
+<UBX(CFG-MSG, msgClass=NMEA-Standard, msgID=GLL, rateDDC=0, rateUART1=1, rateUART2=0, rateUSB=1, rateSPI=0, reserved=0)>
 >>> output = msg.serialize()
 >>> output
-b'\xb5b\x06\x01\x08\x00\xf0\x01\x00\x01\x01\x01\x00\x00\x036'
+b'\xb5b\x06\x01\x08\x00\xf0\x01\x00\x01\x00\x01\x00\x00\x036'
 >>> serialOut.write(output)
 ```
 
