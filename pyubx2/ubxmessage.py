@@ -8,6 +8,7 @@ Created on 26 Sep 2020
 # pylint: disable=invalid-name
 
 import struct
+import ctypes
 from datetime import datetime, timedelta
 
 import pyubx2.exceptions as ube
@@ -148,6 +149,22 @@ class UBXMessage():
             if ckm != ckv:
                 raise ube.UBXParseError(f"Message checksum {ckm} invalid - should be {ckv}")
         return UBXMessage(clsid, msgid, payload)
+
+    @staticmethod
+    def float_to_hex(f: float) -> bytes:
+        '''
+        Convert single precision decimal (R4) to bytes (IEEE754)
+        '''
+
+        return hex(struct.unpack('<I', struct.pack('<f', f))[0])
+
+    @staticmethod
+    def double_to_hex(f: float) -> bytes:
+        '''
+        Convert double precision decimal (r8) to bytes (IEEE754)
+        '''
+
+        return hex(struct.unpack('<Q', struct.pack('<d', f))[0])
 
     @staticmethod
     def bytes2len(length: bytes) -> int:
@@ -407,8 +424,114 @@ class UBXMessage():
                 val = int.from_bytes(val, 'little', signed=False)
             if att[0:1] == 'I':  # signed integer
                 val = int.from_bytes(val, 'little', signed=True)
-            if att[0:1] == 'R':  # float
+            if att == 'R4':  # single precision floating point
                 val = struct.pack('f', val)
+            if att == 'R8':  # double precision floating point
+                val = struct.pack('d', val)
+
+        if not isinstance(att, tuple):
+            if self._index > 0:  # add 2-digit suffix to repeating attribute names
+                key = key + "_{0:0=2d}".format(self._index)
+            setattr(self, key, val)
+            offset += atts
+
+        return (offset, att)
+
+    def fill(self, **kwargs):
+        '''
+        Populate POLL or SET message from keywords.
+        Where a keyword is absent, set to a nominal value.
+        '''
+
+        offset = 0
+        self._index = 0
+        try:
+
+            # lookup attributes from the relevant set/poll dictionary
+            if self._mode in (ubt.OUTPUT, ubt.SET):
+                pdict = ubs.UBX_PAYLOADS_SET[self.identity]
+            else:
+                pdict = ubp.UBX_PAYLOADS_POLL[self.identity]
+            # parse each attribute
+            for key in pdict.keys():
+                (offset, att) = self._payload_fill(offset, pdict, key, **kwargs)
+            # recalculate checksum based on payload content
+            if self._payload is None:
+                self._length = self.len2bytes(0)
+                self._checksum = self.calc_checksum(self._ubx_class + self._ubx_id
+                                                    +self._length)
+            else:
+                self._length = self.len2bytes(len(self._payload))
+                self._checksum = self.calc_checksum(self._ubx_class + self._ubx_id
+                                                    +self._length + self._payload)
+
+        except ube.UBXTypeError as err:
+            raise ube.UBXTypeError(f"Undefined attribute type {att} in message class {self.identity}") \
+                    from err
+        except KeyError as err:
+            raise ube.UBXMessageError(f"Undefined message class={self._ubx_class}, id={self._ubx_id}") \
+                    from err
+
+    def _payload_fill(self, offset: int, pdict: dict, key: str, **kwargs):
+        '''
+        Recursive routine to populate individual payload attributes
+        with either provided keyword values or nominal values
+        '''
+        # pylint: disable=no-member
+
+        if self._payload is None:
+            self._payload = b''
+
+        if self._index > 0:  # if a repeating group attribute
+            keyr = key + "_{0:0=2d}".format(self._index)
+        else:
+            keyr = key
+
+        att = pdict[key]  # get attribute type
+        if isinstance(att, tuple):  # attribute is a tuple i.e. a nested repeating group
+            numr, attd = att
+            rng = getattr(self, numr)
+            for i in range(rng):
+                self._index = i + 1
+                for key1 in attd.keys():
+                    (offset, _) = self._payload_fill(offset, attd, key1, **kwargs)
+
+        elif keyr in kwargs:  # if the attribute value has been provided as a keyword
+            atts = int(att[1:3])
+            val = kwargs[keyr]
+            if att[0:1] == 'X':  # byte
+                self._payload += val
+            if att[0:1] == 'U':  # unsigned integer
+                valb = val.to_bytes(atts, byteorder="little", signed=False)
+                self._payload += valb
+            if att[0:1] == 'I':  # signed integer
+                valb = val.to_bytes(atts, byteorder="little", signed=True)
+                self._payload += valb
+            if att == 'R4':  # single precision floating point
+                valb = self.float_to_hex(val)
+                self._payload += valb
+            if att == 'R8':  # double precision floating point
+                valb = self.double_to_hex(val)
+                self._payload += valb
+
+        else:  # else set attribute to nominal value
+            atts = int(att[1:3])  # attribute size in bytes
+            val = 0
+            if att[0:1] == 'X':  # byte
+                valb = b'\x00'
+                self._payload += valb
+            if att[0:1] == 'U':  # unsigned integer
+                valb = val.to_bytes(atts, byteorder="little", signed=False)
+                self._payload += valb
+            if att[0:1] == 'I':  # signed integer
+                valb = val.to_bytes(atts, byteorder="little", signed=True)
+                self._payload += valb
+            if att == 'R4':  # single precision floating point
+                valb = struct.pack('f', val)
+                self._payload += valb
+            if att == 'R8':  # double precision floating point
+                valb = struct.pack('d', val)
+                self._payload += valb
 
         if not isinstance(att, tuple):
             if self._index > 0:  # add 2-digit suffix to repeating attribute names
