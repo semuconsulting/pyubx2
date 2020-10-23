@@ -100,7 +100,7 @@ class UBXSetter():
             # send each UBX-NAV config message in turn
             for msgtype in msgs:
                 payload = msgtype + config
-                msg = UBXMessage('CFG', 'CFG-MSG', payload, SET)
+                msg = UBXMessage('CFG', 'CFG-MSG', SET, payload=payload)
                 print(f"Sending {msg}")
                 self._send(msg.serialize())
                 sleep(1)

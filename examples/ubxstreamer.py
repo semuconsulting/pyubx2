@@ -162,13 +162,13 @@ if __name__ == "__main__":
     print("\nPolling receiver...\n\n")
     # poll the receiver configuration
     for msgtype in ('CFG-PRT', 'CFG-USB', 'CFG-NMEA', 'CFG-NAV5'):
-        msg = UBXMessage('CFG', msgtype, None, POLL)
+        msg = UBXMessage('CFG', msgtype, POLL)
         ubp.send(msg.serialize())
         sleep(1)
 
     # poll all the current message rates
     for payload in UBX_CONFIG_MESSAGES:
-        msg = UBXMessage('CFG', 'CFG-MSG', payload, POLL)
+        msg = UBXMessage('CFG', 'CFG-MSG', POLL, payload=payload)
         ubp.send(msg.serialize())
         sleep(1)
     print("\n\nPolling complete, waiting for final responses...\n\n")

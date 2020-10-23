@@ -24,32 +24,31 @@ GNSSLIST = {0: 'GPS', 1: 'SBAS', 2: 'Galileo', 3: 'BeiDou',
 THESE ARE THE UBX PROTOCOL PAYLOAD ATTRIBUTE TYPES
 '''
 U1 = 'U01'  # Unsigned Char
-I1 = 'I01'  # Signed Char 1 2's complement
-X1 = 'X01'  # Bitfield 1
 U2 = 'U02'  # Unsigned Short
-I2 = 'I02'  # Signed Short
-X2 = 'X02'  # Bitfield 2
 U3 = 'U03'  # Unsigned Long 3
-U4 = 'U04'  # Unsigned Long 4
-I4 = 'I04'  # Signed Long 4 2's complement
-X4 = 'X04'  # Bitfield 4
-R4 = 'R04'  # Float (IEEE 754) Single Precision 4
 U4 = 'U04'  # Unsigned Long 4
 U5 = 'U05'  # Unsigned Long 5
 U6 = 'U06'  # Unsigned Long 6
-X6 = 'X06'  # Bitfield 6
-R8 = 'R08'  # Float (IEEE 754) Double Precision 8
 U8 = 'U08'  # Unsigned Long 8
 U12 = 'U12'  # Unsigned Long 12
 U40 = 'U40'  # Unsigned Long 40
 U64 = 'U64'  # Unsigned Long 64
+I1 = 'I01'  # Signed Char 1 2's complement
+I2 = 'I02'  # Signed Short
+I4 = 'I04'  # Signed Long 4 2's complement
+X1 = 'X01'  # Bitfield 1
+X2 = 'X02'  # Bitfield 2
+X4 = 'X04'  # Bitfield 4
+X6 = 'X06'  # Bitfield 6
+R4 = 'R04'  # Float (IEEE 754) Single Precision 4
+R8 = 'R08'  # Float (IEEE 754) Double Precision 8
 C2 = 'C02'  # ASCII / ISO 8859.1 Encoding 2
 C6 = 'C06'  # ASCII / ISO 8859.1 Encoding 6
 C10 = 'C10'  # ASCII / ISO 8859.1 Encoding 10
 C30 = 'C30'  # ASCII / ISO 8859.1 Encoding 30
 C32 = 'C32'  # ASCII / ISO 8859.1 Encoding 32
 CH = 'CH'  # ASCII / ISO 8859.1 Encoding Variable Length
-VALID_TYPES = (U1, I1, X1, U2, I2, X2, U3, U4, I4, X4, R4, U5, R8, U6, X6, U12, U40, U64, C2, C6, C10, C30, C32, CH)
+VALID_TYPES = (U1, U2, U3, U4, U5, U6, U8, U12, U40, U64, I1, I2, I4, X1, X2, X4, X6, R4, R8, C2, C6, C10, C30, C32, CH)
 
 '''
 THESE ARE THE UBX PROTOCOL MESSAGE CLASSES

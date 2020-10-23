@@ -75,7 +75,7 @@ class UBXFactoryReset():
             loadMask = b'\x07\x00\x00\x00'
             devicerMask = b'\x01'  # only target the battery-backed RAM
             payload = clearMask + saveMask + loadMask + devicerMask
-            msg = UBXMessage('CFG', 'CFG-CFG', payload, SET)
+            msg = UBXMessage('CFG', 'CFG-CFG', SET, payload=payload)
             self._send(msg.serialize())
         except (ube.UBXMessageError, ube.UBXTypeError, ube.UBXParseError) as err:
             print(f"Something went wrong {err}")

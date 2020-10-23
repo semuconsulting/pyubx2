@@ -88,7 +88,7 @@ class UBXSetter():
                   +outProtoMask + reserved4 + reserved5
 
         try:
-            msg = UBXMessage('CFG', 'CFG-PRT', payload, SET)
+            msg = UBXMessage('CFG', 'CFG-PRT', SET, payload=payload)
             print(f"Sending {msg}")
             self._send(msg.serialize())
         except (ube.UBXMessageError, ube.UBXTypeError, ube.UBXParseError) as err:
