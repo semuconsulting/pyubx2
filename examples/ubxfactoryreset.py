@@ -15,7 +15,7 @@ from pyubx2 import UBXMessage, SET
 import pyubx2.exceptions as ube
 
 
-class UBXFactoryReset():
+class UBXSetter():
     '''
     UBXSetter class.
     '''
@@ -70,12 +70,10 @@ class UBXFactoryReset():
         '''
 
         try:
-            clearMask = b'\x07\x00\x00\x00'  # little-endian
-            saveMask = b'\x00\x00\x00\x00'
-            loadMask = b'\x07\x00\x00\x00'
-            devicerMask = b'\x01'  # only target the battery-backed RAM
-            payload = clearMask + saveMask + loadMask + devicerMask
-            msg = UBXMessage('CFG', 'CFG-CFG', SET, payload=payload)
+            msg = UBXMessage('CFG', 'CFG-CFG', SET,
+                             clearMask=b'\x07\x00\x00\x00',  # clear everything
+                             loadMask=b'\x07\x00\x00\x00',  # reload everything
+                             devicerMask=b'\x01')  # target battery-backed RAM
             self._send(msg.serialize())
         except (ube.UBXMessageError, ube.UBXTypeError, ube.UBXParseError) as err:
             print(f"Something went wrong {err}")
@@ -91,8 +89,8 @@ if __name__ == "__main__":
     BAUDRATE = 9600
     TIMEOUT = 5
 
-    print("Instantiating UBXFactoryReset class...")
-    ubs = UBXFactoryReset(PORT, BAUDRATE, TIMEOUT)
+    print("Instantiating UBXSetter class...")
+    ubs = UBXSetter(PORT, BAUDRATE, TIMEOUT)
     print(f"Connecting to serial port {PORT} at {BAUDRATE} baud...")
     ubs.connect()
     print("Sending factory reset message to receiver...")
