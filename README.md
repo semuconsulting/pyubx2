@@ -107,27 +107,22 @@ e.g. the `NAV-POSLLH` message has the following properties:
 
 ## Generating
 
-**NB: The UBXMessage constructor format has been changed in pyubx2 v0.2.0 to accommodate keyword parameters - see [Release Notes](https://github.com/semuconsulting/pyubx2/releases) on GitHub for details.**
-
 You can create a `UBXMessage` object by calling the constructor with the following parameters:
 1. ubxClass
 2. ubxID
-3. mode
+3. mode (0=GET, 1=SET, 2=POLL)
 4. (optional) a series of keyword parameters representing the message payload
 
 The 'ubxClass' and 'ubxID' parameters may be passed as lookup strings, integers or bytes.
 
-The 'mode' parameter is an integer flag signifying whether the message payload refers to a: 
-* GET message (i.e. output *from* the receiver) = 0
-* SET message (i.e. input *to* the receiver) = 1
-* POLL message (i.e. input *to* the receiver in anticipation of a response back) = 2
-
-The distinction is necessary because the UBX protocol uses the same message class and id
-for all three modes, but with different payloads.
+The 'mode' parameter signifies whether the message payload refers to a: 
+* GET message (i.e. output *from* the receiver)
+* SET message (i.e. input *to* the receiver)
+* POLL message (i.e. input *to* the receiver in anticipation of a response back)
 
 The message payload can be defined via keyword parameters in one of three ways:
-1. A single keyword parameter of `payload` containing the full payload as a sequence of bytes.
-2. One or more attribute names corresponding to the message class/id in question. Any attributes not explicitly provided as keyword
+1. A single keyword parameter of `payload` containing the full payload as a sequence of bytes (any other keyword parameters will be ignored).
+2. One or more keyword parameters corresponding to individual message attributes. Any attributes not explicitly provided as keyword
 parameters will be set to a nominal value according to their type.
 3. If no keyword parameters are passed, the payload is assumed to be null.
 
@@ -154,9 +149,6 @@ any of the following constructor formats will work:
 >>> print(msg3)
 <UBX(CFG-MSG, msgClass=NMEA-Standard, msgID=VTG)>
 ```
-
-Typically one would only need to create input (i.e. SET or POLL) messages via the UBXMessage constructor; output (GET) messages would
-normally be generated from an incoming data stream via the UBXReader.read() or UBXMessage.parse() methods.
 
 ### Serializing
 

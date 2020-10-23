@@ -1,5 +1,5 @@
-'''
-UBXReader class. 
+"""
+UBXReader class.
 
 Reads and parses individual UBX messages from any stream which supports a read(n) -> bytes method.
 
@@ -8,29 +8,32 @@ Returns both the raw binary data (as bytes) and the parsed data (as a UBXMessage
 Created on 2 Oct 2020
 
 @author: semuadmin
-'''
+"""
 
 from pyubx2.ubxmessage import UBXMessage
 import pyubx2.ubxtypes_core as ubt
 
 
 class UBXReader():
-    '''
+    """
     UBXReader class.
-    '''
+    """
 
     def __init__(self, stream):
-        '''
-        Constructor.
-        '''
+        """Constructor.
+
+        :params stream: stream
+
+        """
 
         self._stream = stream
 
     def read(self) -> (bytes, UBXMessage):
+        """Read the binary data from the serial buffer.
 
-        '''
-        Read the binary data from the serial buffer.
-        '''
+        :return (bytes:, UBXMessage:)
+
+        """
 
         stm = self._stream
         reading = True

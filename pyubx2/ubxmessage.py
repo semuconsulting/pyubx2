@@ -1,10 +1,10 @@
-'''
+"""
 UBX Message Protocol Class
 
 Created on 26 Sep 2020
 
 @author: semuadmin
-'''
+"""
 # pylint: disable=invalid-name
 
 import struct
@@ -18,20 +18,10 @@ import pyubx2.ubxtypes_poll as ubp
 
 
 class UBXMessage():
-    '''
-    UBX Message Class.
-    '''
+    """UBX Message Class."""
 
     def __init__(self, ubxClass, ubxID, mode: int, **kwargs):
-        '''
-        Constructor.
-
-        Parameters:
-
-        1. msgClass - UBX message class in string, integer or byte format (it's stored as a byte).
-        2. msgID    - UBX message ID in string, integer or byte format (it's stored as a byte).
-        3. mode     - message mode as integer, either GET (0), SET (1) or POLL (2)
-        4. kwargs   - optional keyword parms representing individual attribute values
+        """Constructor.
 
         If no keyword parms are passed, the payload is taken to be empty.
 
@@ -41,7 +31,13 @@ class UBXMessage():
 
         Otherwise, any named attributes will be assigned the value given, all others will
         be assigned a nominal value according to type.
-        '''
+
+        :param msgClass: str, int or byte:
+        :param msgID: str, int or byte:
+        :param mode: int:
+        :param kwargs:
+
+        """
 
         self._header = ubt.UBX_HDR
         self._mode = mode
@@ -68,9 +64,11 @@ class UBXMessage():
             self.fill(**kwargs)
 
     def __str__(self) -> str:
-        '''
-        Human readable representation.
-        '''
+        """Human readable representation.
+
+        :return: str:
+
+        """
 
         clsid = None
 
@@ -117,18 +115,22 @@ class UBXMessage():
         return stg
 
     def __repr__(self) -> str:
-        '''
-        Machine readable (constructor) representation.
-        '''
+        """Machine readable (constructor) representation.
+
+        :return str:
+
+        """
 
         if self._payload is None:
             return f"'UBXMessage({self._ubxClass}, {self._ubxID}, {self._mode})'"
         return f"'UBXMessage({self._ubxClass}, {self._ubxID}, {self._mode}, {self._payload})'"
 
     def serialize(self) -> bytes:
-        '''
-        Return message content as byte array suitable for writing to a stream.
-        '''
+        """Serialize message
+
+        :return bytes:
+
+        """
 
         if self._payload is None:
             return (ubt.UBX_HDR + self._ubxClass + self._ubxID + self._length
@@ -138,12 +140,15 @@ class UBXMessage():
 
     @staticmethod
     def parse(message: bytes, validate: bool=False) -> object:
-        '''
-        Parse UBX byte array to UBXMessage object.
+        """Parse UBX byte array to UBXMessage object.
 
         Includes option to validate incoming payload length and checksum
         (UXBMessage will calculate and assign it's own values anyway).
-        '''
+
+        :param message: bytes:
+        :param validate: bool:  (Default value = False)
+
+        """
 
         lenm = len(message)
         hdr = message[0:2]
@@ -174,10 +179,13 @@ class UBXMessage():
 
     @staticmethod
     def msgclass2bytes(msgClass: int, msgID: int) -> bytes:
-        '''
-        Convert message class/id integers to bytes
+        """Convert message class/id integers to bytes
         e.g. 6, 1 to b'/x06/x01'.
-        '''
+
+        :param msgClass: int:
+        :param msgID: int:
+
+        """
 
         msgClass = msgClass.to_bytes(1, byteorder="little", signed=False)
         msgID = msgID.to_bytes(1, byteorder="little", signed=False)
@@ -185,10 +193,13 @@ class UBXMessage():
 
     @staticmethod
     def msgstr2bytes(msgClass: str, msgID: str) -> bytes:
-        '''
-        Convert plain text UBX message class to bytes
+        """Convert plain text UBX message class to bytes
         e.g. 'CFG-MSG' to b'/x06/x01'.
-        '''
+
+        :param msgClass: str:
+        :param msgID: str:
+
+        """
 
         try:
             clsid = UBXMessage.key_from_val(ubt.UBX_CLASSES, msgClass)
@@ -199,58 +210,78 @@ class UBXMessage():
 
     @staticmethod
     def bytes_to_float(b: bytes) -> float:
-        '''
-        Convert 4 little-endian bytes (R4) to single precision decimal (IEEE754)
-        '''
+        """Convert 4 little-endian bytes (R4) to single precision decimal (IEEE754)
+
+        :param b: bytes:
+        :return float:
+
+        """
 
         return struct.unpack('<f', b)[0]
 
     @staticmethod
     def bytes_to_double(b: bytes) -> float:
-        '''
-        Convert 8 little-endian bytes (R8) to double precision decimal (IEEE754)
-        '''
+        """Convert 8 little-endian bytes (R8) to double precision decimal (IEEE754)
+
+        :param b: bytes:
+        :return float:
+
+        """
 
         return struct.unpack('<d', b)[0]
 
     @staticmethod
     def float_to_bytes(f: float) -> bytes:
-        '''
-        Convert single precision decimal to 4 little-endian bytes (R4) (IEEE754)
-        '''
+        """Convert single precision decimal to 4 little-endian bytes (R4) (IEEE754)
+
+        :param f: float:
+        :return float:
+
+        """
 
         return struct.pack('<f', f)
 
     @staticmethod
     def double_to_bytes(f: float) -> bytes:
-        '''
-        Convert double precision decimal to 8 little-endian bytes (R8) (IEEE754)
-        '''
+        """Convert double precision decimal to 8 little-endian bytes (R8) (IEEE754)
+
+        :param f: float:
+        :return bytes:
+
+        """
 
         return struct.pack('<d', f)
 
     @staticmethod
     def bytes2len(length: bytes) -> int:
-        '''
-        Convert payload length as bytes to integer.
-        '''
+        """Convert payload length as bytes to integer.
+
+        :param length: bytes:
+        :return int:
+
+        """
 
         return int.from_bytes(length, 'little', signed=False)
 
     @staticmethod
     def len2bytes(length: int) -> bytes:
-        '''
-        Convert payload length as integer to two little-endian bytes.
-        '''
+        """Convert payload length as integer to two little-endian bytes.
+
+        :param length: int:
+        :return bytes:
+
+        """
 
         return length.to_bytes(2, byteorder="little", signed=False)
 
     @staticmethod
     def calc_checksum(content: bytes) -> bytes:
-        '''
-        Return the Fletcher-8 checksum for the message content
-        (content = clsid + msgid + length + payload).
-        '''
+        """
+
+        :param content: bytes:
+        :return checksum: bytes:
+
+        """
 
         check_a = 0
         check_b = 0
@@ -264,9 +295,7 @@ class UBXMessage():
         return bytes((check_a, check_b))
 
     def _do_len_checksum(self):
-        '''
-        Calculate and format payload length and checksum as bytes
-        '''
+        """Calculate and format payload length and checksum as bytes"""
 
         if self._payload is None:
             self._length = self.len2bytes(0)
@@ -279,10 +308,13 @@ class UBXMessage():
 
     @staticmethod
     def isvalid_checksum(message: bytes) -> bool:
-        '''
-        Validate input message's checksum
+        """Validate input message's checksum
         ('message' includes header and checksum)
-        '''
+
+        :param message: bytes:
+        :return bool:
+
+        """
 
         lenm = len(message)
         ckm = message[lenm - 2:lenm]
@@ -290,18 +322,24 @@ class UBXMessage():
 
     @staticmethod
     def itow2utc(iTOW: int) -> datetime.time:
-        '''
-        Convert UBX iTOW to UTC time
-        '''
+        """Convert UBX iTOW to UTC time
+
+        :param iTOW: int:
+        :return datetime.time:
+
+        """
 
         utc = datetime(1980, 1, 6) + timedelta(seconds=(iTOW / 1000) - (35 - 19))
         return utc.time()
 
     @staticmethod
     def gpsfix2str(fix: int) -> str:
-        '''
-        Converts GPS fix integer to string
-        '''
+        """Converts GPS fix integer to string
+
+        :param fix: int:
+        :return str:
+
+        """
 
         if fix == 5:
             fixs = 'TIME ONLY'
@@ -319,9 +357,12 @@ class UBXMessage():
 
     @staticmethod
     def dop2str(dop: float) -> str:
-        '''
-        Converts DOP float to descriptive string
-        '''
+        """Converts DOP float to descriptive string
+
+        :param dop: float:
+        :return str:
+
+        """
 
         if dop == 1:
             dops = 'Ideal'
@@ -339,9 +380,12 @@ class UBXMessage():
 
     @staticmethod
     def gnss2str(gnssId: int) -> str:
-        '''
-        Converts GNSS ID to descriptive string
-        '''
+        """Converts GNSS ID to descriptive string
+
+        :param gnssId: int:
+        :return str:
+
+        """
 
         try:
             return ubt.GNSSLIST[gnssId]
@@ -350,18 +394,25 @@ class UBXMessage():
 
     @staticmethod
     def nmeaver2str(nmeaVersion: int) -> str:
-        '''
-        Converts NMEA version integer to readable string
-        '''
+        """Converts NMEA version integer to readable string
+
+        :param nmeaVersion: int:
+        :return str:
+
+        """
 
         h = hex(nmeaVersion)
         return h[2:3] + '.' + h[3:]
 
     @staticmethod
-    def key_from_val(dictionary: dict, value):
-        '''
-        Helper method - get dictionary key corresponding to (unique) value.
-        '''
+    def key_from_val(dictionary: dict, value) -> str:
+        """Helper method - get dictionary key corresponding to (unique) value.
+
+        :param dictionary: dict:
+        :param value:
+        :return str:
+
+        """
 
         val = None
         for key, val in dictionary.items():
@@ -371,10 +422,12 @@ class UBXMessage():
 
     @property
     def identity(self) -> str:
-        '''
-        Message identity getter.
+        """Message identity getter.
         Returns identity in plain text form e.g. 'CFG-MSG'.
-        '''
+
+        :return identity: str:
+
+        """
 
         try:
             # all MGA messages except MGA-DBD need to be identified by the
@@ -389,39 +442,41 @@ class UBXMessage():
 
     @property
     def header(self) -> bytes:
-        '''Header getter'''
+        """Header getter"""
         return self._header
 
     @property
     def msg_cls(self) -> bytes:
-        '''Class id getter'''
+        """Class id getter"""
         return self._ubxClass
 
     @property
     def msg_id(self) -> bytes:
-        '''Message id getter'''
+        """Message id getter"""
         return self._ubxID
 
     @property
     def length(self) -> bytes:
-        '''Payload length getter (as 2 little-endian bytes)'''
+        """Payload length getter (as 2 little-endian bytes)"""
         return self._length
 
     @property
     def payload(self) -> bytes:
-        '''Payload getter - returns the raw payload bytes'''
+        """Payload getter - returns the raw payload bytes"""
         return self._payload
 
     @payload.setter
     def payload (self, payload: bytes):
-        '''
-        Payload setter.
+        """Payload setter.
 
         Dynamically adds and populates public class attributes in accordance
         with the class's payload definition in UBX_PAYLOADS_INPUT/OUTPUT.
 
         The private attribute '_payload' will always hold the raw payload bytes.
-        '''
+
+        :param payload: bytes:
+
+        """
 
         self._payload = payload
         offset = 0
@@ -447,10 +502,15 @@ class UBXMessage():
             raise ube.UBXMessageError(f"Undefined message class={self._ubxClass}, id={self._ubxID}") from err
 
     def _payload_attr(self, payload : bytes, offset: int, pdict: dict, key: str):
-        '''
-        Recursive routine to parse individual payload attributes to
+        """Recursive routine to parse individual payload attributes to
         their appropriate types
-        '''
+
+        :param payload : bytes:
+        :param offset: int:
+        :param pdict: dict:
+        :param key: str:
+
+        """
         # pylint: disable=no-member
 
         # print(f" _PAYLOAD_ATTR - identity={self.identity}, key = {key}")
@@ -497,10 +557,12 @@ class UBXMessage():
         return (offset, att)
 
     def fill(self, **kwargs):
-        '''
-        Populate UBX message from named attribute keywords.
+        """Populate UBX message from named attribute keywords.
         Where a named attribute is absent, set to a nominal value (zeros or blanks).
-        '''
+
+        :param **kwargs:
+
+        """
 
         offset = 0
         self._index = 0
@@ -532,10 +594,15 @@ class UBXMessage():
                     from err
 
     def _payload_fill(self, offset: int, pdict: dict, key: str, **kwargs):
-        '''
-        Recursive routine to populate individual payload attributes
+        """Recursive routine to populate individual payload attributes
         with either provided keyword values or nominal values
-        '''
+
+        :param offset: int:
+        :param pdict: dict:
+        :param key: str:
+        :param **kwargs:
+
+        """
         # pylint: disable=no-member
 
         if self._payload is None:
@@ -611,15 +678,19 @@ class UBXMessage():
         return (offset, att)
 
     def _calc_num_repeats(self, att, payload : bytes, offset: int) -> int:
-        '''
-        Deduce number of items in repeating group, where this
+        """Deduce number of items in repeating group, where this
         isn't specified by a 'numCh' or equivalent attribute e.g.
         CFG-RINV or MON-VER.
 
         NB: this assumes the repeating group is always at the end of the
         payload, which is true for all currently supported message types
         but may change in the future.
-        '''
+
+        :param att:
+        :param payload : bytes:
+        :param offset: int:
+
+        """
         # pylint: disable=no-self-use
 
         # get length of remaining payload
