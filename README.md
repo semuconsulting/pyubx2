@@ -57,7 +57,7 @@ Examples:
 >>> from pyubx2 import UBXReader
 >>> stream = Serial('COM6', 9600, timeout=3)
 >>> ubr = UBXReader(stream)
->>> msg = ubr.read()
+>>> (raw_data, parsed_data) = ubr.read()
 ```
 
 * File input
@@ -68,7 +68,7 @@ Examples:
 >>> file = os.path.join(os.path.dirname(__file__), 'ubxdata.bin')
 >>> stream = open(file, 'rb')
 >>> ubr = UBXReader(stream)
->>> msg = ubr.read()
+>>> (raw_data, parsed_data) = ubr.read()
 ```
 
 ## Parsing
