@@ -76,19 +76,10 @@ class UBXSetter():
         sends it to the receiver.
         '''
 
-        portID = b'\x03'  # USB port
-        reserved0 = b'\x00'
-        txReady = b'\x00\x00'
-        mode = b'\x00\x00\x00\x00'  # not used for USB port
-        baudRate = b'\x00\x00\x00\x00'  # not used for USB port
-        inProtoMask = b'\x07\x00'  # NMEA + UBX + RTCM3
-        reserved4 = b'\x00\x00'
-        reserved5 = b'\x00\x00'
-        payload = portID + reserved0 + txReady + mode + baudRate + inProtoMask \
-                  +outProtoMask + reserved4 + reserved5
-
         try:
-            msg = UBXMessage('CFG', 'CFG-PRT', SET, payload=payload)
+            msg = UBXMessage('CFG', 'CFG-PRT', SET, portID=3,
+                             baudRate=0, inProtoMask=b'\x07\x00',
+                             outProtoMask=outProtoMask)
             print(f"Sending {msg}")
             self._send(msg.serialize())
         except (ube.UBXMessageError, ube.UBXTypeError, ube.UBXParseError) as err:

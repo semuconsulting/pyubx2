@@ -9,7 +9,7 @@ the receiver's UART and USB ports.
 **NOTE:**
 
 1.  Some UBX-NAV message combinations are unsupported or mutually
-    exclusive (e.g. NAV-POSLLH & NAV-POSECEF) on some receivers,
+    exclusive (e.g. NAV-POSLLH & NAV-POSECEF on some NEO-6 receivers),
     so you won't necessarily receive each and every type on the input stream.
 
 2.  The configuration set here is volatile and will be reset after a receiver
@@ -90,11 +90,9 @@ class UBXSetter():
 
             msgs = []
 
-            # compile (nearly) all the UBX-NAV config message types
-            # exclude the -ECEF (Earth-Centered, Earth-Fixed) message types as they
-            # can block 'conventional' nav messages like NAV-POSLLH and NAV-VELNED
+            # compile all the UBX-NAV config message types
             for key, val in UBX_CONFIG_MESSAGES.items():
-                if val[0:3] == 'NAV' and val not in ('NAV-POSECEF', 'NAV-VELECEF', 'HPPOSECEF'):
+                if val[0:3] == 'NAV':
                     msgs.append(key)
 
             # send each UBX-NAV config message in turn
