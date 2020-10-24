@@ -658,8 +658,7 @@ class UBXMessage():
                 valb = self.double_to_bytes(val)
                 self._payload += valb
             if att[0:1] == 'C':  # character
-                valb = bytes(val, 'utf-8')
-                self._payload += valb
+                self._payload += val
 
         else:  # else set attribute to nominal value
             atts = int(att[1:3])  # attribute size in bytes
@@ -683,9 +682,8 @@ class UBXMessage():
                 valb = self.double_to_bytes(val)
                 self._payload += valb
             if att[0:1] == 'C':  # character
-                val = '_' * atts
-                valb = bytes(val, 'utf-8')
-                self._payload += valb
+                val = b'_' * atts
+                self._payload += val
 
         if not isinstance(att, tuple):
             if self._index > 0:  # add 2-digit suffix to repeating attribute names

@@ -42,17 +42,17 @@ class FillTest(unittest.TestCase):
         self.assertEqual(str(res), EXPECTED_RESULT)
 
     def testFill_CFGNMEA(self):  # test SET constructor fill, set all values
-        EXPECTED_RESULT = "<UBX(CFG-NMEA, filter=b'E', nmeaVersion=4.0, numSV=4, flags=b'\\x14', gnssToFilter=b'\\x00\\x00\\x00\\x00', svNumbering=0, mainTalkerId=0, gsvTalkerId=0, version=0, bdsTalkerId=__, reserved1=0)>"
+        EXPECTED_RESULT = "<UBX(CFG-NMEA, filter=b'E', nmeaVersion=4.0, numSV=4, flags=b'\\x14', gnssToFilter=b'\\x00\\x00\\x00\\x00', svNumbering=0, mainTalkerId=0, gsvTalkerId=0, version=0, bdsTalkerId=b'__', reserved1=0)>"
         res = UBXMessage('CFG', 'CFG-NMEA', SET, filter=b'\x45', nmeaVersion=64, numSV=4, flags=b'\x14')
         self.assertEqual(str(res), EXPECTED_RESULT)
 
     def testFill_CFGNMEA2(self):  # test SET constructor fill, set some values, default others
-        EXPECTED_RESULT = "<UBX(CFG-NMEA, filter=b'\\x00', nmeaVersion=2.3, numSV=1, flags=b'\\x00', gnssToFilter=b'\\x00\\x00\\x00\\x00', svNumbering=0, mainTalkerId=0, gsvTalkerId=0, version=0, bdsTalkerId=__, reserved1=0)>"
+        EXPECTED_RESULT = "<UBX(CFG-NMEA, filter=b'\\x00', nmeaVersion=2.3, numSV=1, flags=b'\\x00', gnssToFilter=b'\\x00\\x00\\x00\\x00', svNumbering=0, mainTalkerId=0, gsvTalkerId=0, version=0, bdsTalkerId=b'__', reserved1=0)>"
         res = UBXMessage('CFG', 'CFG-NMEA', SET, nmeaVersion=35, numSV=1)
         self.assertEqual(str(res), EXPECTED_RESULT)
 
     def testFill_CFGNMEAPARSE(self):  # check that raw payload is correctly populated and parses back to original message
-        EXPECTED_RESULT = "<UBX(CFG-NMEA, filter=b'\\x00', nmeaVersion=2.3, numSV=1, flags=b'\\x00', gnssToFilter=b'\\x00\\x00\\x00\\x00', svNumbering=0, mainTalkerId=0, gsvTalkerId=0, version=0, bdsTalkerId=__, reserved1=0)>"
+        EXPECTED_RESULT = "<UBX(CFG-NMEA, filter=b'\\x00', nmeaVersion=2.3, numSV=1, flags=b'\\x00', gnssToFilter=b'\\x00\\x00\\x00\\x00', svNumbering=0, mainTalkerId=0, gsvTalkerId=0, version=0, bdsTalkerId=b'__', reserved1=0)>"
         res = UBXMessage('CFG', 'CFG-NMEA', SET, nmeaVersion=35, numSV=1)
         res2 = UBXMessage.parse(res.serialize())
         self.assertEqual(str(res2), EXPECTED_RESULT)
@@ -84,13 +84,13 @@ class FillTest(unittest.TestCase):
         self.assertEqual(str(res), EXPECTED_RESULT)
 
     def testFill_CFGDAT(self):  # floating point attribute, single and double precision
-        EXPECTED_RESULT = "<UBX(CFG-DAT, datumNum=4, datumName=WGS-84, majA=4321.123456789128, flat=-2964.00469836, dX=-1.2345678, dY=27.40654, dZ=0.0, rotX=0.0, rotY=0.0, rotZ=0.0, scale=0.0)>"
-        res = UBXMessage('CFG', 'CFG-DAT', SET, datumNum=4, datumName="WGS-84", majA=4321.123456789128, flat=-2964.00469836, dX=-1.2345678, dY=27.40654)
+        EXPECTED_RESULT = "<UBX(CFG-DAT, datumNum=4, datumName=b'WGS-84', majA=4321.123456789128, flat=-2964.00469836, dX=-1.2345678, dY=27.40654, dZ=0.0, rotX=0.0, rotY=0.0, rotZ=0.0, scale=0.0)>"
+        res = UBXMessage('CFG', 'CFG-DAT', SET, datumNum=4, datumName=b'WGS-84', majA=4321.123456789128, flat=-2964.00469836, dX=-1.2345678, dY=27.40654)
         self.assertEqual(str(res), EXPECTED_RESULT)
 
     def testFill_CFGDATPARSE(self):  # check that raw payload is correctly populated and parses back to original message
-        EXPECTED_RESULT = "<UBX(CFG-DAT, datumNum=4, datumName=WGS-84, majA=4321.123456789128, flat=-2964.00469836, dX=-1.2345677614212036, dY=27.406539916992188, dZ=0.0, rotX=0.0, rotY=0.0, rotZ=0.0, scale=0.0)>"
-        res = UBXMessage('CFG', 'CFG-DAT', SET, datumNum=4, datumName="WGS-84", majA=4321.123456789128, flat=-2964.00469836, dX=-1.2345678, dY=27.40654)
+        EXPECTED_RESULT = "<UBX(CFG-DAT, datumNum=4, datumName=b'WGS-84', majA=4321.123456789128, flat=-2964.00469836, dX=-1.2345677614212036, dY=27.406539916992188, dZ=0.0, rotX=0.0, rotY=0.0, rotZ=0.0, scale=0.0)>"
+        res = UBXMessage('CFG', 'CFG-DAT', SET, datumNum=4, datumName=b'WGS-84', majA=4321.123456789128, flat=-2964.00469836, dX=-1.2345678, dY=27.40654)
         res2 = UBXMessage.parse(res.serialize())
         self.assertEqual(str(res2), EXPECTED_RESULT)
 
