@@ -71,9 +71,9 @@ class UBXSetter():
 
         try:
             msg = UBXMessage('CFG', 'CFG-CFG', SET,
-                             clearMask=b'\x07\x00\x00\x00',  # clear everything
-                             loadMask=b'\x07\x00\x00\x00',  # reload everything
-                             devicerMask=b'\x01')  # target battery-backed RAM
+                             clearMask=b'\x1f\x1f\x00\x00',  # clear everything
+                             loadMask=b'\x1f\x1f\x00\x00',  # reload everything
+                             devicerMask=b'\x07')  # target battery-backed RAM, Flash and EEPROM
             self._send(msg.serialize())
         except (ube.UBXMessageError, ube.UBXTypeError, ube.UBXParseError) as err:
             print(f"Something went wrong {err}")
