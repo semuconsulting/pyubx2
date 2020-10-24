@@ -77,8 +77,8 @@ UBX_PAYLOADS_POLL = {
 },
 'CFG-PM2': {
 },
-'CFG-PM': {
-},
+# 'CFG-PM': {
+# },
 'CFG-PMS': {
 },
 'CFG-PRT': {
