@@ -6,9 +6,9 @@ THESE ARE THE PAYLOAD DEFINITIONS FOR _SET_ MESSAGES _TO_ THE RECEIVER
 
 NB: Attribute names must be unique within each message class/id
 
-NB: Repeating groups must be defined as a tuple thus: 
+NB: Repeating groups must be defined as a tuple thus:
     'group': ('numr', {dict})
-    where 
+    where
     - 'numr' is the name of the preceding attribute containing the number
        of repeats, or 'None' if there isn't one
     - {dict} is the nested dictionary containing the repeating attributes
@@ -17,7 +17,7 @@ Created on 27 Sep 2020
 
 @author: semuadmin
 '''
-# pylint: disable=line-too-long
+# pylint: disable=unused-import, too-many-lines, line-too-long
 
 from pyubx2.ubxtypes_core import U1, I1, X1, U2, I2, X2, U3, U4, I4, U5, \
                                  X4, R4, U6, U40, U64, X6, R8, C2, C6, C10, \
@@ -284,7 +284,24 @@ UBX_PAYLOADS_SET = {
 'reserved3': U4,
 'reserved4': U4
 },
-'CFG-NMEA': {
+'CFG-NMEAvX': {  # deprecated length 4
+'filter': X1,
+'nmeaVersion': U1,
+'numSV': U1,
+'flags': X1
+},
+'CFG-NMEAv0': {  # v0 deprecated length 12
+'filter': X1,
+'nmeaVersion': U1,
+'numSV': U1,
+'flags': X1,
+'gnssToFilter': X4,
+'svNumbering': U1,
+'mainTalkerId': U1,
+'gsvTalkerId': U1,
+'version': U1
+},
+'CFG-NMEA': {  # preferred version length 20
 'filter': X1,
 'nmeaVersion': U1,
 'numSV': U1,

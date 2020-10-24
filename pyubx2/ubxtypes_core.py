@@ -99,7 +99,7 @@ b'\x06\x47': 'CFG-LOGFILTER',
 b'\x06\x01': 'CFG-MSG',
 b'\x06\x24': 'CFG-NAV5',
 b'\x06\x23': 'CFG-NAVX5',
-b'\x06\x17': 'CFG-NMEA',
+b'\x06\x17': 'CFG-NMEA',  # NB: 3 versions of this
 b'\x06\x1e': 'CFG-ODO',
 b'\x06\x3b': 'CFG-PM2',
 b'\x06\x86': 'CFG-PMS',

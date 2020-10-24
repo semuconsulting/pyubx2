@@ -491,15 +491,33 @@ class UBXMessage():
                     pdict = ubs.UBX_PAYLOADS_SET[self.identity]
                 else:
                     pdict = ubg.UBX_PAYLOADS_GET[self.identity]
+                if self.identity == 'CFG-NMEA':
+                    pdict = self._get_cfgnmea_version()
                 # parse each attribute
                 for key in pdict.keys():
                     (offset, att) = self._payload_attr(payload, offset, pdict, key)
-            self._do_len_checksum()
+                self._do_len_checksum()
 
         except ube.UBXTypeError as err:
             raise ube.UBXTypeError(f"Undefined attribute type {att} in message class {self.identity}") from err
         except KeyError as err:
             raise ube.UBXMessageError(f"Undefined message class={self._ubxClass}, id={self._ubxID}") from err
+
+    def _get_cfgnmea_version(self) -> dict:
+        """Selects appropriate payload definition version for CFG-NMEA message
+        
+        :return dict:
+
+        """
+
+        lpd = len(self._payload)
+        if lpd == 4:
+            pdict = ubg.UBX_PAYLOADS_GET['CFG-NMEAvX']
+        elif lpd == 12:
+            pdict = ubg.UBX_PAYLOADS_GET['CFG-NMEAv0']
+        else:
+            pdict = ubg.UBX_PAYLOADS_GET['CFG-NMEA']
+        return pdict
 
     def _payload_attr(self, payload : bytes, offset: int, pdict: dict, key: str):
         """Recursive routine to parse individual payload attributes to
@@ -531,7 +549,7 @@ class UBXMessage():
         elif att == ubt.CH:  # attribute is a single variable-length string (e.g. INF-NOTICE)
             atts = len(payload)
             val = payload.decode('utf-8', 'backslashreplace')
-        elif att[0:1] == 'X':  # or key in ('clsID', 'msgClass', 'msgID'):  # attribute is a bitmask
+        elif att[0:1] == 'X':  # attribute is a bitmask
             atts = int(att[1:3])  # attribute size in bytes
             val = payload[offset:offset + atts]  # the raw value in bytes
         else:  # attribute is an integer or float or char
@@ -542,7 +560,7 @@ class UBXMessage():
             if att[0:1] == 'I':  # signed integer
                 val = int.from_bytes(val, 'little', signed=True)
             if att[0:1] == 'C':  # character string
-                val = val.decode('utf-8', 'backslashreplace')
+                val = payload[offset:offset + atts]
             if att == ubt.R4:  # single precision floating point
                 val = self.bytes_to_float(val)
             if att == ubt.R8:  # double precision floating point
