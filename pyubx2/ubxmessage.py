@@ -66,7 +66,6 @@ class UBXMessage():
         :param **kwargs:
 
         """
-        # pylint: disable=line-too-long
 
         offset = 0
 
@@ -80,15 +79,19 @@ class UBXMessage():
                     (offset, att) = self._set_attribute(offset, pdict, key, **kwargs)
             self._do_len_checksum()
 
-        except (AttributeError, TypeError, ValueError) as err:
-            raise ube.UBXTypeError(f"Incorrect type for attribute '{key}' in {self.mode2str(self._mode)} message class {self.identity}") \
-                    from err
+        except (AttributeError, OverflowError, struct.error,
+                TypeError, ValueError) as err:
+            raise ube.UBXTypeError((f"Incorrect type for attribute '{key}' "
+                                    f"in {self.mode2str(self._mode)} message "
+                                    f"class {self.identity}")) from err
         except ube.UBXTypeError as err:
-            raise ube.UBXTypeError(f"Undefined attribute type '{att}' in {self.mode2str(self._mode)} message class {self.identity}") \
-                    from err
+            raise ube.UBXTypeError((f"Undefined attribute type '{att}' "
+                                    f"in {self.mode2str(self._mode)} message "
+                                    f"class {self.identity}")) from err
         except KeyError as err:
-            raise ube.UBXMessageError(f"Undefined {self.mode2str(self._mode)} message class={self._ubxClass}, id={self._ubxID}") \
-                    from err
+            raise ube.UBXMessageError((f"Undefined {self.mode2str(self._mode)} "
+                                       f"message class={self._ubxClass}, "
+                                       f"id={self._ubxID}")) from err
 
     def _set_attribute(self, offset: int, pdict: dict, key: str, **kwargs) -> (int, str):
         """Recursive routine to populate individual payload attributes
@@ -343,8 +346,8 @@ class UBXMessage():
             else:
                 umsg_name = ubt.UBX_MSGIDS[self._ubxClass + self._ubxID]
         except KeyError as err:
-            raise ube.UBXMessageError(f"Message type {self._ubxClass + self._ubxID} not defined") \
-                from err
+            raise ube.UBXMessageError((f"Message type {self._ubxClass + self._ubxID}"
+                                       f" not defined")) from err
         return umsg_name
 
     @property
@@ -402,11 +405,14 @@ class UBXMessage():
             ckv = UBXMessage.calc_checksum(clsid + msgid + lenb)
         if validate:
             if hdr != ubt.UBX_HDR:
-                raise ube.UBXParseError(f"Invalid message header {hdr} - should be {ubt.UBX_HDR}")
+                raise ube.UBXParseError((f"Invalid message header {hdr}"
+                                         f" - should be {ubt.UBX_HDR}"))
             if leni != UBXMessage.bytes2len(lenb):
-                raise ube.UBXParseError(f"Invalid payload length {lenb} - should be {UBXMessage.len2bytes(leni)}")  # pylint: disable=line-too-long
+                raise ube.UBXParseError((f"Invalid payload length {lenb}"
+                                         f" - should be {UBXMessage.len2bytes(leni)}"))
             if ckm != ckv:
-                raise ube.UBXParseError(f"Message checksum {ckm} invalid - should be {ckv}")
+                raise ube.UBXParseError((f"Message checksum {ckm}"
+                                         f" invalid - should be {ckv}"))
         if payload is None:
             return UBXMessage(clsid, msgid, ubt.GET)
         return UBXMessage(clsid, msgid, ubt.GET, payload=payload)

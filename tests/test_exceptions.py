@@ -10,7 +10,7 @@ Exception handling tests for UBXMessage constructor and parse
 
 import unittest
 
-from pyubx2 import UBXMessage, UBXTypeError, UBXParseError, UBXMessageError, SET, POLL, GET
+from pyubx2 import UBXMessage, UBXTypeError, UBXParseError, SET
 
 
 class ExceptionTest(unittest.TestCase):
@@ -41,6 +41,21 @@ class ExceptionTest(unittest.TestCase):
         EXPECTED_ERROR = "Incorrect type for attribute 'datumName' in SET message class CFG-DAT"
         with self.assertRaisesRegex(UBXTypeError, EXPECTED_ERROR):
             UBXMessage('CFG', 'CFG-DAT', SET, datumNum=4, datumName=123, majA='xcy', flat='xyx', dX='xyz', dY='xyx')
+
+    def testFill_CFGDAT3(self):  # incorrect type (signed not unsigned integer)
+        EXPECTED_ERROR = "Incorrect type for attribute 'datumNum' in SET message class CFG-DAT"
+        with self.assertRaisesRegex(UBXTypeError, EXPECTED_ERROR):
+            UBXMessage('CFG', 'CFG-DAT', SET, datumNum=-4, datumName=b'WGS84', majA=123.45, flat=123.45, dX=123.45, dY=123.45)
+
+    def testFill_CFGDAT4(self):  # incorrect type (string not float)
+        EXPECTED_ERROR = "Incorrect type for attribute 'majA' in SET message class CFG-DAT"
+        with self.assertRaisesRegex(UBXTypeError, EXPECTED_ERROR):
+            UBXMessage('CFG', 'CFG-DAT', SET, datumNum=4, datumName=b'WGS84', majA='xxx', flat=123.45, dX=123.45, dY=123.45)
+
+    def testFill_CFGDAT5(self):  # incorrect type (binary not float)
+        EXPECTED_ERROR = "Incorrect type for attribute 'flat' in SET message class CFG-DAT"
+        with self.assertRaisesRegex(UBXTypeError, EXPECTED_ERROR):
+            UBXMessage('CFG', 'CFG-DAT', SET, datumNum=4, datumName=b'WGS84', majA=123.45, flat=b'\xffffff', dX=123.45, dY=123.45)
 
 
 if __name__ == "__main__":

@@ -13,6 +13,12 @@ class UBXParseError(Exception):
     '''
 
 
+class UBXStreamError(Exception):
+    '''
+    UBX Streaming error.
+    '''
+
+
 class UBXMessageError(Exception):
     '''
     UBX Undefined message class/id.

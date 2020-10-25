@@ -22,6 +22,7 @@ from time import sleep
 
 from pyubx2 import UBXMessage, POLL, UBX_CONFIG_MESSAGES
 from pyubx2.ubxreader import UBXReader
+from pyubx2.exceptions import UBXStreamError
 from serial import Serial, SerialException, SerialTimeoutException
 
 import pyubx2.exceptions as ube
@@ -63,7 +64,7 @@ class UBXStreamer():
             self._serial_object = Serial(self._port,
                                          self._baudrate,
                                          timeout=self._timeout)
-            self._ubxreader = UBXReader(BufferedReader(self._serial_object))
+            self._ubxreader = UBXReader(BufferedReader(self._serial_object), False)
             self._connected = True
         except (SerialException, SerialTimeoutException) as err:
             print(f"Error connecting to serial port {err}")
@@ -134,7 +135,8 @@ class UBXStreamer():
 #                         print(raw_data)
                     if parsed_data:
                         print(parsed_data)
-                except (ube.UBXMessageError, ube.UBXTypeError, ube.UBXParseError) as err:
+                except (ube.UBXStreamError, ube.UBXMessageError, ube.UBXTypeError,
+                        ube.UBXParseError) as err:
                     print(f"Something went wrong {err}")
                     continue
 
