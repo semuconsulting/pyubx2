@@ -42,7 +42,7 @@ class UBXMessage():
         self._header = ubt.UBX_HDR
         self._mode = mode
 
-        # accommodate different types of msgClass and msgID
+        # accommodate different formats of msgClass and msgID
         if isinstance(ubxClass, str) and isinstance(ubxID, str):  # string e.g. 'CFG', 'CFG-PRT'
             # print(f"parms are strings {ubxClass} {ubxID}")
             (self._ubxClass, self._ubxID) = UBXMessage.msgstr2bytes(ubxClass, ubxID)
@@ -54,14 +54,203 @@ class UBXMessage():
             self._ubxClass = ubxClass
             self._ubxID = ubxID
 
-        if len(kwargs) == 0:  # if no kwargs, assume null payload
-            self.payload = None
+        self._index = 0
+        self._payload = b''
+        self._length = b''
+        self._checksum = b''
+        self._do_attributes(**kwargs)
+
+    def _do_attributes(self, **kwargs):
+        """Populate UBXMessage from named attribute keywords.
+        Where a named attribute is absent, set to a nominal value (zeros or blanks).
+
+        :param **kwargs:
+
+        """
+
+        offset = 0
+
+        try:
+
+            if len(kwargs) == 0:  # if no kwargs, assume null payload
+                self._payload = None
+            else:
+                pdict = self._get_dict()  # get appropriate payload dict
+                for key in pdict.keys():  # set each attribute in dict
+                    (offset, att) = self._set_attribute(offset, pdict, key, **kwargs)
             self._do_len_checksum()
-        else:  # use fill() method to populate message attributes
-            self._payload = b''
-            self._length = b''
-            self._checksum = b''
-            self.fill(**kwargs)
+
+        except ube.UBXTypeError as err:
+            raise ube.UBXTypeError(f"Undefined attribute type {att} in message class {self.identity}") \
+                    from err
+        except KeyError as err:
+            raise ube.UBXMessageError(f"Undefined message class={self._ubxClass}, id={self._ubxID}") \
+                    from err
+
+    def _set_attribute(self, offset: int, pdict: dict, key: str, **kwargs) -> (int, str):
+        """Recursive routine to populate individual payload attributes
+
+        :param offset: int:
+        :param pdict: dict:
+        :param key: str:
+        :param **kwargs:
+
+        """
+        # pylint: disable=no-member
+
+        if 'payload' in kwargs:
+            self._payload = kwargs['payload']
+        else:
+            if self._payload is None:
+                self._payload = b''
+            if self._index > 0:  # if a repeating group attribute
+                keyr = key + "_{0:0=2d}".format(self._index)
+            else:
+                keyr = key
+
+        att = pdict[key]  # get attribute type
+        if isinstance(att, tuple):  # attribute is a tuple i.e. a nested repeating group
+            numr, attd = att
+            if numr == 'None':
+                rng = self._calc_num_repeats(attd, self._payload, offset)
+            else:
+                rng = getattr(self, numr)
+            for i in range(rng):
+                self._index = i + 1
+                for key1 in attd.keys():
+                    (offset, _) = self._set_attribute(offset, attd, key1, **kwargs)
+
+        else:
+
+            if att == ubt.CH:
+                atts = len(self._payload)
+            else:
+                atts = int(att[1:3])
+
+            # if the entire payload has been provided,
+            # use the appropriate section of the payload
+            if 'payload' in kwargs:
+                self._payload = kwargs['payload']
+                val = self._payload[offset:offset + atts]
+                if att == ubt.CH:  # attribute is a single variable-length string (e.g. INF-NOTICE)
+                    val = self._payload.decode('utf-8', 'backslashreplace')
+                if att[0:1] == 'U':  # unsigned integer
+                    val = int.from_bytes(val, 'little', signed=False)
+                if att[0:1] == 'I':  # signed integer
+                    val = int.from_bytes(val, 'little', signed=True)
+                if att == ubt.R4:  # single precision floating point
+                    val = self.bytes_to_float(val)
+                if att == ubt.R8:  # double precision floating point
+                    val = self.bytes_to_double(val)
+
+            # else if individual attribute has been provided,
+            # use the keyword value
+            elif keyr in kwargs:
+                val = kwargs[keyr]
+                if att[0:1] in ('X', 'C'):  # byte or char
+                    valb = val
+                if att[0:1] == 'U':  # unsigned integer
+                    valb = val.to_bytes(atts, byteorder="little", signed=False)
+                if att[0:1] == 'I':  # signed integer
+                    valb = val.to_bytes(atts, byteorder="little", signed=True)
+                if att == ubt.R4:  # single precision floating point
+                    valb = self.float_to_bytes(val)
+                if att == ubt.R8:  # double precision floating point
+                    valb = self.double_to_bytes(val)
+                self._payload += valb
+
+            # else set individual attribute to nominal value
+            else:
+                if att[0:1] in ('X', 'C'):  # byte or char
+                    valb = b'\x00' * atts
+                    val = valb
+                if att[0:1] == 'U':  # unsigned integer
+                    val = 0
+                    valb = val.to_bytes(atts, byteorder="little", signed=False)
+                if att[0:1] == 'I':  # signed integer
+                    val = 0
+                    valb = val.to_bytes(atts, byteorder="little", signed=True)
+                if att == ubt.R4:  # single precision floating point
+                    val = 0.0
+                    valb = self.float_to_bytes(val)
+                if att == ubt.R8:  # double precision floating point
+                    val = 0.0
+                    valb = self.double_to_bytes(val)
+                self._payload += valb
+
+        if not isinstance(att, tuple):
+            if self._index > 0:  # add 2-digit suffix to repeating attribute names
+                key = key + "_{0:0=2d}".format(self._index)
+            setattr(self, key, val)
+            offset += atts
+
+        return (offset, att)
+
+    def _do_len_checksum(self):
+        """Calculate and format payload length and checksum as bytes"""
+
+        if self._payload is None:
+            self._length = self.len2bytes(0)
+            self._checksum = self.calc_checksum(self._ubxClass + self._ubxID
+                                                +self._length)
+        else:
+            self._length = self.len2bytes(len(self._payload))
+            self._checksum = self.calc_checksum(self._ubxClass + self._ubxID
+                                                +self._length + self._payload)
+
+    def _get_dict(self) -> dict:
+        """Get payload dictionary corresponding to message mode
+
+        :return dict:
+
+        """
+
+        if self._mode == ubt.POLL:
+            pdict = ubp.UBX_PAYLOADS_POLL[self.identity]
+        elif self._mode == ubt.SET:
+            pdict = ubs.UBX_PAYLOADS_SET[self.identity]
+        else:
+            pdict = ubg.UBX_PAYLOADS_GET[self.identity]
+        if self.identity == 'CFG-NMEA':
+            pdict = self._get_cfgnmea_version()
+        return pdict
+
+    def _get_cfgnmea_version(self) -> dict:
+        """Selects appropriate payload definition version for CFG-NMEA message
+
+        :return dict:
+
+        """
+
+        lpd = len(self._payload)
+        if lpd == 4:
+            pdict = ubg.UBX_PAYLOADS_GET['CFG-NMEAvX']
+        elif lpd == 12:
+            pdict = ubg.UBX_PAYLOADS_GET['CFG-NMEAv0']
+        else:
+            pdict = ubg.UBX_PAYLOADS_GET['CFG-NMEA']
+        return pdict
+
+    def _calc_num_repeats(self, att, payload : bytes, offset: int) -> int:
+        """Deduce number of items in repeating group by dividing length of
+        remaining payload by length of group.
+
+        NB: this assumes the repeating group is always at the end of the
+        payload, which is true for all currently supported message types
+        but may change in the future.
+
+        :param att:
+        :param payload : bytes:
+        :param offset: int:
+
+        """
+        # pylint: disable=no-self-use
+
+        lenpayload = len(payload) - offset
+        lengroup = 0
+        for _, val in att.items():
+            lengroup += int(val[1:3])
+        return int(lenpayload / lengroup)
 
     def __str__(self) -> str:
         """Human readable representation.
@@ -138,9 +327,54 @@ class UBXMessage():
         return (ubt.UBX_HDR + self._ubxClass + self._ubxID + self._length
                 +self._payload + self._checksum)
 
+    @property
+    def identity(self) -> str:
+        """Message identity getter.
+        Returns identity in plain text form e.g. 'CFG-MSG'.
+
+        :return identity: str:
+
+        """
+
+        try:
+            # all MGA messages except MGA-DBD need to be identified by the
+            # 'type' attribute - the first byte of the payload
+            if self._ubxClass == b'\x13' and self._ubxID != b'\x80':
+                umsg_name = ubt.UBX_MSGIDS[self._ubxClass + self._ubxID + self._payload[0:1]]
+            else:
+                umsg_name = ubt.UBX_MSGIDS[self._ubxClass + self._ubxID]
+        except KeyError as err:
+            raise ube.UBXMessageError(f"Message type {self._ubxClass + self._ubxID} not defined") from err
+        return umsg_name
+
+    @property
+    def header(self) -> bytes:
+        """Header getter"""
+        return self._header
+
+    @property
+    def msg_cls(self) -> bytes:
+        """Class id getter"""
+        return self._ubxClass
+
+    @property
+    def msg_id(self) -> bytes:
+        """Message id getter"""
+        return self._ubxID
+
+    @property
+    def length(self) -> bytes:
+        """Payload length getter (as 2 little-endian bytes)"""
+        return self._length
+
+    @property
+    def payload(self) -> bytes:
+        """Payload getter - returns the raw payload bytes"""
+        return self._payload
+
     @staticmethod
     def parse(message: bytes, validate: bool=False) -> object:
-        """Parse UBX byte array to UBXMessage object.
+        """Parse UBX byte stream to UBXMessage object.
 
         Includes option to validate incoming payload length and checksum
         (UXBMessage will calculate and assign it's own values anyway).
@@ -294,18 +528,6 @@ class UBXMessage():
 
         return bytes((check_a, check_b))
 
-    def _do_len_checksum(self):
-        """Calculate and format payload length and checksum as bytes"""
-
-        if self._payload is None:
-            self._length = self.len2bytes(0)
-            self._checksum = self.calc_checksum(self._ubxClass + self._ubxID
-                                                +self._length)
-        else:
-            self._length = self.len2bytes(len(self._payload))
-            self._checksum = self.calc_checksum(self._ubxClass + self._ubxID
-                                                +self._length + self._payload)
-
     @staticmethod
     def isvalid_checksum(message: bytes) -> bool:
         """Validate input message's checksum
@@ -419,301 +641,3 @@ class UBXMessage():
             if val == value:
                 return key
         raise ube.UBXMessageError(f"Undefined message type {value}")
-
-    @property
-    def identity(self) -> str:
-        """Message identity getter.
-        Returns identity in plain text form e.g. 'CFG-MSG'.
-
-        :return identity: str:
-
-        """
-
-        try:
-            # all MGA messages except MGA-DBD need to be identified by the
-            # 'type' attribute - the first byte of the payload
-            if self._ubxClass == b'\x13' and self._ubxID != b'\x80':
-                umsg_name = ubt.UBX_MSGIDS[self._ubxClass + self._ubxID + self._payload[0:1]]
-            else:
-                umsg_name = ubt.UBX_MSGIDS[self._ubxClass + self._ubxID]
-        except KeyError as err:
-            raise ube.UBXMessageError(f"Message type {self._ubxClass + self._ubxID} not defined") from err
-        return umsg_name
-
-    @property
-    def header(self) -> bytes:
-        """Header getter"""
-        return self._header
-
-    @property
-    def msg_cls(self) -> bytes:
-        """Class id getter"""
-        return self._ubxClass
-
-    @property
-    def msg_id(self) -> bytes:
-        """Message id getter"""
-        return self._ubxID
-
-    @property
-    def length(self) -> bytes:
-        """Payload length getter (as 2 little-endian bytes)"""
-        return self._length
-
-    @property
-    def payload(self) -> bytes:
-        """Payload getter - returns the raw payload bytes"""
-        return self._payload
-
-    @payload.setter
-    def payload (self, payload: bytes):
-        """Payload setter.
-
-        Dynamically adds and populates public class attributes in accordance
-        with the class's payload definition in UBX_PAYLOADS_INPUT/OUTPUT.
-
-        The private attribute '_payload' will always hold the raw payload bytes.
-
-        :param payload: bytes:
-
-        """
-
-        self._payload = payload
-        offset = 0
-        self._index = 0
-        try:
-
-            if payload is not None:
-                # lookup attributes from the relevant get/set/poll dictionary
-                if self._mode == ubt.POLL:
-                    pdict = ubp.UBX_PAYLOADS_POLL[self.identity]
-                elif self._mode == ubt.SET:
-                    pdict = ubs.UBX_PAYLOADS_SET[self.identity]
-                else:
-                    pdict = ubg.UBX_PAYLOADS_GET[self.identity]
-                if self.identity == 'CFG-NMEA':
-                    pdict = self._get_cfgnmea_version()
-                # parse each attribute
-                for key in pdict.keys():
-                    (offset, att) = self._payload_attr(payload, offset, pdict, key)
-                self._do_len_checksum()
-
-        except ube.UBXTypeError as err:
-            raise ube.UBXTypeError(f"Undefined attribute type {att} in message class {self.identity}") from err
-        except KeyError as err:
-            raise ube.UBXMessageError(f"Undefined message class={self._ubxClass}, id={self._ubxID}") from err
-
-    def _get_cfgnmea_version(self) -> dict:
-        """Selects appropriate payload definition version for CFG-NMEA message
-        
-        :return dict:
-
-        """
-
-        lpd = len(self._payload)
-        if lpd == 4:
-            pdict = ubg.UBX_PAYLOADS_GET['CFG-NMEAvX']
-        elif lpd == 12:
-            pdict = ubg.UBX_PAYLOADS_GET['CFG-NMEAv0']
-        else:
-            pdict = ubg.UBX_PAYLOADS_GET['CFG-NMEA']
-        return pdict
-
-    def _payload_attr(self, payload : bytes, offset: int, pdict: dict, key: str):
-        """Recursive routine to parse individual payload attributes to
-        their appropriate types
-
-        :param payload : bytes:
-        :param offset: int:
-        :param pdict: dict:
-        :param key: str:
-
-        """
-        # pylint: disable=no-member
-
-        # print(f" _PAYLOAD_ATTR - identity={self.identity}, key = {key}")
-        att = pdict[key]  # get attribute type
-        if isinstance(att, tuple):  # attribute is a tuple i.e. a nested repeating group
-            # first value in tuple = name of attribute containing number of repeats,
-            # or 'None' if there isn't one, in which case we need to calculate it
-            # second value in tuple = the nested dictionary of repeating attributes
-            numr, attd = att
-            if numr == 'None':
-                rng = self._calc_num_repeats(attd, payload, offset)
-            else:
-                rng = getattr(self, numr)
-            for i in range(rng):
-                self._index = i + 1
-                for key1 in attd.keys():
-                    (offset, _) = self._payload_attr(payload, offset, attd, key1)
-        elif att == ubt.CH:  # attribute is a single variable-length string (e.g. INF-NOTICE)
-            atts = len(payload)
-            val = payload.decode('utf-8', 'backslashreplace')
-        elif att[0:1] == 'X':  # attribute is a bitmask
-            atts = int(att[1:3])  # attribute size in bytes
-            val = payload[offset:offset + atts]  # the raw value in bytes
-        else:  # attribute is an integer or float or char
-            atts = int(att[1:3])
-            val = payload[offset:offset + atts]
-            if att[0:1] == 'U':  # unsigned integer
-                val = int.from_bytes(val, 'little', signed=False)
-            if att[0:1] == 'I':  # signed integer
-                val = int.from_bytes(val, 'little', signed=True)
-            if att[0:1] == 'C':  # character string
-                val = payload[offset:offset + atts]
-            if att == ubt.R4:  # single precision floating point
-                val = self.bytes_to_float(val)
-            if att == ubt.R8:  # double precision floating point
-                val = self.bytes_to_double(val)
-
-        if not isinstance(att, tuple):
-            if self._index > 0:  # add 2-digit suffix to repeating attribute names
-                key = key + "_{0:0=2d}".format(self._index)
-            setattr(self, key, val)
-            offset += atts
-
-        return (offset, att)
-
-    def fill(self, **kwargs):
-        """Populate UBX message from named attribute keywords.
-        Where a named attribute is absent, set to a nominal value (zeros or blanks).
-
-        :param **kwargs:
-
-        """
-
-        offset = 0
-        self._index = 0
-
-        try:
-            # lookup attributes from the relevant set/poll dictionary
-            if self._mode == ubt.POLL:
-                pdict = ubp.UBX_PAYLOADS_POLL[self.identity]
-            elif self._mode == ubt.SET:
-                pdict = ubs.UBX_PAYLOADS_SET[self.identity]
-            else:
-                pdict = ubg.UBX_PAYLOADS_GET[self.identity]
-
-            if 'payload' in kwargs:
-                # set entire payload, ignoring any other keyword parms
-                payload = kwargs.get('payload')
-                self.payload = payload
-            else:
-                # populate each attribute with either a provided or nominal value
-                for key in pdict.keys():
-                    (offset, att) = self._payload_fill(offset, pdict, key, **kwargs)
-            self._do_len_checksum()
-
-        except ube.UBXTypeError as err:
-            raise ube.UBXTypeError(f"Undefined attribute type {att} in message class {self.identity}") \
-                    from err
-        except KeyError as err:
-            raise ube.UBXMessageError(f"Undefined message class={self._ubxClass}, id={self._ubxID}") \
-                    from err
-
-    def _payload_fill(self, offset: int, pdict: dict, key: str, **kwargs):
-        """Recursive routine to populate individual payload attributes
-        with either provided keyword values or nominal values
-
-        :param offset: int:
-        :param pdict: dict:
-        :param key: str:
-        :param **kwargs:
-
-        """
-        # pylint: disable=no-member
-
-        if self._payload is None:
-            self._payload = b''
-
-        if self._index > 0:  # if a repeating group attribute
-            keyr = key + "_{0:0=2d}".format(self._index)
-        else:
-            keyr = key
-
-        att = pdict[key]  # get attribute type
-        if isinstance(att, tuple):  # attribute is a tuple i.e. a nested repeating group
-            numr, attd = att
-            rng = getattr(self, numr)
-            for i in range(rng):
-                self._index = i + 1
-                for key1 in attd.keys():
-                    (offset, _) = self._payload_fill(offset, attd, key1, **kwargs)
-
-        elif keyr in kwargs:  # if the attribute value has been provided as a keyword
-            atts = int(att[1:3])
-            val = kwargs[keyr]
-            if att[0:1] == 'X':  # byte
-                self._payload += val
-            if att[0:1] == 'U':  # unsigned integer
-                valb = val.to_bytes(atts, byteorder="little", signed=False)
-                self._payload += valb
-            if att[0:1] == 'I':  # signed integer
-                valb = val.to_bytes(atts, byteorder="little", signed=True)
-                self._payload += valb
-            if att == ubt.R4:  # single precision floating point
-                valb = self.float_to_bytes(val)
-                self._payload += valb
-            if att == ubt.R8:  # double precision floating point
-                valb = self.double_to_bytes(val)
-                self._payload += valb
-            if att[0:1] == 'C':  # character
-                self._payload += val
-
-        else:  # else set attribute to nominal value
-            atts = int(att[1:3])  # attribute size in bytes
-            if att[0:1] == 'X':  # byte
-                valb = val = b'\x00' * atts
-                self._payload += valb
-            if att[0:1] == 'U':  # unsigned integer
-                val = 0
-                valb = val.to_bytes(atts, byteorder="little", signed=False)
-                self._payload += valb
-            if att[0:1] == 'I':  # signed integer
-                val = 0
-                valb = val.to_bytes(atts, byteorder="little", signed=True)
-                self._payload += valb
-            if att == ubt.R4:  # single precision floating point
-                val = 0.0
-                valb = self.float_to_bytes(val)
-                self._payload += valb
-            if att == ubt.R8:  # double precision floating point
-                val = 0.0
-                valb = self.double_to_bytes(val)
-                self._payload += valb
-            if att[0:1] == 'C':  # character
-                val = b'_' * atts
-                self._payload += val
-
-        if not isinstance(att, tuple):
-            if self._index > 0:  # add 2-digit suffix to repeating attribute names
-                key = key + "_{0:0=2d}".format(self._index)
-            setattr(self, key, val)
-            offset += atts
-
-        return (offset, att)
-
-    def _calc_num_repeats(self, att, payload : bytes, offset: int) -> int:
-        """Deduce number of items in repeating group, where this
-        isn't specified by a 'numCh' or equivalent attribute e.g.
-        CFG-RINV or MON-VER.
-
-        NB: this assumes the repeating group is always at the end of the
-        payload, which is true for all currently supported message types
-        but may change in the future.
-
-        :param att:
-        :param payload : bytes:
-        :param offset: int:
-
-        """
-        # pylint: disable=no-self-use
-
-        # get length of remaining payload
-        plen = len(payload) - offset
-        # calculate length of each item in group
-        lng = 0
-        for _, val in att.items():
-            lng += int(val[1:3])
-        # deduce number of repeating items in remaining payload
-        return int(plen / lng)
