@@ -42,7 +42,7 @@ The recommended way to install the latest version of `pyubx2` is with
 
 You can create a `UBXReader` object by calling the constructor with an active stream object. 
 The stream object can be any data stream which supports a `read(n) -> bytes` method (e.g. File or Serial, with 
-or without a buffer wrapper).
+or without a buffer wrapper). `UBXReader` implements an iterator.
 
 Individual input UBX messages can then be read using the `UBXReader.read()` function, which returns both the raw binary
 data (as bytes) and the parsed data (as a `UBXMessage` object). The function is thread-safe in so far as the incoming
@@ -60,7 +60,7 @@ Examples:
 >>> (raw_data, parsed_data) = ubr.read()
 ```
 
-* File input
+* File input (using iterator)
 
 ```python
 >>> import os
@@ -68,7 +68,8 @@ Examples:
 >>> file = os.path.join(os.path.dirname(__file__), 'ubxdata.bin')
 >>> stream = open(file, 'rb')
 >>> ubr = UBXReader(stream)
->>> (raw_data, parsed_data) = ubr.read()
+>>> for (raw_data, parsed_data) in ubr: print(parsed_data)
+...
 ```
 
 ## Parsing
