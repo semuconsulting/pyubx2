@@ -171,7 +171,10 @@ b'\xb5b\x06\x01\x08\x00\xf0\x01\x00\x01\x00\x01\x00\x00\x036'
 
 The following examples can be found in the `\examples` folder:
 
-1. `ubxstreamer.py` illustrates how to implement a threaded serial reader for UBX messages using pyubx2. 
+1. `ubxstreamer.py` illustrates how to implement a threaded serial reader for UBX messages using pyubx2.UBXReader. 
+
+1. `ubxfile.py` illustrates how to implement a binary file reader for UBX messages using 
+the pyubx2.UBXReader iterator function. 
 
 1. `ubxconfig.py` illustrates how to implement a simple configuration utility which sets output UBX-NAV message  rates on the  receiver's UART and USB ports (on a non-permanent basis). You can see the results using `ubxstreamer.py`.
 

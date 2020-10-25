@@ -84,17 +84,17 @@ class UBXStreamer():
 if __name__ == "__main__":
 
     print("Enter fully qualified name of file containing binary UBX data: ", end='')
-    filename = input()
-    print("Do you want to validate the data (y/n)? (n) ", end='')
+    filefqn = input()
+    print("Do you want to validate the data stream (y/n)? (n) ", end='')
     val = input() or 'n'
-    validate = True if val in ('Y', 'y', 'YES,', 'yes', 'True') else False
+    VALD = val in ('Y', 'y', 'YES,', 'yes', 'True')
 
     print("Instantiating UBXStreamer class...")
-    ubf = UBXStreamer(filename)
-    print(f"Opening file {filename}...")
+    ubf = UBXStreamer(filefqn)
+    print(f"Opening file {filefqn}...")
     ubf.open()
     print("Starting file reader")
-    ubf.reader(validate)
+    ubf.reader(VALD)
     print("\n\nClosing file...")
     ubf.close()
     print("Test Complete")
