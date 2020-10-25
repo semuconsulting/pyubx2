@@ -9,14 +9,13 @@ Fill method tests for pyubx2.UBXMessage
 
 import unittest
 
-from pyubx2 import UBXMessage, SET, POLL, GET
+from pyubx2 import UBXMessage, SET, POLL
 
 
 class FillTest(unittest.TestCase):
 
     def setUp(self):
         self.maxDiff = None
-        pass
 
     def tearDown(self):
         pass

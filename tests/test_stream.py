@@ -11,7 +11,7 @@ Stream method tests for pyubx2.UBXReader
 import os
 import unittest
 
-import pyubx2
+from pyubx2 import UBXReader
 
 
 class StreamTest(unittest.TestCase):
@@ -60,15 +60,12 @@ class StreamTest(unittest.TestCase):
 
         i = 0
         raw = 0
-        ubxreader = pyubx2.UBXReader(self.streamNAV)
-        print("\n")
+        ubxreader = UBXReader(self.streamNAV)
         while raw is not None:
             (raw, parsed) = ubxreader.read()
             if raw is not None:
-                print(f"Testing {str(parsed).split(',')[0][5:]}")
                 self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
                 i += 1
-        print("\n")
 
     def testINF(self):
         EXPECTED_RESULTS = (
@@ -88,15 +85,12 @@ class StreamTest(unittest.TestCase):
 
         i = 0
         raw = 0
-        ubxreader = pyubx2.UBXReader(self.streamINF)
-        print("\n")
+        ubxreader = UBXReader(self.streamINF)
         while raw is not None:
             (raw, parsed) = ubxreader.read()
             if raw is not None:
-                print(f"Testing {str(parsed).split(',')[0][5:]}")
                 self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
                 i += 1
-        print("\n")
 
     def testMON(self):
         EXPECTED_RESULTS = (
@@ -110,15 +104,12 @@ class StreamTest(unittest.TestCase):
 
         i = 0
         raw = 0
-        ubxreader = pyubx2.UBXReader(self.streamMON)
-        print("\n")
+        ubxreader = UBXReader(self.streamMON)
         while raw is not None:
             (raw, parsed) = ubxreader.read()
             if raw is not None:
-                print(f"Testing {str(parsed).split(',')[0][5:]}")
                 self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
                 i += 1
-        print("\n")
 
     def testRXM(self):
         EXPECTED_RESULTS = (
@@ -130,15 +121,12 @@ class StreamTest(unittest.TestCase):
 
         i = 0
         raw = 0
-        ubxreader = pyubx2.UBXReader(self.streamRXM)
-        print("\n")
+        ubxreader = UBXReader(self.streamRXM)
         while raw is not None:
             (raw, parsed) = ubxreader.read()
             if raw is not None:
-                print(f"Testing {str(parsed).split(',')[0][5:]}")
                 self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
                 i += 1
-        print("\n")
 
 
 if __name__ == "__main__":

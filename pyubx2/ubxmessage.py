@@ -26,8 +26,7 @@ class UBXMessage():
         If no keyword parms are passed, the payload is taken to be empty.
 
         If 'payload' is passed as a keyword parm, this is taken to contain the complete
-        payload as a sequence of bytes; individual message attributes are assigned via the
-        payload.setter method. Any other other keyword parms are ignored.
+        payload as a sequence of bytes; any other keyword parms are ignored.
 
         Otherwise, any named attributes will be assigned the value given, all others will
         be assigned a nominal value according to type.
@@ -41,6 +40,10 @@ class UBXMessage():
 
         self._header = ubt.UBX_HDR
         self._mode = mode
+        self._index = 0
+        self._payload = b''
+        self._length = b''
+        self._checksum = b''
 
         # accommodate different formats of msgClass and msgID
         if isinstance(ubxClass, str) and isinstance(ubxID, str):  # string e.g. 'CFG', 'CFG-PRT'
@@ -54,10 +57,6 @@ class UBXMessage():
             self._ubxClass = ubxClass
             self._ubxID = ubxID
 
-        self._index = 0
-        self._payload = b''
-        self._length = b''
-        self._checksum = b''
         self._do_attributes(**kwargs)
 
     def _do_attributes(self, **kwargs):
@@ -67,6 +66,7 @@ class UBXMessage():
         :param **kwargs:
 
         """
+        # pylint: disable=line-too-long
 
         offset = 0
 
@@ -80,11 +80,14 @@ class UBXMessage():
                     (offset, att) = self._set_attribute(offset, pdict, key, **kwargs)
             self._do_len_checksum()
 
+        except (AttributeError, TypeError, ValueError) as err:
+            raise ube.UBXTypeError(f"Incorrect type for attribute '{key}' in {self.mode2str(self._mode)} message class {self.identity}") \
+                    from err
         except ube.UBXTypeError as err:
-            raise ube.UBXTypeError(f"Undefined attribute type {att} in message class {self.identity}") \
+            raise ube.UBXTypeError(f"Undefined attribute type '{att}' in {self.mode2str(self._mode)} message class {self.identity}") \
                     from err
         except KeyError as err:
-            raise ube.UBXMessageError(f"Undefined message class={self._ubxClass}, id={self._ubxID}") \
+            raise ube.UBXMessageError(f"Undefined {self.mode2str(self._mode)} message class={self._ubxClass}, id={self._ubxID}") \
                     from err
 
     def _set_attribute(self, offset: int, pdict: dict, key: str, **kwargs) -> (int, str):
@@ -98,15 +101,11 @@ class UBXMessage():
         """
         # pylint: disable=no-member
 
-        if 'payload' in kwargs:
-            self._payload = kwargs['payload']
+        #  if repeating group, suffix keyword with index
+        if self._index > 0:
+            keyr = key + "_{0:0=2d}".format(self._index)
         else:
-            if self._payload is None:
-                self._payload = b''
-            if self._index > 0:  # if a repeating group attribute
-                keyr = key + "_{0:0=2d}".format(self._index)
-            else:
-                keyr = key
+            keyr = key
 
         att = pdict[key]  # get attribute type
         if isinstance(att, tuple):  # attribute is a tuple i.e. a nested repeating group
@@ -122,7 +121,7 @@ class UBXMessage():
 
         else:
 
-            if att == ubt.CH:
+            if att == ubt.CH:  # INF message payload
                 atts = len(self._payload)
             else:
                 atts = int(att[1:3])
@@ -143,8 +142,7 @@ class UBXMessage():
                 if att == ubt.R8:  # double precision floating point
                     val = self.bytes_to_double(val)
 
-            # else if individual attribute has been provided,
-            # use the keyword value
+            # else if individual attribute has been provided
             elif keyr in kwargs:
                 val = kwargs[keyr]
                 if att[0:1] in ('X', 'C'):  # byte or char
@@ -335,6 +333,7 @@ class UBXMessage():
         :return identity: str:
 
         """
+        # pylint: disable=line-too-long
 
         try:
             # all MGA messages except MGA-DBD need to be identified by the
@@ -344,7 +343,8 @@ class UBXMessage():
             else:
                 umsg_name = ubt.UBX_MSGIDS[self._ubxClass + self._ubxID]
         except KeyError as err:
-            raise ube.UBXMessageError(f"Message type {self._ubxClass + self._ubxID} not defined") from err
+            raise ube.UBXMessageError(f"Message type {self._ubxClass + self._ubxID} not defined") \
+                from err
         return umsg_name
 
     @property
@@ -625,6 +625,12 @@ class UBXMessage():
 
         h = hex(nmeaVersion)
         return h[2:3] + '.' + h[3:]
+
+    @staticmethod
+    def mode2str(mode: int) -> str:
+        """Convert mode to string"""
+
+        return ['GET', 'SET', 'POLL'][mode]
 
     @staticmethod
     def key_from_val(dictionary: dict, value) -> str:
