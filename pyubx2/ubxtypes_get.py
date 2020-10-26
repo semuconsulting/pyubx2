@@ -861,7 +861,7 @@ UBX_PAYLOADS_GET = {
 'MON-VER': {
 'swVersion': C30,
 'hwVersion': C30,
-# 'romVersion': C30,
+'romVersion': C30,
 'group': ('None', {  # repeating group
 'extension': C30
 })},
