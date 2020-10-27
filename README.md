@@ -182,6 +182,10 @@ the pyubx2.UBXReader iterator function.
 1. `ubxprotocol.py` illustrates how to set the outbound protocols on the receiver's USB port 
 to NMEA, UBX or both (on a non-permanent basis). You can see the results using `ubxstreamer.py`.
 
+1. `ubxtracker.py` illustrates a simple CLI tool to convert a binary UBX data dump 
+(e.g. as produced by the [PyGPSClient](http://github.com/semuconsulting/PyGPSClient)'s data logging facility) to a `*.gpx` track file using pyubx2.UBXReader.
+
+
 
 ## <a name="extensibility">Extensibility</a>
 
