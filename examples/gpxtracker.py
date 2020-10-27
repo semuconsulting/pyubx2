@@ -1,11 +1,11 @@
 '''
-Simple CLI utility which creates a GPX track file
+Simple CLI utility which creates a GPX or KML track file
 from a binary UBX dump (such as that created by
 PyGPSClient's datalogging facility).
 
 Dump must contain UBX NAV-PVT messages.
 
-There are a number of free online GPX viewers
+There are a number of free online GPX/KML viewers
 e.g. https://gpx-viewer.com/view
 
 Could have used minidom for XML but didn't seem worth it.
@@ -21,14 +21,18 @@ from time import strftime
 from pyubx2.ubxreader import UBXReader
 import pyubx2.exceptions as ube
 
+XML_HDR = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+
 GPX_NS = ' '.join(('xmlns="http://www.topografix.com/GPX/1/1"',
             'creator="pyubx2" version="0.2.6"',
             'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"',
             'xsi:schemaLocation="http://www.topografix.com/GPX/1/1',
             'http://www.topografix.com/GPX/1/1/gpx.xsd"'))
+KML_NS = 'xmlns="http://www.opengis.net/kml/2.2"'
+GITHUB_LINK = 'https://github.com/semuconsulting/pyubx2'
 
-GPX_LINK = '<link href="https://github.com/semuconsulting/pyubx2">' \
-            '<text>pyubx2</text></link>'
+GPX = 'G'
+KML = 'K'
 
 
 class UBXTracker():
@@ -36,7 +40,7 @@ class UBXTracker():
     UBXTracker class.
     '''
 
-    def __init__(self, infile, outdir):
+    def __init__(self, infile, outdir, form='g'):
         '''
         Constructor.
         '''
@@ -44,8 +48,9 @@ class UBXTracker():
         self._filename = infile
         self._outdir = outdir
         self._infile = None
-        self._gpxfname = None
-        self._gpxfile = None
+        self._format = form.upper() if form in ('g', 'k', 'G', 'K') else 'G'
+        self._trkfname = None
+        self._trkfile = None
         self._ubxreader = None
         self._connected = False
 
@@ -62,10 +67,11 @@ class UBXTracker():
         '''
 
         try:
+            ext = 'gpx' if self._format == GPX else 'kml'
             timestamp = strftime("%Y%m%d%H%M%S")
             self._infile = open(self._filename, 'rb')
-            self._gpxfname = os.path.join(self._outdir, f"gpxtrack-{timestamp}.gpx")
-            self._gpxfile = open(self._gpxfname, 'a')
+            self._trkfname = os.path.join(self._outdir, f"{ext}track-{timestamp}.{ext}")
+            self._trkfile = open(self._trkfname, 'a')
             self._connected = True
         except IOError as err:
             print(f"Error opening file {err}")
@@ -78,7 +84,7 @@ class UBXTracker():
         if self._connected and self._infile:
             try:
                 self._infile.close()
-                self._gpxfile.close()
+                self._trkfile.close()
             except IOError as err:
                 print(f"Error closing file {err}")
         self._connected = False
@@ -92,21 +98,30 @@ class UBXTracker():
         i = 0
         self._ubxreader = UBXReader(self._infile, validate)
 
-        self._gpx_hdr()
+        if self._format == GPX:
+            self._gpx_hdr()
+        else:
+            self._kml_hdr()
 
         for (_, msg) in self._ubxreader:  # invokes iterator method
             try:
                 if msg.identity == 'NAV-PVT':
-                    self._gpx_trkpnt(msg)
+                    if self._format == GPX:
+                        self._gpx_trkpnt(msg)
+                    else:
+                        self._kml_trkpnt(msg)
                     i += 1
             except (ube.UBXMessageError, ube.UBXTypeError, ube.UBXParseError) as err:
                 print(f"Something went wrong {err}")
                 continue
 
-        self._gpx_tlr()
+        if self._format == GPX:
+            self._gpx_tlr()
+        else:
+            self._kml_tlr()
 
         print(f"\n{i} NAV-PVT message{'' if i == 1 else 's'} read from {self._filename}")
-        print(f"{i} trackpoint{'' if i == 1 else 's'} written to {self._gpxfname}")
+        print(f"{i} trackpoint{'' if i == 1 else 's'} written to {self._trkfname}")
 
     def _gpx_hdr(self):
         '''
@@ -114,10 +129,12 @@ class UBXTracker():
         '''
 
         date = datetime.now().isoformat() + 'Z'
-        gpxtrack = '<gpx ' + GPX_NS + '>' + GPX_LINK
-        gpxtrack += f'<metadata><time>{date}</time></metadata>'
-        gpxtrack += '<trk><name>GPX track from UBX NAV-PVT datalog</name><trkseg>'
-        self._gpxfile.write(gpxtrack)
+        gpxtrack = (XML_HDR + '<gpx ' + GPX_NS + '>'
+        f'<link href="{GITHUB_LINK}"><text>pyubx2</text></link>'
+        f'<metadata><time>{date}</time></metadata>'
+        '<trk><name>GPX track from UBX NAV-PVT datalog</name><trkseg>')
+
+        self._trkfile.write(gpxtrack)
 
     def _gpx_trkpnt(self, msg):
         '''
@@ -126,15 +143,15 @@ class UBXTracker():
 
         date = datetime(msg.year, msg.month, msg.day, msg.hour, \
                         msg.min, msg.second).isoformat() + 'Z'
-        trkpnt = f'<trkpt lat="{msg.lat / 10 ** 7}" lon="{msg.lon / 10 ** 7}">'
-        trkpnt += f'<ele>{msg.hMSL / 1000}</ele>'
-        trkpnt += f'<fix>{msg.fixType}</fix>'
-        trkpnt += f'<sat>{msg.numSV}</sat>'
-        trkpnt += f'<pdop>{msg.pDOP}</pdop>'
-        trkpnt += f'<speed>{msg.gSpeed / 1000}</speed>'  # unofficial
-        trkpnt += f'<time>{date}</time></trkpt>'
+        trkpnt = (f'<trkpt lat="{msg.lat / 10 ** 7}" lon="{msg.lon / 10 ** 7}">'
+        f'<ele>{msg.hMSL / 1000}</ele>'
+        f'<fix>{msg.fixType}</fix>'
+        f'<sat>{msg.numSV}</sat>'
+        f'<pdop>{msg.pDOP}</pdop>'
+        f'<speed>{msg.gSpeed / 1000}</speed>'  # unofficial
+        f'<time>{date}</time></trkpt>')
 
-        self._gpxfile.write(trkpnt)
+        self._trkfile.write(trkpnt)
 
     def _gpx_tlr(self):
         '''
@@ -142,15 +159,53 @@ class UBXTracker():
         '''
 
         gpxtrack = '</trkseg></trk></gpx>'
-        self._gpxfile.write(gpxtrack)
+        self._trkfile.write(gpxtrack)
+
+    def _kml_hdr(self):
+        '''
+        Create KML track header tags
+        '''
+
+        kmltrack = (XML_HDR + '<kml ' + KML_NS + '>'
+        f'<Document><name><![CDATA[{self._trkfname}]]></name>'
+        '<visibility>1</visibility><open>1</open>'
+        f'<Snippet><![CDATA[created using <a {GITHUB_LINK}">pyubx2</a>]]></Snippet>'
+        '<Folder id="Tracks"><name>KML track from UBX NAV-PVT datalog</name>'
+        '<Style id="mystyle"><LineStyle>'
+        '<color>e00000ff</color><width>4</width></LineStyle></Style>'
+        '<visibility>1</visibility><open>0</open>'
+        '<Placemark><name><![CDATA[GPX track from UBX NAV-PVT datalog]]></name>'
+        '<styleUrl>#mystyle</styleUrl>'
+        '<LineString><tessellate>1</tessellate>'
+        '<altitudeMode>clampToGround</altitudeMode><coordinates>')
+
+        self._trkfile.write(kmltrack)
+
+    def _kml_trkpnt(self, msg):
+        '''
+        Creates KML track point from NAV-PVT message content
+        '''
+
+        kmlpnt = f'{msg.lon / 10 ** 7},{msg.lat / 10 ** 7},{msg.hMSL / 1000} '
+
+        self._trkfile.write(kmlpnt)
+
+    def _kml_tlr(self):
+        '''
+        Create KML track trailer tags
+        '''
+
+        kmltrack = '</coordinates></LineString></Placemark></Folder></Document></kml>'
+        self._trkfile.write(kmltrack)
 
 
 if __name__ == "__main__":
 
-    print("UBX datalog to GPX file converter\n")
+    print("UBX datalog to GPX/KML file converter\n")
     infilep = input("Enter input UBX datalog file: ")
-    outdirp = input("Enter output directory for GPX file: ")
-    tkr = UBXTracker(infilep, outdirp)
+    outdirp = input("Enter output directory: ")
+    trkform = input("Select g for GPX or k for KML (g): ") or 'g'
+    tkr = UBXTracker(infilep, outdirp, trkform)
     print(f"\nProcessing file {infilep}...")
     tkr.open()
     tkr.reader()
