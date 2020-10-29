@@ -183,7 +183,7 @@ the pyubx2.UBXReader iterator function.
 to NMEA, UBX or both (on a non-permanent basis). You can see the results using `ubxstreamer.py`.
 
 1. `ubxtracker.py` illustrates a simple CLI tool to convert a binary UBX data dump 
-(e.g. as produced by the [PyGPSClient](http://github.com/semuconsulting/PyGPSClient)'s data logging facility) to a `*.gpx` or `*.kml` track file using pyubx2.UBXReader.
+(e.g. as produced by the [PyGPSClient](http://github.com/semuconsulting/PyGPSClient)'s data logging facility) to a `*.gpx` track file using pyubx2.UBXReader.
 
 
 
