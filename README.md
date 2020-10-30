@@ -7,7 +7,7 @@ UBX is a proprietary binary protocol implemented on u-blox &copy; GPS/GNSS recei
 
 The `pyubx2` homepage is located at [http://github.com/semuconsulting/pyubx2](http://github.com/semuconsulting/pyubx2).
 
-This is a personal project and I am in no way affiliated with u-blox.
+This is an independent project and we have no affiliation whatsoever with u-blox &copy;.
 
 ### Current Status
 
@@ -42,11 +42,11 @@ The recommended way to install the latest version of `pyubx2` is with
 
 You can create a `UBXReader` object by calling the constructor with an active stream object. 
 The stream object can be any data stream which supports a `read(n) -> bytes` method (e.g. File or Serial, with 
-or without a buffer wrapper). `UBXReader` implements an iterator.
+or without a buffer wrapper).
 
 Individual input UBX messages can then be read using the `UBXReader.read()` function, which returns both the raw binary
 data (as bytes) and the parsed data (as a `UBXMessage` object). The function is thread-safe in so far as the incoming
-data stream object is thread-safe.
+data stream object is thread-safe. `UBXReader` also implements an iterator.
 
 Examples:
 
