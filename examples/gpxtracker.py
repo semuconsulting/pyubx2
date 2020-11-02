@@ -124,10 +124,11 @@ class UBXTracker():
 
         trkpnt = f'<trkpt lat="{lat}" lon="{lon}">'
 
-        # these are the main permissible elements in the GPX schema for wptType
+        # these are the permissible elements in the GPX schema for wptType
         # http://www.topografix.com/GPX/1/1/#type_wptType
         for tag in ('ele', 'time', 'magvar', 'geoidheight', 'name', 'cmt', 'desc', 'src',
-                    'link', 'sym', 'type', 'fix', 'sat', 'hdop', 'vdop', 'pdop'):
+                    'link', 'sym', 'type', 'fix', 'sat', 'hdop', 'vdop', 'pdop',
+                    'ageofdgpsdata', 'dgpsid', 'extensions'):
             if tag in kwargs:
                 val = kwargs[tag]
                 trkpnt += f'<{tag}>{val}</{tag}>'
