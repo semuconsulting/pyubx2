@@ -1,9 +1,11 @@
 .DS_Store
 .dropbox
 .project
+.coverage
 .pydevproject
 Pipfile*.*
 /.settings
+/htmlcov
 /build
 /dist
 /pyubx2_*

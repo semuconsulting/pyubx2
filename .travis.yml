@@ -15,7 +15,7 @@ install:
 # command to run tests, e.g. python setup.py test
 script:
     - python setup.py sdist bdist_wheel
-    - pip install dist/pyubx2-*.tar.gz --user
+    - pip install dist/pyubx2-*.tar.gz
     - py.test
     - pylint -E pyubx2
 
