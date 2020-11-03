@@ -28,10 +28,9 @@ Constructive feedback and feature requests welcome.
 
 ## <a name="installation">Installation</a>
 
-![Python version](https://img.shields.io/pypi/pyversions/pyubx2.svg?style=flat)
-
 `pyubx2` is compatible with Python 3.6+ and has no third-party library dependencies.
 
+![Python version](https://img.shields.io/pypi/pyversions/pyubx2.svg?style=flat)
 [![PyPI version](https://img.shields.io/pypi/v/pyubx2.svg?style=flat)](https://pypi.org/project/pyubx2/)
 ![PyPI downloads](https://img.shields.io/pypi/dm/pyubx2.svg?style=flat)
 

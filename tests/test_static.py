@@ -53,8 +53,8 @@ class StaticTest(unittest.TestCase):
 
     def testgnss2str(self):
         GNSS = {0: 'GPS', 1: 'SBAS', 2: 'Galileo', 3: 'BeiDou',
-                4: 'IMES', 5: 'QZSS', 6: 'GLONASS'}
-        for i in range (0, 7):
+                4: 'IMES', 5: 'QZSS', 6: 'GLONASS', 7: "7"}
+        for i in range (0, 8):
             res = UBXMessage.gnss2str(i)
             self.assertEqual(res, GNSS[i])
 

@@ -25,6 +25,9 @@ class StreamTest(unittest.TestCase):
         self.streamMON = open(os.path.join(dirname, 'pygpsdata-MON.log'), 'rb')
         self.streamRXM = open(os.path.join(dirname, 'pygpsdata-RXM.log'), 'rb')
         self.streamMIX = open(os.path.join(dirname, 'pygpsdata-MIXED.log'), 'rb')
+        self.streamBADHDR = open(os.path.join(dirname, 'pygpsdata-BADHDR.log'), 'rb')
+        self.streamBADEOF1 = open(os.path.join(dirname, 'pygpsdata-BADEOF1.log'), 'rb')
+        self.streamBADEOF2 = open(os.path.join(dirname, 'pygpsdata-BADEOF2.log'), 'rb')
 
     def tearDown(self):
         self.streamNAV.close()
@@ -32,6 +35,9 @@ class StreamTest(unittest.TestCase):
         self.streamMON.close()
         self.streamRXM.close()
         self.streamMIX.close()
+        self.streamBADHDR.close()
+        self.streamBADEOF1.close()
+        self.streamBADEOF2.close()
 
     def testNAV(self):
         EXPECTED_RESULTS = (
@@ -152,6 +158,47 @@ class StreamTest(unittest.TestCase):
             ubxreader = UBXReader(self.streamMIX, True)
             for (_, _) in ubxreader:
                 i += 1
+
+    def testIterator3(self):  # test iterator function with mixed data stream
+        EXPECTED_RESULTS = (
+        "<UBX(NAV-SOL, iTOW=11:33:17, fTOW=52790, week=2128, gpsFix=3, flags=b'\\xdd', ecefX=380364134, ecefY=-14880030, ecefZ=510063062, pAcc=1026, ecefVX=-3, ecefVY=0, ecefVZ=1, sAcc=72, pDOP=135, reserved1=2, numSV=15, reserved2=215776)>",
+        "<UBX(NAV-PVT, iTOW=11:33:17, year=2020, month=10, day=23, hour=11, min=33, second=15, valid=b'7', tAcc=17, nano=52792, fixType=3, flags=b'\\x01', flags2=b'\\n', numSV=15, lon=-22402964, lat=534506691, height=75699, hMSL=27215, hAcc=6298, vAcc=8101, velN=27, velE=-4, velD=11, gSpeed=27, headMot=770506, sAcc=715, headAcc=3905453, pDOP=135, reserved1=151580049408, headVeh=0, magDec=0, magAcc=0)>",
+        "<UBX(NAV-SVINFO, iTOW=11:33:17, numCh=25, globalFlags=b'\\x04', reserved2=0, chn_01=13, svid_01=1, flags_01=b'\\x0c', quality_01=b'\\x01', cno_01=0, elev_01=4, azim_01=142, prRes_01=0, chn_02=19, svid_02=2, flags_02=b'\\x04', quality_02=b'\\x01', cno_02=0, elev_02=19, azim_02=311, prRes_02=0, chn_03=3, svid_03=3, flags_03=b'\\r', quality_03=b'\\x04', cno_03=24, elev_03=41, azim_03=89, prRes_03=469, chn_04=0, svid_04=4, flags_04=b'\\r', quality_04=b'\\x07', cno_04=26, elev_04=70, azim_04=98, prRes_04=94, chn_05=1, svid_05=6, flags_05=b'\\r', quality_05=b'\\x07', cno_05=29, elev_05=61, azim_05=287, prRes_05=-1023, chn_06=255, svid_06=7, flags_06=b'\\x04', quality_06=b'\\x00', cno_06=0, elev_06=0, azim_06=168, prRes_06=0, chn_07=2, svid_07=9, flags_07=b'\\r', quality_07=b'\\x07', cno_07=32, elev_07=56, azim_07=200, prRes_07=-18, chn_08=23, svid_08=12, flags_08=b'\\x04', quality_08=b'\\x01', cno_08=0, elev_08=1, azim_08=311, prRes_08=0, chn_09=5, svid_09=17, flags_09=b'\\r', quality_09=b'\\x04', cno_09=23, elev_09=26, azim_09=226, prRes_09=505, chn_10=4, svid_10=19, flags_10=b'\\r', quality_10=b'\\x04', cno_10=25, elev_10=35, azim_10=242, prRes_10=1630, chn_11=6, svid_11=22, flags_11=b'\\r', quality_11=b'\\x04', cno_11=21, elev_11=20, azim_11=96, prRes_11=-1033, chn_12=22, svid_12=25, flags_12=b'\\x04', quality_12=b'\\x01', cno_12=0, elev_12=4, azim_12=344, prRes_12=0, chn_13=11, svid_13=31, flags_13=b'\\r', quality_13=b'\\x04', cno_13=14, elev_13=10, azim_13=27, prRes_13=1714, chn_14=18, svid_14=120, flags_14=b'\\x14', quality_14=b'\\x01', cno_14=0, elev_14=28, azim_14=196, prRes_14=0, chn_15=20, svid_15=123, flags_15=b'\\x14', quality_15=b'\\x01', cno_15=0, elev_15=22, azim_15=140, prRes_15=0, chn_16=16, svid_16=136, flags_16=b'\\x14', quality_16=b'\\x01', cno_16=0, elev_16=29, azim_16=171, prRes_16=0, chn_17=14, svid_17=65, flags_17=b'\\r', quality_17=b'\\x04', cno_17=21, elev_17=33, azim_17=252, prRes_17=139, chn_18=8, svid_18=71, flags_18=b'\\r', quality_18=b'\\x04', cno_18=19, elev_18=44, azim_18=53, prRes_18=1941, chn_19=9, svid_19=72, flags_19=b'\\r', quality_19=b'\\x04', cno_19=20, elev_19=76, azim_19=286, prRes_19=-1155, chn_20=15, svid_20=73, flags_20=b'\\r', quality_20=b'\\x06', cno_20=25, elev_20=19, azim_20=81, prRes_20=-115, chn_21=21, svid_21=79, flags_21=b'\\x04', quality_21=b'\\x01', cno_21=0, elev_21=0, azim_21=342, prRes_21=0, chn_22=17, svid_22=80, flags_22=b'\\x04', quality_22=b'\\x04', cno_22=18, elev_22=20, azim_22=29, prRes_22=0, chn_23=7, svid_23=86, flags_23=b'\\r', quality_23=b'\\x04', cno_23=10, elev_23=18, azim_23=177, prRes_23=-149, chn_24=10, svid_24=87, flags_24=b'\\r', quality_24=b'\\x07', cno_24=32, elev_24=65, azim_24=257, prRes_24=169, chn_25=12, svid_25=88, flags_25=b'\\r', quality_25=b'\\x04', cno_25=23, elev_25=40, azim_25=318, prRes_25=-93)>"
+        )
+        i = 0
+        raw = 0
+        ubxreader = UBXReader(self.streamMIX, False)
+        while raw is not None and i < 3:
+            (raw, parsed) = ubxreader.read()
+            if raw is not None:
+                self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
+                i += 1
+
+    def testBADHDR(self):  # invalid header in data
+        EXPECTED_ERROR = "Unknown data header (.*)"
+        with self.assertRaisesRegex(UBXStreamError, EXPECTED_ERROR):
+            i = 0
+            ubxreader = UBXReader(self.streamBADHDR, True)
+            for (_, _) in ubxreader:
+                i += 1
+
+    def testBADEOF1(self):  # premature EOF after header
+        i = 0
+        raw = 0
+        ubxreader = UBXReader(self.streamBADEOF1)
+        while raw is not None:
+            (raw, _) = ubxreader.read()
+            i += 1
+        self.assertEqual(i, 4)
+
+    def testBADEOF2(self):  # premature EOF after message class and length
+        i = 0
+        raw = 0
+        ubxreader = UBXReader(self.streamBADEOF2)
+        while raw is not None:
+            (raw, _) = ubxreader.read()
+            i += 1
+        self.assertEqual(i, 3)
 
 
 if __name__ == "__main__":

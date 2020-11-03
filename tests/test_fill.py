@@ -61,6 +61,12 @@ class FillTest(unittest.TestCase):
         res = UBXMessage('CFG', 'CFG-NMEA', POLL)
         self.assertEqual(str(res), EXPECTED_RESULT)
 
+    def testFill_CFGNMEAPOLL2(self):  # test POLL constructor, no payload
+        EXPECTED_RESULT = "<UBX(CFG-NMEA)>"
+        res = UBXMessage('CFG', 'CFG-NMEA', POLL)
+        res2 = UBXMessage.parse(res.serialize())
+        self.assertEqual(str(res2), EXPECTED_RESULT)
+
     def testFill_CFGDOSC(self):  # multiple repeats in group
         EXPECTED_RESULT = "<UBX(CFG-DOSC, version=23, numOsc=2, reserved1=0, oscId_01=4, reserved2_01=0, flags_01=b'\\x00\\x00', freq_01=22, phaseOffset_01=0, withTemp_01=0, withAge_01=0, timeToTemp_01=0, reserved3_01=0, gainVco_01=0, gainUncertainty_01=0, reserved4_01=0, oscId_02=7, reserved2_02=0, flags_02=b'\\x00\\x00', freq_02=44, phaseOffset_02=0, withTemp_02=0, withAge_02=0, timeToTemp_02=0, reserved3_02=0, gainVco_02=0, gainUncertainty_02=0, reserved4_02=0)>"
         res = UBXMessage('CFG', 'CFG-DOSC', SET, version=23, numOsc=2, oscId_01=4, freq_01=22, oscId_02=7, freq_02=44)

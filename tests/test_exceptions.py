@@ -10,12 +10,14 @@ Exception handling tests for UBXMessage constructor and parse
 
 import unittest
 
-from pyubx2 import UBXMessage, UBXTypeError, UBXParseError, SET
+from pyubx2 import UBXMessage, UBXTypeError, UBXParseError, UBXMessageError, SET, POLL
 
 
 class ExceptionTest(unittest.TestCase):
 
     def setUp(self):
+        self.bad_hdr = b'\xb0b\x05\x01\x02\x00\x06\x01\x0f\x38'
+        self.bad_len = b'\xb5b\x05\x01\x03\x00\x06\x01\x0f\x37'
         self.maxDiff = None
 
     def tearDown(self):
@@ -56,6 +58,21 @@ class ExceptionTest(unittest.TestCase):
         EXPECTED_ERROR = "Incorrect type for attribute 'flat' in SET message class CFG-DAT"
         with self.assertRaisesRegex(UBXTypeError, EXPECTED_ERROR):
             UBXMessage('CFG', 'CFG-DAT', SET, datumNum=4, datumName=b'WGS84', majA=123.45, flat=b'\xffffff', dX=123.45, dY=123.45)
+
+    def testFill_XXX(self):  # test for invalid message type
+        EXPECTED_ERROR = "Undefined message, class XXX, id XXX-YYY"
+        with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
+            UBXMessage('XXX', 'XXX-YYY', POLL)
+
+    def testParseBadHdr(self):  # test for invalid message header in bytes
+        EXPECTED_ERROR = "Invalid message header (.*) - should be (.*)"
+        with self.assertRaisesRegex(UBXParseError, EXPECTED_ERROR):
+            UBXMessage.parse(self.bad_hdr, True)
+
+    def testParseBadLen(self):  # test for invalid message length in bytes
+        EXPECTED_ERROR = "Invalid payload length (.*) - should be (.*)"
+        with self.assertRaisesRegex(UBXParseError, EXPECTED_ERROR):
+            UBXMessage.parse(self.bad_len, True)
 
 
 if __name__ == "__main__":
