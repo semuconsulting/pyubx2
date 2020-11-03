@@ -1,10 +1,5 @@
 language: python
 
-os:
-  - linux
-  - osx
-  - windows
-
 python:
   - "3.6"
   - "3.7"
