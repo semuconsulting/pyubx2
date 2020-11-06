@@ -310,7 +310,9 @@ class UBXMessage():
         return stg
 
     def __repr__(self) -> str:
-        """Machine readable (eval) representation.
+        """Machine readable representation.
+        
+        eval(repr(obj)) = obj
 
         :return str:
 
