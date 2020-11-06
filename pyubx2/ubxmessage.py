@@ -38,6 +38,8 @@ class UBXMessage():
 
         """
 
+        # object is mutable during initialisation only
+        super().__setattr__('_immutable', False)
         self._header = ubt.UBX_HDR
         self._mode = mode
         self._index = 0
@@ -58,6 +60,9 @@ class UBXMessage():
             self._ubxID = ubxID
 
         self._do_attributes(**kwargs)
+
+        # once initialised, object is immutable
+        self._immutable = True
 
     def _do_attributes(self, **kwargs):
         """Populate UBXMessage from named attribute keywords.
@@ -314,6 +319,16 @@ class UBXMessage():
         if self._payload is None:
             return f"'UBXMessage({self._ubxClass}, {self._ubxID}, {self._mode})'"
         return f"'UBXMessage({self._ubxClass}, {self._ubxID}, {self._mode}, {self._payload})'"
+
+    def __setattr__(self, name, value):
+        '''
+        Override setattr to make object immutable after instantiation
+        '''
+
+        if self._immutable:
+            raise ube.UBXMessageError(f"Object is immutable. Updates to {name} not permitted after initialisation.")
+
+        super().__setattr__(name, value)
 
     def serialize(self) -> bytes:
         """Serialize message

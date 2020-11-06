@@ -15,7 +15,7 @@ from importlib import import_module
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 currdir = os.path.dirname(__file__)
 import pyubx2
-print(f"Testing Local Version: {pyubx2.VERSION}")
+print(f"Testing Local Version: {pyubx2.version}")
 
 if sys.platform == "win32":
     PORT = 'COM6'

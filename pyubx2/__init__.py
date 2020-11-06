@@ -4,7 +4,8 @@ Created on 27 Sep 2020
 @author: semuadmin
 '''
 
-from ._version import VERSION
+from ._version import __version__
+version = __version__
 
 from .ubxmessage import UBXMessage
 from .ubxreader import UBXReader

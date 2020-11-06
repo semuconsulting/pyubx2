@@ -5,7 +5,7 @@ Created on 1 Oct 2020
 '''
 import setuptools
 
-from pyubx2._version import VERSION
+from pyubx2 import version as VERSION
 
 with open("README.md", "r") as fh:
     long_description = fh.read()

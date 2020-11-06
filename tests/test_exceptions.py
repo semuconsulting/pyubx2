@@ -74,6 +74,12 @@ class ExceptionTest(unittest.TestCase):
         with self.assertRaisesRegex(UBXParseError, EXPECTED_ERROR):
             UBXMessage.parse(self.bad_len, True)
 
+    def testImmutability(self):  # verify object is immutable after instantiation
+        EXPECTED_ERROR = "Object is immutable. Updates to msgClass not permitted after initialisation."
+        res = UBXMessage('CFG', 'CFG-MSG', POLL, msgClass=240, msgID=5)
+        with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
+            res.msgClass = 222
+
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']

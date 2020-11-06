@@ -16,3 +16,4 @@ Pipfile*.*
 /pyubx2/__pycache__
 *.pyc
 /examples/ubxsandpit.py
+/.pytest_cache/
