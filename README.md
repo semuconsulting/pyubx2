@@ -115,6 +115,8 @@ You can create a `UBXMessage` object by calling the constructor with the followi
 3. mode (0=GET, 1=SET, 2=POLL)
 4. (optional) a series of keyword parameters representing the message payload
 
+**NB:** Once instantiated, a `UBXMessage` object is immutable.
+
 The 'ubxClass' and 'ubxID' parameters may be passed as lookup strings, integers or bytes.
 
 The 'mode' parameter signifies whether the message payload refers to a: 

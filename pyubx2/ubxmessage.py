@@ -318,7 +318,7 @@ class UBXMessage():
 
         if self._payload is None:
             return f"'UBXMessage({self._ubxClass}, {self._ubxID}, {self._mode})'"
-        return f"'UBXMessage({self._ubxClass}, {self._ubxID}, {self._mode}, {self._payload})'"
+        return f"'UBXMessage({self._ubxClass}, {self._ubxID}, {self._mode}, payload={self._payload})'"
 
     def __setattr__(self, name, value):
         '''
