@@ -310,15 +310,15 @@ class UBXMessage():
         return stg
 
     def __repr__(self) -> str:
-        """Machine readable (constructor) representation.
+        """Machine readable (eval) representation.
 
         :return str:
 
         """
 
         if self._payload is None:
-            return f"'UBXMessage({self._ubxClass}, {self._ubxID}, {self._mode})'"
-        return f"'UBXMessage({self._ubxClass}, {self._ubxID}, {self._mode}, payload={self._payload})'"
+            return f"UBXMessage({self._ubxClass}, {self._ubxID}, {self._mode})"
+        return f"UBXMessage({self._ubxClass}, {self._ubxID}, {self._mode}, payload={self._payload})"
 
     def __setattr__(self, name, value):
         '''

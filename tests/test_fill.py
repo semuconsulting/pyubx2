@@ -99,6 +99,17 @@ class FillTest(unittest.TestCase):
         res2 = UBXMessage.parse(res.serialize())
         self.assertEqual(str(res2), EXPECTED_RESULT)
 
+    def testEVAL(self):  # test eval of repr
+        res = UBXMessage('CFG', 'CFG-MSG', POLL, msgClass=240, msgID=5)
+        reseval = eval(repr(res))
+        assert type(reseval) is UBXMessage
+
+    def testEVAL2(self):  # test eval of repr
+        res = UBXMessage('CFG', 'CFG-MSG', SET, msgClass=240, msgID=5, rateUART1=1, rateUSB=1)
+        reseval = eval(repr(res))
+        print(reseval)
+        assert type(reseval) is UBXMessage
+
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
