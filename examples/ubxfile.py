@@ -84,7 +84,7 @@ class UBXStreamer():
 if __name__ == "__main__":
 
     print("Enter fully qualified name of file containing binary UBX data: ", end='')
-    filefqn = input()
+    filefqn = input().strip('\"')
     print("Do you want to validate the data stream (y/n)? (n) ", end='')
     val = input() or 'n'
     VALD = val in ('Y', 'y', 'YES,', 'yes', 'True')
