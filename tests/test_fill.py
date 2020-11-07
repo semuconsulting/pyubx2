@@ -99,6 +99,12 @@ class FillTest(unittest.TestCase):
         res2 = UBXMessage.parse(res.serialize())
         self.assertEqual(str(res2), EXPECTED_RESULT)
 
+    def testFill_CFGDATPARSE2(self):  # check that raw payload is correctly populated and parses back to original message
+        EXPECTED_RESULT = "<UBX(CFG-DAT, datumNum=4, datumName=b'WGS-84', majA=0.0, flat=0.0, dX=-1.2345677614212036, dY=27.406539916992188, dZ=0.0, rotX=0.0, rotY=0.0, rotZ=0.0, scale=0.0)>"
+        res = UBXMessage('CFG', 'CFG-DAT', SET, datumNum=4, datumName=b'WGS-84', dX=-1.2345678, dY=27.40654)
+        res2 = UBXMessage.parse(res.serialize())
+        self.assertEqual(str(res2), EXPECTED_RESULT)
+
     def testEVAL(self):  # test eval of repr
         res = UBXMessage('CFG', 'CFG-MSG', POLL, msgClass=240, msgID=5)
         reseval = eval(repr(res))

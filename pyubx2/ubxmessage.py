@@ -79,7 +79,7 @@ class UBXMessage():
             if len(kwargs) == 0:  # if no kwargs, assume null payload
                 self._payload = None
             else:
-                pdict = self._get_dict()  # get appropriate payload dict
+                pdict = self._get_dict(**kwargs)  # get appropriate payload dict
                 for key in pdict.keys():  # set each attribute in dict
                     (offset, att) = self._set_attribute(offset, pdict, key, **kwargs)
             self._do_len_checksum()
@@ -204,7 +204,7 @@ class UBXMessage():
             self._checksum = self.calc_checksum(self._ubxClass + self._ubxID
                                                 +self._length + self._payload)
 
-    def _get_dict(self) -> dict:
+    def _get_dict(self, **kwargs) -> dict:
         """Get payload dictionary corresponding to message mode
 
         :return dict:
@@ -216,19 +216,37 @@ class UBXMessage():
         elif self._mode == ubt.SET:
             pdict = ubs.UBX_PAYLOADS_SET[self.identity]
         else:
-            pdict = ubg.UBX_PAYLOADS_GET[self.identity]
-        if self.identity == 'CFG-NMEA':
-            pdict = self._get_cfgnmea_version()
+            if self._ubxClass == b'\x13' and self._ubxID != b'\x80':  # MGA message
+                pdict = self._get_mga_version(**kwargs)
+            elif self.identity == 'CFG-NMEA':
+                pdict = self._get_cfgnmea_version(**kwargs)
+            else:
+                pdict = ubg.UBX_PAYLOADS_GET[self.identity]
         return pdict
 
-    def _get_cfgnmea_version(self) -> dict:
-        """Selects appropriate payload definition version for CFG-NMEA message
+    def _get_mga_version(self, **kwargs) -> dict:
+        """
+        Select appropriate MGA payload definition
+ 
+         :return dict:
+
+        """
+
+        typ = kwargs['payload'][0:1]
+        identity = ubt.UBX_MSGIDS[self._ubxClass + self._ubxID + typ]
+        pdict = ubg.UBX_PAYLOADS_GET[identity]
+        return pdict
+
+    def _get_cfgnmea_version(self, **kwargs) -> dict:
+        """
+        Selects appropriate payload definition version for older
+        generations of CFG-NMEA message
 
         :return dict:
 
         """
 
-        lpd = len(self._payload)
+        lpd = len(kwargs['payload'])
         if lpd == 4:
             pdict = ubg.UBX_PAYLOADS_GET['CFG-NMEAvX']
         elif lpd == 12:
