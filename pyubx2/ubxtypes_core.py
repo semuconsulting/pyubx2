@@ -66,7 +66,8 @@ b'\x0d':'TIM',  # Timing Messages: Timepulse Output, Timemark Results
 b'\x10':'ESF',  # External Sensor Fusion Messages: External sensor measurements and status information
 b'\x13':'MGA',  # Multiple GNSS Assistance Messages: Assistance data for various GNSS
 b'\x21':'LOG',  # Logging Messages: Log creation, deletion, info and retrieval
-b'\x27':'SEC'  # Security Feature Messages
+b'\x27':'SEC',  # Security Feature Messages
+b'\x66':'FOO'  # Dummy message class for testing
 }
 
 '''
@@ -224,6 +225,7 @@ b'\x0d\x01': 'TIM-TP',
 b'\x0d\x15': 'TIM-VCOCAL',
 b'\x0d\x06': 'TIM-VRFY',
 b'\x09\x14': 'UPD-SOS',
+b'\x66\x66': 'FOO-BAR'  # Dummy message for testing
 }
 
 '''

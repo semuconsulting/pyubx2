@@ -1405,5 +1405,10 @@ UBX_PAYLOADS_GET = {
 'reserved1': U3,
 'response': U1,
 'reserved2': U3
-}
+},
+# ********************************************************************
+# Dummy message for error testing
+'FOO-BAR': {
+'spam': 'Z2',
+'eggs': 'Y1'}
 }

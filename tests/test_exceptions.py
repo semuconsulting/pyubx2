@@ -10,7 +10,7 @@ Exception handling tests for UBXMessage constructor and parse
 
 import unittest
 
-from pyubx2 import UBXMessage, UBXTypeError, UBXParseError, UBXMessageError, SET, POLL
+from pyubx2 import UBXMessage, UBXTypeError, UBXParseError, UBXMessageError, GET, SET, POLL
 
 
 class ExceptionTest(unittest.TestCase):
@@ -18,6 +18,7 @@ class ExceptionTest(unittest.TestCase):
     def setUp(self):
         self.bad_hdr = b'\xb0b\x05\x01\x02\x00\x06\x01\x0f\x38'
         self.bad_len = b'\xb5b\x05\x01\x03\x00\x06\x01\x0f\x37'
+        self.bad_msg = b'\xb5b\x66\x66\x02\x00\x06\x01\xd5\x77'
         self.maxDiff = None
 
     def tearDown(self):
@@ -73,6 +74,31 @@ class ExceptionTest(unittest.TestCase):
         EXPECTED_ERROR = "Invalid payload length (.*) - should be (.*)"
         with self.assertRaisesRegex(UBXParseError, EXPECTED_ERROR):
             UBXMessage.parse(self.bad_len, True)
+
+    def testFill_NONEXISTCLS(self):  # non existent message class
+        EXPECTED_ERROR = "Undefined message, class XXX, id XXX-YYY"
+        with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
+            UBXMessage('XXX', 'XXX-YYY', SET, filter=45, nmeaVersion='xx', numSV=4, flags=14)
+
+    def testFill_NONEXISTID(self):  # non existent message id
+        EXPECTED_ERROR = "Undefined message, class CFG, id CFG-XXX"
+        with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
+            UBXMessage('CFG', 'CFG-XXX', SET, filter=45, nmeaVersion='xx', numSV=4, flags=14)
+
+    def testFill_INVALIDATTR(self):  # test invalid attribute type with provided values
+        EXPECTED_ERROR = "Unknown attribute type Z2 for key spam"
+        with self.assertRaisesRegex(UBXTypeError, EXPECTED_ERROR):
+            UBXMessage('FOO', 'FOO-BAR', GET, spam=45, eggs='xx')
+
+    def testFill_INVALIDATTR2(self):  # test invalid attribute type with defaulted values
+        EXPECTED_ERROR = "Unknown attribute type Z2 for key spam"
+        with self.assertRaisesRegex(UBXTypeError, EXPECTED_ERROR):
+            UBXMessage('FOO', 'FOO-BAR', GET, eggs=45)
+
+    def testParse_INVALIDATTR(self):  # test for invalid message header in bytes
+        EXPECTED_ERROR = "Unknown attribute type Z2 for key spam"
+        with self.assertRaisesRegex(UBXTypeError, EXPECTED_ERROR):
+            UBXMessage.parse(self.bad_msg, True)
 
     def testImmutability(self):  # verify object is immutable after instantiation
         EXPECTED_ERROR = "Object is immutable. Updates to msgClass not permitted after initialisation."

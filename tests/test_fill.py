@@ -113,7 +113,6 @@ class FillTest(unittest.TestCase):
     def testEVAL2(self):  # test eval of repr
         res = UBXMessage('CFG', 'CFG-MSG', SET, msgClass=240, msgID=5, rateUART1=1, rateUSB=1)
         reseval = eval(repr(res))
-        print(reseval)
         assert type(reseval) is UBXMessage
 
 

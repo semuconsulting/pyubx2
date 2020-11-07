@@ -89,14 +89,6 @@ class UBXMessage():
             raise ube.UBXTypeError((f"Incorrect type for attribute '{key}' "
                                     f"in {self.mode2str(self._mode)} message "
                                     f"class {self.identity}")) from err
-        except ube.UBXTypeError as err:
-            raise ube.UBXTypeError((f"Undefined attribute type '{att}' "
-                                    f"in {self.mode2str(self._mode)} message "
-                                    f"class {self.identity}")) from err
-        except KeyError as err:
-            raise ube.UBXMessageError((f"Undefined {self.mode2str(self._mode)} "
-                                       f"message class={self._ubxClass}, "
-                                       f"id={self._ubxID}")) from err
 
     def _set_attribute(self, offset: int, pdict: dict, key: str, **kwargs) -> (int, str):
         """Recursive routine to populate individual payload attributes
@@ -141,28 +133,34 @@ class UBXMessage():
                 val = self._payload[offset:offset + atts]
                 if att == ubt.CH:  # attribute is a single variable-length string (e.g. INF-NOTICE)
                     val = self._payload.decode('utf-8', 'backslashreplace')
-                if att[0:1] == 'U':  # unsigned integer
+                elif att[0:1] in ('X', 'C'):
+                    pass
+                elif att[0:1] == 'U':  # unsigned integer
                     val = int.from_bytes(val, 'little', signed=False)
-                if att[0:1] == 'I':  # signed integer
+                elif att[0:1] == 'I':  # signed integer
                     val = int.from_bytes(val, 'little', signed=True)
-                if att == ubt.R4:  # single precision floating point
+                elif att == ubt.R4:  # single precision floating point
                     val = self.bytes_to_float(val)
-                if att == ubt.R8:  # double precision floating point
+                elif att == ubt.R8:  # double precision floating point
                     val = self.bytes_to_double(val)
+                else:
+                    raise ube.UBXTypeError(f"Unknown attribute type {att} for key {key}")
 
             # else if individual attribute has been provided
             elif keyr in kwargs:
                 val = kwargs[keyr]
                 if att[0:1] in ('X', 'C'):  # byte or char
                     valb = val
-                if att[0:1] == 'U':  # unsigned integer
+                elif att[0:1] == 'U':  # unsigned integer
                     valb = val.to_bytes(atts, byteorder="little", signed=False)
-                if att[0:1] == 'I':  # signed integer
+                elif att[0:1] == 'I':  # signed integer
                     valb = val.to_bytes(atts, byteorder="little", signed=True)
-                if att == ubt.R4:  # single precision floating point
+                elif att == ubt.R4:  # single precision floating point
                     valb = self.float_to_bytes(val)
-                if att == ubt.R8:  # double precision floating point
+                elif att == ubt.R8:  # double precision floating point
                     valb = self.double_to_bytes(val)
+                else:
+                    raise ube.UBXTypeError(f"Unknown attribute type {att} for key {key}")
                 self._payload += valb
 
             # else set individual attribute to nominal value
@@ -170,18 +168,20 @@ class UBXMessage():
                 if att[0:1] in ('X', 'C'):  # byte or char
                     valb = b'\x00' * atts
                     val = valb
-                if att[0:1] == 'U':  # unsigned integer
+                elif att[0:1] == 'U':  # unsigned integer
                     val = 0
                     valb = val.to_bytes(atts, byteorder="little", signed=False)
-                if att[0:1] == 'I':  # signed integer
+                elif att[0:1] == 'I':  # signed integer
                     val = 0
                     valb = val.to_bytes(atts, byteorder="little", signed=True)
-                if att == ubt.R4:  # single precision floating point
+                elif att == ubt.R4:  # single precision floating point
                     val = 0.0
                     valb = self.float_to_bytes(val)
-                if att == ubt.R8:  # double precision floating point
+                elif att == ubt.R8:  # double precision floating point
                     val = 0.0
                     valb = self.double_to_bytes(val)
+                else:
+                    raise ube.UBXTypeError(f"Unknown attribute type {att} for key {key}")
                 self._payload += valb
 
         if not isinstance(att, tuple):
@@ -295,31 +295,28 @@ class UBXMessage():
                 val = self.__dict__[att]
                 # if the attributes include a UBX class & id,
                 # show the ASCII lookup form rather than the binary
-                try:
-                    if att[0:6] == 'gnssId':  # attribute is a GNSS ID
-                        val = self.gnss2str(val)  # get string representation e.g. 'GPS'
-                    if att == 'nmeaVersion':  # attribute is NMEA version
-                        val = self.nmeaver2str(val)
-                    if att == "iTOW":
-                        val = self.itow2utc(val)
-                    # if it's an ACK-ACK or ACK-NAK, we show what it's acknowledging in plain text
-                    if self._ubxClass == b'\x05':  # ACK
-                        if att == 'clsID':
-                            clsid = val.to_bytes(1, byteorder="little", signed=False)
-                            val = ubt.UBX_CLASSES[clsid]
-                        if att == 'msgID' and clsid:
-                            msgid = val.to_bytes(1, byteorder="little", signed=False)
-                            val = ubt.UBX_MSGIDS[clsid + msgid]
-                    # if it's a CFG-MSG, we show what message class/id it refers to in plain text
-                    if self._ubxClass == b'\x06' and self._ubxID == b'\x01':  # CFG-MSG
-                        if att == 'msgClass':
-                            clsid = val.to_bytes(1, byteorder="little", signed=False)
-                            val = ubt.UBX_CONFIG_CATEGORIES[clsid]
-                        if att == 'msgID' and clsid:
-                            msgid = val.to_bytes(1, byteorder="little", signed=False)
-                            val = ubt.UBX_CONFIG_MESSAGES[clsid + msgid]
-                except KeyError:
-                    pass  # ignore any dictionary lookup errors and just show original binary value
+                if att[0:6] == 'gnssId':  # attribute is a GNSS ID
+                    val = self.gnss2str(val)  # get string representation e.g. 'GPS'
+                if att == 'nmeaVersion':  # attribute is NMEA version
+                    val = self.nmeaver2str(val)
+                if att == "iTOW":
+                    val = self.itow2utc(val)
+                # if it's an ACK-ACK or ACK-NAK, we show what it's acknowledging in plain text
+                if self._ubxClass == b'\x05':  # ACK
+                    if att == 'clsID':
+                        clsid = val.to_bytes(1, byteorder="little", signed=False)
+                        val = ubt.UBX_CLASSES[clsid]
+                    if att == 'msgID' and clsid:
+                        msgid = val.to_bytes(1, byteorder="little", signed=False)
+                        val = ubt.UBX_MSGIDS[clsid + msgid]
+                # if it's a CFG-MSG, we show what message class/id it refers to in plain text
+                if self._ubxClass == b'\x06' and self._ubxID == b'\x01':  # CFG-MSG
+                    if att == 'msgClass':
+                        clsid = val.to_bytes(1, byteorder="little", signed=False)
+                        val = ubt.UBX_CONFIG_CATEGORIES[clsid]
+                    if att == 'msgID' and clsid:
+                        msgid = val.to_bytes(1, byteorder="little", signed=False)
+                        val = ubt.UBX_CONFIG_MESSAGES[clsid + msgid]
                 stg += att + '=' + str(val)
                 if i < len(self.__dict__) - 1:
                     stg += ", "
@@ -371,18 +368,14 @@ class UBXMessage():
         :return identity: str:
 
         """
-        # pylint: disable=line-too-long
 
-        try:
-            # all MGA messages except MGA-DBD need to be identified by the
-            # 'type' attribute - the first byte of the payload
-            if self._ubxClass == b'\x13' and self._ubxID != b'\x80':
-                umsg_name = ubt.UBX_MSGIDS[self._ubxClass + self._ubxID + self._payload[0:1]]
-            else:
-                umsg_name = ubt.UBX_MSGIDS[self._ubxClass + self._ubxID]
-        except KeyError as err:
-            raise ube.UBXMessageError((f"Message type {self._ubxClass + self._ubxID}"
-                                       f" not defined")) from err
+        # all MGA messages except MGA-DBD need to be identified by the
+        # 'type' attribute - the first byte of the payload
+        if self._ubxClass == b'\x13' and self._ubxID != b'\x80':
+            umsg_name = ubt.UBX_MSGIDS[self._ubxClass + self._ubxID + self._payload[0:1]]
+        else:
+            umsg_name = ubt.UBX_MSGIDS[self._ubxClass + self._ubxID]
+
         return umsg_name
 
     @property
