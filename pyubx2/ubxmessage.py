@@ -17,7 +17,7 @@ import pyubx2.ubxtypes_set as ubs
 import pyubx2.ubxtypes_poll as ubp
 
 
-class UBXMessage():
+class UBXMessage:
     """UBX Message Class."""
 
     def __init__(self, ubxClass, ubxID, mode: int, **kwargs):
@@ -39,16 +39,18 @@ class UBXMessage():
         """
 
         # object is mutable during initialisation only
-        super().__setattr__('_immutable', False)
+        super().__setattr__("_immutable", False)
         self._header = ubt.UBX_HDR
         self._mode = mode
         self._index = 0
-        self._payload = b''
-        self._length = b''
-        self._checksum = b''
+        self._payload = b""
+        self._length = b""
+        self._checksum = b""
 
         # accommodate different formats of msgClass and msgID
-        if isinstance(ubxClass, str) and isinstance(ubxID, str):  # string e.g. 'CFG', 'CFG-PRT'
+        if isinstance(ubxClass, str) and isinstance(
+            ubxID, str
+        ):  # string e.g. 'CFG', 'CFG-PRT'
             # print(f"parms are strings {ubxClass} {ubxID}")
             (self._ubxClass, self._ubxID) = UBXMessage.msgstr2bytes(ubxClass, ubxID)
         elif isinstance(ubxClass, int) and isinstance(ubxID, int):  # int e.g. 6, 1
@@ -84,13 +86,24 @@ class UBXMessage():
                     (offset, att) = self._set_attribute(offset, pdict, key, **kwargs)
             self._do_len_checksum()
 
-        except (AttributeError, OverflowError, struct.error,
-                TypeError, ValueError) as err:
-            raise ube.UBXTypeError((f"Incorrect type for attribute '{key}' "
-                                    f"in {self.mode2str(self._mode)} message "
-                                    f"class {self.identity}")) from err
+        except (
+            AttributeError,
+            OverflowError,
+            struct.error,
+            TypeError,
+            ValueError,
+        ) as err:
+            raise ube.UBXTypeError(
+                (
+                    f"Incorrect type for attribute '{key}' "
+                    f"in {self.mode2str(self._mode)} message "
+                    f"class {self.identity}"
+                )
+            ) from err
 
-    def _set_attribute(self, offset: int, pdict: dict, key: str, **kwargs) -> (int, str):
+    def _set_attribute(
+        self, offset: int, pdict: dict, key: str, **kwargs
+    ) -> (int, str):
         """Recursive routine to populate individual payload attributes
 
         :param offset: int:
@@ -110,7 +123,7 @@ class UBXMessage():
         att = pdict[key]  # get attribute type
         if isinstance(att, tuple):  # attribute is a tuple i.e. a nested repeating group
             numr, attd = att
-            if numr == 'None':
+            if numr == "None":
                 rng = self._calc_num_repeats(attd, self._payload, offset)
             else:
                 rng = getattr(self, numr)
@@ -128,50 +141,56 @@ class UBXMessage():
 
             # if the entire payload has been provided,
             # use the appropriate section of the payload
-            if 'payload' in kwargs:
-                self._payload = kwargs['payload']
-                val = self._payload[offset:offset + atts]
-                if att == ubt.CH:  # attribute is a single variable-length string (e.g. INF-NOTICE)
-                    val = self._payload.decode('utf-8', 'backslashreplace')
-                elif att[0:1] in ('X', 'C'):
+            if "payload" in kwargs:
+                self._payload = kwargs["payload"]
+                val = self._payload[offset : offset + atts]
+                if (
+                    att == ubt.CH
+                ):  # attribute is a single variable-length string (e.g. INF-NOTICE)
+                    val = self._payload.decode("utf-8", "backslashreplace")
+                elif att[0:1] in ("X", "C"):
                     pass
-                elif att[0:1] == 'U':  # unsigned integer
-                    val = int.from_bytes(val, 'little', signed=False)
-                elif att[0:1] == 'I':  # signed integer
-                    val = int.from_bytes(val, 'little', signed=True)
+                elif att[0:1] == "U":  # unsigned integer
+                    val = int.from_bytes(val, "little", signed=False)
+                elif att[0:1] == "I":  # signed integer
+                    val = int.from_bytes(val, "little", signed=True)
                 elif att == ubt.R4:  # single precision floating point
                     val = self.bytes_to_float(val)
                 elif att == ubt.R8:  # double precision floating point
                     val = self.bytes_to_double(val)
                 else:
-                    raise ube.UBXTypeError(f"Unknown attribute type {att} for key {key}")
+                    raise ube.UBXTypeError(
+                        f"Unknown attribute type {att} for key {key}"
+                    )
 
             # else if individual attribute has been provided
             elif keyr in kwargs:
                 val = kwargs[keyr]
-                if att[0:1] in ('X', 'C'):  # byte or char
+                if att[0:1] in ("X", "C"):  # byte or char
                     valb = val
-                elif att[0:1] == 'U':  # unsigned integer
+                elif att[0:1] == "U":  # unsigned integer
                     valb = val.to_bytes(atts, byteorder="little", signed=False)
-                elif att[0:1] == 'I':  # signed integer
+                elif att[0:1] == "I":  # signed integer
                     valb = val.to_bytes(atts, byteorder="little", signed=True)
                 elif att == ubt.R4:  # single precision floating point
                     valb = self.float_to_bytes(val)
                 elif att == ubt.R8:  # double precision floating point
                     valb = self.double_to_bytes(val)
                 else:
-                    raise ube.UBXTypeError(f"Unknown attribute type {att} for key {key}")
+                    raise ube.UBXTypeError(
+                        f"Unknown attribute type {att} for key {key}"
+                    )
                 self._payload += valb
 
             # else set individual attribute to nominal value
             else:
-                if att[0:1] in ('X', 'C'):  # byte or char
-                    valb = b'\x00' * atts
+                if att[0:1] in ("X", "C"):  # byte or char
+                    valb = b"\x00" * atts
                     val = valb
-                elif att[0:1] == 'U':  # unsigned integer
+                elif att[0:1] == "U":  # unsigned integer
                     val = 0
                     valb = val.to_bytes(atts, byteorder="little", signed=False)
-                elif att[0:1] == 'I':  # signed integer
+                elif att[0:1] == "I":  # signed integer
                     val = 0
                     valb = val.to_bytes(atts, byteorder="little", signed=True)
                 elif att == ubt.R4:  # single precision floating point
@@ -181,7 +200,9 @@ class UBXMessage():
                     val = 0.0
                     valb = self.double_to_bytes(val)
                 else:
-                    raise ube.UBXTypeError(f"Unknown attribute type {att} for key {key}")
+                    raise ube.UBXTypeError(
+                        f"Unknown attribute type {att} for key {key}"
+                    )
                 self._payload += valb
 
         if not isinstance(att, tuple):
@@ -197,12 +218,14 @@ class UBXMessage():
 
         if self._payload is None:
             self._length = self.len2bytes(0)
-            self._checksum = self.calc_checksum(self._ubxClass + self._ubxID
-                                                +self._length)
+            self._checksum = self.calc_checksum(
+                self._ubxClass + self._ubxID + self._length
+            )
         else:
             self._length = self.len2bytes(len(self._payload))
-            self._checksum = self.calc_checksum(self._ubxClass + self._ubxID
-                                                +self._length + self._payload)
+            self._checksum = self.calc_checksum(
+                self._ubxClass + self._ubxID + self._length + self._payload
+            )
 
     def _get_dict(self, **kwargs) -> dict:
         """Get payload dictionary corresponding to message mode
@@ -216,9 +239,9 @@ class UBXMessage():
         elif self._mode == ubt.SET:
             pdict = ubs.UBX_PAYLOADS_SET[self.identity]
         else:
-            if self._ubxClass == b'\x13' and self._ubxID != b'\x80':  # MGA message
+            if self._ubxClass == b"\x13" and self._ubxID != b"\x80":  # MGA message
                 pdict = self._get_mga_version(**kwargs)
-            elif self.identity == 'CFG-NMEA':
+            elif self.identity == "CFG-NMEA":
                 pdict = self._get_cfgnmea_version(**kwargs)
             else:
                 pdict = ubg.UBX_PAYLOADS_GET[self.identity]
@@ -227,12 +250,12 @@ class UBXMessage():
     def _get_mga_version(self, **kwargs) -> dict:
         """
         Select appropriate MGA payload definition
- 
+
          :return dict:
 
         """
 
-        typ = kwargs['payload'][0:1]
+        typ = kwargs["payload"][0:1]
         identity = ubt.UBX_MSGIDS[self._ubxClass + self._ubxID + typ]
         pdict = ubg.UBX_PAYLOADS_GET[identity]
         return pdict
@@ -246,16 +269,16 @@ class UBXMessage():
 
         """
 
-        lpd = len(kwargs['payload'])
+        lpd = len(kwargs["payload"])
         if lpd == 4:
-            pdict = ubg.UBX_PAYLOADS_GET['CFG-NMEAvX']
+            pdict = ubg.UBX_PAYLOADS_GET["CFG-NMEAvX"]
         elif lpd == 12:
-            pdict = ubg.UBX_PAYLOADS_GET['CFG-NMEAv0']
+            pdict = ubg.UBX_PAYLOADS_GET["CFG-NMEAv0"]
         else:
-            pdict = ubg.UBX_PAYLOADS_GET['CFG-NMEA']
+            pdict = ubg.UBX_PAYLOADS_GET["CFG-NMEA"]
         return pdict
 
-    def _calc_num_repeats(self, att, payload : bytes, offset: int) -> int:
+    def _calc_num_repeats(self, att, payload: bytes, offset: int) -> int:
         """Deduce number of items in repeating group by dividing length of
         remaining payload by length of group.
 
@@ -291,33 +314,33 @@ class UBXMessage():
 
         stg = f"<UBX({umsg_name}, "
         for i, att in enumerate(self.__dict__):
-            if att[0] != '_':  # only show public attributes
+            if att[0] != "_":  # only show public attributes
                 val = self.__dict__[att]
                 # if the attributes include a UBX class & id,
                 # show the ASCII lookup form rather than the binary
-                if att[0:6] == 'gnssId':  # attribute is a GNSS ID
+                if att[0:6] == "gnssId":  # attribute is a GNSS ID
                     val = self.gnss2str(val)  # get string representation e.g. 'GPS'
-                if att == 'nmeaVersion':  # attribute is NMEA version
+                if att == "nmeaVersion":  # attribute is NMEA version
                     val = self.nmeaver2str(val)
                 if att == "iTOW":
                     val = self.itow2utc(val)
                 # if it's an ACK-ACK or ACK-NAK, we show what it's acknowledging in plain text
-                if self._ubxClass == b'\x05':  # ACK
-                    if att == 'clsID':
+                if self._ubxClass == b"\x05":  # ACK
+                    if att == "clsID":
                         clsid = val.to_bytes(1, byteorder="little", signed=False)
                         val = ubt.UBX_CLASSES[clsid]
-                    if att == 'msgID' and clsid:
+                    if att == "msgID" and clsid:
                         msgid = val.to_bytes(1, byteorder="little", signed=False)
                         val = ubt.UBX_MSGIDS[clsid + msgid]
                 # if it's a CFG-MSG, we show what message class/id it refers to in plain text
-                if self._ubxClass == b'\x06' and self._ubxID == b'\x01':  # CFG-MSG
-                    if att == 'msgClass':
+                if self._ubxClass == b"\x06" and self._ubxID == b"\x01":  # CFG-MSG
+                    if att == "msgClass":
                         clsid = val.to_bytes(1, byteorder="little", signed=False)
                         val = ubt.UBX_CONFIG_CATEGORIES[clsid]
-                    if att == 'msgID' and clsid:
+                    if att == "msgID" and clsid:
                         msgid = val.to_bytes(1, byteorder="little", signed=False)
                         val = ubt.UBX_CONFIG_MESSAGES[clsid + msgid]
-                stg += att + '=' + str(val)
+                stg += att + "=" + str(val)
                 if i < len(self.__dict__) - 1:
                     stg += ", "
         stg += ")>"
@@ -326,7 +349,7 @@ class UBXMessage():
 
     def __repr__(self) -> str:
         """Machine readable representation.
-        
+
         eval(repr(obj)) = obj
 
         :return str:
@@ -338,12 +361,14 @@ class UBXMessage():
         return f"UBXMessage({self._ubxClass}, {self._ubxID}, {self._mode}, payload={self._payload})"
 
     def __setattr__(self, name, value):
-        '''
+        """
         Override setattr to make object immutable after instantiation
-        '''
+        """
 
         if self._immutable:
-            raise ube.UBXMessageError(f"Object is immutable. Updates to {name} not permitted after initialisation.")
+            raise ube.UBXMessageError(
+                f"Object is immutable. Updates to {name} not permitted after initialisation."
+            )
 
         super().__setattr__(name, value)
 
@@ -355,10 +380,21 @@ class UBXMessage():
         """
 
         if self._payload is None:
-            return (ubt.UBX_HDR + self._ubxClass + self._ubxID + self._length
-                    +self._checksum)
-        return (ubt.UBX_HDR + self._ubxClass + self._ubxID + self._length
-                +self._payload + self._checksum)
+            return (
+                ubt.UBX_HDR
+                + self._ubxClass
+                + self._ubxID
+                + self._length
+                + self._checksum
+            )
+        return (
+            ubt.UBX_HDR
+            + self._ubxClass
+            + self._ubxID
+            + self._length
+            + self._payload
+            + self._checksum
+        )
 
     @property
     def identity(self) -> str:
@@ -371,8 +407,10 @@ class UBXMessage():
 
         # all MGA messages except MGA-DBD need to be identified by the
         # 'type' attribute - the first byte of the payload
-        if self._ubxClass == b'\x13' and self._ubxID != b'\x80':
-            umsg_name = ubt.UBX_MSGIDS[self._ubxClass + self._ubxID + self._payload[0:1]]
+        if self._ubxClass == b"\x13" and self._ubxID != b"\x80":
+            umsg_name = ubt.UBX_MSGIDS[
+                self._ubxClass + self._ubxID + self._payload[0:1]
+            ]
         else:
             umsg_name = ubt.UBX_MSGIDS[self._ubxClass + self._ubxID]
 
@@ -404,7 +442,7 @@ class UBXMessage():
         return self._payload
 
     @staticmethod
-    def parse(message: bytes, validate: bool=False) -> object:
+    def parse(message: bytes, validate: bool = False) -> object:
         """Parse UBX byte stream to UBXMessage object.
 
         Includes option to validate incoming payload length and checksum
@@ -420,27 +458,33 @@ class UBXMessage():
         clsid = message[2:3]
         msgid = message[3:4]
         lenb = message[4:6]
-        if lenb == b'\x00\x00':
+        if lenb == b"\x00\x00":
             payload = None
             leni = 0
         else:
-            payload = message[6:lenm - 2]
+            payload = message[6 : lenm - 2]
             leni = len(payload)
-        ckm = message[lenm - 2:lenm]
+        ckm = message[lenm - 2 : lenm]
         if payload is not None:
             ckv = UBXMessage.calc_checksum(clsid + msgid + lenb + payload)
         else:
             ckv = UBXMessage.calc_checksum(clsid + msgid + lenb)
         if validate:
             if hdr != ubt.UBX_HDR:
-                raise ube.UBXParseError((f"Invalid message header {hdr}"
-                                         f" - should be {ubt.UBX_HDR}"))
+                raise ube.UBXParseError(
+                    (f"Invalid message header {hdr}" f" - should be {ubt.UBX_HDR}")
+                )
             if leni != UBXMessage.bytes2len(lenb):
-                raise ube.UBXParseError((f"Invalid payload length {lenb}"
-                                         f" - should be {UBXMessage.len2bytes(leni)}"))
+                raise ube.UBXParseError(
+                    (
+                        f"Invalid payload length {lenb}"
+                        f" - should be {UBXMessage.len2bytes(leni)}"
+                    )
+                )
             if ckm != ckv:
-                raise ube.UBXParseError((f"Message checksum {ckm}"
-                                         f" invalid - should be {ckv}"))
+                raise ube.UBXParseError(
+                    (f"Message checksum {ckm}" f" invalid - should be {ckv}")
+                )
         if payload is None:
             return UBXMessage(clsid, msgid, ubt.GET)
         return UBXMessage(clsid, msgid, ubt.GET, payload=payload)
@@ -474,7 +518,9 @@ class UBXMessage():
             msgid = UBXMessage.key_from_val(ubt.UBX_MSGIDS, msgID)[1:]
             return (clsid, msgid)
         except ube.UBXMessageError as err:
-            raise ube.UBXMessageError(f"Undefined message, class {msgClass}, id {msgID}") from err
+            raise ube.UBXMessageError(
+                f"Undefined message, class {msgClass}, id {msgID}"
+            ) from err
 
     @staticmethod
     def bytes_to_float(b: bytes) -> float:
@@ -485,7 +531,7 @@ class UBXMessage():
 
         """
 
-        return struct.unpack('<f', b)[0]
+        return struct.unpack("<f", b)[0]
 
     @staticmethod
     def bytes_to_double(b: bytes) -> float:
@@ -496,7 +542,7 @@ class UBXMessage():
 
         """
 
-        return struct.unpack('<d', b)[0]
+        return struct.unpack("<d", b)[0]
 
     @staticmethod
     def float_to_bytes(f: float) -> bytes:
@@ -507,7 +553,7 @@ class UBXMessage():
 
         """
 
-        return struct.pack('<f', f)
+        return struct.pack("<f", f)
 
     @staticmethod
     def double_to_bytes(f: float) -> bytes:
@@ -518,7 +564,7 @@ class UBXMessage():
 
         """
 
-        return struct.pack('<d', f)
+        return struct.pack("<d", f)
 
     @staticmethod
     def bytes2len(length: bytes) -> int:
@@ -529,7 +575,7 @@ class UBXMessage():
 
         """
 
-        return int.from_bytes(length, 'little', signed=False)
+        return int.from_bytes(length, "little", signed=False)
 
     @staticmethod
     def len2bytes(length: int) -> bytes:
@@ -573,8 +619,8 @@ class UBXMessage():
         """
 
         lenm = len(message)
-        ckm = message[lenm - 2:lenm]
-        return ckm == UBXMessage.calc_checksum(message[2:lenm - 2])
+        ckm = message[lenm - 2 : lenm]
+        return ckm == UBXMessage.calc_checksum(message[2 : lenm - 2])
 
     @staticmethod
     def itow2utc(iTOW: int) -> datetime.time:
@@ -598,17 +644,17 @@ class UBXMessage():
         """
 
         if fix == 5:
-            fixs = 'TIME ONLY'
+            fixs = "TIME ONLY"
         elif fix == 4:
-            fixs = 'GPS + DR'
+            fixs = "GPS + DR"
         elif fix == 3:
-            fixs = '3D'
+            fixs = "3D"
         elif fix == 2:
-            fixs = '2D'
+            fixs = "2D"
         elif fix == 1:
-            fixs = 'DR'
+            fixs = "DR"
         else:
-            fixs = 'NO FIX'
+            fixs = "NO FIX"
         return fixs
 
     @staticmethod
@@ -621,17 +667,17 @@ class UBXMessage():
         """
 
         if dop == 1:
-            dops = 'Ideal'
+            dops = "Ideal"
         elif dop <= 2:
-            dops = 'Excellent'
+            dops = "Excellent"
         elif dop <= 5:
-            dops = 'Good'
+            dops = "Good"
         elif dop <= 10:
-            dops = 'Moderate'
+            dops = "Moderate"
         elif dop <= 20:
-            dops = 'Fair'
+            dops = "Fair"
         else:
-            dops = 'Poor'
+            dops = "Poor"
         return dops
 
     @staticmethod
@@ -658,13 +704,13 @@ class UBXMessage():
         """
 
         h = hex(nmeaVersion)
-        return h[2:3] + '.' + h[3:]
+        return h[2:3] + "." + h[3:]
 
     @staticmethod
     def mode2str(mode: int) -> str:
         """Convert mode to string"""
 
-        return ['GET', 'SET', 'POLL'][mode]
+        return ["GET", "SET", "POLL"][mode]
 
     @staticmethod
     def key_from_val(dictionary: dict, value) -> str:

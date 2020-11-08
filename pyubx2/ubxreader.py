@@ -21,7 +21,7 @@ import pyubx2.ubxtypes_core as ubt
 NMEAMSG = "Looks like NMEA data. Set validate to 'False' to ignore."
 
 
-class UBXReader():
+class UBXReader:
     """
     UBXReader class.
     """
@@ -74,18 +74,18 @@ class UBXReader():
                 clsid = byten[0:1]
                 msgid = byten[1:2]
                 lenb = byten[2:4]
-                leni = int.from_bytes(lenb, 'little', signed=False)
+                leni = int.from_bytes(lenb, "little", signed=False)
                 byten = stm.read(leni + 2)
                 if len(byten) < leni + 2:  # EOF
                     break
                 plb = byten[0:leni]
-                cksum = byten[leni:leni + 2]
+                cksum = byten[leni : leni + 2]
                 raw_data = ubt.UBX_HDR + clsid + msgid + lenb + plb + cksum
                 parsed_data = UBXMessage.parse(raw_data)
                 reading = False
             else:  # it's not a UBX message
                 if self._validate:  # raise error and quit
-                    nmeawarn = NMEAMSG if byte1 in (b'$G', b'$P') else ""
+                    nmeawarn = NMEAMSG if byte1 in (b"$G", b"$P") else ""
                     raise UBXStreamError(f"Unknown data header {byte1}. {nmeawarn}")
                 byte1 = stm.read(2)  # read next 2 bytes and carry on
 

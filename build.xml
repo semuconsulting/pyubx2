@@ -3,8 +3,9 @@
 	<condition property="python" value="python" else="/Library/Frameworks/Python.framework/Versions/3.9/bin/python3">
 		<os family="windows" />
 	</condition>
-	<property name="version" value="0.2.4" />
+	<property name="version" value="0.2.5" />
 	<property name="test_args" value="tests/testsuite.py" />
+	<property name="format_args" value="-m black pyubx2" />
 	<property name="build_args" value="setup.py sdist bdist_wheel" />
 	<property name="deploy_args" value="-m twine upload --config-file .pypirc dist/*" />
 	<property name="install_args" value="-m pip install dist/${ant.project.name}-${version}.tar.gz --user" />
@@ -22,7 +23,13 @@
 			<fileset dir="${ant.project.name}/__pycache__" includes="*.nbc, *.nbi, *.pyc" />
 		</delete>
 	</target>
-	<target name="build" depends="clean">
+	<target name="format" depends="clean">
+		<echo>Formatting...</echo>
+		<exec executable="${python}">
+			<arg line="${format_args}" />
+		</exec>
+	</target>
+	<target name="build" depends="format">
 		<echo>Building...</echo>
 		<exec executable="${python}">
 			<arg line="${build_args}" />
