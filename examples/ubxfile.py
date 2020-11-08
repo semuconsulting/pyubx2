@@ -1,25 +1,25 @@
-'''
+"""
 Example implementation of a UBXMessage file reader
 using the UBXReader iterator functions
 
 Created on 25 Oct 2020
 
 @author: semuadmin
-'''
+"""
 
 from pyubx2.ubxreader import UBXReader
 import pyubx2.exceptions as ube
 
 
-class UBXStreamer():
-    '''
+class UBXStreamer:
+    """
     UBXStreamer class.
-    '''
+    """
 
     def __init__(self, filename):
-        '''
+        """
         Constructor.
-        '''
+        """
 
         self._filename = filename
         self._stream = None
@@ -28,27 +28,27 @@ class UBXStreamer():
         self._reading = False
 
     def __del__(self):
-        '''
+        """
         Destructor.
-        '''
+        """
 
         self.close()
 
     def open(self):
-        '''
+        """
         Open file.
-        '''
+        """
 
         try:
-            self._stream = open(self._filename, 'rb')
+            self._stream = open(self._filename, "rb")
             self._connected = True
         except Exception as err:
             print(f"Error opening file {err}")
 
     def close(self):
-        '''
+        """
         Close file.
-        '''
+        """
 
         if self._connected and self._stream:
             try:
@@ -58,10 +58,10 @@ class UBXStreamer():
         self._connected = False
 
     def reader(self, validate):
-        '''
+        """
         Reads and parses UBX message data from stream
         using UBXReader iterator method
-        '''
+        """
 
         i = 0
         self._ubxreader = UBXReader(self._stream, validate)
@@ -69,8 +69,8 @@ class UBXStreamer():
         for msg in self._ubxreader:  # invokes iterator method
             try:
                 (raw_data, parsed_data) = msg
-#                 if raw_data:
-#                     print(raw_data)
+                #                 if raw_data:
+                #                     print(raw_data)
                 if parsed_data:
                     print(parsed_data)
                     i += 1
@@ -83,11 +83,11 @@ class UBXStreamer():
 
 if __name__ == "__main__":
 
-    print("Enter fully qualified name of file containing binary UBX data: ", end='')
-    filefqn = input().strip('\"')
-    print("Do you want to validate the data stream (y/n)? (n) ", end='')
-    val = input() or 'n'
-    VALD = val in ('Y', 'y', 'YES,', 'yes', 'True')
+    print("Enter fully qualified name of file containing binary UBX data: ", end="")
+    filefqn = input().strip('"')
+    print("Do you want to validate the data stream (y/n)? (n) ", end="")
+    val = input() or "n"
+    VALD = val in ("Y", "y", "YES,", "yes", "True")
 
     print("Instantiating UBXStreamer class...")
     ubf = UBXStreamer(filefqn)
