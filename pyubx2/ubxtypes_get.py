@@ -56,7 +56,7 @@ UBX_PAYLOADS_GET = {
     "AID-ALM": {"svid": U4, "week": U4, "optBlock": ("None", {"dwrd": U4})},
     "AID-AOP": {"gnssId": U1, "svId": U1, "reserved1": U2, "data": U64},
     "AID-EPH": {
-        "svid": U1,
+        "svid": U4,
         "how": U4,
         "optBlock": (
             "None",
