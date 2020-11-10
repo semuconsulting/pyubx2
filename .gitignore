@@ -17,3 +17,4 @@ Pipfile*.*
 *.pyc
 /examples/ubxsandpit.py
 /.pytest_cache/
+pylint_report.txt
