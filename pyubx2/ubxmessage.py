@@ -237,17 +237,20 @@ class UBXMessage:
         if self._mode == ubt.POLL:
             pdict = ubp.UBX_PAYLOADS_POLL[self.identity]
         elif self._mode == ubt.SET:
-            pdict = ubs.UBX_PAYLOADS_SET[self.identity]
+            if self._ubxClass == b"\x13" and self._ubxID != b"\x80":  # MGA SET message
+                pdict = self._get_mga_version(ubt.SET, **kwargs)
+            else:
+                pdict = ubs.UBX_PAYLOADS_SET[self.identity]
         else:
-            if self._ubxClass == b"\x13" and self._ubxID != b"\x80":  # MGA message
-                pdict = self._get_mga_version(**kwargs)
+            if self._ubxClass == b"\x13" and self._ubxID != b"\x80":  # MGA GET message
+                pdict = self._get_mga_version(ubt.GET, **kwargs)
             elif self.identity == "CFG-NMEA":
                 pdict = self._get_cfgnmea_version(**kwargs)
             else:
                 pdict = ubg.UBX_PAYLOADS_GET[self.identity]
         return pdict
 
-    def _get_mga_version(self, **kwargs) -> dict:
+    def _get_mga_version(self, mode, **kwargs) -> dict:
         """
         Select appropriate MGA payload definition
 
@@ -257,7 +260,10 @@ class UBXMessage:
 
         typ = kwargs["payload"][0:1]
         identity = ubt.UBX_MSGIDS[self._ubxClass + self._ubxID + typ]
-        pdict = ubg.UBX_PAYLOADS_GET[identity]
+        if mode == ubt.SET:
+            pdict = ubs.UBX_PAYLOADS_SET[identity]
+        else:
+            pdict = ubg.UBX_PAYLOADS_GET[identity]
         return pdict
 
     def _get_cfgnmea_version(self, **kwargs) -> dict:
@@ -515,7 +521,8 @@ class UBXMessage:
 
         try:
             clsid = UBXMessage.key_from_val(ubt.UBX_CLASSES, msgClass)
-            msgid = UBXMessage.key_from_val(ubt.UBX_MSGIDS, msgID)[1:]
+            # msgid = UBXMessage.key_from_val(ubt.UBX_MSGIDS, msgID)[1:]
+            msgid = UBXMessage.key_from_val(ubt.UBX_MSGIDS, msgID)[1:2]
             return (clsid, msgid)
         except ube.UBXMessageError as err:
             raise ube.UBXMessageError(
