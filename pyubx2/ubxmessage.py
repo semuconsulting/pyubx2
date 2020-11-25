@@ -451,8 +451,7 @@ class UBXMessage:
     def parse(message: bytes, validate: bool = False) -> object:
         """Parse UBX byte stream to UBXMessage object.
 
-        Includes option to validate incoming payload length and checksum
-        (UXBMessage will calculate and assign it's own values anyway).
+        Includes option to validate payload header, length and checksum
 
         :param message: bytes:
         :param validate: bool:  (Default value = False)
@@ -464,29 +463,32 @@ class UBXMessage:
         clsid = message[2:3]
         msgid = message[3:4]
         lenb = message[4:6]
-        if lenb == b"\x00\x00":
+        lenp = UBXMessage.bytes2len(lenb)
+        if lenp == 0:
             payload = None
-            leni = 0
+        elif lenp <= (lenm - 8):
+            payload = message[6 : 6 + lenp ]
         else:
-            payload = message[6 : lenm - 2]
-            leni = len(payload)
-        ckm = message[lenm - 2 : lenm]
-        if payload is not None:
-            ckv = UBXMessage.calc_checksum(clsid + msgid + lenb + payload)
-        else:
-            ckv = UBXMessage.calc_checksum(clsid + msgid + lenb)
+            raise ube.UBXParseError(
+                (f"Invalid message" f" - too short (truncated?)")
+            )
+        ckm = message[6 + lenp : 6 + lenp + 2 ]
         if validate:
             if hdr != ubt.UBX_HDR:
                 raise ube.UBXParseError(
                     (f"Invalid message header {hdr}" f" - should be {ubt.UBX_HDR}")
                 )
-            if leni != UBXMessage.bytes2len(lenb):
+            if lenm < (lenp + 8):
                 raise ube.UBXParseError(
                     (
-                        f"Invalid payload length {lenb}"
-                        f" - should be {UBXMessage.len2bytes(leni)}"
+                        f"Invalid message length {lenm}"
+                        f" - should be {lenp+8} (at least)"
                     )
                 )
+            if payload is not None:
+                ckv = UBXMessage.calc_checksum(clsid + msgid + lenb + payload)
+            else:
+                ckv = UBXMessage.calc_checksum(clsid + msgid + lenb)
             if ckm != ckv:
                 raise ube.UBXParseError(
                     (f"Message checksum {ckm}" f" invalid - should be {ckv}")

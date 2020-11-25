@@ -71,7 +71,8 @@ class ExceptionTest(unittest.TestCase):
             UBXMessage.parse(self.bad_hdr, True)
 
     def testParseBadLen(self):  # test for invalid message length in bytes
-        EXPECTED_ERROR = "Invalid payload length (.*) - should be (.*)"
+        #EXPECTED_ERROR = "Invalid payload length (.*) - should be (.*)"
+        EXPECTED_ERROR = "Invalid message - too short \(truncated\?\)"
         with self.assertRaisesRegex(UBXParseError, EXPECTED_ERROR):
             UBXMessage.parse(self.bad_len, True)
 
