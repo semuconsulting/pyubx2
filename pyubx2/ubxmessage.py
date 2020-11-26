@@ -466,19 +466,18 @@ class UBXMessage:
         lenp = UBXMessage.bytes2len(lenb)
         if lenp == 0:
             payload = None
-        elif lenp <= (lenm - 8):
-            payload = message[6 : 6 + lenp ]
         else:
-            raise ube.UBXParseError(
-                (f"Invalid message" f" - too short (truncated?)")
-            )
+            if lenp > (lenm - 8):
+                lenp = lenm - 8 # this would be an invalid message
+            payload = message[6 : 6 + lenp ]
         ckm = message[6 + lenp : 6 + lenp + 2 ]
         if validate:
             if hdr != ubt.UBX_HDR:
                 raise ube.UBXParseError(
                     (f"Invalid message header {hdr}" f" - should be {ubt.UBX_HDR}")
                 )
-            if lenm < (lenp + 8):
+            lenp = UBXMessage.bytes2len(lenb)
+            if lenp > (lenm - 8):
                 raise ube.UBXParseError(
                     (
                         f"Invalid message length {lenm}"
