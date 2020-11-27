@@ -149,7 +149,7 @@ if __name__ == "__main__":
 
     # set PORT, BAUDRATE and TIMEOUT as appropriate
     if platform == "win32":
-        PORT = "COM7"
+        PORT = "COM11"
     else:
         PORT = "/dev/tty.usbmodem14101"
     BAUDRATE = 9600
@@ -167,7 +167,11 @@ if __name__ == "__main__":
 
     print("\nPolling receiver...\n\n")
     # poll the receiver configuration
-    for msgtype in ("CFG-PRT", "CFG-USB", "CFG-NMEA", "CFG-NAV5"):
+    for port in (0, 1, 2, 3, 4):  # I2C, UART1, UART2, USB, SPI
+        msg = UBXMessage("CFG", "CFG-PRT", POLL, portID=port)
+        ubp.send(msg.serialize())
+        sleep(1)
+    for msgtype in ("CFG-USB", "CFG-NMEA", "CFG-NAV5"):
         msg = UBXMessage("CFG", msgtype, POLL)
         ubp.send(msg.serialize())
         sleep(1)
