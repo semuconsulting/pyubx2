@@ -49,9 +49,13 @@ Individual input UBX messages can then be read using the `UBXReader.read()` func
 data (as bytes) and the parsed data (as a `UBXMessage` object). The function is thread-safe in so far as the incoming
 data stream object is thread-safe. `UBXReader` also implements an iterator.
 
+The `UBXReader` constructor includes an optional `validate` flag which governs behaviour if the stream includes non-UBX data.
+If set to 'False' (the default), it will ignore such data and continue with the next valid UBX message. If set to 'True', it
+will raise a `UBXStreamError`.
+
 Examples:
 
-* Serial input
+* Serial input - this example will ignore any non-UBX data.
 
 ```python
 >>> from serial import Serial
@@ -61,14 +65,14 @@ Examples:
 >>> (raw_data, parsed_data) = ubr.read()
 ```
 
-* File input (using iterator)
+* File input (using iterator) - this example will produce a `UBXStreamError` if non-UBX data is encountered.
 
 ```python
 >>> import os
 >>> from pyubx2 import UBXReader
 >>> file = os.path.join(os.path.dirname(__file__), 'ubxdata.bin')
 >>> stream = open(file, 'rb')
->>> ubr = UBXReader(stream)
+>>> ubr = UBXReader(stream, True)
 >>> for (raw_data, parsed_data) in ubr: print(parsed_data)
 ...
 ```
