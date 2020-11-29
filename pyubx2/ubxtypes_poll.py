@@ -13,7 +13,7 @@ Created on 27 Sep 2020
 """
 # pylint: disable=unused-import, too-many-lines, line-too-long
 
-from pyubx2.ubxtypes_core import U1
+from pyubx2.ubxtypes_core import U1, U2, U4
 
 UBX_PAYLOADS_POLL = {
     # AID messages are deprecated in favour of MGA messages in >=Gen8
@@ -62,6 +62,12 @@ UBX_PAYLOADS_POLL = {
     # },
     "CFG-TXSLOT": {},
     "CFG-USB": {},
+    "CFG-VALGET": {
+        "version": U1,
+        "layer": U1,
+        "position": U2,
+        "group": ("None", {"keys": U4}),  # repeating group
+    },
     # *************************************************
     "ESF-STATUS": {},
     # *************************************************

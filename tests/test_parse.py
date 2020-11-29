@@ -9,7 +9,7 @@ Parse method tests for pyubx2.UBXMessage
 
 import unittest
 
-from pyubx2 import UBXMessage, SET, POLL, GET
+from pyubx2 import UBXMessage
 
 
 class ParseTest(unittest.TestCase):
@@ -26,6 +26,7 @@ class ParseTest(unittest.TestCase):
         self.cfg_nmeav0 = b'\xb5b\x06\x17\x0c\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x29\x61'
         self.mga_dbd = b'\xb5b\x13\x80\x0e\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x01\x02\xf2\xc2'
         self.mga_flash_ack = b'\xb5b\x13\x21\x06\x00\x03\x01\x02\x00\x00\x04\x44\x3a'
+        self.cfg_valget = b'\xb5b\x06\x8b\x06\x00\x00\x01\x02\x00\x01\x02\x9d\x60'
 
     def tearDown(self):
         pass
@@ -128,6 +129,10 @@ class ParseTest(unittest.TestCase):
     def testMgaFlashAck(self):
         res = UBXMessage.parse(self.mga_flash_ack, True)
         self.assertEqual(str(res), "<UBX(MGA-FLASH-ACK, type=3, version=1, ack=2, reserved1=0, sequence=1024)>")
+
+    def testCFGVALGET(self):
+        res = UBXMessage.parse(self.cfg_valget, True)
+        self.assertEqual(str(res), "<UBX(CFG-VALGET, version=0, layer=1, position=2, cfgData_01=1, cfgData_02=2)>")
 
 
 if __name__ == "__main__":

@@ -9,7 +9,7 @@ Fill method tests for pyubx2.UBXMessage
 
 import unittest
 
-from pyubx2 import UBXMessage, SET, POLL
+from pyubx2 import UBXMessage, GET, SET, POLL
 
 
 class FillTest(unittest.TestCase):
@@ -114,6 +114,21 @@ class FillTest(unittest.TestCase):
         res = UBXMessage('CFG', 'CFG-MSG', SET, msgClass=240, msgID=5, rateUART1=1, rateUSB=1)
         reseval = eval(repr(res))
         assert type(reseval) is UBXMessage
+
+    def testPoll_CFGVALGET(self):  #  test CFG-VALGET POLL constructor
+        EXPECTED_RESULT = "<UBX(CFG-VALGET, version=0, layer=1, position=2, keys_01=1, keys_02=2)>"
+        res = UBXMessage('CFG', 'CFG-VALGET', POLL, payload=b'\x00\x01\x02\x00\x01\x00\x00\x00\x02\x00\x00\x00')
+        self.assertEqual(str(res), EXPECTED_RESULT)
+
+    def testPoll_CFGVALDEL(self):  #  test CFG-VALDEL SET constructor
+        EXPECTED_RESULT = "<UBX(CFG-VALDEL, version=1, layers=b'\\x01', transaction=b'\\x02', reserved0=0, keys_01=1, keys_02=2)>"
+        res = UBXMessage('CFG', 'CFG-VALDEL', SET, payload=b'\x01\x01\x02\x00\x01\x00\x00\x00\x02\x00\x00\x00')
+        self.assertEqual(str(res), EXPECTED_RESULT)
+
+    def testPoll_CFGVALSET(self):  #  test CFG-VALSET SET constructor
+        EXPECTED_RESULT = "<UBX(CFG-VALSET, version=1, layers=b'\\x01', transaction=2, reserved0=0, cfgData_01=3, cfgData_02=4, cfgData_03=5)>"
+        res = UBXMessage('CFG', 'CFG-VALSET', SET, payload=b'\x01\x01\x02\x00\x03\x04\x05')
+        self.assertEqual(str(res), EXPECTED_RESULT)
 
 
 if __name__ == "__main__":
