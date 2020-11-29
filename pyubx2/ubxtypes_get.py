@@ -446,6 +446,12 @@ UBX_PAYLOADS_GET = {
         "productString": C32,
         "serialNumber": C32,
     },
+    "CFG-VALGET": {  # gen-9
+        "version": U1,
+        "layer": X1,
+        "position": U2,
+        "cfgData": ("None", {"data": U1}),  # {KeyID: U4, value: 1, 2, 4 or 8 bytes}
+    },
     # ********************************************************************
     # External Sensor Fusion Messages: i.e. External Sensor Measurements and Status Information.
     # Messages in the ESF class are used to output external sensor fusion information from the receiver.

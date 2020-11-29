@@ -17,6 +17,16 @@ GET = 0
 SET = 1
 POLL = 2
 
+VALGET_RAM = bytes([0b0000])  # 0
+VALGET_BBR = bytes([0b0001])  # 1
+VALGET_FLASH = bytes([0b0010])  # 2
+VALGET_DEFAULT = bytes([0b0111])  # 7
+
+VALSET_RAM = bytes([0b0001])  # 1
+VALSET_BBR = bytes([0b0010])  # 2
+VALSET_FLASH = bytes([0b0100])  # 3
+VALSET_ALL = bytes([0b0111])  # 7
+
 GNSSLIST = {
     0: "GPS",
     1: "SBAS",
@@ -149,6 +159,9 @@ UBX_MSGIDS = {
     b"\x06\x31": "CFG-TP5",
     b"\x06\x53": "CFG-TXSLOT",
     b"\x06\x1b": "CFG-USB",
+    b"\x06\x8a": "CFG-VALSET",
+    b"\x06\x8b": "CFG-VALGET",
+    b"\x06\x8c": "CFG-VALDEL",
     b"\x10\x10": "ESF-STATUS",
     b"\x04\x04": "INF-DEBUG",
     b"\x04\x00": "INF-ERROR",

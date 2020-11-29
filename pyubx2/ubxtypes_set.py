@@ -437,6 +437,18 @@ UBX_PAYLOADS_SET = {
         "productString": C32,
         "serialNumber": C32,
     },
+    "CFG-VALDEL": {  # gen-9
+        "version": U1,
+        "layers": X1,
+        "reserved0": U2,  # U1[2]
+        "keys": ("None", {"key": U4}),
+    },
+    "CFG-VALSET": {  # gen-9
+        "version": U1,
+        "layers": X1,
+        "reserved0": U2,  # U1[2]
+        "cfgData": ("None", {"data": U1}),  # {KeyID: U4, value: 1, 2, 4 or 8 bytes}
+    },
     # ********************************************************************
     # Logging Messages: i.e. Log creation, deletion, info and retrieval.
     # Messages in the LOG class are used to configure and report status information of the logging feature.
