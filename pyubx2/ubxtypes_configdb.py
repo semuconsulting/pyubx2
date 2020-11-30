@@ -34,6 +34,16 @@ from pyubx2.ubxtypes_core import (
     X8,
 )
 
+# bytes 28..30 of Configuration Key ID represent
+# storage length of Configuration Value in bytes
+UBX_CONFIG_STORSIZE = {
+    0x01: 1,
+    0x02: 1,
+    0x03: 2,
+    0x04: 4,
+    0x05: 5,
+}
+
 UBX_CONFIG_DATABASE = {
     # CFG-ANA AssistNow Autonomous and Offline configuration
     "CFG-ANA-USE_ANA": (0x10230001, L),
