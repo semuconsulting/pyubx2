@@ -30,31 +30,38 @@ GNSSLIST = {
 """
 THESE ARE THE UBX PROTOCOL PAYLOAD ATTRIBUTE TYPES
 """
-U1 = "U01"  # Unsigned Char
-U2 = "U02"  # Unsigned Short
-U3 = "U03"  # Unsigned Long 3
-U4 = "U04"  # Unsigned Long 4
-U5 = "U05"  # Unsigned Long 5
-U6 = "U06"  # Unsigned Long 6
-U8 = "U08"  # Unsigned Long 8
-U12 = "U12"  # Unsigned Long 12
-U40 = "U40"  # Unsigned Long 40
-U64 = "U64"  # Unsigned Long 64
-I1 = "I01"  # Signed Char 1 2's complement
-I2 = "I02"  # Signed Short
-I4 = "I04"  # Signed Long 4 2's complement
-X1 = "X01"  # Bitfield 1
-X2 = "X02"  # Bitfield 2
-X4 = "X04"  # Bitfield 4
-X6 = "X06"  # Bitfield 6
-R4 = "R04"  # Float (IEEE 754) Single Precision 4
-R8 = "R08"  # Float (IEEE 754) Double Precision 8
-C2 = "C02"  # ASCII / ISO 8859.1 Encoding 2
-C6 = "C06"  # ASCII / ISO 8859.1 Encoding 6
-C10 = "C10"  # ASCII / ISO 8859.1 Encoding 10
-C30 = "C30"  # ASCII / ISO 8859.1 Encoding 30
-C32 = "C32"  # ASCII / ISO 8859.1 Encoding 32
+U1 = "U01"  # Unsigned Int 1 byte
+U2 = "U02"  # Unsigned Int 2 bytes
+U3 = "U03"  # Unsigned Int 3 bytes
+U4 = "U04"  # Unsigned Int 4 bytes
+U5 = "U05"  # Unsigned Int 5 bytes
+U6 = "U06"  # Unsigned Int 6 bytes
+U8 = "U08"  # Unsigned Int 8 bytes
+U12 = "U12"  # Unsigned Int 12 bytes
+U40 = "U40"  # Unsigned Int 40 bytes
+U64 = "U64"  # Unsigned Int 64 bytes
+I1 = "I01"  # Signed Int 2's complement 1 byte
+I2 = "I02"  # Signed Int 2's complement 2 bytes
+I4 = "I04"  # Signed Int 2's complement 4 bytes
+I8 = "I08"  # Signed Int 2's complement 8 bytes
+X1 = "X01"  # Bitfield 1 byte
+X2 = "X02"  # Bitfield 2 bytes
+X4 = "X04"  # Bitfield 4 bytes
+X6 = "X06"  # Bitfield 6 bytes
+X8 = "X08"  # Bitfield 8 bytes
+R4 = "R04"  # Float (IEEE 754) Single Precision 4 bytes
+R8 = "R08"  # Float (IEEE 754) Double Precision 8 bytes
+C2 = "C02"  # ASCII / ISO 8859.1 Encoding 2 bytes
+C6 = "C06"  # ASCII / ISO 8859.1 Encoding 6 bytes
+C10 = "C10"  # ASCII / ISO 8859.1 Encoding 10 bytes
+C30 = "C30"  # ASCII / ISO 8859.1 Encoding 30 bytes
+C32 = "C32"  # ASCII / ISO 8859.1 Encoding 32 bytes
 CH = "CH"  # ASCII / ISO 8859.1 Encoding Variable Length
+E1 = "E01"  # Unsigned Int Enumeration 1 byte
+E2 = "E02"  # Unsigned Int Enumeration 2 bytes
+E4 = "E04"  # Unsigned Int Enumeration 3 bytes
+L = "L01"  # boolean stored as U01
+
 VALID_TYPES = (
     U1,
     U2,
@@ -69,10 +76,12 @@ VALID_TYPES = (
     I1,
     I2,
     I4,
+    I8,
     X1,
     X2,
     X4,
     X6,
+    X8,
     R4,
     R8,
     C2,
@@ -81,6 +90,10 @@ VALID_TYPES = (
     C30,
     C32,
     CH,
+    E1,
+    E2,
+    E4,
+    L,
 )
 
 """

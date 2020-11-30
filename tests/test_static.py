@@ -75,10 +75,10 @@ class StaticTest(unittest.TestCase):
     def testcfgname2key(self):
         (key, typ) = UBXMessage.cfgname2key("CFG-NMEA-PROTVER")
         self.assertEqual(key, 0x20930001)
-        self.assertEqual(typ, "E1")
+        self.assertEqual(typ, "E01")
         (key, typ) = UBXMessage.cfgname2key("CFG-UART1-BAUDRATE")
         self.assertEqual(key, 0x40520001)
-        self.assertEqual(typ, "U4")
+        self.assertEqual(typ, "U04")
 
 
 if __name__ == "__main__":
