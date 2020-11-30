@@ -41,7 +41,7 @@ UBX_CONFIG_STORSIZE = {
     0x02: 1,
     0x03: 2,
     0x04: 4,
-    0x05: 5,
+    0x05: 8,
 }
 
 UBX_CONFIG_DATABASE = {
