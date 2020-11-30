@@ -59,8 +59,8 @@ C32 = "C32"  # ASCII / ISO 8859.1 Encoding 32 bytes
 CH = "CH"  # ASCII / ISO 8859.1 Encoding Variable Length
 E1 = "E01"  # Unsigned Int Enumeration 1 byte
 E2 = "E02"  # Unsigned Int Enumeration 2 bytes
-E4 = "E04"  # Unsigned Int Enumeration 3 bytes
-L = "L01"  # boolean stored as U01
+E4 = "E04"  # Unsigned Int Enumeration 4 bytes
+L = "L01"  # Boolean stored as U01
 
 VALID_TYPES = (
     U1,
