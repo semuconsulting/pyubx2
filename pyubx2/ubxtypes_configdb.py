@@ -34,7 +34,7 @@ from pyubx2.ubxtypes_core import (
     X8,
 )
 
-# bytes 28..30 of Configuration Key ID represent
+# bits 28..30 of Configuration Key ID represent
 # storage length of Configuration Value in bytes
 UBX_CONFIG_STORSIZE = {
     0x01: 1,

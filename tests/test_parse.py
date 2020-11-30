@@ -26,7 +26,9 @@ class ParseTest(unittest.TestCase):
         self.cfg_nmeav0 = b'\xb5b\x06\x17\x0c\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x29\x61'
         self.mga_dbd = b'\xb5b\x13\x80\x0e\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x01\x02\xf2\xc2'
         self.mga_flash_ack = b'\xb5b\x13\x21\x06\x00\x03\x01\x02\x00\x00\x04\x44\x3a'
-        self.cfg_valget = b'\xb5b\x06\x8b\x06\x00\x00\x01\x02\x00\x01\x02\x9d\x60'
+        self.cfg_valget = b'\xb5b\x06\x8b\x0c\x00\x00\x00\x00\x00\x01\x00\x52\x40\x80\x25\x00\x00\xd5\xd0'
+        self.cfg_valget2 = b'\xb5b\x06\x8b\x09\x00\x00\x00\x00\x00\x01\x00\x51\x20\x55\x61\xc2'
+        self.cfg_valget3 = b'\xb5b\x06\x8b\x0e\x00\x00\x00\x00\x00\x01\x00\x51\x20\x55\x02\x00\x21\x30\x23\xdc\xe7'
 
     def tearDown(self):
         pass
@@ -132,7 +134,22 @@ class ParseTest(unittest.TestCase):
 
     def testCFGVALGET(self):
         res = UBXMessage.parse(self.cfg_valget, True)
-        self.assertEqual(str(res), "<UBX(CFG-VALGET, version=0, layer=1, position=2, cfgData_01=1, cfgData_02=2)>")
+        self.assertEqual(str(res), "<UBX(CFG-VALGET, version=0, layer=0, position=0, cfgData_01=1, cfgData_02=0, cfgData_03=82, cfgData_04=64, cfgData_05=128, cfgData_06=37, cfgData_07=0, cfgData_08=0)>")
+
+    def testCFGVALGETParse(self):  # test parse of CFG-VALGET CFG-UART1-BAUDRATE
+        res = UBXMessage.parse(self.cfg_valget, True)
+        dic = res._parse_cfgvalget()
+        self.assertEqual(dic, {1079115777: 9600})
+
+    def testCFGVALGETParse2(self):  # test parse of CFG-VALGET CFG-I2C-ADDRESS
+        res = UBXMessage.parse(self.cfg_valget2, True)
+        dic = res._parse_cfgvalget()
+        self.assertEqual(dic, {542179329: 85})
+
+    def testCFGVALGETParse3(self):  # test parse of CFG-VALGET CFG-I2C-ADDRESS
+        res = UBXMessage.parse(self.cfg_valget3, True)
+        dic = res._parse_cfgvalget()
+        self.assertEqual(dic, {542179329: 85, 807469058: 35})
 
 
 if __name__ == "__main__":

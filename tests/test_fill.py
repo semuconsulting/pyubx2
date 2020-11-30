@@ -116,18 +116,18 @@ class FillTest(unittest.TestCase):
         assert type(reseval) is UBXMessage
 
     def testPoll_CFGVALGET(self):  #  test CFG-VALGET POLL constructor
-        EXPECTED_RESULT = "<UBX(CFG-VALGET, version=0, layer=1, position=2, keys_01=1, keys_02=2)>"
-        res = UBXMessage('CFG', 'CFG-VALGET', POLL, payload=b'\x00\x01\x02\x00\x01\x00\x00\x00\x02\x00\x00\x00')
+        EXPECTED_RESULT = "<UBX(CFG-VALGET, version=0, layer=1, position=0, keys_01=1079115777, keys_02=1079181313)>"
+        res = UBXMessage('CFG', 'CFG-VALGET', POLL, payload=b'\x00\x01\x00\x00\x01\x00\x52\x40\x01\x00\x53\x40')
         self.assertEqual(str(res), EXPECTED_RESULT)
 
     def testPoll_CFGVALDEL(self):  #  test CFG-VALDEL SET constructor
-        EXPECTED_RESULT = "<UBX(CFG-VALDEL, version=1, layers=b'\\x01', transaction=b'\\x02', reserved0=0, keys_01=1, keys_02=2)>"
-        res = UBXMessage('CFG', 'CFG-VALDEL', SET, payload=b'\x01\x01\x02\x00\x01\x00\x00\x00\x02\x00\x00\x00')
+        EXPECTED_RESULT = "<UBX(CFG-VALDEL, version=0, layers=b'\\x03', transaction=b'\\x00', reserved0=0, keys_01=1079115777, keys_02=16798528)>"
+        res = UBXMessage('CFG', 'CFG-VALDEL', SET, payload=b'\x00\x03\x00\x00\x01\x00\x52\x40\x40\x53\x00\x01')
         self.assertEqual(str(res), EXPECTED_RESULT)
 
     def testPoll_CFGVALSET(self):  #  test CFG-VALSET SET constructor
-        EXPECTED_RESULT = "<UBX(CFG-VALSET, version=1, layers=b'\\x01', transaction=2, reserved0=0, cfgData_01=3, cfgData_02=4, cfgData_03=5)>"
-        res = UBXMessage('CFG', 'CFG-VALSET', SET, payload=b'\x01\x01\x02\x00\x03\x04\x05')
+        EXPECTED_RESULT = "<UBX(CFG-VALSET, version=0, layers=b'\\x03', transaction=0, reserved0=0, cfgData_01=1, cfgData_02=0, cfgData_03=82, cfgData_04=64, cfgData_05=128, cfgData_06=37, cfgData_07=0, cfgData_08=0)>"
+        res = UBXMessage('CFG', 'CFG-VALSET', SET, payload=b'\x00\x03\x00\x00\x01\x00\x52\x40\x80\x25\x00\x00')
         self.assertEqual(str(res), EXPECTED_RESULT)
 
 

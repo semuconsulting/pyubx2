@@ -80,6 +80,11 @@ class StaticTest(unittest.TestCase):
         self.assertEqual(key, 0x40520001)
         self.assertEqual(typ, "U04")
 
+    def testcfgkey2type(self):
+        (key, typ) = UBXMessage.cfgkey2name(0x20510001)
+        self.assertEqual(key, "CFG-I2C-ADDRESS")
+        self.assertEqual(typ, "U01")
+
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']

@@ -379,6 +379,52 @@ class UBXMessage:
 
         super().__setattr__(name, value)
 
+    def _parse_cfgvalget(self) -> dict:
+        """Parse CFG-VALGET payload to array of key value pairs
+
+        !!! TODO - WORK IN PROGRESS - THIS MAY CHANGE IN FINAL IMPLEMENTATION !!!
+
+        :return cfgdict: dictionary of key value pair(s)
+        """
+
+        if self.identity != "CFG-VALGET":
+            return None
+
+        val = 0
+        cfgdata = []  # array of individual bytes
+        cfglen = UBXMessage.bytes2len(self._length) - 4  # length of cfgData group
+        cfgdict = {}  # dict of key value pairs
+        for i in range(cfglen):
+            cfgdata.append(getattr(self, "cfgData_{0:0=2d}".format(i + 1)))
+
+        i = 0
+        for cfgbyte in range(cfglen):  # for each configuration byte
+            if i == 4:
+                key = int.from_bytes(
+                    cfgdata[cfgbyte - 4 : cfgbyte], "little", signed=False
+                )
+                # siz = key >> 28 & 0b111  # bits 28..30 represent size of value store
+                # lng = ubcdb.UBX_CONFIG_STORSIZE[siz]
+                (_, att) = self.cfgkey2name(key)
+                atts = int(att[1:3])
+                val = cfgdata[cfgbyte : cfgbyte + atts]
+                if att[0:1] in ("X"):
+                    pass
+                elif att[0:1] in ("E", "L", "U"):  # unsigned integer/enumeration
+                    val = int.from_bytes(val, "little", signed=False)
+                elif att[0:1] == "I":  # signed integer
+                    val = int.from_bytes(val, "little", signed=True)
+                elif att == ubt.R4:  # single precision floating point
+                    val = self.bytes_to_float(val)
+                elif att == ubt.R8:  # double precision floating point
+                    val = self.bytes_to_double(val)
+                cfgdict[key] = val
+                i = 0
+            else:
+                i += 1
+
+        return cfgdict
+
     def serialize(self) -> bytes:
         """Serialize message
 
@@ -737,11 +783,33 @@ class UBXMessage:
         raise ube.UBXMessageError(f"Undefined message type {value}")
 
     @staticmethod
-    def cfgname2key(name):
-        """Return hexadecimal key for configuration database name
+    def cfgname2key(name: str) -> (int, str):
+        """
+        Return hexadecimal key and data type for given
+        configuration database key name.
 
         :param name: str
         :return (key: int, type: str)
         """
+        try:
+            return ubcdb.UBX_CONFIG_DATABASE[name]
+        except KeyError:
+            raise ube.UBXMessageError(f"Undefined configuration database key {name}")
 
-        return ubcdb.UBX_CONFIG_DATABASE[name]
+    @staticmethod
+    def cfgkey2name(keyID: int) -> (str, str):
+        """
+        Return key name and data type for given
+        configuration database hexadecimal key.
+
+        :param keyID: int:
+        :return (keyname: str, type: str)
+
+        """
+
+        val = None
+        for key, val in ubcdb.UBX_CONFIG_DATABASE.items():
+            (kid, typ) = val
+            if keyID == kid:
+                return (key, typ)
+        raise ube.UBXMessageError(f"Undefined configuration database key {hex(keyID)}")
