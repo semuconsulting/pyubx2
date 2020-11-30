@@ -15,6 +15,7 @@ import pyubx2.ubxtypes_core as ubt
 import pyubx2.ubxtypes_get as ubg
 import pyubx2.ubxtypes_set as ubs
 import pyubx2.ubxtypes_poll as ubp
+import pyubx2.ubxtypes_configdb as ubcdb
 
 
 class UBXMessage:
@@ -734,3 +735,13 @@ class UBXMessage:
             if val == value:
                 return key
         raise ube.UBXMessageError(f"Undefined message type {value}")
+
+    @staticmethod
+    def cfgname2key(name):
+        """Return hexadecimal key for configuration database name
+
+        :param name: str
+        :return (key: int, type: str)
+        """
+
+        return ubcdb.UBX_CONFIG_DATABASE[name]
