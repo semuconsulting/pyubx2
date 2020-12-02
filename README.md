@@ -24,7 +24,7 @@ At time of writing the library implements a complete set of inbound and outbound
 the [u-blox generation 8 protocol](https://www.u-blox.com/en/docs/UBX-13003221), but is readily 
 [extensible](#extensibility) for later generations.
 
-Constructive feedback and feature requests welcome.
+Contributions and feedback welcome - see [CONTRIBUTING](CONTRIBUTING.MD).
 
 ## <a name="installation">Installation</a>
 

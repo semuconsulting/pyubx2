@@ -124,14 +124,18 @@ class UBXMessage:
         att = pdict[key]  # get attribute type
         if isinstance(att, tuple):  # attribute is a tuple i.e. a nested repeating group
             numr, attd = att
-            if numr == "None":
-                rng = self._calc_num_repeats(attd, self._payload, offset)
+            # if CFG-VALGET, parse as configuration database key value pairs
+            if self._ubxClass == b"\x06" and self._ubxID in (b"\x8b"):
+                self._set_cfgval_attributes(offset, **kwargs)
             else:
-                rng = getattr(self, numr)
-            for i in range(rng):
-                self._index = i + 1
-                for key1 in attd.keys():
-                    (offset, _) = self._set_attribute(offset, attd, key1, **kwargs)
+                if numr == "None":
+                    rng = self._calc_num_repeats(attd, self._payload, offset)
+                else:
+                    rng = getattr(self, numr)
+                for i in range(rng):
+                    self._index = i + 1
+                    for key1 in attd.keys():
+                        (offset, _) = self._set_attribute(offset, attd, key1, **kwargs)
 
         else:
 
@@ -213,6 +217,45 @@ class UBXMessage:
             offset += atts
 
         return (offset, att)
+
+    def _set_cfgval_attributes(self, offset: int, **kwargs):
+        """Parse CFG-VALGET payload to set of configuration
+        database key value pairs
+
+        !!! TODO - WORK IN PROGRESS - THIS MAY CHANGE IN FINAL IMPLEMENTATION !!!
+
+        :param offset int: payload offset
+        :param **kwargs  payload
+        """
+
+        self._payload = kwargs["payload"]
+        cfglen = len(self._payload[offset:])
+
+        i = 0
+        while offset < cfglen:
+            if i == 4:
+                key = int.from_bytes(
+                    self._payload[offset : offset + 4], "little", signed=False
+                )
+                (keyname, att) = self.cfgkey2name(key)
+                atts = int(att[1:3])
+                val = self._payload[offset + 4 : offset + 4 + atts]
+                if att[0:1] in ("X"):  # bitfield
+                    pass
+                elif att[0:1] in ("E", "L", "U"):  # unsigned integer/enumeration
+                    val = int.from_bytes(val, "little", signed=False)
+                elif att[0:1] == "I":  # signed integer
+                    val = int.from_bytes(val, "little", signed=True)
+                elif att == ubt.R4:  # single precision floating point
+                    val = self.bytes_to_float(val)
+                elif att == ubt.R8:  # double precision floating point
+                    val = self.bytes_to_double(val)
+                setattr(self, keyname, val)
+                i = 0
+                offset += 4 + atts
+
+            else:
+                i += 1
 
     def _do_len_checksum(self):
         """Calculate and format payload length and checksum as bytes"""
@@ -378,52 +421,6 @@ class UBXMessage:
             )
 
         super().__setattr__(name, value)
-
-    def _parse_cfgvalget(self) -> dict:
-        """Parse CFG-VALGET payload to array of key value pairs
-
-        !!! TODO - WORK IN PROGRESS - THIS MAY CHANGE IN FINAL IMPLEMENTATION !!!
-
-        :return cfgdict: dictionary of key value pair(s)
-        """
-
-        if self.identity != "CFG-VALGET":
-            return None
-
-        val = 0
-        cfgdata = []  # array of individual bytes
-        cfglen = UBXMessage.bytes2len(self._length) - 4  # length of cfgData group
-        cfgdict = {}  # dict of key value pairs
-        for i in range(cfglen):
-            cfgdata.append(getattr(self, "cfgData_{0:0=2d}".format(i + 1)))
-
-        i = 0
-        for cfgbyte in range(cfglen):  # for each configuration byte
-            if i == 4:
-                key = int.from_bytes(
-                    cfgdata[cfgbyte - 4 : cfgbyte], "little", signed=False
-                )
-                # siz = key >> 28 & 0b111  # bits 28..30 represent size of value store
-                # lng = ubcdb.UBX_CONFIG_STORSIZE[siz]
-                (_, att) = self.cfgkey2name(key)
-                atts = int(att[1:3])
-                val = cfgdata[cfgbyte : cfgbyte + atts]
-                if att[0:1] in ("X"):
-                    pass
-                elif att[0:1] in ("E", "L", "U"):  # unsigned integer/enumeration
-                    val = int.from_bytes(val, "little", signed=False)
-                elif att[0:1] == "I":  # signed integer
-                    val = int.from_bytes(val, "little", signed=True)
-                elif att == ubt.R4:  # single precision floating point
-                    val = self.bytes_to_float(val)
-                elif att == ubt.R8:  # double precision floating point
-                    val = self.bytes_to_double(val)
-                cfgdict[key] = val
-                i = 0
-            else:
-                i += 1
-
-        return cfgdict
 
     def serialize(self) -> bytes:
         """Serialize message

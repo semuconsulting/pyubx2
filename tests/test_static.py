@@ -31,6 +31,22 @@ class StaticTest(unittest.TestCase):
         res = UBXMessage.len2bytes(24)
         self.assertEqual(res, (b'\x18\x00'))
 
+    def testFloat2Bytes(self):
+        res = UBXMessage.float_to_bytes(1.234)
+        self.assertEqual(res, (b'\xb6\xf3\x9d?'))
+
+    def testDouble2Bytes(self):
+        res = UBXMessage.double_to_bytes(1.2345678)
+        self.assertEqual(res, (b']\x1d[*\xca\xc0\xf3?'))
+
+    def testBytes2Float(self):
+        res = UBXMessage.bytes_to_float(b'\xb6\xf3\x9d?')
+        self.assertAlmostEqual(res, 1.234, 3)
+
+    def testBytes2Double(self):
+        res = UBXMessage.bytes_to_double(b']\x1d[*\xca\xc0\xf3?')
+        self.assertAlmostEqual(res, 1.2345678, 7)
+
     def testKeyfromVal(self):
         res = UBXMessage.key_from_val(UBX_CLASSES, 'MON')
         self.assertEqual(res, (b'\x0A'))
@@ -73,16 +89,16 @@ class StaticTest(unittest.TestCase):
             i += 1
 
     def testcfgname2key(self):
-        (key, typ) = UBXMessage.cfgname2key("CFG-NMEA-PROTVER")
+        (key, typ) = UBXMessage.cfgname2key("CFG_NMEA_PROTVER")
         self.assertEqual(key, 0x20930001)
         self.assertEqual(typ, "E01")
-        (key, typ) = UBXMessage.cfgname2key("CFG-UART1-BAUDRATE")
+        (key, typ) = UBXMessage.cfgname2key("CFG_UART1_BAUDRATE")
         self.assertEqual(key, 0x40520001)
         self.assertEqual(typ, "U04")
 
     def testcfgkey2type(self):
         (key, typ) = UBXMessage.cfgkey2name(0x20510001)
-        self.assertEqual(key, "CFG-I2C-ADDRESS")
+        self.assertEqual(key, "CFG_I2C_ADDRESS")
         self.assertEqual(typ, "U01")
 
 

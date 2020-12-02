@@ -28,7 +28,8 @@ class ParseTest(unittest.TestCase):
         self.mga_flash_ack = b'\xb5b\x13\x21\x06\x00\x03\x01\x02\x00\x00\x04\x44\x3a'
         self.cfg_valget = b'\xb5b\x06\x8b\x0c\x00\x00\x00\x00\x00\x01\x00\x52\x40\x80\x25\x00\x00\xd5\xd0'
         self.cfg_valget2 = b'\xb5b\x06\x8b\x09\x00\x00\x00\x00\x00\x01\x00\x51\x20\x55\x61\xc2'
-        self.cfg_valget3 = b'\xb5b\x06\x8b\x0e\x00\x00\x00\x00\x00\x01\x00\x51\x20\x55\x02\x00\x21\x30\x23\xdc\xe7'
+        self.cfg_valget3 = b'\xb5b\x06\x8b\x16\x00\x00\x00\x00\x00\x01\x00\x51\x20\x55\x01\x00\x52\x40\x80\x25\x00\x00\x02\x00\x21\x30\x23\x1c\x92'
+        self.cfg_valget4 = b'\xb5b\x06\x8b\x0c\x00\x00\x00\x00\x00\x68\x00\x11\x40\xb6\xf3\x9d\x3f\xdb\x3d'
 
     def tearDown(self):
         pass
@@ -132,24 +133,21 @@ class ParseTest(unittest.TestCase):
         res = UBXMessage.parse(self.mga_flash_ack, True)
         self.assertEqual(str(res), "<UBX(MGA-FLASH-ACK, type=3, version=1, ack=2, reserved1=0, sequence=1024)>")
 
-    def testCFGVALGET(self):
+    def testCFGVALGET(self):  # test parser of CFG-VALGET CFG-UART1-BAUDRATE
         res = UBXMessage.parse(self.cfg_valget, True)
-        self.assertEqual(str(res), "<UBX(CFG-VALGET, version=0, layer=0, position=0, cfgData_01=1, cfgData_02=0, cfgData_03=82, cfgData_04=64, cfgData_05=128, cfgData_06=37, cfgData_07=0, cfgData_08=0)>")
+        self.assertEqual(str(res), "<UBX(CFG-VALGET, version=0, layer=0, position=0, CFG_UART1_BAUDRATE=9600)>")
 
-    def testCFGVALGETParse(self):  # test parse of CFG-VALGET CFG-UART1-BAUDRATE
-        res = UBXMessage.parse(self.cfg_valget, True)
-        dic = res._parse_cfgvalget()
-        self.assertEqual(dic, {1079115777: 9600})
-
-    def testCFGVALGETParse2(self):  # test parse of CFG-VALGET CFG-I2C-ADDRESS
+    def testCFGVALGET2(self):  # test parse of CFG-VALGET CFG-I2C-ADDRESS
         res = UBXMessage.parse(self.cfg_valget2, True)
-        dic = res._parse_cfgvalget()
-        self.assertEqual(dic, {542179329: 85})
+        self.assertEqual(str(res), "<UBX(CFG-VALGET, version=0, layer=0, position=0, CFG_I2C_ADDRESS=85)>")
 
-    def testCFGVALGETParse3(self):  # test parse of CFG-VALGET CFG-I2C-ADDRESS
+    def testCFGVALGET3(self):  # test parse of CFG-VALGET CFG-I2C-ADDRESS, CFG-UART1-BAUDRATE, CFG-RATE-NAV
         res = UBXMessage.parse(self.cfg_valget3, True)
-        dic = res._parse_cfgvalget()
-        self.assertEqual(dic, {542179329: 85, 807469058: 35})
+        self.assertEqual(str(res), "<UBX(CFG-VALGET, version=0, layer=0, position=0, CFG_I2C_ADDRESS=85, CFG_UART1_BAUDRATE=9600, CFG_RATE_NAV=35)>")
+
+    def testCFGVALGET4(self):  # test parser of CFG-VALGET CFG-NAVSPG-USRDAT_ROTY
+        res = UBXMessage.parse(self.cfg_valget4, True)
+        self.assertAlmostEqual(res.CFG_NAVSPG_USRDAT_ROTY, 1.23, 2)
 
 
 if __name__ == "__main__":
