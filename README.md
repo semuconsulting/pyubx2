@@ -158,6 +158,42 @@ any of the following constructor formats will work:
 <UBX(CFG-MSG, msgClass=NMEA-Standard, msgID=VTG)>
 ```
 
+### Generating CFG-VALSET and CFG-VALDEL messages
+
+Generation 9 of the UBX protocol introduced the concept of a device configuration database with
+individual configuration parameters being set or unset via the CFG-VALSET and CFG-VALDEL message
+types. Dedicated static methods are provided to create these message types - `UBXMessage.build_cfgvalset` and `UBXMessage.build_cfgvaldel`. 
+
+The following parameters are required:
+
+- version - 0 for not transactional, 1 = transactional
+- layers - 1 = RAM (*CFG-VALSET only*), 2 = BBR, 4 = FLASH
+- transaction - 0 = none, 1 = Start, 2 = Ongoing, 3 = Commit
+- (*CFG-VALSET only*) cfgData - an array of up to 64 (keyname, value) tuples
+- (*CFG-VALDEL only*) keys - an array of up to 64 keynames
+
+Keynames (as strings) and their corresponding integer keys and data types are defined in `ubxtypes_configdb.UBX_CONFIG_DATABASE`.
+
+**CFG-VALSET**
+
+```python
+>>> from pyubx2 import UBXMessage
+>>> cfgData = [("CFG_UART1_BAUDRATE", 9600), ("CFG_UART2_BAUDRATE", 115200)]
+>>> msg = UBXMessage.build_cfgvalset(0, 1, 0, cfgData)
+>>> print(msg)
+<UBX(CFG-VALSET, version=0, layers=b'\x01', transaction=0, reserved0=0, cfgData_01=1, cfgData_02=0 ...)>
+```
+
+**CFG-VALDEL**
+
+```python
+>>> from pyubx2 import UBXMessage
+>>> keys = ["CFG_UART1_BAUDRATE", "CFG_UART2_BAUDRATE"]
+>>> msg = UBXMessage.build_cfgvaldel(0, 4, 0, keys)
+>>> print(msg)
+<UBX(CFG-VALDEL, version=0, layers=b'\x04', transaction=b'\x00', reserved0=0, keys_01=1079115777, keys_02=1079181313)>
+```
+
 ### Serializing
 
 The `UBXMessage` class implements a `serialize()` method to convert a `UBXMessage` object to a bytes array suitable for writing to an output stream.

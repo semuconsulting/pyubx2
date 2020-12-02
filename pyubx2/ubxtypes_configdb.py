@@ -34,6 +34,15 @@ from pyubx2.ubxtypes_core import (
     X8,
 )
 
+LAYER_RAM = 1
+LAYER_BBR = 2
+LAYER_FLASH = 4
+
+TXN_NULL = 0
+TXN_START = 1
+TXN_ONGOING = 2
+TXN_COMMIT = 3
+
 # bits 28..30 of Configuration KeyID represent
 # storage length of Configuration Value in bytes
 # KeyID >> 28 & 0b111

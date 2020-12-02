@@ -106,6 +106,12 @@ class ExceptionTest(unittest.TestCase):
         with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
             res.msgClass = 222
 
+    def testBadCfgValSet(self):  # test for invalid cfgData keyname
+        EXPECTED_ERROR = "Undefined configuration database key FOO_BAR"
+        cfgData = [("FOO_BAR", 9600)]
+        with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
+            UBXMessage.build_cfgvalset(0, 0, 0, cfgData)
+
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']

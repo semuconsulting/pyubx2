@@ -226,11 +226,10 @@ class UBXMessage:
         """Parse CFG-VALGET payload to set of configuration
         database key value pairs
 
-        !!! TODO - WORK IN PROGRESS - THIS MAY CHANGE IN FINAL IMPLEMENTATION !!!
-
         :param offset int: payload offset
         :param **kwargs  payload
         """
+        # TODO - PROVISIONAL - MAY CHANGE IN FINAL IMPLEMENTATION
 
         self._payload = kwargs["payload"]
         cfglen = len(self._payload[offset:])
@@ -504,6 +503,7 @@ class UBXMessage:
 
         :param message: bytes:
         :param validate: bool:  (Default value = False)
+        :return UBXMessage object:
 
         """
 
@@ -814,3 +814,88 @@ class UBXMessage:
             if keyID == kid:
                 return (key, typ)
         raise ube.UBXMessageError(f"Undefined configuration database key {hex(keyID)}")
+
+    @staticmethod
+    def build_cfgvalset(
+        version: int, layers: int, transaction: int, cfgData: list
+    ) -> object:
+        """
+        Construct CFG-VALSET message from an array of
+        configuration database (keyname, value) tuples.
+
+        :param version: int:
+        :param layers: int: (1=RAM, 2=BBR, 4=Flash)
+        :param transaction: int: (0=no txn, 1=start txn, 2=continue txn, 3=apply txn)
+        :param cfgData: list: (keyname, value) tuples; max 64 tuples)
+        :return UBXMessage object: CFG-VALSET message
+
+        """
+        # TODO - PROVISIONAL - MAY CHANGE IN FINAL IMPLEMENTATION
+
+        num = len(cfgData)
+        if num > 64:
+            raise ube.UBXMessageError(
+                f"Number of configuration items {num} exceeds maximum of 64"
+            )
+
+        version = version.to_bytes(1, byteorder="little", signed=False)
+        layers = layers.to_bytes(1, byteorder="little", signed=False)
+        transaction = transaction.to_bytes(1, byteorder="little", signed=False)
+        reserved0 = b"\x00"
+        payload = version + layers + transaction + reserved0
+        lis = b""
+
+        for cfgItem in cfgData:
+            (keyname, val) = cfgItem
+            (key, att) = UBXMessage.cfgname2key(keyname)
+            keyb = key.to_bytes(4, byteorder="little", signed=False)
+            atts = int(att[1:3])
+            if att[0:1] in ("X", "C"):  # byte or char
+                valb = val
+            elif att[0:1] in ("E", "L", "U"):  # unsigned integer
+                valb = val.to_bytes(atts, byteorder="little", signed=False)
+            elif att[0:1] == "I":  # signed integer
+                valb = val.to_bytes(atts, byteorder="little", signed=True)
+            elif att == ubt.R4:  # single precision floating point
+                valb = UBXMessage.float_to_bytes(val)
+            elif att == ubt.R8:  # double precision floating point
+                valb = UBXMessage.double_to_bytes(val)
+
+            lis = lis + keyb + valb
+
+        return UBXMessage("CFG", "CFG-VALSET", ubt.SET, payload=payload + lis)
+
+    @staticmethod
+    def build_cfgvaldel(
+        version: int, layers: int, transaction: int, keys: list
+    ) -> object:
+        """
+        Construct CFG-VALDEL message from an array of
+        configuration database keynames.
+
+        :param version: int:
+        :param layers: int: (2=BBR, 4=Flash)
+        :param transaction: int: (0=no txn, 1=start txn, 2=continue txn, 3=apply txn)
+        :param keys: list: keyname; max 64 keys
+        :return UBXMessage object: CFG-VALDEL message
+
+        """
+        # TODO - PROVISIONAL - MAY CHANGE IN FINAL IMPLEMENTATION
+
+        num = len(keys)
+        if num > 64:
+            raise ube.UBXMessageError(f"Number of keys {num} exceeds maximum of 64")
+
+        version = version.to_bytes(1, byteorder="little", signed=False)
+        layers = layers.to_bytes(1, byteorder="little", signed=False)
+        transaction = transaction.to_bytes(1, byteorder="little", signed=False)
+        reserved0 = b"\x00"
+        payload = version + layers + transaction + reserved0
+        lis = b""
+
+        for keyname in keys:
+            (key, _) = UBXMessage.cfgname2key(keyname)
+            keyb = key.to_bytes(4, byteorder="little", signed=False)
+            lis = lis + keyb
+
+        return UBXMessage("CFG", "CFG-VALDEL", ubt.SET, payload=payload + lis)
