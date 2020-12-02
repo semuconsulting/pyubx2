@@ -124,8 +124,12 @@ class UBXMessage:
         att = pdict[key]  # get attribute type
         if isinstance(att, tuple):  # attribute is a tuple i.e. a nested repeating group
             numr, attd = att
-            # if CFG-VALGET, parse as configuration database key value pairs
-            if self._ubxClass == b"\x06" and self._ubxID in (b"\x8b"):
+            # if CFG-VALGET GET, parse as configuration database key value pairs
+            if (
+                self._ubxClass == b"\x06"
+                and self._ubxID == b"\x8b"
+                and self._mode == ubt.GET
+            ):
                 self._set_cfgval_attributes(offset, **kwargs)
             else:
                 if numr == "None":

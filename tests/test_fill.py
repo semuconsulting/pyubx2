@@ -115,6 +115,11 @@ class FillTest(unittest.TestCase):
         reseval = eval(repr(res))
         assert type(reseval) is UBXMessage
 
+    def testPoll_CFGVALGET(self):  #  test CFG-VALGET POLL constructor
+        EXPECTED_RESULT = "<UBX(CFG-VALGET, version=0, layer=1, position=0, keys_01=1079115777, keys_02=1079181313)>"
+        res = UBXMessage('CFG', 'CFG-VALGET', POLL, payload=b'\x00\x01\x00\x00\x01\x00\x52\x40\x01\x00\x53\x40')
+        self.assertEqual(str(res), EXPECTED_RESULT)
+
     def testPoll_CFGVALDEL(self):  #  test CFG-VALDEL SET constructor
         EXPECTED_RESULT = "<UBX(CFG-VALDEL, version=0, layers=b'\\x03', transaction=b'\\x00', reserved0=0, keys_01=1079115777, keys_02=16798528)>"
         res = UBXMessage('CFG', 'CFG-VALDEL', SET, payload=b'\x00\x03\x00\x00\x01\x00\x52\x40\x40\x53\x00\x01')
