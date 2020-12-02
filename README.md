@@ -20,11 +20,11 @@ This is an independent project and we have no affiliation whatsoever with u-blox
 ![Contributors](https://img.shields.io/github/contributors/semuconsulting/pyubx2.svg)
 ![Open Issues](https://img.shields.io/github/issues-raw/semuconsulting/pyubx2)
 
-At time of writing the library implements a complete set of inbound and outbound messages as defined in 
-the [u-blox generation 8 protocol](https://www.u-blox.com/en/docs/UBX-13003221), but is readily 
+At time of writing the library implements a comprehensive set of inbound and outbound messages as defined in 
+the [u-blox generation 9 protocol](https://www.u-blox.com/en/docs/UBX-19035940), but is readily 
 [extensible](#extensibility) for later generations.
 
-Contributions and feedback welcome - see [CONTRIBUTING](CONTRIBUTING.MD).
+Contributions and feedback welcome - see CONTRIBUTING.MD
 
 ## <a name="installation">Installation</a>
 

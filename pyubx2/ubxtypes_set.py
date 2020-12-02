@@ -121,6 +121,14 @@ UBX_PAYLOADS_SET = {
     # messages in the CFG class sent to the receiver are either acknowledged (with message UBX-ACK-ACK) if
     # processed successfully or rejected (with message UBX-ACK-NAK) if processing unsuccessfully.
     "CFG-ANT": {"flags": X2, "pins": X2},
+    "CFG-BATCH": {
+        "version": U1,
+        "flags": X1,
+        "bufSize": U2,
+        "notifThrs": U2,
+        "pioId": U1,
+        "reserved0": U1,
+    },
     "CFG-CFG": {"clearMask": X4, "saveMask": X4, "loadMask": X4, "deviceMask": X1},
     "CFG-DAT": {
         "datumNum": U2,
@@ -454,12 +462,36 @@ UBX_PAYLOADS_SET = {
     # ********************************************************************
     # Logging Messages: i.e. Log creation, deletion, info and retrieval.
     # Messages in the LOG class are used to configure and report status information of the logging feature.
+    "LOG-CREATE": {
+        "version": U1,
+        "logCfg": X1,
+        "reserved1": U1,
+        "logSize": U1,
+        "userDefinedSize": U4,
+    },
     "LOG-ERASE": {},
+    "LOG-FINDTIME": {
+        "version": U1,
+        "type": U1,
+        "reserved0": U2,
+        "year": U2,
+        "month": U1,
+        "day": U1,
+        "hour": U1,
+        "minute": U1,
+        "second": U1,
+        "reserved1": U1,
+    },
     "LOG-RETRIEVE": {
         "startNumber": U4,
         "entryCount": U4,
         "version": U1,
         "reserved": U3,
+    },
+    "LOG-RETRIEVEBATCH": {
+        "version": U1,
+        "flags": X1,
+        "reserved0": U2,
     },
     "LOG-STRING": {"group": ("None", {"bytes": U1})},  # repeating group
     # ********************************************************************

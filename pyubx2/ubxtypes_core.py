@@ -2,8 +2,8 @@
 """
 UBX Protocol core globals and constants
 
-Based on u-blox Generation 8 receiver datasheet:
-https://www.u-blox.com/en/docs/UBX-13003221
+Based on u-blox Generation 9 SPG receiver datasheet:
+https://www.u-blox.com/en/docs/UBX-190359401
 
 Created on 27 Sep 2020
 
@@ -37,6 +37,7 @@ U4 = "U04"  # Unsigned Int 4 bytes
 U5 = "U05"  # Unsigned Int 5 bytes
 U6 = "U06"  # Unsigned Int 6 bytes
 U8 = "U08"  # Unsigned Int 8 bytes
+U9 = "U09"  # Unsigned Int 9 bytes
 U12 = "U12"  # Unsigned Int 12 bytes
 U40 = "U40"  # Unsigned Int 40 bytes
 U64 = "U64"  # Unsigned Int 64 bytes
@@ -70,6 +71,7 @@ VALID_TYPES = (
     U5,
     U6,
     U8,
+    U9,
     U12,
     U40,
     U64,
@@ -131,7 +133,11 @@ UBX_MSGIDS = {
     b"\x0b\x31": "AID-EPH",
     b"\x0b\x02": "AID-HUI",
     b"\x0b\x01": "AID-INI",
+    # ********************************************************************
+    # Many CFG messages are deprecated since Gen 9 in favour of CFG-VALSET
+    # ********************************************************************
     b"\x06\x13": "CFG-ANT",
+    b"\x06\x93": "CFG-BATCH",
     b"\x06\x09": "CFG-CFG",
     b"\x06\x06": "CFG-DAT",
     b"\x06\x61": "CFG-DOSC",
@@ -171,14 +177,16 @@ UBX_MSGIDS = {
     b"\x04\x02": "INF-NOTICE",
     b"\x04\x03": "INF-TEST",
     b"\x04\x01": "INF-WARNING",
+    b"\x21\x11": "LOG-BATCH",
     b"\x21\x07": "LOG-CREATE",
     b"\x21\x03": "LOG-ERASE",
     b"\x21\x0e": "LOG-FINDTIME",
     b"\x21\x08": "LOG-INFO",
-    b"\x21\x0f": "LOG-RETRIEVEPOSEXTRA",
-    b"\x21\x0b": "LOG-RETRIEVEPOS",
-    b"\x21\x0d": "LOG-RETRIEVESTRING",
     b"\x21\x09": "LOG-RETRIEVE",
+    b"\x21\x10": "LOG-RETRIEVEBATCH",
+    b"\x21\x0b": "LOG-RETRIEVEPOS",
+    b"\x21\x0f": "LOG-RETRIEVEPOSEXTRA",
+    b"\x21\x0d": "LOG-RETRIEVESTRING",
     b"\x21\x04": "LOG-STRING",
     # ***************************************************************
     # MGA messages need special handling as MSGIDs are not unique
@@ -218,6 +226,7 @@ UBX_MSGIDS = {
     b"\x13\x05\x01": "MGA-QZSS-EPH",
     b"\x13\x05\x02": "MGA-QZSS-ALM",
     b"\x13\x05\x04": "MGA-QZSS-HEALTH",
+    b"\x0a\x36": "MON-COMMS",
     b"\x0a\x28": "MON-GNSS",
     b"\x0a\x0b": "MON-HW2",
     b"\x0a\x09": "MON-HW",
@@ -227,10 +236,12 @@ UBX_MSGIDS = {
     b"\x0a\x07": "MON-RXBUF",
     b"\x0a\x21": "MON-RXR",
     b"\x0a\x2e": "MON-SMGR",
+    b"\x0a\x31": "MON-SPAN",
     b"\x0a\x08": "MON-TXBUF",
     b"\x0a\x04": "MON-VER",
     b"\x01\x60": "NAV-AOPSTATUS",
     b"\x01\x22": "NAV-CLOCK",
+    b"\x01\x36": "NAV-COV",
     b"\x01\x31": "NAV-DGPS",
     b"\x01\x04": "NAV-DOP",
     b"\x01\x61": "NAV-EOE",
@@ -243,6 +254,7 @@ UBX_MSGIDS = {
     b"\x01\x10": "NAV-RESETODO",
     b"\x01\x35": "NAV-SAT",
     b"\x01\x32": "NAV-SBAS",
+    b"\x01\x43": "NAV-SIG",
     b"\x01\x06": "NAV-SOL",
     b"\x01\x03": "NAV-STATUS",
     b"\x01\x30": "NAV-SVINFO",
@@ -259,6 +271,7 @@ UBX_MSGIDS = {
     b"\x02\x41": "RXM-PMREQ",
     b"\x02\x15": "RXM-RAWX",
     b"\x02\x59": "RXM-RLM",
+    b"\x02\x32": "RXM-RTCM",
     b"\x02\x13": "RXM-SFRBX",
     b"\x02\x20": "RXM-SVSI",
     b"\x27\x01": "SEC-SIGN",
@@ -306,6 +319,7 @@ UBX_CONFIG_MESSAGES = {
     b"\x01\x60": "NAV-AOPSTATUS",
     b"\x01\x05": "NAV-ATT",
     b"\x01\x22": "NAV-CLOCK",
+    b"\x01\x36": "NAV-COV",
     b"\x01\x31": "NAV-DGPS",
     b"\x01\x04": "NAV-DOP",
     b"\x01\x40": "NAV-EKFSTATUS",
@@ -342,8 +356,10 @@ UBX_CONFIG_MESSAGES = {
     b"\x02\x41": "RXM-PMREQ",
     b"\x02\x15": "RXM-RAWX",
     b"\x02\x59": "RXM-RLM",
+    b"\x02\x32": "RXM-RTCM",
     b"\x02\x13": "RXM-SFRBX",
     b"\x02\x20": "RXM-SVSI",
+    b"\x0a\x36": "MON-COMMS",
     b"\x0a\x28": "MON-GNSS",
     b"\x0a\x09": "MON-HW",
     b"\x0a\x0b": "MON-HW2",
@@ -355,9 +371,10 @@ UBX_CONFIG_MESSAGES = {
     b"\x0a\x07": "MON-RXBUF",
     b"\x0a\x21": "MON-RXR",
     b"\x0a\x2e": "MON-SMGR",
-    # b'\x0a\x31': 'MON-SPAN',
+    b"\x0a\x31": "MON-SPAN",
     b"\x0a\x08": "MON-TXBUF",
     b"\x0a\x04": "MON-VER",
+    b"\x21\x11": "LOG-BATCH",
     b"\x21\x07": "LOG-CREATE",
     b"\x21\x03": "LOG-ERASE",
     b"\x21\x0e": "LOG-FINDTIME",
@@ -366,6 +383,7 @@ UBX_CONFIG_MESSAGES = {
     b"\x21\x0b": "LOG-RETRIEVEPOS",
     b"\x21\x0d": "LOG-RETRIEVESTRING",
     b"\x21\x09": "LOG-RETRIEVE",
+    b"\x21\x10": "LOG-RETRIEVEBATCH",
     b"\x21\x04": "LOG-STRING",
     b"\xf0\x0a": "DTM",  # Datum Reference
     b"\xf0\x44": "GBQ",  # Poll Standard Message - Talker ID GB (BeiDou)
