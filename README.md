@@ -161,16 +161,19 @@ any of the following constructor formats will work:
 ### Generating CFG-VALSET and CFG-VALDEL messages
 
 Generation 9 of the UBX protocol introduced the concept of a device configuration database with
-individual configuration parameters being set or unset via the CFG-VALSET and CFG-VALDEL message
-types. Dedicated static methods are provided to create these message types - `UBXMessage.build_cfgvalset` and `UBXMessage.build_cfgvaldel`. 
+individual configuration parameters being set or unset in the designed memory 'layer(s)' via the 
+CFG-VALSET and CFG-VALDEL message types (*previous CFG message types are now deprecated*). 
+Optionally, batches of CFG-VALSET and CFG-VALDEL messages can be applied as part of a transaction, with the combined configuration only being committed at the end of the transaction.
+
+Dedicated static methods are provided to create these message types - `UBXMessage.build_cfgvalset` and `UBXMessage.build_cfgvaldel`. 
 
 The following parameters are required:
 
-- version - 0 for not transactional, 1 = transactional
-- layers - 1 = RAM (*CFG-VALSET only*), 2 = BBR, 4 = FLASH
-- transaction - 0 = none, 1 = Start, 2 = Ongoing, 3 = Commit
-- (*CFG-VALSET only*) cfgData - an array of up to 64 (keyname, value) tuples
-- (*CFG-VALDEL only*) keys - an array of up to 64 keynames
+1. version - 0 = not transactional, 1 = transactional
+1. layers - 1 = Volatile RAM (*CFG-VALSET only*), 2 = Battery-Backed RAM (BBR), 4 = FLASH
+1. transaction - 0 = None, 1 = Start, 2 = Ongoing, 3 = Commit
+1. (*CFG-VALSET only*) cfgData - an array of up to 64 (keyname, value) tuples
+1. (*CFG-VALDEL only*) keys - an array of up to 64 keynames
 
 Keynames (as strings) and their corresponding integer keys and data types are defined in `ubxtypes_configdb.UBX_CONFIG_DATABASE`.
 
