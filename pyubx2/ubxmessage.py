@@ -767,17 +767,15 @@ class UBXMessage:
         raise ube.UBXMessageError(f"Undefined configuration database key {hex(keyID)}")
 
     @staticmethod
-    def build_cfgvalset(
-        version: int, layers: int, transaction: int, cfgData: list
-    ) -> object:
+    def config_set(layers: int, transaction: int, cfgData: list) -> object:
         """
         Construct CFG-VALSET message from an array of
-        configuration database (keyname, value) tuples.
+        configuration database (key, value) tuples. Keys
+        can be in int (keyID) or str (keyname) format.
 
-        :param version: int:
         :param layers: int: (1=RAM, 2=BBR, 4=Flash)
         :param transaction: int: (0=no txn, 1=start txn, 2=continue txn, 3=apply txn)
-        :param cfgData: list: (keyname, value) tuples; max 64 tuples)
+        :param cfgData: list: (key, value) tuples; max 64 tuples)
         :return UBXMessage object: CFG-VALSET message
 
         """
@@ -789,6 +787,7 @@ class UBXMessage:
                 f"Number of configuration tuples {num} exceeds maximum of 64"
             )
 
+        version = 0 if transaction == 0 else 1
         version = version.to_bytes(1, byteorder="little", signed=False)
         layers = layers.to_bytes(1, byteorder="little", signed=False)
         transaction = transaction.to_bytes(1, byteorder="little", signed=False)
@@ -797,8 +796,9 @@ class UBXMessage:
         lis = b""
 
         for cfgItem in cfgData:
-            (keyname, val) = cfgItem
-            (key, att) = UBXMessage.cfgname2key(keyname)
+            (key, val) = cfgItem
+            if isinstance(key, str):  # if keyname as a string
+                (key, att) = UBXMessage.cfgname2key(key)  # lookup keyID
             keyb = key.to_bytes(4, byteorder="little", signed=False)
             valb = UBXMessage.val2bytes(val, att)
             lis = lis + keyb + valb
@@ -806,17 +806,15 @@ class UBXMessage:
         return UBXMessage("CFG", "CFG-VALSET", ubt.SET, payload=payload + lis)
 
     @staticmethod
-    def build_cfgvaldel(
-        version: int, layers: int, transaction: int, keys: list
-    ) -> object:
+    def config_del(layers: int, transaction: int, keys: list) -> object:
         """
         Construct CFG-VALDEL message from an array of
-        configuration database keynames.
+        configuration database keys, which can be in int (keyID)
+        or str (keyname) format.
 
-        :param version: int:
         :param layers: int: (2=BBR, 4=Flash)
         :param transaction: int: (0=no txn, 1=start txn, 2=continue txn, 3=apply txn)
-        :param keys: list: keyname; max 64 keys
+        :param keys: list: keyID as int or keyname as string; max 64 keys
         :return UBXMessage object: CFG-VALDEL message
 
         """
@@ -828,6 +826,7 @@ class UBXMessage:
                 f"Number of configuration keys {num} exceeds maximum of 64"
             )
 
+        version = 0 if transaction == 0 else 1
         version = version.to_bytes(1, byteorder="little", signed=False)
         layers = layers.to_bytes(1, byteorder="little", signed=False)
         transaction = transaction.to_bytes(1, byteorder="little", signed=False)
@@ -835,9 +834,48 @@ class UBXMessage:
         payload = version + layers + transaction + reserved0
         lis = b""
 
-        for keyname in keys:
-            (key, _) = UBXMessage.cfgname2key(keyname)
+        for key in keys:
+            if isinstance(key, str):  # if keyname as a string
+                (key, _) = UBXMessage.cfgname2key(key)  # lookup keyID
             keyb = key.to_bytes(4, byteorder="little", signed=False)
             lis = lis + keyb
 
         return UBXMessage("CFG", "CFG-VALDEL", ubt.SET, payload=payload + lis)
+
+    @staticmethod
+    def config_poll(layers: int, position: int, keys: list) -> object:
+        """
+        Construct CFG-VALGET message from an array of
+        configuration database keys, which can be in int (keyID)
+        or str (keyname) format. keyID format allows for wildcard
+        queries.
+
+        :param version: int:
+        :param layers: int: (0=RAM, 1=BBR, 2=Flash, 7 = Default)
+        :param position: int: (number of keys to skip before returning result)
+        :param keys: list: keyID as int or keyname as string; max 64 keys
+        :return UBXMessage object: CFG-VALGET message
+
+        """
+        # TODO - PROVISIONAL - MAY CHANGE IN FINAL IMPLEMENTATION
+
+        num = len(keys)
+        if num > 64:
+            raise ube.UBXMessageError(
+                f"Number of configuration keys {num} exceeds maximum of 64"
+            )
+
+        version = 0
+        version = version.to_bytes(1, byteorder="little", signed=False)
+        layers = layers.to_bytes(1, byteorder="little", signed=False)
+        position = position.to_bytes(2, byteorder="little", signed=False)
+        payload = version + layers + position
+        lis = b""
+
+        for key in keys:
+            if isinstance(key, str):  # if keyname as a string
+                (key, _) = UBXMessage.cfgname2key(key)  # lookup keyID
+            keyb = key.to_bytes(4, byteorder="little", signed=False)
+            lis = lis + keyb
+
+        return UBXMessage("CFG", "CFG-VALGET", ubt.POLL, payload=payload + lis)

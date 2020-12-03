@@ -26,11 +26,19 @@ from pyubx2.ubxtypes_core import (
     X8,
 )
 
-LAYER_RAM = 1
-LAYER_BBR = 2
-LAYER_FLASH = 4
+# memory layer designators for CFG-VALSET & CFG-VALDEL
+SET_LAYER_RAM = 1
+SET_LAYER_BBR = 2
+SET_LAYER_FLASH = 4
 
-TXN_NULL = 0
+# memory layer designators for CFG-VALGET
+POLL_LAYER_RAM = 0
+POLL_LAYER_BBR = 1
+POLL_LAYER_FLASH = 2
+POLL_LAYER_DEFAULT = 7
+
+# transaction state designators for CFG-VALSET & CFG-VALDEL
+TXN_NONE = 0
 TXN_START = 1
 TXN_ONGOING = 2
 TXN_COMMIT = 3

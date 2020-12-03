@@ -59,25 +59,30 @@ class SpecialTest(unittest.TestCase):
         res = UBXMessage.parse(self.cfg_rinv0, True)
         self.assertEqual(str(res), "<UBX(CFG-RINV, flags=b'\\x03')>")
 
-    def testBuildCfgValSet(self):  # test creation of CFG-VALSET message with single key
+    def testConfigSet(self):  # test creation of CFG-VALSET message with single key
         cfgData = [("CFG_UART1_BAUDRATE", 9600)]
-        res = UBXMessage.build_cfgvalset(0, ubxcdb.LAYER_RAM, ubxcdb.TXN_NULL, cfgData)
+        res = UBXMessage.config_set(ubxcdb.SET_LAYER_RAM, ubxcdb.TXN_NONE, cfgData)
         self.assertEqual(str(res), "<UBX(CFG-VALSET, version=0, layers=b'\\x01', transaction=0, reserved0=0, cfgData_01=1, cfgData_02=0, cfgData_03=82, cfgData_04=64, cfgData_05=128, cfgData_06=37, cfgData_07=0, cfgData_08=0)>")
 
-    def testBuildCfgValSet2(self):  # test creation of CFG-VALSET message with multiple keys as transaction
-        cfgData = [("CFG_UART1_BAUDRATE", 9600), ("CFG_UART2_BAUDRATE", 115200)]
-        res = UBXMessage.build_cfgvalset(1, ubxcdb.LAYER_BBR, ubxcdb.TXN_START, cfgData)
+    def testConfigSet2(self):  # test creation of CFG-VALSET message with multiple keys as transaction
+        cfgData = [("CFG_UART1_BAUDRATE", 9600), (0x40530001, 115200)]
+        res = UBXMessage.config_set(ubxcdb.SET_LAYER_BBR, ubxcdb.TXN_START, cfgData)
         self.assertEqual(str(res), "<UBX(CFG-VALSET, version=1, layers=b'\\x02', transaction=1, reserved0=0, cfgData_01=1, cfgData_02=0, cfgData_03=82, cfgData_04=64, cfgData_05=128, cfgData_06=37, cfgData_07=0, cfgData_08=0, cfgData_09=1, cfgData_10=0, cfgData_11=83, cfgData_12=64, cfgData_13=0, cfgData_14=194, cfgData_15=1, cfgData_16=0)>")
 
-    def testBuildCfgValDel(self):  # test creation of CFG-VALSET message with single key
+    def testConfigDel(self):  # test creation of CFG-VALSET message with single key
         keys = ["CFG_UART1_BAUDRATE", ]
-        res = UBXMessage.build_cfgvaldel(0, ubxcdb.LAYER_BBR, ubxcdb.TXN_NULL, keys)
+        res = UBXMessage.config_del(ubxcdb.SET_LAYER_BBR, ubxcdb.TXN_NONE, keys)
         self.assertEqual(str(res), "<UBX(CFG-VALDEL, version=0, layers=b'\\x02', transaction=b'\\x00', reserved0=0, keys_01=1079115777)>")
 
-    def testBuildCfgValDel2(self):  # test creation of CFG-VALSET message with multiples keys as transaction
-        keys = ["CFG_UART1_BAUDRATE", "CFG_UART2_BAUDRATE"]
-        res = UBXMessage.build_cfgvaldel(1, ubxcdb.LAYER_FLASH, ubxcdb.TXN_START, keys)
+    def testConfigDel2(self):  # test creation of CFG-VALSET message with multiples keys as transaction
+        keys = ["CFG_UART1_BAUDRATE", 0x40530001]
+        res = UBXMessage.config_del(ubxcdb.SET_LAYER_FLASH, ubxcdb.TXN_START, keys)
         self.assertEqual(str(res), "<UBX(CFG-VALDEL, version=1, layers=b'\\x04', transaction=b'\\x01', reserved0=0, keys_01=1079115777, keys_02=1079181313)>")
+
+    def testConfigPoll(self):  # test creation of CFG-VALGET message with multiple keys
+        keys = ["CFG_UART1_BAUDRATE", 0x40530001]
+        res = UBXMessage.config_poll(ubxcdb.POLL_LAYER_FLASH, 0, keys)
+        self.assertEqual(str(res), "<UBX(CFG-VALGET, version=0, layer=2, position=0, keys_01=1079115777, keys_02=1079181313)>")
 
 
 if __name__ == "__main__":

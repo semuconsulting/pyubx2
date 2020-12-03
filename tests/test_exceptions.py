@@ -110,28 +110,36 @@ class ExceptionTest(unittest.TestCase):
         EXPECTED_ERROR = "Undefined configuration database key FOO_BAR"
         cfgData = [("FOO_BAR", 9600)]
         with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
-            UBXMessage.build_cfgvalset(0, 0, 0, cfgData)
+            UBXMessage.config_set(0, 0, cfgData)
 
     def testBadCfgKey(self):  # test for invalid key
         EXPECTED_ERROR = "Undefined configuration database key 0x11223344"
         with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
             UBXMessage.cfgkey2name(0x11223344)
 
-    def testMaxCfgValSet(self):  # test for >64 configuration tuples
+    def testMaxConfigSet(self):  # test for >64 configuration tuples
         EXPECTED_ERROR = "Number of configuration tuples 65 exceeds maximum of 64"
         cfgData = []
         for i in range(65):
             cfgData.append(('CFG_TEST', i))
         with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
-            UBXMessage.build_cfgvalset(0, 0, 0, cfgData)
+            UBXMessage.config_set(0, 0, cfgData)
 
-    def testMaxCfgValDel(self):  # test for >64 configuration keys
+    def testMaxConfigDel(self):  # test for >64 configuration keys
         EXPECTED_ERROR = "Number of configuration keys 68 exceeds maximum of 64"
-        cfgData = []
+        keys = []
         for _ in range(68):
-            cfgData.append('CFG_TEST')
+            keys.append('CFG_TEST')
         with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
-            UBXMessage.build_cfgvaldel(0, 0, 0, cfgData)
+            UBXMessage.config_del(0, 0, keys)
+
+    def testMaxConfigPoll(self):  # test for >64 configuration keys
+        EXPECTED_ERROR = "Number of configuration keys 67 exceeds maximum of 64"
+        keys = []
+        for _ in range(67):
+            keys.append('CFG_TEST')
+        with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
+            UBXMessage.config_poll(0, 0, keys)
 
 
 if __name__ == "__main__":
