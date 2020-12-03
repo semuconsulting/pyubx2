@@ -1,9 +1,7 @@
 """
 UBX Protocol Configuration Database Keys
 
-!!! TODO _ WORK IN PROGRESS _ THIS MAY CHANGE IN FINAL IMPLEMENTATION !!!
-
-Used by CFG_VALGET, CFG_VALSET and CFG_VALDEL message types
+Used by CFG-VALGET, CFG-VALSET and CFG-VALDEL message types
 
 Format:
 "Configuration Name": (key, "type")
@@ -15,22 +13,16 @@ Created on 30 Nov 2020
 
 from pyubx2.ubxtypes_core import (
     E1,
-    E2,
-    E4,
     I1,
     I2,
     I4,
-    I8,
     L,
     R4,
     R8,
     U1,
     U2,
     U4,
-    U8,
     X1,
-    X2,
-    X4,
     X8,
 )
 

@@ -122,7 +122,7 @@ class UBXMessage:
             keyr = key
 
         att = pdict[key]  # get attribute type
-        if isinstance(att, tuple):  # attribute is a tuple i.e. a nested repeating group
+        if isinstance(att, tuple):  # repeating group of attributes
             numr, attd = att
             # if CFG-VALGET GET, parse as configuration database key value pairs
             if (
@@ -141,83 +141,37 @@ class UBXMessage:
                     for key1 in attd.keys():
                         (offset, _) = self._set_attribute(offset, attd, key1, **kwargs)
 
-        else:
+        else:  # single attribute
 
             if att == ubt.CH:  # INF message payload
                 atts = len(self._payload)
             else:
                 atts = int(att[1:3])
 
-            # if the entire payload has been provided,
-            # use the appropriate section of the payload
+            # if payload keyword has been provided,
+            # use the appropriate offset of the provided payload
             if "payload" in kwargs:
                 self._payload = kwargs["payload"]
-                val = self._payload[offset : offset + atts]
-                if (
-                    att == ubt.CH
-                ):  # attribute is a single variable-length string (e.g. INF-NOTICE)
-                    val = self._payload.decode("utf-8", "backslashreplace")
-                elif att[0:1] in ("X", "C"):
-                    pass
-                elif att[0:1] == "U":  # unsigned integer
-                    val = int.from_bytes(val, "little", signed=False)
-                elif att[0:1] == "I":  # signed integer
-                    val = int.from_bytes(val, "little", signed=True)
-                elif att == ubt.R4:  # single precision floating point
-                    val = self.bytes_to_float(val)
-                elif att == ubt.R8:  # double precision floating point
-                    val = self.bytes_to_double(val)
+                if att == ubt.CH:
+                    valb = self._payload
                 else:
-                    raise ube.UBXTypeError(
-                        f"Unknown attribute type {att} for key {key}"
-                    )
+                    valb = self._payload[offset : offset + atts]
+                val = self.bytes2val(valb, att)
 
-            # else if individual attribute has been provided
-            elif keyr in kwargs:
-                val = kwargs[keyr]
-                if att[0:1] in ("X", "C"):  # byte or char
-                    valb = val
-                elif att[0:1] == "U":  # unsigned integer
-                    valb = val.to_bytes(atts, byteorder="little", signed=False)
-                elif att[0:1] == "I":  # signed integer
-                    valb = val.to_bytes(atts, byteorder="little", signed=True)
-                elif att == ubt.R4:  # single precision floating point
-                    valb = self.float_to_bytes(val)
-                elif att == ubt.R8:  # double precision floating point
-                    valb = self.double_to_bytes(val)
-                else:
-                    raise ube.UBXTypeError(
-                        f"Unknown attribute type {att} for key {key}"
-                    )
-                self._payload += valb
-
-            # else set individual attribute to nominal value
             else:
-                if att[0:1] in ("X", "C"):  # byte or char
-                    valb = b"\x00" * atts
-                    val = valb
-                elif att[0:1] == "U":  # unsigned integer
-                    val = 0
-                    valb = val.to_bytes(atts, byteorder="little", signed=False)
-                elif att[0:1] == "I":  # signed integer
-                    val = 0
-                    valb = val.to_bytes(atts, byteorder="little", signed=True)
-                elif att == ubt.R4:  # single precision floating point
-                    val = 0.0
-                    valb = self.float_to_bytes(val)
-                elif att == ubt.R8:  # double precision floating point
-                    val = 0.0
-                    valb = self.double_to_bytes(val)
+                # if individual attribute keyword has been provided
+                if keyr in kwargs:
+                    val = kwargs[keyr]
+                # else set attribute to nominal value (0)
                 else:
-                    raise ube.UBXTypeError(
-                        f"Unknown attribute type {att} for key {key}"
-                    )
+                    if att[0:1] in ("X", "C"):  # byte or char
+                        val = b"\x00" * atts
+                    else:
+                        val = 0
+                valb = self.val2bytes(val, att)
                 self._payload += valb
 
-        if not isinstance(att, tuple):
-            if self._index > 0:  # add 2-digit suffix to repeating attribute names
-                key = key + "_{0:0=2d}".format(self._index)
-            setattr(self, key, val)
+            setattr(self, keyr, val)
             offset += atts
 
         return (offset, att)
@@ -242,17 +196,8 @@ class UBXMessage:
                 )
                 (keyname, att) = self.cfgkey2name(key)
                 atts = int(att[1:3])
-                val = self._payload[offset + 4 : offset + 4 + atts]
-                if att[0:1] in ("X"):  # bitfield
-                    pass
-                elif att[0:1] in ("E", "L", "U"):  # unsigned integer/enumeration
-                    val = int.from_bytes(val, "little", signed=False)
-                elif att[0:1] == "I":  # signed integer
-                    val = int.from_bytes(val, "little", signed=True)
-                elif att == ubt.R4:  # single precision floating point
-                    val = self.bytes_to_float(val)
-                elif att == ubt.R8:  # double precision floating point
-                    val = self.bytes_to_double(val)
+                valb = self._payload[offset + 4 : offset + 4 + atts]
+                val = self.bytes2val(valb, att)
                 setattr(self, keyname, val)
                 i = 0
                 offset += 4 + atts
@@ -485,9 +430,9 @@ class UBXMessage:
         return self._ubxID
 
     @property
-    def length(self) -> bytes:
-        """Payload length getter (as 2 little-endian bytes)"""
-        return self._length
+    def length(self) -> int:
+        """Payload length getter"""
+        return self.bytes2len(self._length)
 
     @property
     def payload(self) -> bytes:
@@ -569,7 +514,6 @@ class UBXMessage:
 
         try:
             clsid = UBXMessage.key_from_val(ubt.UBX_CLASSES, msgClass)
-            # msgid = UBXMessage.key_from_val(ubt.UBX_MSGIDS, msgID)[1:]
             msgid = UBXMessage.key_from_val(ubt.UBX_MSGIDS, msgID)[1:2]
             return (clsid, msgid)
         except ube.UBXMessageError as err:
@@ -578,48 +522,55 @@ class UBXMessage:
             ) from err
 
     @staticmethod
-    def bytes_to_float(b: bytes) -> float:
-        """Convert 4 little-endian bytes (R4) to single precision decimal (IEEE754)
+    def val2bytes(val, att: str) -> bytes:
+        """
+        Return bytes from value for given attribute type
 
-        :param b: bytes:
-        :return float:
-
+        :param val value
+        :param att str: attribute type
+        :return bytes: value as bytes
         """
 
-        return struct.unpack("<f", b)[0]
+        atts = int(att[1:3])
+        if att[0:1] in ("C", "X"):  # byte or char
+            valb = val
+        elif att[0:1] in ("E", "L", "U"):  # unsigned integer
+            valb = val.to_bytes(atts, byteorder="little", signed=False)
+        elif att[0:1] == "I":  # signed integer
+            valb = val.to_bytes(atts, byteorder="little", signed=True)
+        elif att == ubt.R4:  # single precision floating point
+            valb = struct.pack("<f", val)
+        elif att == ubt.R8:  # double precision floating point
+            valb = struct.pack("<d", val)
+        else:
+            raise ube.UBXTypeError(f"Unknown attribute type {att}")
+        return valb
 
     @staticmethod
-    def bytes_to_double(b: bytes) -> float:
-        """Convert 8 little-endian bytes (R8) to double precision decimal (IEEE754)
+    def bytes2val(valb: bytes, att: str) -> object:
+        """
+        Return value from bytes for given attribute type
 
-        :param b: bytes:
-        :return float:
-
+        :param valb bytes: value in byte format
+        :param att str: attribute type
+        :return object: value
         """
 
-        return struct.unpack("<d", b)[0]
-
-    @staticmethod
-    def float_to_bytes(f: float) -> bytes:
-        """Convert single precision decimal to 4 little-endian bytes (R4) (IEEE754)
-
-        :param f: float:
-        :return float:
-
-        """
-
-        return struct.pack("<f", f)
-
-    @staticmethod
-    def double_to_bytes(f: float) -> bytes:
-        """Convert double precision decimal to 8 little-endian bytes (R8) (IEEE754)
-
-        :param f: float:
-        :return bytes:
-
-        """
-
-        return struct.pack("<d", f)
+        if att == ubt.CH:  # single variable-length string (e.g. INF-NOTICE)
+            val = valb.decode("utf-8", "backslashreplace")
+        elif att[0:1] in ("X", "C"):
+            val = valb
+        elif att[0:1] == "U":  # unsigned integer
+            val = int.from_bytes(valb, "little", signed=False)
+        elif att[0:1] == "I":  # signed integer
+            val = int.from_bytes(valb, "little", signed=True)
+        elif att == ubt.R4:  # single precision floating point
+            val = struct.unpack("<f", valb)[0]
+        elif att == ubt.R8:  # double precision floating point
+            val = struct.unpack("<d", valb)[0]
+        else:
+            raise ube.UBXTypeError(f"Unknown attribute type {att}")
+        return val
 
     @staticmethod
     def bytes2len(length: bytes) -> int:
@@ -835,7 +786,7 @@ class UBXMessage:
         num = len(cfgData)
         if num > 64:
             raise ube.UBXMessageError(
-                f"Number of configuration items {num} exceeds maximum of 64"
+                f"Number of configuration tuples {num} exceeds maximum of 64"
             )
 
         version = version.to_bytes(1, byteorder="little", signed=False)
@@ -849,18 +800,7 @@ class UBXMessage:
             (keyname, val) = cfgItem
             (key, att) = UBXMessage.cfgname2key(keyname)
             keyb = key.to_bytes(4, byteorder="little", signed=False)
-            atts = int(att[1:3])
-            if att[0:1] in ("X", "C"):  # byte or char
-                valb = val
-            elif att[0:1] in ("E", "L", "U"):  # unsigned integer
-                valb = val.to_bytes(atts, byteorder="little", signed=False)
-            elif att[0:1] == "I":  # signed integer
-                valb = val.to_bytes(atts, byteorder="little", signed=True)
-            elif att == ubt.R4:  # single precision floating point
-                valb = UBXMessage.float_to_bytes(val)
-            elif att == ubt.R8:  # double precision floating point
-                valb = UBXMessage.double_to_bytes(val)
-
+            valb = UBXMessage.val2bytes(val, att)
             lis = lis + keyb + valb
 
         return UBXMessage("CFG", "CFG-VALSET", ubt.SET, payload=payload + lis)
@@ -884,7 +824,9 @@ class UBXMessage:
 
         num = len(keys)
         if num > 64:
-            raise ube.UBXMessageError(f"Number of keys {num} exceeds maximum of 64")
+            raise ube.UBXMessageError(
+                f"Number of configuration keys {num} exceeds maximum of 64"
+            )
 
         version = version.to_bytes(1, byteorder="little", signed=False)
         layers = layers.to_bytes(1, byteorder="little", signed=False)

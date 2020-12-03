@@ -19,6 +19,27 @@ class StaticTest(unittest.TestCase):
     def tearDown(self):
         pass
 
+    def testVal2Bytes(self):  # test conversion of value to bytes
+        INPUTS = [(2345, 'U02'), (-2346789, 'I04'), (b'\x44\x55', 'X02'), (23.12345678, 'R04'), (-23.12345678912345, 'R08')]
+        EXPECTED_RESULTS = [b'\x29\x09', b'\xdb\x30\xdc\xff', b'\x44\x55', b'\xd7\xfc\xb8\x41', b'\x1f\xc1\x37\xdd\x9a\x1f\x37\xc0']
+        for i, inp in enumerate(INPUTS):
+            (val, att) = inp
+            res = UBXMessage.val2bytes(val, att)
+            self.assertEqual(res, EXPECTED_RESULTS[i])
+
+    def testBytes2Val(self):  # test conversion of bytes to value
+        INPUTS = [(b'\x29\x09', 'U02'), (b'\xdb\x30\xdc\xff', 'I04'), (b'\x44\x55', 'X02'), (b'\xd7\xfc\xb8\x41', 'R04'), (b'\x1f\xc1\x37\xdd\x9a\x1f\x37\xc0', 'R08')]
+        EXPECTED_RESULTS = [2345, -2346789, b'\x44\x55', 23.12345678, -23.12345678912345]
+        for i, inp in enumerate(INPUTS):
+            (valb, att) = inp
+            res = UBXMessage.bytes2val(valb, att)
+            if att == 'R04':
+                self.assertAlmostEqual(res, EXPECTED_RESULTS[i], 6)
+            elif att == 'R08':
+                self.assertAlmostEqual(res, EXPECTED_RESULTS[i], 14)
+            else:
+                self.assertEqual(res, EXPECTED_RESULTS[i])
+
     def testUBX2Bytes(self):
         res = UBXMessage.msgstr2bytes('CFG', 'CFG-MSG')
         self.assertEqual(res, (b'\x06', b'\x01'))
@@ -30,22 +51,6 @@ class StaticTest(unittest.TestCase):
     def testLen2Bytes(self):
         res = UBXMessage.len2bytes(24)
         self.assertEqual(res, (b'\x18\x00'))
-
-    def testFloat2Bytes(self):
-        res = UBXMessage.float_to_bytes(1.234)
-        self.assertEqual(res, (b'\xb6\xf3\x9d?'))
-
-    def testDouble2Bytes(self):
-        res = UBXMessage.double_to_bytes(1.2345678)
-        self.assertEqual(res, (b']\x1d[*\xca\xc0\xf3?'))
-
-    def testBytes2Float(self):
-        res = UBXMessage.bytes_to_float(b'\xb6\xf3\x9d?')
-        self.assertAlmostEqual(res, 1.234, 3)
-
-    def testBytes2Double(self):
-        res = UBXMessage.bytes_to_double(b']\x1d[*\xca\xc0\xf3?')
-        self.assertAlmostEqual(res, 1.2345678, 7)
 
     def testKeyfromVal(self):
         res = UBXMessage.key_from_val(UBX_CLASSES, 'MON')

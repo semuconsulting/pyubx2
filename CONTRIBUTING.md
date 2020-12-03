@@ -25,7 +25,7 @@ We use python's native unittest framework for local unit testing, complemented b
 
 Please write unittest examples for new code you create and add them to the /tests folder following the naming convention test_*.py.
 
-We test on the following platforms using u-blox [NEO-6](https://www.u-blox.com/en/product/neo-6-series), [NEO-7](https://www.u-blox.com/en/product/neo-7-series) and [NEO-8](https://www.u-blox.com/en/product/neo-m8-series) devices:
+We test on the following platforms using u-blox [NEO-6](https://www.u-blox.com/en/product/neo-6-series), [NEO-7](https://www.u-blox.com/en/product/neo-7-series), [NEO-8](https://www.u-blox.com/en/product/neo-m8-series) and [NEO-9](https://www.u-blox.com/en/product/neo-m9n-module) devices:
 * Windows 10
 * MacOS (Big Sur)
 * Linux (Ubuntu Bionic)

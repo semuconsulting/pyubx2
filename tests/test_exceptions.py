@@ -86,17 +86,17 @@ class ExceptionTest(unittest.TestCase):
             UBXMessage('CFG', 'CFG-XXX', SET, filter=45, nmeaVersion='xx', numSV=4, flags=14)
 
     def testFill_INVALIDATTR(self):  # test invalid attribute type with provided values
-        EXPECTED_ERROR = "Unknown attribute type Z2 for key spam"
+        EXPECTED_ERROR = "Unknown attribute type Z2"
         with self.assertRaisesRegex(UBXTypeError, EXPECTED_ERROR):
             UBXMessage('FOO', 'FOO-BAR', GET, spam=45, eggs='xx')
 
     def testFill_INVALIDATTR2(self):  # test invalid attribute type with defaulted values
-        EXPECTED_ERROR = "Unknown attribute type Z2 for key spam"
+        EXPECTED_ERROR = "Unknown attribute type Z2"
         with self.assertRaisesRegex(UBXTypeError, EXPECTED_ERROR):
             UBXMessage('FOO', 'FOO-BAR', GET, eggs=45)
 
     def testParse_INVALIDATTR(self):  # test for invalid message header in bytes
-        EXPECTED_ERROR = "Unknown attribute type Z2 for key spam"
+        EXPECTED_ERROR = "Unknown attribute type Z2"
         with self.assertRaisesRegex(UBXTypeError, EXPECTED_ERROR):
             UBXMessage.parse(self.bad_msg, True)
 
@@ -111,6 +111,27 @@ class ExceptionTest(unittest.TestCase):
         cfgData = [("FOO_BAR", 9600)]
         with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
             UBXMessage.build_cfgvalset(0, 0, 0, cfgData)
+
+    def testBadCfgKey(self):  # test for invalid key
+        EXPECTED_ERROR = "Undefined configuration database key 0x11223344"
+        with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
+            UBXMessage.cfgkey2name(0x11223344)
+
+    def testMaxCfgValSet(self):  # test for >64 configuration tuples
+        EXPECTED_ERROR = "Number of configuration tuples 65 exceeds maximum of 64"
+        cfgData = []
+        for i in range(65):
+            cfgData.append(('CFG_TEST', i))
+        with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
+            UBXMessage.build_cfgvalset(0, 0, 0, cfgData)
+
+    def testMaxCfgValDel(self):  # test for >64 configuration keys
+        EXPECTED_ERROR = "Number of configuration keys 68 exceeds maximum of 64"
+        cfgData = []
+        for _ in range(68):
+            cfgData.append('CFG_TEST')
+        with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
+            UBXMessage.build_cfgvaldel(0, 0, 0, cfgData)
 
 
 if __name__ == "__main__":

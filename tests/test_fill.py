@@ -1,7 +1,7 @@
 '''
 Created on 21 Oct 2020
 
-Fill method tests for pyubx2.UBXMessage
+Constructor method tests for pyubx2.UBXMessage
 
 @author: semuadmin
 '''
@@ -89,7 +89,7 @@ class FillTest(unittest.TestCase):
         self.assertEqual(str(res), EXPECTED_RESULT)
 
     def testFill_CFGDAT(self):  # floating point attribute, single and double precision
-        EXPECTED_RESULT = "<UBX(CFG-DAT, datumNum=4, datumName=b'WGS-84', majA=4321.123456789128, flat=-2964.00469836, dX=-1.2345678, dY=27.40654, dZ=0.0, rotX=0.0, rotY=0.0, rotZ=0.0, scale=0.0)>"
+        EXPECTED_RESULT = "<UBX(CFG-DAT, datumNum=4, datumName=b'WGS-84', majA=4321.123456789128, flat=-2964.00469836, dX=-1.2345678, dY=27.40654, dZ=0, rotX=0, rotY=0, rotZ=0, scale=0)>"
         res = UBXMessage('CFG', 'CFG-DAT', SET, datumNum=4, datumName=b'WGS-84', majA=4321.123456789128, flat=-2964.00469836, dX=-1.2345678, dY=27.40654)
         self.assertEqual(str(res), EXPECTED_RESULT)
 
@@ -115,17 +115,17 @@ class FillTest(unittest.TestCase):
         reseval = eval(repr(res))
         assert type(reseval) is UBXMessage
 
-    def testPoll_CFGVALGET(self):  #  test CFG-VALGET POLL constructor
+    def testFill_CFGVALGET(self):  #  test CFG-VALGET POLL constructor
         EXPECTED_RESULT = "<UBX(CFG-VALGET, version=0, layer=1, position=0, keys_01=1079115777, keys_02=1079181313)>"
         res = UBXMessage('CFG', 'CFG-VALGET', POLL, payload=b'\x00\x01\x00\x00\x01\x00\x52\x40\x01\x00\x53\x40')
         self.assertEqual(str(res), EXPECTED_RESULT)
 
-    def testPoll_CFGVALDEL(self):  #  test CFG-VALDEL SET constructor
+    def testFill_CFGVALDEL(self):  #  test CFG-VALDEL SET constructor
         EXPECTED_RESULT = "<UBX(CFG-VALDEL, version=0, layers=b'\\x03', transaction=b'\\x00', reserved0=0, keys_01=1079115777, keys_02=16798528)>"
         res = UBXMessage('CFG', 'CFG-VALDEL', SET, payload=b'\x00\x03\x00\x00\x01\x00\x52\x40\x40\x53\x00\x01')
         self.assertEqual(str(res), EXPECTED_RESULT)
 
-    def testPoll_CFGVALSET(self):  #  test CFG-VALSET SET constructor
+    def testFill_CFGVALSET(self):  #  test CFG-VALSET SET constructor
         EXPECTED_RESULT = "<UBX(CFG-VALSET, version=0, layers=b'\\x03', transaction=0, reserved0=0, cfgData_01=1, cfgData_02=0, cfgData_03=82, cfgData_04=64, cfgData_05=128, cfgData_06=37, cfgData_07=0, cfgData_08=0)>"
         res = UBXMessage('CFG', 'CFG-VALSET', SET, payload=b'\x00\x03\x00\x00\x01\x00\x52\x40\x80\x25\x00\x00')
         self.assertEqual(str(res), EXPECTED_RESULT)

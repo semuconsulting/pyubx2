@@ -35,10 +35,11 @@ class FillTest(unittest.TestCase):
         res = UBXMessage('CFG', 'CFG-MSG', POLL, msgClass=240, msgID=5)
         self.assertEqual(str(res.msg_id), EXPECTED_RESULT)
 
-    def testFill_CFGMSG4(self):  # test msg length in bytes property
-        EXPECTED_RESULT = "b'\\x02\\x00'"
+    def testFill_CFGMSG4(self):  # test msg length property
+        # EXPECTED_RESULT = "b'\\x02\\x00'"
+        EXPECTED_RESULT = 2
         res = UBXMessage('CFG', 'CFG-MSG', POLL, msgClass=240, msgID=5)
-        self.assertEqual(str(res.length), EXPECTED_RESULT)
+        self.assertEqual(res.length, EXPECTED_RESULT)
 
 
 if __name__ == "__main__":
