@@ -484,7 +484,7 @@ UBX_PAYLOADS_GET = {
         "yAccel": I4,
         "zAccel": I4,
     },
-    "ESF-MEAS": {
+    "ESF-MEAS": {  # this version used when bit 3 of flags = 0
         "timeTag": U4,
         "flags": X2,
         "id": U2,
@@ -494,13 +494,18 @@ UBX_PAYLOADS_GET = {
                 "data": X4,
             },
         ),
-        # optional repeating group not currently implemented
-        #         "group": (
-        #             "None",
-        #             {  # optional repeating group * numMeas, which is bits 11..15 in flags
-        #                 "calibTtag": U4,
-        #             }
-        #         ),
+    },
+    "ESF-MEAS-CT": {  # this version used when bit 3 of flags = 1
+        "timeTag": U4,
+        "flags": X2,
+        "id": U2,
+        "group": (
+            "None",
+            {  # repeating group * numMeas, which is bits 11..15 of flags
+                "data": X4,
+                "calibTtag": U4,
+            },
+        ),
     },
     "ESF-RAW": {
         "reserved1": U4,

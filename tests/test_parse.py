@@ -30,6 +30,8 @@ class ParseTest(unittest.TestCase):
         self.cfg_valget2 = b'\xb5b\x06\x8b\x09\x00\x00\x00\x00\x00\x01\x00\x51\x20\x55\x61\xc2'
         self.cfg_valget3 = b'\xb5b\x06\x8b\x16\x00\x00\x00\x00\x00\x01\x00\x51\x20\x55\x01\x00\x52\x40\x80\x25\x00\x00\x02\x00\x21\x30\x23\x1c\x92'
         self.cfg_valget4 = b'\xb5b\x06\x8b\x0c\x00\x00\x00\x00\x00\x68\x00\x11\x40\xb6\xf3\x9d\x3f\xdb\x3d'
+        self.esf_meas = b'\xb5b\x10\x02\x10\x00\x01\x02\x03\x04\x00\x00\x00\x00\x01\x02\x03\x04\x05\x06\x07\x08\x50\x8a'
+        self.esf_measct = b'\xb5b\x10\x02\x18\x00\x01\x02\x03\x04\x00\x08\x00\x00\x01\x02\x03\x04\x01\x02\x03\x04\x05\x06\x07\x08\x05\x06\x07\x08\x84\xaa'
 
     def tearDown(self):
         pass
@@ -148,6 +150,14 @@ class ParseTest(unittest.TestCase):
     def testCFGVALGET4(self):  # test parser of CFG-VALGET CFG-NAVSPG-USRDAT_ROTY
         res = UBXMessage.parse(self.cfg_valget4, True)
         self.assertAlmostEqual(res.CFG_NAVSPG_USRDAT_ROTY, 1.23, 2)
+
+    def testESFMEAS(self):  # test parser of ESF-MEAS without calibTtag data
+        res = UBXMessage.parse(self.esf_meas, True)
+        self.assertEqual(str(res), "<UBX(ESF-MEAS, timeTag=67305985, flags=b'\\x00\\x00', id=0, data_01=b'\\x01\\x02\\x03\\x04', data_02=b'\\x05\\x06\\x07\\x08')>")
+
+    def testESFMEASCT(self):  # test parser of ESF-MEAS without calibTtag data
+        res = UBXMessage.parse(self.esf_measct, True)
+        self.assertEqual(str(res), "<UBX(ESF-MEAS, timeTag=67305985, flags=b'\\x00\\x08', id=0, data_01=b'\\x01\\x02\\x03\\x04', calibTtag_01=67305985, data_02=b'\\x05\\x06\\x07\\x08', calibTtag_02=134678021)>")
 
 
 if __name__ == "__main__":

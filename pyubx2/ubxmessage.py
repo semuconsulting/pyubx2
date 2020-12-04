@@ -247,12 +247,14 @@ class UBXMessage:
                 pdict = self._get_mga_version(ubt.SET, **kwargs)
             else:
                 pdict = ubs.UBX_PAYLOADS_SET[self.identity]
-        else:
+        else:  # GET message
             if self._ubxClass == b"\x13" and self._ubxID != b"\x80":  # MGA GET message
                 pdict = self._get_mga_version(ubt.GET, **kwargs)
             #             elif self.identity == "CFG-NMEA":
             elif self._ubxClass == b"\x06" and self._ubxID == b"\x17":  # CFG-NMEA
                 pdict = self._get_cfgnmea_version(**kwargs)
+            elif self._ubxClass == b"\x10" and self._ubxID == b"\x02":  # ESF-MEAS
+                pdict = self._get_esfmeas_version(**kwargs)
             else:
                 pdict = ubg.UBX_PAYLOADS_GET[self.identity]
         return pdict
@@ -292,6 +294,25 @@ class UBXMessage:
             pdict = ubg.UBX_PAYLOADS_GET["CFG-NMEAv0"]
         else:
             pdict = ubg.UBX_PAYLOADS_GET["CFG-NMEA"]
+        return pdict
+
+    def _get_esfmeas_version(self, **kwargs) -> dict:
+        """
+        Select appropriate payload definition version for
+        ESF-MEAS message by checking bit 3 in the
+        'flags' attribute.
+
+        :param **kwargs payload
+        :return dict:
+        """
+
+        flags = kwargs["payload"][4:6]  # bytes
+        flags = int(flags.hex(), 16)  # int
+        calibTtagValid = flags >> 3 & 1  # test bit 3
+        if calibTtagValid:
+            pdict = ubg.UBX_PAYLOADS_GET["ESF-MEAS-CT"]
+        else:
+            pdict = ubg.UBX_PAYLOADS_GET["ESF-MEAS"]
         return pdict
 
     def _calc_num_repeats(self, att, payload: bytes, offset: int) -> int:
