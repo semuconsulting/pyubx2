@@ -126,17 +126,19 @@ Payloads for each of these identities are defined in the ubxtypes_* modules
 UBX_MSGIDS = {
     b"\x05\x01": "ACK-ACK",
     b"\x05\x00": "ACK-NAK",
-    # ***************************************************************
-    # AID messages are deprecated since Gen 8 in favour of MGA
-    # ***************************************************************
+    # *********************************************************************
+    # AssistNow Aiding messages
+    # Since Gen 8, these are deprecated in favour of MGA
+    # *********************************************************************
     b"\x0b\x30": "AID-ALM",
     b"\x0b\x33": "AID-AOP",
     b"\x0b\x31": "AID-EPH",
     b"\x0b\x02": "AID-HUI",
     b"\x0b\x01": "AID-INI",
-    # ********************************************************************
-    # Many CFG messages are deprecated since Gen 9 in favour of CFG-VALSET
-    # ********************************************************************
+    # *********************************************************************
+    # Configuration messages
+    # Since Gen 9, many of these are deprecated in favour of CFG-VALSET/DEL
+    # *********************************************************************
     b"\x06\x13": "CFG-ANT",
     b"\x06\x93": "CFG-BATCH",
     b"\x06\x09": "CFG-CFG",
@@ -172,19 +174,31 @@ UBX_MSGIDS = {
     b"\x06\x8c": "CFG-VALDEL",
     b"\x06\x8b": "CFG-VALGET",
     b"\x06\x8a": "CFG-VALSET",
+    # ***************************************************************
+    # External Sensor Fusion messages
+    # ***************************************************************
     b"\x10\x14": "ESF-ALG",
     b"\x10\x15": "ESF-INS",
     b"\x10\x02": "ESF-MEAS",
     b"\x10\x03": "ESF-RAW",
     b"\x10\x10": "ESF-STATUS",
-    b"\x28\x00": "HNR-ATT",
-    b"\x28\x01": "HNR-INS",
-    b"\x28\x01": "HNR-PVT",
+    # ***************************************************************
+    # High Rate Navigation messages
+    # ***************************************************************
+    b"\x28\x01": "HNR-ATT",
+    b"\x28\x02": "HNR-INS",
+    b"\x28\x00": "HNR-PVT",
+    # ***************************************************************
+    # Information messages
+    # ***************************************************************
     b"\x04\x04": "INF-DEBUG",
     b"\x04\x00": "INF-ERROR",
     b"\x04\x02": "INF-NOTICE",
     b"\x04\x03": "INF-TEST",
     b"\x04\x01": "INF-WARNING",
+    # ***************************************************************
+    # Logging messages
+    # ***************************************************************
     b"\x21\x11": "LOG-BATCH",
     b"\x21\x07": "LOG-CREATE",
     b"\x21\x03": "LOG-ERASE",
@@ -197,8 +211,9 @@ UBX_MSGIDS = {
     b"\x21\x0d": "LOG-RETRIEVESTRING",
     b"\x21\x04": "LOG-STRING",
     # ***************************************************************
-    # MGA messages need special handling as MSGIDs are not unique
-    # Message identity is determined by 'type' attribute in payload
+    # Multiple GNSS Assistance messages
+    # These need special handling as MSGIDs alone are not unique;
+    # message identity is determined by 'type' attribute in payload
     # ***************************************************************
     b"\x13\x60\x01": "MGA-ACK-DATA0",
     b"\x13\x60\x00": "MGA-NAK-DATA0",
@@ -234,6 +249,9 @@ UBX_MSGIDS = {
     b"\x13\x05\x01": "MGA-QZSS-EPH",
     b"\x13\x05\x02": "MGA-QZSS-ALM",
     b"\x13\x05\x04": "MGA-QZSS-HEALTH",
+    # ***************************************************************
+    # Hardware Monitoring messages
+    # ***************************************************************
     b"\x0a\x36": "MON-COMMS",
     b"\x0a\x28": "MON-GNSS",
     b"\x0a\x0b": "MON-HW2",
@@ -247,6 +265,9 @@ UBX_MSGIDS = {
     b"\x0a\x31": "MON-SPAN",
     b"\x0a\x08": "MON-TXBUF",
     b"\x0a\x04": "MON-VER",
+    # ***************************************************************
+    # Navigation messages
+    # ***************************************************************
     b"\x01\x60": "NAV-AOPSTATUS",
     b"\x01\x22": "NAV-CLOCK",
     b"\x01\x36": "NAV-COV",
@@ -282,6 +303,9 @@ UBX_MSGIDS = {
     b"\x01\x21": "NAV-TIMEUTC",
     b"\x01\x11": "NAV-VELECEF",
     b"\x01\x12": "NAV-VELNED",
+    # ***************************************************************
+    # Receiver Management messages
+    # ***************************************************************
     b"\x02\x61": "RXM-IMES",
     b"\x02\x14": "RXM-MEASX",
     b"\x02\x41": "RXM-PMREQ",
@@ -290,8 +314,14 @@ UBX_MSGIDS = {
     b"\x02\x32": "RXM-RTCM",
     b"\x02\x13": "RXM-SFRBX",
     b"\x02\x20": "RXM-SVSI",
+    # ***************************************************************
+    # Security messages
+    # ***************************************************************
     b"\x27\x01": "SEC-SIGN",
     b"\x27\x03": "SEC-UNIQID",
+    # ***************************************************************
+    # Timing messages
+    # ***************************************************************
     b"\x0d\x11": "TIM-DOSC",
     b"\x0d\x16": "TIM-FCHG",
     b"\x0d\x17": "TIM-HOC",
@@ -302,6 +332,9 @@ UBX_MSGIDS = {
     b"\x0d\x01": "TIM-TP",
     b"\x0d\x15": "TIM-VCOCAL",
     b"\x0d\x06": "TIM-VRFY",
+    # ***************************************************************
+    # Firmware update messages
+    # ***************************************************************
     b"\x09\x14": "UPD-SOS",
     b"\x66\x66": "FOO-BAR",  # Dummy message for testing
 }
@@ -402,6 +435,9 @@ UBX_CONFIG_MESSAGES = {
     b"\x21\x09": "LOG-RETRIEVE",
     b"\x21\x10": "LOG-RETRIEVEBATCH",
     b"\x21\x04": "LOG-STRING",
+    b"\x28\x01": "HNR-ATT",
+    b"\x28\x02": "HNR-INS",
+    b"\x28\x00": "HNR-PVT",
     b"\xf0\x0a": "DTM",  # Datum Reference
     b"\xf0\x44": "GBQ",  # Poll Standard Message - Talker ID GB (BeiDou)
     b"\xf0\x09": "GBS",  # GNSS Satellite Fault Detection

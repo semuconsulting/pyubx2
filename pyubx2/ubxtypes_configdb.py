@@ -455,8 +455,8 @@ UBX_CONFIG_DATABASE = {
     "CFG_MSGOUT_UBX_TIM_VRFY_UART1": (0x20910093, U1),
     "CFG_MSGOUT_UBX_TIM_VRFY_UART2": (0x20910094, U1),
     "CFG_MSGOUT_UBX_TIM_VRFY_USB": (0x20910095, U1),
-    "CFG_MSGOUT_UBX_UNKNOWN_001": (0x20910119, U1),  # TODO find out what this is
-    "CFG_MSGOUT_UBX_UNKNOWN_002": (0x2091011A, U1),  # TODO find out what this is
+    "CFG_MSGOUT_UBX_0x20910119": (0x20910119, U1),  # TODO find out what this is
+    "CFG_MSGOUT_UBX_0x2091011A": (0x2091011A, U1),  # TODO find out what this is
     # CFG_NAVSPG Standard precision navigation configuration
     "CFG_NAVSPG_FIXMODE": (0x20110011, E1),
     "CFG_NAVSPG_INIFIX3D": (0x10110013, L),

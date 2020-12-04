@@ -141,7 +141,7 @@ class ExceptionTest(unittest.TestCase):
         with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
             UBXMessage.config_poll(0, 0, keys)
 
-#     # not currently practical to test this
+#     # can only be tested by temporarily removing a valid message definition
 #     def testIdentity(self):  # test for invalid message identity
 #         EXPECTED_ERROR = "Unknown UBX message type class {'b\x77'} id {'b\x88'}"
 #         msg = UBXMessage('b\x77', 'b\x88', POLL)

@@ -533,7 +533,9 @@ UBX_PAYLOADS_GET = {
         ),
     },
     # ********************************************************************
-    # High Rate Navigation Messages:
+    # High Rate Navigation Results Messages: i.e. High rate time, position, speed, heading.
+    # Messages in the HNR class are used to output high rate navigation data for position, altitude,
+    # velocity and their accuracies.
     "HNR-ATT": {
         "iTOW": U4,
         "version": U1,
@@ -1272,7 +1274,7 @@ UBX_PAYLOADS_GET = {
             },
         ),
     },
-    "NAV-SLAS": {  # TODO
+    "NAV-SLAS": {
         "iTOW": U4,
         "version": U1,
         "reserved1": U3,
