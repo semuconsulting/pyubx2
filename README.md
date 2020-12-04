@@ -243,14 +243,17 @@ Wild card query to retrieve all CFG_MSGOUT (keyID 0x2091*) parameters (set bits 
 >>> layer = 1
 >>> position = 0 # retrieve first 64 results
 >>> keys = [0x2091ffff]
->>> msg1 = UBXMessage.config_poll(layer, position, keys)
->>> print(msg1)
+>>> msg1of3 = UBXMessage.config_poll(layer, position, keys)
+>>> print(msg1of3)
 <UBX(CFG-VALGET, version=0, layers=b'\x01', position=b'\x00\x00', keys_01=546439167)>
 >>> position = 64 # retrieve next 64 results
->>> msg2 = UBXMessage.config_poll(layer, position, keys)
->>> print(msg2)
+>>> msg2of3 = UBXMessage.config_poll(layer, position, keys)
+>>> print(msg2of3)
 <UBX(CFG-VALGET, version=0, layers=b'\x01', position=b'@\x00', keys_01=546439167)>
-...
+>>> position = 128 # retrieve next 64 results
+>>> msg3of3 = UBXMessage.config_poll(layer, position, keys)
+>>> print(msg3of3)
+<UBX(CFG-VALGET, version=0, layers=b'\x01', position=b'\x80\x00', keys_01=546439167)>
 ```
 
 ### Serializing

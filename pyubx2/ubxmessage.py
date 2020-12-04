@@ -250,7 +250,8 @@ class UBXMessage:
         else:
             if self._ubxClass == b"\x13" and self._ubxID != b"\x80":  # MGA GET message
                 pdict = self._get_mga_version(ubt.GET, **kwargs)
-            elif self.identity == "CFG-NMEA":
+            #             elif self.identity == "CFG-NMEA":
+            elif self._ubxClass == b"\x06" and self._ubxID == b"\x17":  # CFG-NMEA
                 pdict = self._get_cfgnmea_version(**kwargs)
             else:
                 pdict = ubg.UBX_PAYLOADS_GET[self.identity]
@@ -427,15 +428,19 @@ class UBXMessage:
 
         """
 
-        # all MGA messages except MGA-DBD need to be identified by the
-        # 'type' attribute - the first byte of the payload
-        if self._ubxClass == b"\x13" and self._ubxID != b"\x80":
-            umsg_name = ubt.UBX_MSGIDS[
-                self._ubxClass + self._ubxID + self._payload[0:1]
-            ]
-        else:
-            umsg_name = ubt.UBX_MSGIDS[self._ubxClass + self._ubxID]
-
+        try:
+            # all MGA messages except MGA-DBD need to be identified by the
+            # 'type' attribute - the first byte of the payload
+            if self._ubxClass == b"\x13" and self._ubxID != b"\x80":
+                umsg_name = ubt.UBX_MSGIDS[
+                    self._ubxClass + self._ubxID + self._payload[0:1]
+                ]
+            else:
+                umsg_name = ubt.UBX_MSGIDS[self._ubxClass + self._ubxID]
+        except KeyError as err:
+            raise ube.UBXMessageError(
+                f"Unknown UBX message type class {self._ubxClass} id {self._ubxID}"
+            ) from err
         return umsg_name
 
     @property
