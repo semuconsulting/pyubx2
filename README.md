@@ -165,15 +165,17 @@ any of the following constructor formats will work:
 
 **CFG-VALSET, CFG-VALDEL and CFG-VALGET message types**
 
-Generation 9 of the UBX protocol introduced the concept of a device configuration interface with individual configuration parameters being set or unset (del) in the designated memory layer(s) via the CFG-VALSET and CFG-VALDEL message types, or queried via the CFG-VALGET message type. *Legacy CFG message types continue to be supported but are now deprecated*.
+Generation 9 of the UBX protocol introduced the concept of a device configuration interface with configurable parameters being set or unset (del) in the designated memory layer(s) via the CFG-VALSET and CFG-VALDEL message types, or queried via the CFG-VALGET message type. *Legacy CFG message types continue to be supported but are now deprecated*.
 
-Individual configuration parameters are designated by keys, which may be in string (keyname) or hexadecimal integer (keyID) format. Keynames and their corresponding keyIDs and data types are defined in `ubxtypes_configdb.py` as `UBX_CONFIG_DATABASE`.
+Individual configuration parameters are designated by keys, which may be in string (keyname) or integer (keyID) format. Keynames and their corresponding hexadecimal keyIDs and data types are defined in `ubxtypes_configdb.py` as `UBX_CONFIG_DATABASE`. Two static helper methods are available to convert keyname to keyID and vice versa - `UBXMessage.cfgname2key()` and `UBXMessage.cfgkey2name()`.
 
 Optionally, batches of CFG-VALSET and CFG-VALDEL messages can be applied transactionally, with the combined configuration only being committed at the end of the transaction.
 
 Dedicated static methods are provided to create these message types - `UBXMessage.config_set()`, `UBXMessage.config_del()` and `UBXMessage.config_poll()`. 
 
 **UBXMessage.config_set() (CFG-VALSET)**
+
+Sets up to 64 parameters in the designated memory layer(s).
 
 Parameters:
 
@@ -184,29 +186,37 @@ keyID (int) or keyname (str) format
 
 ```python
 >>> from pyubx2 import UBXMessage
+>>> layers = 1
+>>> transaction = 0
 >>> cfgData = [("CFG_UART1_BAUDRATE", 9600), (0x40530001, 115200)]
->>> msg = UBXMessage.config_set(0, 1, 0, cfgData)
+>>> msg = UBXMessage.config_set(layers, transaction, cfgData)
 >>> print(msg)
 <UBX(CFG-VALSET, version=0, layers=b'\x01', transaction=0, reserved0=0, cfgData_01=1, cfgData_02=0 ...)>
 ```
 
 **UBXMessage.config_del() (CFG-VALDEL)**
 
+Unsets (deletes) up to 64 parameter settings in the designated non-volatile memory layer(s).
+
 Parameters:
 
-1. layers - 1 = Volatile RAM, 2 = Battery-Backed RAM (BBR), 4 = External Flash
+1. layers - 2 = Battery-Backed RAM (BBR), 4 = External Flash
 1. transaction - 0 = None, 1 = Start, 2 = Ongoing, 3 = Commit
 1. keys - an array of up to 64 keys in either keyID (int) or keyname (str) format
 
 ```python
 >>> from pyubx2 import UBXMessage
+>>> layers = 4
+>>> transaction = 0
 >>> keys = ["CFG_UART1_BAUDRATE", 0x40530001]
->>> msg = UBXMessage.config_del(4, 0, keys)
+>>> msg = UBXMessage.config_del(layers, transaction, keys)
 >>> print(msg)
 <UBX(CFG-VALDEL, version=0, layers=b'\x04', transaction=b'\x00', reserved0=0, keys_01=1079115777, keys_02=1079181313)>
 ```
 
 **UBXMessage.config_poll() (CFG-VALGET)**
+
+Polls up to 64 parameters from the designated memory layer.
 
 Parameters:
 
@@ -218,10 +228,29 @@ wildcards - see UBX device interface specification for details.
 
 ```python
 >>> from pyubx2 import UBXMessage
+>>> layer = 1
+>>> position = 0
 >>> keys = ["CFG_UART1_BAUDRATE", 0x40530001]
->>> msg = UBXMessage.config_poll(1, 0, keys)
+>>> msg = UBXMessage.config_poll(layer, position, keys)
 >>> print(msg)
 <UBX(CFG-VALGET, version=0, layers=b'\x01', position=b'\x00\x00', keys_01=1079115777, keys_02=1079181313)>
+```
+
+Wild card query to retrieve all CFG_MSGOUT (keyID 0x2091*) parameters (set bits 0..15 of the keyID to 0xffff):
+
+```python
+>>> from pyubx2 import UBXMessage
+>>> layer = 1
+>>> position = 0 # retrieve first 64 results
+>>> keys = [0x2091ffff]
+>>> msg1 = UBXMessage.config_poll(layer, position, keys)
+>>> print(msg1)
+<UBX(CFG-VALGET, version=0, layers=b'\x01', position=b'\x00\x00', keys_01=546439167)>
+>>> position = 64 # retrieve next 64 results
+>>> msg2 = UBXMessage.config_poll(layer, position, keys)
+>>> print(msg2)
+<UBX(CFG-VALGET, version=0, layers=b'\x01', position=b'@\x00', keys_01=546439167)>
+...
 ```
 
 ### Serializing

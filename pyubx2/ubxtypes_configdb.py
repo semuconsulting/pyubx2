@@ -4,7 +4,7 @@ UBX Protocol Configuration Database Keys
 Used by CFG-VALGET, CFG-VALSET and CFG-VALDEL message types
 
 Format:
-"Configuration Name": (key, "type")
+"keyname": (keyID, "type")
 
 Created on 30 Nov 2020
 

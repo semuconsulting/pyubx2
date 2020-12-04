@@ -68,10 +68,11 @@ class UBXMessage:
         self._immutable = True
 
     def _do_attributes(self, **kwargs):
-        """Populate UBXMessage from named attribute keywords.
+        """
+        Populate UBXMessage from named attribute keywords.
         Where a named attribute is absent, set to a nominal value (zeros or blanks).
 
-        :param **kwargs:
+        :param **kwargs: payload
 
         """
 
@@ -83,7 +84,7 @@ class UBXMessage:
                 self._payload = None
             else:
                 pdict = self._get_dict(**kwargs)  # get appropriate payload dict
-                for key in pdict.keys():  # set each attribute in dict
+                for key in pdict.keys():  # process each attribute in dict
                     (offset, att) = self._set_attribute(offset, pdict, key, **kwargs)
             self._do_len_checksum()
 
@@ -105,7 +106,8 @@ class UBXMessage:
     def _set_attribute(
         self, offset: int, pdict: dict, key: str, **kwargs
     ) -> (int, str):
-        """Recursive routine to populate individual payload attributes
+        """
+        Recursive routine to populate individual payload attributes
 
         :param offset: int:
         :param pdict: dict:
@@ -115,7 +117,7 @@ class UBXMessage:
         """
         # pylint: disable=no-member
 
-        #  if repeating group, suffix keyword with index
+        #  if within repeating group, suffix keyword with index
         if self._index > 0:
             keyr = key + "_{0:0=2d}".format(self._index)
         else:
@@ -124,7 +126,8 @@ class UBXMessage:
         att = pdict[key]  # get attribute type
         if isinstance(att, tuple):  # repeating group of attributes
             numr, attd = att
-            # if CFG-VALGET GET, parse as configuration database key value pairs
+            # if CFG-VALGET message, use dedicated method to
+            # parse as configuration key value pairs
             if (
                 self._ubxClass == b"\x06"
                 and self._ubxID == b"\x8b"
@@ -132,10 +135,12 @@ class UBXMessage:
             ):
                 self._set_cfgval_attributes(offset, **kwargs)
             else:
+                # derive or retrieve number of attributes in group
                 if numr == "None":
                     rng = self._calc_num_repeats(attd, self._payload, offset)
                 else:
                     rng = getattr(self, numr)
+                # recursively process each attribute, incrementing the payload offset as we go
                 for i in range(rng):
                     self._index = i + 1
                     for key1 in attd.keys():
@@ -143,7 +148,10 @@ class UBXMessage:
 
         else:  # single attribute
 
-            if att == ubt.CH:  # INF message payload
+            # determine attribute size (bytes)
+            if (
+                att == ubt.CH
+            ):  # payload is a single variable length string (e.g. INF message)
                 atts = len(self._payload)
             else:
                 atts = int(att[1:3])
@@ -177,8 +185,9 @@ class UBXMessage:
         return (offset, att)
 
     def _set_cfgval_attributes(self, offset: int, **kwargs):
-        """Parse CFG-VALGET payload to set of configuration
-        database key value pairs
+        """
+        Parse CFG-VALGET payload to set of configuration
+        key value pairs
 
         :param offset int: payload offset
         :param **kwargs  payload
@@ -206,7 +215,8 @@ class UBXMessage:
                 i += 1
 
     def _do_len_checksum(self):
-        """Calculate and format payload length and checksum as bytes"""
+        """
+        Calculate and format payload length and checksum as bytes"""
 
         if self._payload is None:
             self._length = self.len2bytes(0)
@@ -220,8 +230,12 @@ class UBXMessage:
             )
 
     def _get_dict(self, **kwargs) -> dict:
-        """Get payload dictionary corresponding to message mode
+        """
+        Get payload dictionary corresponding to message mode (GET/SET/POLL)
+        MGA and older NMEA messages need special handling as their dictionary keys (ubxClass/ubxID)
+        are not unique
 
+        :param **kwargs payload
         :return dict:
 
         """
@@ -242,11 +256,13 @@ class UBXMessage:
                 pdict = ubg.UBX_PAYLOADS_GET[self.identity]
         return pdict
 
-    def _get_mga_version(self, mode, **kwargs) -> dict:
+    def _get_mga_version(self, mode: int, **kwargs) -> dict:
         """
         Select appropriate MGA payload definition
 
-         :return dict:
+        :param mode str: 0=GET, 1=SET, 2=POLL
+        :param **kwargs payload
+        :return dict:
 
         """
 
@@ -260,9 +276,10 @@ class UBXMessage:
 
     def _get_cfgnmea_version(self, **kwargs) -> dict:
         """
-        Selects appropriate payload definition version for older
+        Select appropriate payload definition version for older
         generations of CFG-NMEA message
 
+        :param **kwargs payload
         :return dict:
 
         """
@@ -277,14 +294,15 @@ class UBXMessage:
         return pdict
 
     def _calc_num_repeats(self, att, payload: bytes, offset: int) -> int:
-        """Deduce number of items in repeating group by dividing length of
+        """
+        Deduce number of items in repeating group by dividing length of
         remaining payload by length of group.
 
         NB: this assumes the repeating group is always at the end of the
         payload, which is true for all currently supported message types
         but may change in the future.
 
-        :param att:
+        :param att: attribute type
         :param payload : bytes:
         :param offset: int:
 
@@ -298,7 +316,8 @@ class UBXMessage:
         return int(lenpayload / lengroup)
 
     def __str__(self) -> str:
-        """Human readable representation.
+        """
+        Human readable representation.
 
         :return: str:
 
@@ -346,7 +365,8 @@ class UBXMessage:
         return stg
 
     def __repr__(self) -> str:
-        """Machine readable representation.
+        """
+        Machine readable representation.
 
         eval(repr(obj)) = obj
 
@@ -361,6 +381,9 @@ class UBXMessage:
     def __setattr__(self, name, value):
         """
         Override setattr to make object immutable after instantiation
+
+        :param name
+        :param value
         """
 
         if self._immutable:
@@ -371,7 +394,8 @@ class UBXMessage:
         super().__setattr__(name, value)
 
     def serialize(self) -> bytes:
-        """Serialize message
+        """
+        Serialize message
 
         :return bytes:
 
@@ -441,7 +465,8 @@ class UBXMessage:
 
     @staticmethod
     def parse(message: bytes, validate: bool = False) -> object:
-        """Parse UBX byte stream to UBXMessage object.
+        """
+        Parse UBX byte stream to UBXMessage object.
 
         Includes option to validate incoming payload length and checksum
         (UXBMessage will calculate and assign it's own values anyway).
@@ -490,7 +515,8 @@ class UBXMessage:
 
     @staticmethod
     def msgclass2bytes(msgClass: int, msgID: int) -> bytes:
-        """Convert message class/id integers to bytes
+        """
+        Convert message class/id integers to bytes
         e.g. 6, 1 to b'/x06/x01'.
 
         :param msgClass: int:
@@ -504,7 +530,8 @@ class UBXMessage:
 
     @staticmethod
     def msgstr2bytes(msgClass: str, msgID: str) -> bytes:
-        """Convert plain text UBX message class to bytes
+        """
+        Convert plain text UBX message class to bytes
         e.g. 'CFG-MSG' to b'/x06/x01'.
 
         :param msgClass: str:
@@ -574,7 +601,8 @@ class UBXMessage:
 
     @staticmethod
     def bytes2len(length: bytes) -> int:
-        """Convert payload length as bytes to integer.
+        """
+        Convert payload length as bytes to integer.
 
         :param length: bytes:
         :return int:
@@ -585,7 +613,8 @@ class UBXMessage:
 
     @staticmethod
     def len2bytes(length: int) -> bytes:
-        """Convert payload length as integer to two little-endian bytes.
+        """
+        Convert payload length as integer to two little-endian bytes.
 
         :param length: int:
         :return bytes:
@@ -616,7 +645,8 @@ class UBXMessage:
 
     @staticmethod
     def isvalid_checksum(message: bytes) -> bool:
-        """Validate input message's checksum
+        """
+        Validate input message's checksum
         ('message' includes header and checksum)
 
         :param message: bytes:
@@ -630,7 +660,8 @@ class UBXMessage:
 
     @staticmethod
     def itow2utc(iTOW: int) -> datetime.time:
-        """Convert UBX iTOW to UTC time
+        """
+        Convert UBX iTOW to UTC time
 
         :param iTOW: int:
         :return datetime.time:
@@ -642,7 +673,8 @@ class UBXMessage:
 
     @staticmethod
     def gpsfix2str(fix: int) -> str:
-        """Converts GPS fix integer to string
+        """
+        Convert GPS fix integer to string
 
         :param fix: int:
         :return str:
@@ -665,7 +697,8 @@ class UBXMessage:
 
     @staticmethod
     def dop2str(dop: float) -> str:
-        """Converts DOP float to descriptive string
+        """
+        Convert Dilution of Precision float to descriptive string
 
         :param dop: float:
         :return str:
@@ -688,7 +721,8 @@ class UBXMessage:
 
     @staticmethod
     def gnss2str(gnssId: int) -> str:
-        """Converts GNSS ID to descriptive string
+        """
+        Convert GNSS ID to descriptive string
 
         :param gnssId: int:
         :return str:
@@ -702,7 +736,8 @@ class UBXMessage:
 
     @staticmethod
     def nmeaver2str(nmeaVersion: int) -> str:
-        """Converts NMEA version integer to readable string
+        """
+        Convert NMEA version integer to readable string
 
         :param nmeaVersion: int:
         :return str:
@@ -714,13 +749,16 @@ class UBXMessage:
 
     @staticmethod
     def mode2str(mode: int) -> str:
-        """Convert mode to string"""
+        """
+        Convert mode to string
+        """
 
         return ["GET", "SET", "POLL"][mode]
 
     @staticmethod
     def key_from_val(dictionary: dict, value) -> str:
-        """Helper method - get dictionary key corresponding to (unique) value.
+        """
+        Helper method - get dictionary key corresponding to (unique) value.
 
         :param dictionary: dict:
         :param value:
@@ -796,9 +834,14 @@ class UBXMessage:
         lis = b""
 
         for cfgItem in cfgData:
+            att = ""
             (key, val) = cfgItem
-            if isinstance(key, str):  # if keyname as a string
-                (key, att) = UBXMessage.cfgname2key(key)  # lookup keyID
+            if isinstance(key, str):  # if key is a string (keyname)
+                (key, att) = UBXMessage.cfgname2key(
+                    key
+                )  # lookup keyID & attribute type
+            else:
+                (_, att) = UBXMessage.cfgkey2name(key)  # lookup attribute type
             keyb = key.to_bytes(4, byteorder="little", signed=False)
             valb = UBXMessage.val2bytes(val, att)
             lis = lis + keyb + valb

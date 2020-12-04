@@ -29,9 +29,8 @@ class UBXReader:
     def __init__(self, stream, validate=False):
         """Constructor.
 
-        :params stream: stream
-        :params validate: bool
-
+        :param stream: stream
+        :param validate: bool
         """
 
         self._stream = stream
@@ -43,7 +42,11 @@ class UBXReader:
         return self
 
     def __next__(self) -> (bytes, UBXMessage):
-        """Return next item in iteration."""
+        """
+        Return next item in iteration.
+
+        :return tuple: (raw_data as bytes, parsed_data as UBXMessage)
+        """
 
         (raw_data, parsed_data) = self.read()
         if raw_data is not None:
@@ -51,9 +54,10 @@ class UBXReader:
         raise StopIteration
 
     def read(self) -> (bytes, UBXMessage):
-        """Read the binary data from the serial buffer.
+        """
+        Read the binary data from the serial buffer.
 
-        :return (bytes:, UBXMessage:)
+        :return tuple: (raw_data as bytes, parsed_data as UBXMessage)
 
         """
 
