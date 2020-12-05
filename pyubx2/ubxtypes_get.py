@@ -500,12 +500,12 @@ UBX_PAYLOADS_GET = {
         "flags": X2,
         "id": U2,
         "group": (
-            "None",
+            "ESF-MEAS-CT",
             {  # repeating group * numMeas, which is bits 11..15 of flags
                 "data": X4,
-                "calibTtag": U4,
             },
         ),
+        "calibTtag": U4,
     },
     "ESF-RAW": {
         "reserved1": U4,

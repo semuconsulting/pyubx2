@@ -118,7 +118,9 @@ class UBXMessage:
         # pylint: disable=no-member
 
         #  if within repeating group, suffix keyword with index
-        if self._index > 0:
+        if (
+            self._index > 0 and key != "calibTtag"
+        ):  # special test for ESF-MEAS-CT attribute
             keyr = key + "_{0:0=2d}".format(self._index)
         else:
             keyr = key
@@ -138,6 +140,10 @@ class UBXMessage:
                 # derive or retrieve number of attributes in group
                 if numr == "None":
                     rng = self._calc_num_repeats(attd, self._payload, offset)
+                elif (
+                    numr == "ESF-MEAS-CT"
+                ):  # special handling for ESF-MEAS-CT message type
+                    rng = self._calc_num_repeats(attd, self._payload, offset, 4)
                 else:
                     rng = getattr(self, numr)
                 # recursively process each attribute, incrementing the payload offset as we go
@@ -315,7 +321,9 @@ class UBXMessage:
             pdict = ubg.UBX_PAYLOADS_GET["ESF-MEAS"]
         return pdict
 
-    def _calc_num_repeats(self, att, payload: bytes, offset: int) -> int:
+    def _calc_num_repeats(
+        self, att, payload: bytes, offset: int, offsetend: int = 0
+    ) -> int:
         """
         Deduce number of items in repeating group by dividing length of
         remaining payload by length of group.
@@ -326,12 +334,13 @@ class UBXMessage:
 
         :param att: attribute type
         :param payload : bytes:
-        :param offset: int:
+        :param offset: int: number of bytes in payload before repeating group
+        :param offsetend: int: number of bytes in payload after repeating group
 
         """
         # pylint: disable=no-self-use
 
-        lenpayload = len(payload) - offset
+        lenpayload = len(payload) - offset - offsetend
         lengroup = 0
         for _, val in att.items():
             lengroup += int(val[1:3])
