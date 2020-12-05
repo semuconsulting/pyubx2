@@ -438,6 +438,9 @@ UBX_CONFIG_MESSAGES = {
     b"\x28\x01": "HNR-ATT",
     b"\x28\x02": "HNR-INS",
     b"\x28\x00": "HNR-PVT",
+    b"\x10\x14": "ESF-ALG",
+    b"\x10\x15": "ESF-INS",
+    b"\x10\x10": "ESF-STATUS",
     b"\xf0\x0a": "DTM",  # Datum Reference
     b"\xf0\x44": "GBQ",  # Poll Standard Message - Talker ID GB (BeiDou)
     b"\xf0\x09": "GBS",  # GNSS Satellite Fault Detection

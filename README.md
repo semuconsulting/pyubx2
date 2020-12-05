@@ -282,14 +282,14 @@ The following examples can be found in the `\examples` folder:
 1. `ubxfile.py` illustrates how to implement a binary file reader for UBX messages using 
 the pyubx2.UBXReader iterator function. 
 
-1. `ubxconfig.py` illustrates how to implement a simple configuration utility which sets output UBX-NAV message  rates on the  receiver's UART and USB ports (on a non-permanent basis). You can see the results using `ubxstreamer.py`.
+1. `ubxcfgval.py` illustrates how to invoke the Generation 9 configuration interface to set the UART1/2 baud rates
+via CFG-VALSET, CF-VALDEL and CFG-VALGET messages.
 
-1. `ubxprotocol.py` illustrates how to set the outbound protocols on the receiver's USB port 
-to NMEA, UBX or both (on a non-permanent basis). You can see the results using `ubxstreamer.py`.
+1. `ubxconfig.py` illustrates how to invoke legacy (pre-Generation 9) configuration messages to set the UBX-NAV* message 
+rates on the receiver's UART and USB ports. You can see the results using `ubxstreamer.py`.
 
 1. `ubxtracker.py` illustrates a simple CLI tool to convert a binary UBX data dump 
 (e.g. as produced by the [PyGPSClient](http://github.com/semuconsulting/PyGPSClient)'s data logging facility) to a `*.gpx` track file using pyubx2.UBXReader.
-
 
 
 ## <a name="extensibility">Extensibility</a>

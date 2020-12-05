@@ -460,6 +460,32 @@ UBX_PAYLOADS_SET = {
         "group": ("None", {"cfgData": U1}),  # repeating group
     },
     # ********************************************************************
+    # External Sensor Fusion Messages: i.e. External Sensor Measurements and Status Information.
+    # Messages in the ESF class are used to output external sensor fusion information from the receiver.
+    "ESF-MEAS": {  # this version used when bit 3 of flags = 0
+        "timeTag": U4,
+        "flags": X2,
+        "id": U2,
+        "group": (
+            "None",
+            {  # repeating group * numMeas, which is bits 11..15 in flags
+                "data": X4,
+            },
+        ),
+    },
+    "ESF-MEAS-CT": {  # this version used when bit 3 of flags = 1
+        "timeTag": U4,
+        "flags": X2,
+        "id": U2,
+        "group": (
+            "ESF-MEAS-CT",
+            {  # repeating group * numMeas, which is bits 11..15 of flags
+                "data": X4,
+            },
+        ),
+        "calibTtag": U4,
+    },
+    # ********************************************************************
     # Logging Messages: i.e. Log creation, deletion, info and retrieval.
     # Messages in the LOG class are used to configure and report status information of the logging feature.
     "LOG-CREATE": {

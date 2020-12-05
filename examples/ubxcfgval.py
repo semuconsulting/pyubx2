@@ -1,16 +1,19 @@
 """
-Example implementation of a threaded UBXMessage streamer
+Example implementation of UBX Gen 9 Configuration Interface
+using CFG-VALSET, CFG-VALDEL and CFG-VALGET messages.
 
 Connects to the receiver's serial port and sets up a
 threaded UBXReader process. With the reader process running
-in the background, it polls the current PRT, USB, NMEA and MSG
-configuration.
+in the background, it sends CFG-VALSET and CFG-VALDEL
+configuration messages to set the UART1/2 baud rates in 
+the BBR memory layer, and uses CFG-VALGET to poll the before and 
+after results.
 
-You should see the poll responses in the input stream,
-or an ACK-NAK (Not Acknowledged) message if that
-particular CFG-MSG type is not supported by the receiver.
+NB: This example will only work on Generation 9 or later devices
+(e.g. NEO-9M). You'll get a series of ACK-NAK responses on earlier
+devices. It also assumes you're connected via USB rather than UART1/2.
 
-Created on 2 Oct 2020
+Created on 5 Dec 2020
 
 @author: semuadmin
 """
@@ -20,9 +23,8 @@ from io import BufferedReader
 from threading import Thread
 from time import sleep
 
-from pyubx2 import UBXMessage, POLL, UBX_CONFIG_MESSAGES
+from pyubx2 import UBXMessage
 from pyubx2.ubxreader import UBXReader
-from pyubx2.exceptions import UBXStreamError
 from serial import Serial, SerialException, SerialTimeoutException
 
 import pyubx2.exceptions as ube
@@ -129,9 +131,7 @@ class UBXStreamer:
         while self._reading and self._serial_object:
             if self._serial_object.in_waiting:
                 try:
-                    (raw_data, parsed_data) = self._ubxreader.read()
-                    #                     if raw_data:
-                    #                         print(raw_data)
+                    (_, parsed_data) = self._ubxreader.read()
                     if parsed_data:
                         print(parsed_data)
                 except (
@@ -143,12 +143,42 @@ class UBXStreamer:
                     print(f"Something went wrong {err}")
                     continue
 
+    def poll_uart(self, layer=0):
+        """
+        Poll the current BBR UART1/2 configuration
+        """
+
+        position = 0
+        keys = ["CFG_UART1_BAUDRATE", "CFG_UART2_BAUDRATE"]
+        msg = UBXMessage.config_poll(layer, position, keys)
+        ubp.send(msg.serialize())
+
+    def set_uart(self, layers=1):
+        """
+        Set the current BBR UART1/2 configuration
+        """
+
+        transaction = 0
+        cfgData = [("CFG_UART1_BAUDRATE", 115200), ("CFG_UART2_BAUDRATE", 57600)]
+        msg = UBXMessage.config_set(layers, transaction, cfgData)
+        ubp.send(msg.serialize())
+
+    def unset_uart(self, layers=1):
+        """
+        Unset (del) the current BBR UART1/2 configuration
+        """
+
+        transaction = 0
+        keys = ["CFG_UART1_BAUDRATE", "CFG_UART2_BAUDRATE"]
+        msg = UBXMessage.config_del(layers, transaction, keys)
+        ubp.send(msg.serialize())
+
 
 if __name__ == "__main__":
 
     # set PORT, BAUDRATE and TIMEOUT as appropriate
     if platform == "win32":
-        PORT = "COM11"
+        PORT = "COM13"
     else:
         PORT = "/dev/tty.usbmodem14101"
     BAUDRATE = 9600
@@ -164,31 +194,36 @@ if __name__ == "__main__":
     print("Starting reader thread...")
     ubp.start_read_thread()
 
-    print("\nPolling receiver...\n\n")
-    # poll the receiver configuration
-    for port in (0, 1, 2, 3, 4):  # I2C, UART1, UART2, USB, SPI
-        msg = UBXMessage("CFG", "CFG-PRT", POLL, portID=port)
-        ubp.send(msg.serialize())
-        sleep(1)
-    for msgtype in ("CFG-USB", "CFG-NMEA", "CFG-NAV5"):
-        msg = UBXMessage("CFG", msgtype, POLL)
-        ubp.send(msg.serialize())
-        sleep(1)
+    print("\nPolling UART configuration in the volatile RAM memory layer via CFG-VALGET...")
+    print("(This should result in ACK-ACK and CFG-VALGET responses)")
+    ubp.poll_uart(0)
+    sleep(2)
+    print("\nPolling UART configuration in the BBR memory layer via CFG-VALGET...")
+    print("(This should result in an ACK-NAK response in the absence of an existing BBR configuration setting)")
+    ubp.poll_uart(1)
+    sleep(2)
+    print("\nSetting UART configuration in the BBR memory layer via CFG-VALSET...")
+    print("(This should result in an ACK-ACK response)")
+    ubp.set_uart(2)
+    sleep(2)
+    print("\nPolling UART configuration in the BBR memory layer via CFG-VALGET...")
+    print("(This should result in ACK-ACK and CFG-VALGET responses)")
+    ubp.poll_uart(1)
+    sleep(2)
+    print("\nUnsetting UART configuration in the BBR memory layer via CFG-VALDEL...")
+    print("(This should result in an ACK-ACK response)")
+    ubp.unset_uart(2)
+    sleep(2)
+    print("\nPolling UART configuration in the BBR memory layer via CFG-VALGET...")
+    print("(This should result in an ACK-NAK response as the BBR configuration setting has now been removed)")
+    ubp.poll_uart(1)
+    sleep(2)
+    print("\nPolling UART configuration in the volatile RAM memory layer via CFG-VALGET...")
+    print("(This should result in ACK-ACK and CFG-VALGET responses)")
+    ubp.poll_uart(0)
+    sleep(5)
 
-    # poll all the current message rates
-    for payload in UBX_CONFIG_MESSAGES:
-        msg = UBXMessage("CFG", "CFG-MSG", POLL, payload=payload)
-        ubp.send(msg.serialize())
-        sleep(1)
-    print("\n\nPolling complete, waiting for final responses...\n\n")
-
-    sleep(3)
-    # ... or wait for the input buffer to clear - this will only work
-    # if the receiver is not pumping out unsolicited UBX messages
-    #     while ubp.waiting():
-    #         print(".", end="")
-
-    print("\n\nStopping reader thread...")
+    print("\n\nStopping reader thread...\n\n")
     ubp.stop_read_thread()
     print("Disconnecting from serial port...")
     ubp.disconnect()

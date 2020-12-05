@@ -198,7 +198,6 @@ class UBXMessage:
         :param offset int: payload offset
         :param **kwargs  payload
         """
-        # TODO - PROVISIONAL - MAY CHANGE IN FINAL IMPLEMENTATION
 
         self._payload = kwargs["payload"]
         cfglen = len(self._payload[offset:])
@@ -818,8 +817,10 @@ class UBXMessage:
         """
         try:
             return ubcdb.UBX_CONFIG_DATABASE[name]
-        except KeyError:
-            raise ube.UBXMessageError(f"Undefined configuration database key {name}")
+        except KeyError as err:
+            raise ube.UBXMessageError(
+                f"Undefined configuration database key {name}"
+            ) from err
 
     @staticmethod
     def cfgkey2name(keyID: int) -> (str, str):
@@ -852,7 +853,6 @@ class UBXMessage:
         :return UBXMessage object: CFG-VALSET message
 
         """
-        # TODO - PROVISIONAL - MAY CHANGE IN FINAL IMPLEMENTATION
 
         num = len(cfgData)
         if num > 64:
@@ -896,7 +896,6 @@ class UBXMessage:
         :return UBXMessage object: CFG-VALDEL message
 
         """
-        # TODO - PROVISIONAL - MAY CHANGE IN FINAL IMPLEMENTATION
 
         num = len(keys)
         if num > 64:
@@ -935,7 +934,6 @@ class UBXMessage:
         :return UBXMessage object: CFG-VALGET message
 
         """
-        # TODO - PROVISIONAL - MAY CHANGE IN FINAL IMPLEMENTATION
 
         num = len(keys)
         if num > 64:

@@ -69,6 +69,8 @@ UBX_PAYLOADS_POLL = {
         "group": ("None", {"keys": U4}),  # repeating group
     },
     # *************************************************
+    "ESF-ALG": {},
+    "ESF-INS": {},
     "ESF-STATUS": {},
     # *************************************************
     "LOG-BATCH": {},
