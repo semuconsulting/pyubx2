@@ -21,8 +21,8 @@ This is an independent project and we have no affiliation whatsoever with u-blox
 ![Open Issues](https://img.shields.io/github/issues-raw/semuconsulting/pyubx2)
 
 At time of writing the library implements a comprehensive set of inbound and outbound messages as defined in 
-the [u-blox generation 9 protocol](https://www.u-blox.com/en/docs/UBX-19035940), but is readily 
-[extensible](#extensibility) for later generations.
+the standard [u-blox generation 9 protocol](https://www.u-blox.com/en/docs/UBX-19035940), but is readily 
+[extensible](#extensibility).
 
 Contributions and feedback welcome - see CONTRIBUTING.MD
 
@@ -302,6 +302,13 @@ can be readily added to the appropriate dictionary. Message payload definitions 
 the preceding attribute containing the number of repeats (or 'None' if there isn't one), 
 and {dict} is the nested dictionary of repeating items. See NAV-SVINFO by way of example.
 * repeating attribute names are parsed with a two-digit suffix (svid_01, svid_02, etc.)
+
+Typically, adding new message types simply requires dictionary updates to one or more `ubxtypes_*.py` modules. Code changes in 
+`UBXMessage.py` are not normally necessary.
+Exceptional processing is generally only required in the following circumstances:
+1. Multiple message types share the same UBX Class and ID, and the identity (payload definition) can only be determined by
+examining one or more bytes/bits in the raw payload (e.g. MGA and legacy CFG-NMEA message types).
+2. The message contains optional elements and/or indeterminate repeating groups (e.g. ESF-MEAS message type).
 
 ## Graphical Client
 

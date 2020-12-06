@@ -117,10 +117,10 @@ class UBXMessage:
         """
         # pylint: disable=no-member
 
-        #  if within repeating group, suffix keyword with index
-        if (
-            self._index > 0 and key != "calibTtag"
-        ):  # special test for ESF-MEAS-CT attribute
+        # if within repeating group, suffix keyword with index
+        # (ESF-MEAS is a special case; currently the only supported message type
+        # which has an optional attribute (calibTtag) _after_ a repeating group)
+        if self._index > 0 and key != "calibTtag":
             keyr = key + "_{0:0=2d}".format(self._index)
         else:
             keyr = key
@@ -142,7 +142,7 @@ class UBXMessage:
                     rng = self._calc_num_repeats(attd, self._payload, offset)
                 elif (
                     numr == "ESF-MEAS-CT"
-                ):  # special handling for ESF-MEAS-CT message type
+                ):  # special handling for ESF-MEAS message type
                     rng = self._calc_num_repeats(attd, self._payload, offset, 4)
                 else:
                     rng = getattr(self, numr)
@@ -304,8 +304,8 @@ class UBXMessage:
     def _get_esfmeas_version(self, **kwargs) -> dict:
         """
         Select appropriate payload definition version for
-        ESF-MEAS message by checking bit 3 in the
-        'flags' attribute.
+        ESF-MEAS message by checking bit 3 (calibTtagValid)
+        in the'flags' attribute.
 
         :param **kwargs payload
         :return dict:
@@ -327,9 +327,8 @@ class UBXMessage:
         Deduce number of items in repeating group by dividing length of
         remaining payload by length of group.
 
-        NB: this assumes the repeating group is always at the end of the
-        payload, which is true for all currently supported message types
-        but may change in the future.
+        This assumes there is only one such repeating group per message,
+        payload, which is true for all currently supported types.
 
         :param att: attribute type
         :param payload : bytes:
