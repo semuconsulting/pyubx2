@@ -1,8 +1,6 @@
 # How to contribute
 
-Here are some guidelines on how to contribute to the pyubx2 project.
-
-We appreciate any contribution, from fixing a grammar mistake in a comment to implementing new functionality. Please read this section if you are contributing your work.
+**pyubx2** is a volunteer project and we appreciate any contribution, from fixing a grammar mistake in a comment to extending device test coverage or implementing new functionality. Please read this section if you are contributing your work.
 
 Being one of our contributors, you agree and confirm that:
 
@@ -15,11 +13,15 @@ Please help us keep our issue list small by adding fixes: #{$ISSUE_NO} to the co
 ## Coding conventions
 
   * This is open source software. We endeavour to make the code as transparent as possible.
+  * We endeavour to keep the core code as generic and reusable as possible, and limit the amount of exceptional processing dedicated to
+  specific UBX message types (though this is sometimes unavoidable).
   * We use [Eclipse PyDev](https://www.pydev.org/) for development and testing, but you are at liberty to use your preferred IDE.
   * We use [pylint](https://pypi.org/project/pylint/) (>=2.6.0) for code analysis.
   * We use [black](https://pypi.org/project/black/) (>= 20.8) for code formatting and ask that you do the same.
 
 ## Testing
+
+While we endeavour to test on as wide a variety of u-blox devices as possible, as a volunteer project we only have a limited number of devices available. We particularly welcome testing contributions relating to specialised devices (e.g. high precision HP, real-time kinetics RTK, automotive dead-reckoning ADR, etc.).
 
 We use python's native unittest framework for local unit testing, complemented by the Travis CI automated build and testing workflow. We endeavour to have 100% code coverage.
 
