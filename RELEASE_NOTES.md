@@ -24,7 +24,8 @@ ENHANCEMENTS:
 	MON-TXBUF
 
 4. ubxmessage.py refactored per pylint recommendations.
-5. Some generic static methods moved to new `ubxhelpers.py` module.
+5. Some generic static methods moved from `ubxmessage.py` to new `ubxhelpers.py` module:
+`itow2utc()`, `gpsfix2str()`, `dop2str()`, `gnss2str()`, `key_from_val()`
 
 FIXES:
 
