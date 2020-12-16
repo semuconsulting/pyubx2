@@ -1,6 +1,6 @@
-#pyubx2 Release Notes
+# pyubx2 Release Notes
 
-###RELEASE 0.3.1-beta PROVISIONAL
+### RELEASE 0.3.1-beta PROVISIONAL
 
 ENHANCEMENTS:
 
@@ -32,19 +32,12 @@ FIXES:
 
 ---
 
-###RELEASE v0.3.0-beta
+### RELEASE v0.3.0-beta
 
 ENHANCEMENTS:
 
 1. Significant release adding support for UBX Generation 9 configuration interface and message types, and adding several Generation 8 message types omitted from earlier versions.
-2. New G9 configuration database key definition module: ubxtypes_configdb.py
-3. New UBXMessage static methods in UBXessage for G9 configuration interface:
-    cfgname2key(),
-    cfgkey2name(),
-    config_set(),
-    config_del(),
-    config_poll()
-4. Add support for following message types:
+2. Add support for following message types:
     CFG-VALSET,
     CFG-VALDEL,
     CFG-VALGET,
@@ -63,18 +56,25 @@ ENHANCEMENTS:
     NAV-SLAS,
     NAV-SVIN,
     NAV-TIMEQZSS
+3. New G9 configuration database key definition module: `ubxtypes_configdb.py`
+4. New UBXMessage static methods in UBXessage for G9 configuration interface:
+    `cfgname2key()`,
+    `cfgkey2name()`,
+    `config_set()`,
+    `config_del()`,
+    `config_poll()`
 
 5. UBXMessage.py code streamlined and de-duplicated.
-    /examples/ufxcfgval.py added to illustrate use of CFG-VAL message types.
+6. `/examples/ufxcfgval.py` added to illustrate use of CFG-VAL message types.
 
 FIXES:
 
-1. NAV-ODO payload definition corrected (reserved0 is now U3)
-2. NAV-ORB attribute 'numCh' amended to 'numSv' as per spec
+1. NAV-ODO payload definition corrected (`reserved0` is now U3)
+2. NAV-ORB attribute `numCh` amended to `numSv` as per spec
 
 ---
 
-###RELEASE v0.2.9-beta
+### RELEASE v0.2.9-beta
 
 ENHANCEMENTS:
 
@@ -82,7 +82,7 @@ ENHANCEMENTS:
 
 ---
 
-###RELEASE v0.2.8-beta
+### RELEASE v0.2.8-beta
 
 FIXES:
 
@@ -90,7 +90,7 @@ FIXES:
 
 ---
 
-###RELEASE v0.2.7-beta
+### RELEASE v0.2.7-beta
 
 FIXES:
 
@@ -98,7 +98,7 @@ FIXES:
 
 ---
 
-###RELEASE v0.2.6-beta
+### RELEASE v0.2.6-beta
 
 FIXES:
 
@@ -106,7 +106,7 @@ FIXES:
 
 ---
 
-###RELEASE v0.2.5-beta
+### RELEASE v0.2.5-beta
 
 ENHANCEMENTS:
 
@@ -116,18 +116,18 @@ ENHANCEMENTS:
 
 ---
 
-###RELEASE v0.2.4-alpha
+### RELEASE v0.2.4-alpha
 
 FIXES:
 
 1. Legacy CFG-NMEA parsing corrected and test coverage enhanced
 2. MGA message parsing corrected and test coverage enhanced
-3. repr() enhanced to reflect principle: eval(repr(obj)) = obj
+3. `repr()` enhanced to reflect principle: `eval(repr(obj)) = obj`
 4. UBXMessage objects are now immutable after initialisation
 
 ---
 
-###RELEASE v0.2.3-alpha
+### RELEASE v0.2.3-alpha
 
 ENHANCEMENTS:
 
@@ -135,7 +135,7 @@ ENHANCEMENTS:
 
 ---
 
-###RELEASE v0.2.2-alpha
+### RELEASE v0.2.2-alpha
 
 FIXES:
 
@@ -143,12 +143,12 @@ FIXES:
 
 ---
 
-###RELEASE v0.2.1-alpha
+### RELEASE v0.2.1-alpha
 
 ENHANCEMENTS:
 
 1. UBXMessage code substantially streamlined and refactored.
-2. Iterator added to UBXReader with option to tolerate or reject mixed (UBX and non-UBX) data streams. ubxfile.py example implementation added.
+2. Iterator added to UBXReader with option to tolerate or reject mixed (UBX and non-UBX) data streams. `ubxfile.py` example implementation added.
 3. Error messaging enhanced.
 4. UBX payload definitions now accommodate earlier versions of the CFG-NMEA message for backwards compatibility.
 
