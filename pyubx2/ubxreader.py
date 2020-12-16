@@ -58,7 +58,7 @@ class UBXReader:
         Read the binary data from the serial buffer.
 
         :return tuple: (raw_data as bytes, parsed_data as UBXMessage)
-
+        :raise UBXStreamError
         """
 
         stm = self._stream

@@ -9,7 +9,7 @@ Constructor method tests for pyubx2.UBXMessage
 
 import unittest
 
-from pyubx2 import UBXMessage, GET, SET, POLL
+from pyubx2 import UBXMessage, SET, POLL
 
 
 class FillTest(unittest.TestCase):
@@ -41,17 +41,17 @@ class FillTest(unittest.TestCase):
         self.assertEqual(str(res), EXPECTED_RESULT)
 
     def testFill_CFGNMEA(self):  # test SET constructor fill, set all values
-        EXPECTED_RESULT = "<UBX(CFG-NMEA, filter=b'E', nmeaVersion=4.0, numSV=4, flags=b'\\x14', gnssToFilter=b'\\x00\\x00\\x00\\x00', svNumbering=0, mainTalkerId=0, gsvTalkerId=0, version=0, bdsTalkerId=b'\\x00\\x00', reserved1=0)>"
+        EXPECTED_RESULT = "<UBX(CFG-NMEA, filter=b'E', nmeaVersion=64, numSV=4, flags=b'\\x14', gnssToFilter=b'\\x00\\x00\\x00\\x00', svNumbering=0, mainTalkerId=0, gsvTalkerId=0, version=0, bdsTalkerId=b'\\x00\\x00', reserved1=0)>"
         res = UBXMessage('CFG', 'CFG-NMEA', SET, filter=b'\x45', nmeaVersion=64, numSV=4, flags=b'\x14')
         self.assertEqual(str(res), EXPECTED_RESULT)
 
     def testFill_CFGNMEA2(self):  # test SET constructor fill, set some values, default others
-        EXPECTED_RESULT = "<UBX(CFG-NMEA, filter=b'\\x00', nmeaVersion=2.3, numSV=1, flags=b'\\x00', gnssToFilter=b'\\x00\\x00\\x00\\x00', svNumbering=0, mainTalkerId=0, gsvTalkerId=0, version=0, bdsTalkerId=b'\\x00\\x00', reserved1=0)>"
+        EXPECTED_RESULT = "<UBX(CFG-NMEA, filter=b'\\x00', nmeaVersion=35, numSV=1, flags=b'\\x00', gnssToFilter=b'\\x00\\x00\\x00\\x00', svNumbering=0, mainTalkerId=0, gsvTalkerId=0, version=0, bdsTalkerId=b'\\x00\\x00', reserved1=0)>"
         res = UBXMessage('CFG', 'CFG-NMEA', SET, nmeaVersion=35, numSV=1)
         self.assertEqual(str(res), EXPECTED_RESULT)
 
     def testFill_CFGNMEAPARSE(self):  # check that raw payload is correctly populated and parses back to original message
-        EXPECTED_RESULT = "<UBX(CFG-NMEA, filter=b'\\x00', nmeaVersion=2.3, numSV=1, flags=b'\\x00', gnssToFilter=b'\\x00\\x00\\x00\\x00', svNumbering=0, mainTalkerId=0, gsvTalkerId=0, version=0, bdsTalkerId=b'\\x00\\x00', reserved1=0)>"
+        EXPECTED_RESULT = "<UBX(CFG-NMEA, filter=b'\\x00', nmeaVersion=35, numSV=1, flags=b'\\x00', gnssToFilter=b'\\x00\\x00\\x00\\x00', svNumbering=0, mainTalkerId=0, gsvTalkerId=0, version=0, bdsTalkerId=b'\\x00\\x00', reserved1=0)>"
         res = UBXMessage('CFG', 'CFG-NMEA', SET, nmeaVersion=35, numSV=1)
         res2 = UBXMessage.parse(res.serialize())
         self.assertEqual(str(res2), EXPECTED_RESULT)
@@ -128,6 +128,26 @@ class FillTest(unittest.TestCase):
     def testFill_CFGVALSET(self):  #  test CFG-VALSET SET constructor
         EXPECTED_RESULT = "<UBX(CFG-VALSET, version=0, layers=b'\\x03', transaction=0, reserved0=0, cfgData_01=1, cfgData_02=0, cfgData_03=82, cfgData_04=64, cfgData_05=128, cfgData_06=37, cfgData_07=0, cfgData_08=0)>"
         res = UBXMessage('CFG', 'CFG-VALSET', SET, payload=b'\x00\x03\x00\x00\x01\x00\x52\x40\x80\x25\x00\x00')
+        self.assertEqual(str(res), EXPECTED_RESULT)
+
+    def testFill_RXMPMREQSET(self):  #  test RXM-PMREQ SET constructor long version with payload keyword
+        EXPECTED_RESULT = "<UBX(RXM-PMREQ, version=0, reserved0=0, duration=67305985, flags=b'\\x01\\x02\\x03\\x04', wakeupSources=b'\\x01\\x02\\x03\\x04')>"
+        res = UBXMessage('RXM', 'RXM-PMREQ', SET, payload=b'\x00\x00\x00\x00\x01\x02\x03\x04\x01\x02\x03\x04\x01\x02\x03\x04')
+        self.assertEqual(str(res), EXPECTED_RESULT)
+
+    def testFill_RXMPMREQSET2(self):  #  test RXM-PMREQ SET constructor long version with version keyword
+        EXPECTED_RESULT = "<UBX(RXM-PMREQ, version=0, reserved0=0, duration=67305985, flags=b'\\x01\\x02\\x03\\x04', wakeupSources=b'\\x01\\x02\\x03\\x04')>"
+        res = UBXMessage('RXM', 'RXM-PMREQ', SET, version=0, duration=67305985, flags=b'\x01\x02\x03\x04', wakeupSources=b'\x01\x02\x03\x04')
+        self.assertEqual(str(res), EXPECTED_RESULT)
+
+    def testFill_RXMPMREQSET3(self):  #  test RXM-PMREQ SET constructor short version
+        EXPECTED_RESULT = "<UBX(RXM-PMREQ, duration=67305985, flags=b'\\x01\\x02\\x03\\x04')>"
+        res = UBXMessage('RXM', 'RXM-PMREQ', SET, payload=b'\x01\x02\x03\x04\x01\x02\x03\x04')
+        self.assertEqual(str(res), EXPECTED_RESULT)
+
+    def testFill_MGABDSSET(self):  #  test MGA-BDS-UTC SET constructor using attribute keywords
+        EXPECTED_RESULT = "<UBX(MGA-BDS-UTC, type=5, version=0, reserved1=0, a0UTC=15, a1UTC=0, dtLS=0, reserved2=0, wnRec=23, wnLSF=41, dN=0, dtLSF=0, reserved3=0)>"
+        res = UBXMessage(b'\x13', b'\x03', SET, type=5, a0UTC=15, wnRec=23, wnLSF=41)
         self.assertEqual(str(res), EXPECTED_RESULT)
 
 

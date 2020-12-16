@@ -8,14 +8,13 @@ Created on 26 Sep 2020
 # pylint: disable=invalid-name
 
 import struct
-from datetime import datetime, timedelta
-
 import pyubx2.exceptions as ube
 import pyubx2.ubxtypes_core as ubt
 import pyubx2.ubxtypes_get as ubg
 import pyubx2.ubxtypes_set as ubs
 import pyubx2.ubxtypes_poll as ubp
 import pyubx2.ubxtypes_configdb as ubcdb
+from pyubx2.ubxhelpers import atttyp, attsiz, itow2utc, gnss2str, key_from_val
 
 
 class UBXMessage:
@@ -32,18 +31,16 @@ class UBXMessage:
         Otherwise, any named attributes will be assigned the value given, all others will
         be assigned a nominal value according to type.
 
-        :param msgClass: str, int or byte:
-        :param msgID: str, int or byte:
-        :param mode: int:
-        :param kwargs:
+        :param object msgClass: str, int or byte:
+        :param object msgID: str, int or byte:
+        :param int mode: SET, GET or POLL
+        :param kwargs: payload key value pairs
 
         """
 
         # object is mutable during initialisation only
         super().__setattr__("_immutable", False)
-        self._header = ubt.UBX_HDR
         self._mode = mode
-        self._index = 0
         self._payload = b""
         self._length = b""
         self._checksum = b""
@@ -52,31 +49,27 @@ class UBXMessage:
         if isinstance(ubxClass, str) and isinstance(
             ubxID, str
         ):  # string e.g. 'CFG', 'CFG-PRT'
-            # print(f"parms are strings {ubxClass} {ubxID}")
             (self._ubxClass, self._ubxID) = UBXMessage.msgstr2bytes(ubxClass, ubxID)
         elif isinstance(ubxClass, int) and isinstance(ubxID, int):  # int e.g. 6, 1
-            # print(f"parms are integers {ubxClass} {ubxID}")
             (self._ubxClass, self._ubxID) = UBXMessage.msgclass2bytes(ubxClass, ubxID)
         else:  # bytes e.g. b'\x06', b'\x01'
-            # print(f"parms are bytes {ubxClass} {ubxID}")
             self._ubxClass = ubxClass
             self._ubxID = ubxID
 
         self._do_attributes(**kwargs)
-
-        # once initialised, object is immutable
-        self._immutable = True
+        self._immutable = True  # once initialised, object is immutable
 
     def _do_attributes(self, **kwargs):
         """
         Populate UBXMessage from named attribute keywords.
         Where a named attribute is absent, set to a nominal value (zeros or blanks).
 
-        :param **kwargs: payload
-
+        :param **kwargs: payload key value pairs
+        :raise UBXTypeError
         """
 
-        offset = 0
+        offset = 0  # payload offset in bytes
+        index = []  # array of (nested) group indices
 
         try:
 
@@ -85,7 +78,9 @@ class UBXMessage:
             else:
                 pdict = self._get_dict(**kwargs)  # get appropriate payload dict
                 for key in pdict.keys():  # process each attribute in dict
-                    (offset, att) = self._set_attribute(offset, pdict, key, **kwargs)
+                    (offset, index) = self._set_attribute(
+                        offset, pdict, key, index, **kwargs
+                    )
             self._do_len_checksum()
 
         except (
@@ -98,123 +93,166 @@ class UBXMessage:
             raise ube.UBXTypeError(
                 (
                     f"Incorrect type for attribute '{key}' "
-                    f"in {self.mode2str(self._mode)} message "
+                    f"in {['GET', 'SET', 'POLL'][self._mode]} message "
                     f"class {self.identity}"
                 )
             ) from err
 
     def _set_attribute(
-        self, offset: int, pdict: dict, key: str, **kwargs
-    ) -> (int, str):
+        self, offset: int, pdict: dict, key: str, index: int, **kwargs
+    ) -> tuple:
         """
-        Recursive routine to populate individual payload attributes
+        Recursive routine to set individual or grouped payload attributes
 
-        :param offset: int:
-        :param pdict: dict:
-        :param key: str:
-        :param **kwargs:
-
+        :param int offset: payload offset
+        :param dict pdict: dict representing payload definition
+        :param str key: attribute keyword
+        :param int index: repeating group index
+        :param **kwargs: payload key value pairs
+        :return (offset, index[])
+        :rtype tuple
         """
-        # pylint: disable=no-member
-
-        # if within repeating group, suffix keyword with index
-        # (ESF-MEAS is a special case; currently the only supported message type
-        # which has an optional attribute (calibTtag) _after_ a repeating group)
-        if self._index > 0 and key != "calibTtag":
-            keyr = key + "_{0:0=2d}".format(self._index)
-        else:
-            keyr = key
 
         att = pdict[key]  # get attribute type
         if isinstance(att, tuple):  # repeating group of attributes
-            numr, attd = att
-            # if CFG-VALGET message, use dedicated method to
-            # parse as configuration key value pairs
-            if (
-                self._ubxClass == b"\x06"
-                and self._ubxID == b"\x8b"
-                and self._mode == ubt.GET
-            ):
-                self._set_cfgval_attributes(offset, **kwargs)
-            else:
-                # derive or retrieve number of attributes in group
-                if numr == "None":
-                    rng = self._calc_num_repeats(attd, self._payload, offset)
-                elif (
-                    numr == "ESF-MEAS-CT"
-                ):  # special handling for ESF-MEAS message type
-                    rng = self._calc_num_repeats(attd, self._payload, offset, 4)
-                else:
-                    rng = getattr(self, numr)
-                # recursively process each attribute, incrementing the payload offset as we go
-                for i in range(rng):
-                    self._index = i + 1
-                    for key1 in attd.keys():
-                        (offset, _) = self._set_attribute(offset, attd, key1, **kwargs)
-
+            (offset, index) = self._set_attribute_group(att, offset, index, **kwargs)
         else:  # single attribute
+            offset = self._set_attribute_single(att, offset, key, index, **kwargs)
 
-            # determine attribute size (bytes)
-            if (
-                att == ubt.CH
-            ):  # payload is a single variable length string (e.g. INF message)
-                atts = len(self._payload)
+        return (offset, index)
+
+    def _set_attribute_group(
+        self, att: str, offset: int, index: int, **kwargs
+    ) -> tuple:
+        """
+        Process (nested) group of attributes
+
+        :param str att: attribute type e.g. 'U002'
+        :param int offset: payload offset
+        :param str key: attribute keyword
+        :param int index: repeating group index
+        :param **kwargs: payload key value pairs
+        :return (offset, index[])
+        :rtype tuple
+        """
+
+        index.append(0)  # add a (nested) group index
+        numr, attd = att
+        # if CFG-VALGET message, use dedicated method to
+        # parse as configuration key value pairs
+        if (
+            self._ubxClass == b"\x06"
+            and self._ubxID == b"\x8b"
+            and self._mode == ubt.GET
+        ):
+            self._set_cfgval_attributes(offset, **kwargs)
+        else:
+            # derive or retrieve number of items in group
+            if isinstance(numr, int):  # fixed number of repeats
+                rng = numr
+            elif numr == "None":  # indeterminate number of repeats
+                rng = self._calc_num_repeats(attd, self._payload, offset, 0)
+            elif numr == "ESF-MEAS-CT":  # special handling for ESF-MEAS
+                rng = self._calc_num_repeats(attd, self._payload, offset, 4)
+            else:  # number of repeats is defined in named attribute
+                rng = getattr(self, numr)
+            # recursively process each group attribute,
+            # incrementing the payload offset and index as we go
+            for i in range(rng):
+                index[-1] = i + 1
+                for key1 in attd.keys():
+                    (offset, index) = self._set_attribute(
+                        offset, attd, key1, index, **kwargs
+                    )
+
+        index.pop()  # remove the nested group index
+
+        return (offset, index)
+
+    def _set_attribute_single(
+        self, att: str, offset: int, key: str, index: int, **kwargs
+    ) -> int:
+        """
+        Set individual attribute value
+
+        :param str att: attribute type e.g. 'U002'
+        :param int offset: payload offset
+        :param str key: attribute keyword
+        :param int index: repeating group index
+        :param **kwargs: payload key value pairs
+        :return offset
+        :rtype int
+        """
+        # pylint: disable=no-member
+
+        # if attribute is part of a (nested) repeating group, suffix name with index
+        keyr = key
+        for i in index:  # one index for each nested level
+            if i > 0:
+                keyr = keyr + "_{0:0=2d}".format(i)
+
+        # determine attribute size (bytes)
+        if (
+            att == ubt.CH
+        ):  # payload is a single variable length string (e.g. INF message)
+            atts = len(self._payload)
+        else:
+            atts = attsiz(att)
+
+        # if payload keyword has been provided,
+        # use the appropriate offset of the provided payload
+        if "payload" in kwargs:
+            self._payload = kwargs["payload"]
+            if att == ubt.CH:
+                valb = self._payload
             else:
-                atts = int(att[1:3])
+                valb = self._payload[offset : offset + atts]
+            val = self.bytes2val(valb, att)
 
-            # if payload keyword has been provided,
-            # use the appropriate offset of the provided payload
-            if "payload" in kwargs:
-                self._payload = kwargs["payload"]
-                if att == ubt.CH:
-                    valb = self._payload
-                else:
-                    valb = self._payload[offset : offset + atts]
-                val = self.bytes2val(valb, att)
-
+        else:
+            # if individual attribute keyword has been provided
+            if keyr in kwargs:
+                val = kwargs[keyr]
+            # else set attribute to nominal value (0)
             else:
-                # if individual attribute keyword has been provided
-                if keyr in kwargs:
-                    val = kwargs[keyr]
-                # else set attribute to nominal value (0)
+                if atttyp(att) in ("X", "C"):  # byte or char
+                    val = b"\x00" * atts
                 else:
-                    if att[0:1] in ("X", "C"):  # byte or char
-                        val = b"\x00" * atts
-                    else:
-                        val = 0
-                valb = self.val2bytes(val, att)
-                self._payload += valb
+                    val = 0
+            valb = self.val2bytes(val, att)
+            self._payload += valb
 
-            setattr(self, keyr, val)
-            offset += atts
+        setattr(self, keyr, val)
+        offset += atts
 
-        return (offset, att)
+        return offset
 
     def _set_cfgval_attributes(self, offset: int, **kwargs):
         """
         Parse CFG-VALGET payload to set of configuration
         key value pairs
 
-        :param offset int: payload offset
-        :param **kwargs  payload
+        :param int offset: payload offset
+        :param **kwargs:  payload key value pairs
         """
 
+        KEYLEN = 4
         self._payload = kwargs["payload"]
         cfglen = len(self._payload[offset:])
 
         i = 0
         while offset < cfglen:
-            if i == 4:
+            if i == KEYLEN:
                 key = int.from_bytes(
-                    self._payload[offset : offset + 4], "little", signed=False
+                    self._payload[offset : offset + KEYLEN], "little", signed=False
                 )
                 (keyname, att) = self.cfgkey2name(key)
-                atts = int(att[1:3])
-                valb = self._payload[offset + 4 : offset + 4 + atts]
+                atts = attsiz(att)
+                valb = self._payload[offset + KEYLEN : offset + KEYLEN + atts]
                 val = self.bytes2val(valb, att)
                 setattr(self, keyname, val)
                 i = 0
-                offset += 4 + atts
+                offset += KEYLEN + atts
 
             else:
                 i += 1
@@ -224,12 +262,12 @@ class UBXMessage:
         Calculate and format payload length and checksum as bytes"""
 
         if self._payload is None:
-            self._length = self.len2bytes(0)
+            self._length = self.val2bytes(0, ubt.U2)
             self._checksum = self.calc_checksum(
                 self._ubxClass + self._ubxID + self._length
             )
         else:
-            self._length = self.len2bytes(len(self._payload))
+            self._length = self.val2bytes(len(self._payload), ubt.U2)
             self._checksum = self.calc_checksum(
                 self._ubxClass + self._ubxID + self._length + self._payload
             )
@@ -237,25 +275,30 @@ class UBXMessage:
     def _get_dict(self, **kwargs) -> dict:
         """
         Get payload dictionary corresponding to message mode (GET/SET/POLL)
-        MGA and older NMEA messages need special handling as their dictionary keys (ubxClass/ubxID)
-        are not unique
+        Certain message types need special handling as alternate payload
+        definitions exist for the same ubxClass/ubxID.
 
-        :param **kwargs payload
-        :return dict:
-
+        :param **kwargs: payload key value pairs
+        :return dictionary representing payload definition
+        :rtype dict
         """
 
         if self._mode == ubt.POLL:
             pdict = ubp.UBX_PAYLOADS_POLL[self.identity]
         elif self._mode == ubt.SET:
-            if self._ubxClass == b"\x13" and self._ubxID != b"\x80":  # MGA SET message
+            if self._ubxClass == b"\x13" and self._ubxID != b"\x80":  # MGA SET
                 pdict = self._get_mga_version(ubt.SET, **kwargs)
+            elif self._ubxClass == b"\x02" and self._ubxID == b"\x41":  # RXM-PMREQ SET
+                pdict = self._get_rxmpmreq_version(**kwargs)
             else:
                 pdict = ubs.UBX_PAYLOADS_SET[self.identity]
         else:  # GET message
-            if self._ubxClass == b"\x13" and self._ubxID != b"\x80":  # MGA GET message
+            if self._ubxClass == b"\x13" and self._ubxID != b"\x80":  # MGA GET
                 pdict = self._get_mga_version(ubt.GET, **kwargs)
-            #             elif self.identity == "CFG-NMEA":
+            elif self._ubxClass == b"\x02" and self._ubxID == b"\x72":  # RXM-PMP
+                pdict = self._get_rxmpmp_version(**kwargs)
+            elif self._ubxClass == b"\x02" and self._ubxID == b"\x59":  # RXM-RLM
+                pdict = self._get_rxmrlm_version(**kwargs)
             elif self._ubxClass == b"\x06" and self._ubxID == b"\x17":  # CFG-NMEA
                 pdict = self._get_cfgnmea_version(**kwargs)
             elif self._ubxClass == b"\x10" and self._ubxID == b"\x02":  # ESF-MEAS
@@ -266,15 +309,24 @@ class UBXMessage:
 
     def _get_mga_version(self, mode: int, **kwargs) -> dict:
         """
-        Select appropriate MGA payload definition
+        Select appropriate MGA payload definition by checking
+        value of 'type' attribute (1st byte of payload)
 
-        :param mode str: 0=GET, 1=SET, 2=POLL
-        :param **kwargs payload
-        :return dict:
-
+        :param str mode: 0=GET, 1=SET, 2=POLL
+        :param **kwargs: payload key value pairs
+        :return dictionary representing payload definition
+        :rtype dict
+        :raise UBXMessageError
         """
 
-        typ = kwargs["payload"][0:1]
+        if "type" in kwargs:
+            typ = self.val2bytes(kwargs["type"], ubt.U1)
+        elif "payload" in kwargs:
+            typ = kwargs["payload"][0:1]
+        else:
+            raise ube.UBXMessageError(
+                "MGA message definitions must include type or payload keyword"
+            )
         identity = ubt.UBX_MSGIDS[self._ubxClass + self._ubxID + typ]
         if mode == ubt.SET:
             pdict = ubs.UBX_PAYLOADS_SET[identity]
@@ -282,15 +334,79 @@ class UBXMessage:
             pdict = ubg.UBX_PAYLOADS_GET[identity]
         return pdict
 
+    def _get_rxmpmreq_version(self, **kwargs) -> dict:
+        """
+        Select appropriate RXM-PMREQ payload definition by checking
+        the version keyword or payload length
+
+        :param **kwargs: payload key value pairs
+        :return dictionary representing payload definition
+        :rtype dict
+        :raise UBXMessageError
+        """
+        # pylint: disable=no-self-use
+
+        lpd = 0
+        if "version" in kwargs:  # assume longer version
+            lpd = 16
+        elif "payload" in kwargs:
+            lpd = len(kwargs["payload"])
+        else:
+            raise ube.UBXMessageError(
+                "RXM-PMREQ message definitions must include version or payload keyword"
+            )
+        if lpd == 16:
+            pdict = ubs.UBX_PAYLOADS_SET["RXM-PMREQ"]  # long
+        else:
+            pdict = ubs.UBX_PAYLOADS_SET["RXM-PMREQ-S"]  # short
+        return pdict
+
+    def _get_rxmpmp_version(self, **kwargs) -> dict:
+        """
+        Select appropriate RXM-PMP payload definition by checking
+        value of 'version' attribute (1st byte of payload)
+
+        :param **kwargs: payload key value pairs
+        :return dictionary representing payload definition
+        :rtype dict
+        """
+        # pylint: disable=no-self-use
+
+        ver = kwargs["payload"][0:1]
+        if ver == b"\x00":
+            pdict = ubg.UBX_PAYLOADS_GET["RXM-PMP-V0"]
+        else:
+            pdict = ubg.UBX_PAYLOADS_GET["RXM-PMP-V1"]
+        return pdict
+
+    def _get_rxmrlm_version(self, **kwargs) -> dict:
+        """
+        Select appropriate RXM-PMP payload definition by checking
+        the payload length
+
+        :param **kwargs: payload key value pairs
+        :return dictionary representing payload definition
+        :rtype dict
+        """
+        # pylint: disable=no-self-use
+
+        lpd = len(kwargs["payload"])
+        if lpd == 16:
+            pdict = ubg.UBX_PAYLOADS_GET["RXM-RLM-S"]  # short
+        else:
+            pdict = ubg.UBX_PAYLOADS_GET["RXM-RLM-L"]  # long
+        return pdict
+
     def _get_cfgnmea_version(self, **kwargs) -> dict:
         """
         Select appropriate payload definition version for older
-        generations of CFG-NMEA message
+        generations of CFG-NMEA message by checking payload length
 
-        :param **kwargs payload
-        :return dict:
-
+        :param **kwargs: payload key value pairs
+        :return dictionary representing payload definition
+        :rtype dict
         """
+        # pylint: disable=no-self-use
 
         lpd = len(kwargs["payload"])
         if lpd == 4:
@@ -307,9 +423,11 @@ class UBXMessage:
         ESF-MEAS message by checking bit 3 (calibTtagValid)
         in the'flags' attribute.
 
-        :param **kwargs payload
-        :return dict:
+        :param **kwargs: payload key value pairs
+        :return dictionary representing payload definition
+        :rtype dict
         """
+        # pylint: disable=no-self-use
 
         flags = kwargs["payload"][4:6]  # bytes
         flags = int(flags.hex(), 16)  # int
@@ -321,19 +439,21 @@ class UBXMessage:
         return pdict
 
     def _calc_num_repeats(
-        self, att, payload: bytes, offset: int, offsetend: int = 0
+        self, att: str, payload: bytes, offset: int, offsetend: int = 0
     ) -> int:
         """
-        Deduce number of items in repeating group by dividing length of
-        remaining payload by length of group.
+        Deduce number of items in 'indeterminate' repeating group by
+        dividing length of remaining payload by length of group.
 
         This assumes there is only one such repeating group per message,
         payload, which is true for all currently supported types.
 
-        :param att: attribute type
-        :param payload : bytes:
-        :param offset: int: number of bytes in payload before repeating group
-        :param offsetend: int: number of bytes in payload after repeating group
+        :param str att: attribute type
+        :param bytes payload : raw payload
+        :param int offset: number of bytes in payload before repeating group
+        :param int offsetend: number of bytes in payload after repeating group
+        :return number of repeats
+        :rtype int
 
         """
         # pylint: disable=no-self-use
@@ -341,15 +461,15 @@ class UBXMessage:
         lenpayload = len(payload) - offset - offsetend
         lengroup = 0
         for _, val in att.items():
-            lengroup += int(val[1:3])
+            lengroup += attsiz(val)
         return int(lenpayload / lengroup)
 
     def __str__(self) -> str:
         """
         Human readable representation.
 
-        :return: str:
-
+        :return human readable representation
+        :rtype str
         """
 
         clsid = None
@@ -362,29 +482,25 @@ class UBXMessage:
         for i, att in enumerate(self.__dict__):
             if att[0] != "_":  # only show public attributes
                 val = self.__dict__[att]
-                # if the attributes include a UBX class & id,
-                # show the ASCII lookup form rather than the binary
                 if att[0:6] == "gnssId":  # attribute is a GNSS ID
-                    val = self.gnss2str(val)  # get string representation e.g. 'GPS'
-                if att == "nmeaVersion":  # attribute is NMEA version
-                    val = self.nmeaver2str(val)
-                if att == "iTOW":
-                    val = self.itow2utc(val)
+                    val = gnss2str(val)  # get string representation e.g. 'GPS'
+                if att == "iTOW":  # attribute is a GPS Time of Week
+                    val = itow2utc(val)  # show time in UTC format
                 # if it's an ACK-ACK or ACK-NAK, we show what it's acknowledging in plain text
                 if self._ubxClass == b"\x05":  # ACK
                     if att == "clsID":
-                        clsid = val.to_bytes(1, byteorder="little", signed=False)
+                        clsid = self.val2bytes(val, ubt.U1)
                         val = ubt.UBX_CLASSES[clsid]
                     if att == "msgID" and clsid:
-                        msgid = val.to_bytes(1, byteorder="little", signed=False)
+                        msgid = self.val2bytes(val, ubt.U1)
                         val = ubt.UBX_MSGIDS[clsid + msgid]
                 # if it's a CFG-MSG, we show what message class/id it refers to in plain text
                 if self._ubxClass == b"\x06" and self._ubxID == b"\x01":  # CFG-MSG
                     if att == "msgClass":
-                        clsid = val.to_bytes(1, byteorder="little", signed=False)
+                        clsid = self.val2bytes(val, ubt.U1)
                         val = ubt.UBX_CONFIG_CATEGORIES[clsid]
                     if att == "msgID" and clsid:
-                        msgid = val.to_bytes(1, byteorder="little", signed=False)
+                        msgid = self.val2bytes(val, ubt.U1)
                         val = ubt.UBX_CONFIG_MESSAGES[clsid + msgid]
                 stg += att + "=" + str(val)
                 if i < len(self.__dict__) - 1:
@@ -399,8 +515,8 @@ class UBXMessage:
 
         eval(repr(obj)) = obj
 
-        :return str:
-
+        :return machine readable representation
+        :rtype str
         """
 
         if self._payload is None:
@@ -411,8 +527,9 @@ class UBXMessage:
         """
         Override setattr to make object immutable after instantiation
 
-        :param name
-        :param value
+        :param str name
+        :param object value
+        :raise UBXMessageError
         """
 
         if self._immutable:
@@ -426,34 +543,24 @@ class UBXMessage:
         """
         Serialize message
 
-        :return bytes:
-
+        :return serialized output
+        :rtype bytes
         """
 
-        if self._payload is None:
-            return (
-                ubt.UBX_HDR
-                + self._ubxClass
-                + self._ubxID
-                + self._length
-                + self._checksum
-            )
-        return (
-            ubt.UBX_HDR
-            + self._ubxClass
-            + self._ubxID
-            + self._length
-            + self._payload
-            + self._checksum
+        output = ubt.UBX_HDR + self._ubxClass + self._ubxID + self._length
+        output += (
+            self._checksum if self._payload is None else self._payload + self._checksum
         )
+        return output
 
     @property
     def identity(self) -> str:
-        """Message identity getter.
+        """
         Returns identity in plain text form e.g. 'CFG-MSG'.
 
-        :return identity: str:
-
+        :return message identity
+        :rtype str
+        :raise UBXMessageError
         """
 
         try:
@@ -472,28 +579,46 @@ class UBXMessage:
         return umsg_name
 
     @property
-    def header(self) -> bytes:
-        """Header getter"""
-        return self._header
-
-    @property
     def msg_cls(self) -> bytes:
-        """Class id getter"""
+        """
+        Class id getter
+
+        :return message class as bytes
+        :rtype bytes
+        """
         return self._ubxClass
 
     @property
     def msg_id(self) -> bytes:
-        """Message id getter"""
+        """
+        Message id getter
+
+        :return message id as bytes
+        :rtype bytes
+        """
+
         return self._ubxID
 
     @property
     def length(self) -> int:
-        """Payload length getter"""
-        return self.bytes2len(self._length)
+        """
+        Payload length getter
+
+        :return payload length as integer
+        :rtype int
+        """
+
+        return UBXMessage.bytes2val(self._length, ubt.U2)
 
     @property
     def payload(self) -> bytes:
-        """Payload getter - returns the raw payload bytes"""
+        """
+        Payload getter - returns the raw payload bytes
+
+        :return raw payload as bytes
+        :rtype bytes
+        """
+
         return self._payload
 
     @staticmethod
@@ -504,10 +629,11 @@ class UBXMessage:
         Includes option to validate incoming payload length and checksum
         (UXBMessage will calculate and assign it's own values anyway).
 
-        :param message: bytes:
-        :param validate: bool:  (Default value = False)
-        :return UBXMessage object:
-
+        :param bytes message
+        :param bool validate: Default value = False
+        :return UBXMessage object
+        :rtype UBXMessage
+        :raise UBXParseError
         """
 
         lenm = len(message)
@@ -531,11 +657,11 @@ class UBXMessage:
                 raise ube.UBXParseError(
                     (f"Invalid message header {hdr}" f" - should be {ubt.UBX_HDR}")
                 )
-            if leni != UBXMessage.bytes2len(lenb):
+            if leni != UBXMessage.bytes2val(lenb, ubt.U2):
                 raise ube.UBXParseError(
                     (
                         f"Invalid payload length {lenb}"
-                        f" - should be {UBXMessage.len2bytes(leni)}"
+                        f" - should be {UBXMessage.val2bytes(leni, ubt.U2)}"
                     )
                 )
             if ckm != ckv:
@@ -552,13 +678,14 @@ class UBXMessage:
         Convert message class/id integers to bytes
         e.g. 6, 1 to b'/x06/x01'.
 
-        :param msgClass: int:
-        :param msgID: int:
-
+        :param int msgClass
+        :param int msgID
+        :return message class as bytes
+        :rtype bytes
         """
 
-        msgClass = msgClass.to_bytes(1, byteorder="little", signed=False)
-        msgID = msgID.to_bytes(1, byteorder="little", signed=False)
+        msgClass = UBXMessage.val2bytes(msgClass, ubt.U1)
+        msgID = UBXMessage.val2bytes(msgID, ubt.U1)
         return (msgClass, msgID)
 
     @staticmethod
@@ -567,16 +694,18 @@ class UBXMessage:
         Convert plain text UBX message class to bytes
         e.g. 'CFG-MSG' to b'/x06/x01'.
 
-        :param msgClass: str:
-        :param msgID: str:
-
+        :param str msgClass
+        :param str msgID
+        :return message class as bytes
+        :rtype bytes
+        :raise UBXMessageError
         """
 
         try:
-            clsid = UBXMessage.key_from_val(ubt.UBX_CLASSES, msgClass)
-            msgid = UBXMessage.key_from_val(ubt.UBX_MSGIDS, msgID)[1:2]
+            clsid = key_from_val(ubt.UBX_CLASSES, msgClass)
+            msgid = key_from_val(ubt.UBX_MSGIDS, msgID)[1:2]
             return (clsid, msgid)
-        except ube.UBXMessageError as err:
+        except KeyError as err:
             raise ube.UBXMessageError(
                 f"Undefined message, class {msgClass}, id {msgID}"
             ) from err
@@ -584,19 +713,21 @@ class UBXMessage:
     @staticmethod
     def val2bytes(val, att: str) -> bytes:
         """
-        Return bytes from value for given attribute type
+        Return bytes from value for given UBX attribute type
 
-        :param val value
-        :param att str: attribute type
-        :return bytes: value as bytes
+        :param object val: value
+        :param str att: attribute type
+        :return value as bytes
+        :rtype bytes
+        :raise UBXTypeError
         """
 
-        atts = int(att[1:3])
-        if att[0:1] in ("C", "X"):  # byte or char
+        atts = attsiz(att)
+        if atttyp(att) in ("C", "X"):  # byte or char
             valb = val
-        elif att[0:1] in ("E", "L", "U"):  # unsigned integer
+        elif atttyp(att) in ("E", "L", "U"):  # unsigned integer
             valb = val.to_bytes(atts, byteorder="little", signed=False)
-        elif att[0:1] == "I":  # signed integer
+        elif atttyp(att) == "I":  # signed integer
             valb = val.to_bytes(atts, byteorder="little", signed=True)
         elif att == ubt.R4:  # single precision floating point
             valb = struct.pack("<f", val)
@@ -609,20 +740,22 @@ class UBXMessage:
     @staticmethod
     def bytes2val(valb: bytes, att: str) -> object:
         """
-        Return value from bytes for given attribute type
+        Return value from bytes for given UBX attribute type
 
-        :param valb bytes: value in byte format
-        :param att str: attribute type
-        :return object: value
+        :param bytes valb: value in byte format
+        :param str att: attribute type
+        :return value
+        :rtype object
+        :raise UBXTypeError
         """
 
         if att == ubt.CH:  # single variable-length string (e.g. INF-NOTICE)
             val = valb.decode("utf-8", "backslashreplace")
-        elif att[0:1] in ("X", "C"):
+        elif atttyp(att) in ("X", "C"):
             val = valb
-        elif att[0:1] == "U":  # unsigned integer
+        elif atttyp(att) == "U":  # unsigned integer
             val = int.from_bytes(valb, "little", signed=False)
-        elif att[0:1] == "I":  # signed integer
+        elif atttyp(att) == "I":  # signed integer
             val = int.from_bytes(valb, "little", signed=True)
         elif att == ubt.R4:  # single precision floating point
             val = struct.unpack("<f", valb)[0]
@@ -633,36 +766,13 @@ class UBXMessage:
         return val
 
     @staticmethod
-    def bytes2len(length: bytes) -> int:
-        """
-        Convert payload length as bytes to integer.
-
-        :param length: bytes:
-        :return int:
-
-        """
-
-        return int.from_bytes(length, "little", signed=False)
-
-    @staticmethod
-    def len2bytes(length: int) -> bytes:
-        """
-        Convert payload length as integer to two little-endian bytes.
-
-        :param length: int:
-        :return bytes:
-
-        """
-
-        return length.to_bytes(2, byteorder="little", signed=False)
-
-    @staticmethod
     def calc_checksum(content: bytes) -> bytes:
         """
+        Calculate checksum using 8-bit Fletcher's algorithm
 
-        :param content: bytes:
-        :return checksum: bytes:
-
+        :param bytes content: message content, excluding header and checksum bytes
+        :return checksum
+        :rtype bytes
         """
 
         check_a = 0
@@ -680,11 +790,10 @@ class UBXMessage:
     def isvalid_checksum(message: bytes) -> bool:
         """
         Validate input message's checksum
-        ('message' includes header and checksum)
 
-        :param message: bytes:
-        :return bool:
-
+        :param bytes message: message including header and checksum
+        :return checksum valid flag
+        :rtype bool
         """
 
         lenm = len(message)
@@ -692,127 +801,15 @@ class UBXMessage:
         return ckm == UBXMessage.calc_checksum(message[2 : lenm - 2])
 
     @staticmethod
-    def itow2utc(iTOW: int) -> datetime.time:
-        """
-        Convert UBX iTOW to UTC time
-
-        :param iTOW: int:
-        :return datetime.time:
-
-        """
-
-        utc = datetime(1980, 1, 6) + timedelta(seconds=(iTOW / 1000) - (35 - 19))
-        return utc.time()
-
-    @staticmethod
-    def gpsfix2str(fix: int) -> str:
-        """
-        Convert GPS fix integer to string
-
-        :param fix: int:
-        :return str:
-
-        """
-
-        if fix == 5:
-            fixs = "TIME ONLY"
-        elif fix == 4:
-            fixs = "GPS + DR"
-        elif fix == 3:
-            fixs = "3D"
-        elif fix == 2:
-            fixs = "2D"
-        elif fix == 1:
-            fixs = "DR"
-        else:
-            fixs = "NO FIX"
-        return fixs
-
-    @staticmethod
-    def dop2str(dop: float) -> str:
-        """
-        Convert Dilution of Precision float to descriptive string
-
-        :param dop: float:
-        :return str:
-
-        """
-
-        if dop == 1:
-            dops = "Ideal"
-        elif dop <= 2:
-            dops = "Excellent"
-        elif dop <= 5:
-            dops = "Good"
-        elif dop <= 10:
-            dops = "Moderate"
-        elif dop <= 20:
-            dops = "Fair"
-        else:
-            dops = "Poor"
-        return dops
-
-    @staticmethod
-    def gnss2str(gnssId: int) -> str:
-        """
-        Convert GNSS ID to descriptive string
-
-        :param gnssId: int:
-        :return str:
-
-        """
-
-        try:
-            return ubt.GNSSLIST[gnssId]
-        except KeyError:
-            return str(gnssId)
-
-    @staticmethod
-    def nmeaver2str(nmeaVersion: int) -> str:
-        """
-        Convert NMEA version integer to readable string
-
-        :param nmeaVersion: int:
-        :return str:
-
-        """
-
-        h = hex(nmeaVersion)
-        return h[2:3] + "." + h[3:]
-
-    @staticmethod
-    def mode2str(mode: int) -> str:
-        """
-        Convert mode to string
-        """
-
-        return ["GET", "SET", "POLL"][mode]
-
-    @staticmethod
-    def key_from_val(dictionary: dict, value) -> str:
-        """
-        Helper method - get dictionary key corresponding to (unique) value.
-
-        :param dictionary: dict:
-        :param value:
-        :return str:
-
-        """
-
-        val = None
-        for key, val in dictionary.items():
-            if val == value:
-                return key
-        raise ube.UBXMessageError(f"Undefined message type {value}")
-
-    @staticmethod
-    def cfgname2key(name: str) -> (int, str):
+    def cfgname2key(name: str) -> tuple:
         """
         Return hexadecimal key and data type for given
         configuration database key name.
 
-        :param name: str
-        :return (key: int, type: str)
+        :param str name: config database key name as string
+        :return tuple of (key: int, type: str)
+        :rtype tuple: (int, str)
+        :raise UBXMessageError
         """
         try:
             return ubcdb.UBX_CONFIG_DATABASE[name]
@@ -822,14 +819,15 @@ class UBXMessage:
             ) from err
 
     @staticmethod
-    def cfgkey2name(keyID: int) -> (str, str):
+    def cfgkey2name(keyID: int) -> tuple:
         """
         Return key name and data type for given
         configuration database hexadecimal key.
 
-        :param keyID: int:
-        :return (keyname: str, type: str)
-
+        :param int keyID: config key as integer
+        :return tuple of (keyname: str, type: str)
+        :rtype tuple: (str, str)
+        :raise UBXMessageError
         """
 
         val = None
@@ -846,11 +844,12 @@ class UBXMessage:
         configuration database (key, value) tuples. Keys
         can be in int (keyID) or str (keyname) format.
 
-        :param layers: int: (1=RAM, 2=BBR, 4=Flash)
-        :param transaction: int: (0=no txn, 1=start txn, 2=continue txn, 3=apply txn)
-        :param cfgData: list: (key, value) tuples; max 64 tuples)
-        :return UBXMessage object: CFG-VALSET message
-
+        :param int layers: memory layer(s) (1=RAM, 2=BBR, 4=Flash)
+        :param int transaction: 0=no txn, 1=start txn, 2=continue txn, 3=apply txn
+        :param list cfgData: list of up to 64 tuples (key, value)
+        :return UBXMessage CFG-VALSET
+        :rtype UBXMessage
+        :raise UBXMessageError
         """
 
         num = len(cfgData)
@@ -859,12 +858,10 @@ class UBXMessage:
                 f"Number of configuration tuples {num} exceeds maximum of 64"
             )
 
-        version = 0 if transaction == 0 else 1
-        version = version.to_bytes(1, byteorder="little", signed=False)
-        layers = layers.to_bytes(1, byteorder="little", signed=False)
-        transaction = transaction.to_bytes(1, byteorder="little", signed=False)
-        reserved0 = b"\x00"
-        payload = version + layers + transaction + reserved0
+        version = UBXMessage.val2bytes(0 if transaction == 0 else 1, ubt.U1)
+        layers = UBXMessage.val2bytes(layers, ubt.U1)
+        transaction = UBXMessage.val2bytes(transaction, ubt.U1)
+        payload = version + layers + transaction + b"\x00"
         lis = b""
 
         for cfgItem in cfgData:
@@ -876,7 +873,7 @@ class UBXMessage:
                 )  # lookup keyID & attribute type
             else:
                 (_, att) = UBXMessage.cfgkey2name(key)  # lookup attribute type
-            keyb = key.to_bytes(4, byteorder="little", signed=False)
+            keyb = UBXMessage.val2bytes(key, ubt.U4)
             valb = UBXMessage.val2bytes(val, att)
             lis = lis + keyb + valb
 
@@ -889,11 +886,12 @@ class UBXMessage:
         configuration database keys, which can be in int (keyID)
         or str (keyname) format.
 
-        :param layers: int: (2=BBR, 4=Flash)
-        :param transaction: int: (0=no txn, 1=start txn, 2=continue txn, 3=apply txn)
-        :param keys: list: keyID as int or keyname as string; max 64 keys
-        :return UBXMessage object: CFG-VALDEL message
-
+        :param int layers: memory layer(s) 2=BBR, 4=Flash
+        :param int transaction: 0=no txn, 1=start txn, 2=continue txn, 3=apply txn
+        :param list keys: array of up to 64 keys as int (keyID) or string (keyname)
+        :return UBXMessage CFG-VALDEL
+        :rtype UBXMessage
+        :raise UBXMessageError
         """
 
         num = len(keys)
@@ -902,36 +900,33 @@ class UBXMessage:
                 f"Number of configuration keys {num} exceeds maximum of 64"
             )
 
-        version = 0 if transaction == 0 else 1
-        version = version.to_bytes(1, byteorder="little", signed=False)
-        layers = layers.to_bytes(1, byteorder="little", signed=False)
-        transaction = transaction.to_bytes(1, byteorder="little", signed=False)
-        reserved0 = b"\x00"
-        payload = version + layers + transaction + reserved0
+        version = UBXMessage.val2bytes(0 if transaction == 0 else 1, ubt.U1)
+        layers = UBXMessage.val2bytes(layers, ubt.U1)
+        transaction = UBXMessage.val2bytes(transaction, ubt.U1)
+        payload = version + layers + transaction + b"\x00"
         lis = b""
 
         for key in keys:
             if isinstance(key, str):  # if keyname as a string
                 (key, _) = UBXMessage.cfgname2key(key)  # lookup keyID
-            keyb = key.to_bytes(4, byteorder="little", signed=False)
+            keyb = UBXMessage.val2bytes(key, ubt.U4)
             lis = lis + keyb
 
         return UBXMessage("CFG", "CFG-VALDEL", ubt.SET, payload=payload + lis)
 
     @staticmethod
-    def config_poll(layers: int, position: int, keys: list) -> object:
+    def config_poll(layer: int, position: int, keys: list) -> object:
         """
         Construct CFG-VALGET message from an array of
         configuration database keys, which can be in int (keyID)
-        or str (keyname) format. keyID format allows for wildcard
-        queries.
+        or str (keyname) format.
 
-        :param version: int:
-        :param layers: int: (0=RAM, 1=BBR, 2=Flash, 7 = Default)
-        :param position: int: (number of keys to skip before returning result)
-        :param keys: list: keyID as int or keyname as string; max 64 keys
-        :return UBXMessage object: CFG-VALGET message
-
+        :param int layer: memory layer 0=RAM, 1=BBR, 2=Flash, 7 = Default
+        :param int position: number of keys to skip before returning result
+        :param list keys: array of up to 64 keys as int (keyID) or str (keyname)
+        :return UBXMessage CFG-VALGET
+        :rtype UBXMessage
+        :raise UBXMessageError
         """
 
         num = len(keys)
@@ -940,17 +935,16 @@ class UBXMessage:
                 f"Number of configuration keys {num} exceeds maximum of 64"
             )
 
-        version = 0
-        version = version.to_bytes(1, byteorder="little", signed=False)
-        layers = layers.to_bytes(1, byteorder="little", signed=False)
-        position = position.to_bytes(2, byteorder="little", signed=False)
-        payload = version + layers + position
+        version = UBXMessage.val2bytes(0, ubt.U1)
+        layer = UBXMessage.val2bytes(layer, ubt.U1)
+        position = UBXMessage.val2bytes(position, ubt.U2)
+        payload = version + layer + position
         lis = b""
 
         for key in keys:
             if isinstance(key, str):  # if keyname as a string
                 (key, _) = UBXMessage.cfgname2key(key)  # lookup keyID
-            keyb = key.to_bytes(4, byteorder="little", signed=False)
+            keyb = UBXMessage.val2bytes(key, ubt.U4)
             lis = lis + keyb
 
         return UBXMessage("CFG", "CFG-VALGET", ubt.POLL, payload=payload + lis)

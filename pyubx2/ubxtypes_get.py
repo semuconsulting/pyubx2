@@ -9,9 +9,13 @@ NB: Attribute names must be unique within each message class/id
 NB: Repeating groups must be defined as a tuple thus
     'group': ('numr', {dict})
     where
-    - 'numr' is the name of the preceding attribute containing the number
-       of repeats, or 'None' if there isn't one
-    - {dict} is the nested dictionary containing the repeating attributes
+    - 'numr' is either:
+       a) an integer representing a fixed number of repeats e.g 32
+       b) a string representing the name of a preceding attribute
+          containing the number of repeats e.g. 'numCh'
+       c) 'None' for an indeterminate number of repeats
+    - {dict} is the nested dictionary containing the repeating
+      attributes
 
 Created on 27 Sep 2020
 
@@ -20,6 +24,17 @@ Created on 27 Sep 2020
 # pylint: disable=unused-import, too-many-lines, line-too-long
 
 from pyubx2.ubxtypes_core import (
+    C2,
+    C6,
+    C10,
+    C30,
+    C32,
+    CH,
+    I1,
+    I2,
+    I4,
+    R4,
+    R8,
     U1,
     U2,
     U3,
@@ -30,20 +45,9 @@ from pyubx2.ubxtypes_core import (
     U9,
     U12,
     U64,
-    I1,
-    I2,
-    I4,
     X1,
     X2,
     X4,
-    R4,
-    R8,
-    C2,
-    C6,
-    C10,
-    C30,
-    C32,
-    CH,
 )
 
 UBX_PAYLOADS_GET = {
@@ -151,6 +155,10 @@ UBX_PAYLOADS_GET = {
         "rotY": R4,
         "rotZ": R4,
         "scale": R4,
+    },
+    "CFG-DGNSS": {
+        "dgnssMode": U1,
+        "reserved0": U3,
     },
     "CFG-DOSC": {
         "version": U1,
@@ -410,6 +418,12 @@ UBX_PAYLOADS_GET = {
         "maxSlewRate": U2,
         "flags": X4,
     },
+    "CFG-SPT": {
+        "version": U1,
+        "reserved0": U1,
+        "sensorId": U2,
+        "reserved1": U8,
+    },
     "CFG-TMODE2": {
         "timeMode": U1,
         "reserved1": U1,
@@ -420,6 +434,22 @@ UBX_PAYLOADS_GET = {
         "fixedPosAcc": U4,
         "svinMinDur": U4,
         "svinAccLimit": U4,
+    },
+    "CFG-TMODE3": {
+        "version": U1,
+        "reserved0": U1,
+        "flags": X2,
+        "ecefXOrLat": I4,
+        "ecefYOrLon": I4,
+        "ecefZOrAlt": I4,
+        "ecefXOrLatHP": I1,
+        "ecefYOrLonHP": I1,
+        "ecefZOrAltHP": I1,
+        "reserved1": U1,
+        "fixedPosAcc": U4,
+        "svinMinDur": U4,
+        "svinAccLimit": U4,
+        "reserved2": U8,
     },
     "CFG-TP5": {
         "tpIdx": U1,
@@ -500,7 +530,7 @@ UBX_PAYLOADS_GET = {
         "flags": X2,
         "id": U2,
         "group": (
-            "ESF-MEAS-CT",
+            "ESF-MEAS-CT",  # specially named to cater for optional calibTtag attribute after repeating group
             {  # repeating group * numMeas, which is bits 11..15 of flags
                 "data": X4,
             },
@@ -781,6 +811,30 @@ UBX_PAYLOADS_GET = {
         "simultaneous": U1,
         "reserved1": U3,
     },
+    "MON-HW": {
+        "pinSel": X4,
+        "pinBank": X4,
+        "pinDir": X4,
+        "pinVal": X4,
+        "noisePerMS": U2,
+        "agcCnt": U2,
+        "aStatus": U1,
+        "aPower": U1,
+        "flags": X1,
+        "reserved1": U1,
+        "usedMask": X4,
+        "groupVP": (
+            25,
+            {
+                "VP": X1,
+            },
+        ),  # repeating group * 25
+        "jamInd": U1,
+        "reserved3": U2,
+        "pinIrq": X4,
+        "pullH": X4,
+        "pullL": X4,
+    },
     "MON-HW2": {
         "ofsI": I1,
         "magI": U1,
@@ -794,48 +848,16 @@ UBX_PAYLOADS_GET = {
         "postStatus": X4,
         "reserved2": U4,
     },
-    "MON-HW": {
-        "pinSel": X4,
-        "pinBank": X4,
-        "pinDir": X4,
-        "pinVal": X4,
-        "noisePerMS": U2,
-        "agcCnt": U2,
-        "aStatus": U1,
-        "aPower": U1,
+    "MON-HW3": {
+        "version": U1,
+        "nPins": U1,
         "flags": X1,
+        "hwVersion": C10,
+        "reserved0": U9,
+        "pinId": U2,
+        "pinMask": X2,
+        "VP": U1,
         "reserved1": U1,
-        "usedMask": X4,
-        "VP01": X1,
-        "VP02": X1,
-        "VP03": X1,
-        "VP04": X1,
-        "VP05": X1,
-        "VP06": X1,
-        "VP07": X1,
-        "VP08": X1,
-        "VP09": X1,
-        "VP10": X1,
-        "VP11": X1,
-        "VP12": X1,
-        "VP13": X1,
-        "VP14": X1,
-        "VP15": X1,
-        "VP16": X1,
-        "VP17": X1,
-        "VP18": X1,
-        "VP19": X1,
-        "VP20": X1,
-        "VP21": X1,
-        "VP22": X1,
-        "VP23": X1,
-        "VP24": X1,
-        "VP25": X1,
-        "jamInd": U1,
-        "reserved3": U2,
-        "pinIrq": X4,
-        "pullH": X4,
-        "pullL": X4,
     },
     "MON-IO": {
         "rxBytes": U4,
@@ -849,60 +871,48 @@ UBX_PAYLOADS_GET = {
         "reserved1": U2,
     },
     "MON-MSGPP": {
-        "msg10": U2,
-        "msg11": U2,
-        "msg12": U2,
-        "msg13": U2,
-        "msg14": U2,
-        "msg15": U2,
-        "msg16": U2,
-        "msg17": U2,
-        "msg20": U2,
-        "msg21": U2,
-        "msg22": U2,
-        "msg23": U2,
-        "msg24": U2,
-        "msg25": U2,
-        "msg26": U2,
-        "msg27": U2,
-        "msg30": U2,
-        "msg31": U2,
-        "msg32": U2,
-        "msg33": U2,
-        "msg34": U2,
-        "msg35": U2,
-        "msg36": U2,
-        "msg37": U2,
-        "msg40": U2,
-        "msg41": U2,
-        "msg42": U2,
-        "msg43": U2,
-        "msg44": U2,
-        "msg45": U2,
-        "msg46": U2,
-        "msg47": U2,
-        "msg50": U2,
-        "msg51": U2,
-        "msg52": U2,
-        "msg53": U2,
-        "msg54": U2,
-        "msg55": U2,
-        "msg56": U2,
-        "msg57": U2,
-        "msg60": U2,
-        "msg61": U2,
-        "msg62": U2,
-        "msg63": U2,
-        "msg64": U2,
-        "msg65": U2,
-        "msg66": U2,
-        "msg67": U2,
-        "skipped1": U4,
-        "skipped2": U4,
-        "skipped3": U4,
-        "skipped4": U4,
-        "skipped5": U4,
-        "skipped6": U4,
+        "groupmsg1": (
+            8,
+            {
+                "msg1": U2,
+            },
+        ),  # repeating group * 8
+        "groupmsg2": (
+            8,
+            {
+                "msg2": U2,
+            },
+        ),  # repeating group * 8
+        "groupmsg3": (
+            8,
+            {
+                "msg3": U2,
+            },
+        ),  # repeating group * 8
+        "groupmsg4": (
+            8,
+            {
+                "msg4": U2,
+            },
+        ),  # repeating group * 8
+        "groupmsg5": (
+            8,
+            {
+                "msg5": U2,
+            },
+        ),  # repeating group * 8
+        "groupmsg6": (
+            8,
+            {
+                "msg6": U2,
+            },
+        ),  # repeating group * 8
+        "groupskipped": (
+            6,
+            {
+                "skipped": U4,
+            },
+        ),  # repeating group * 6
     },
     "MON-PATCH": {
         "version": U2,
@@ -917,25 +927,49 @@ UBX_PAYLOADS_GET = {
             },
         ),
     },
+    "MON-RF": {
+        "version": U1,
+        "nBlocks": U1,
+        "reserved0": U2,
+        "group": (
+            "nBlocks",
+            {  # repeating group * nBlocks
+                "blockId": U1,
+                "flags": X1,
+                "antStatus": U1,
+                "antPower": U1,
+                "postStatus": U4,
+                "reserved1": U4,
+                "noisePerMS": U2,
+                "agcCnt": U2,
+                "jamInd": U1,
+                "ofsI": I1,
+                "magI": U1,
+                "ofsQ": I1,
+                "magQ": U1,
+                "reserved2": U3,
+            },
+        ),
+    },
     "MON-RXBUF": {
-        "pending0": U2,
-        "pending1": U2,
-        "pending2": U2,
-        "pending3": U2,
-        "pending4": U2,
-        "pending5": U2,
-        "usage0": U1,
-        "usage1": U1,
-        "usage2": U1,
-        "usage3": U1,
-        "usage4": U1,
-        "usage5": U1,
-        "peakUsage0": U1,
-        "peakUsage1": U1,
-        "peakUsage2": U1,
-        "peakUsage3": U1,
-        "peakUsage4": U1,
-        "peakUsage5": U1,
+        "groupPending": (
+            6,
+            {
+                "pending": U2,
+            },
+        ),  # repeating group * 6
+        "groupUsage": (
+            6,
+            {
+                "usage": U1,
+            },
+        ),  # repeating group * 6
+        "groupPeakUsage": (
+            6,
+            {
+                "peakUsage": U1,
+            },
+        ),  # repeating group * 6
     },
     "MON-RXR": {"flags": U1},
     "MON-SMGR": {
@@ -956,10 +990,12 @@ UBX_PAYLOADS_GET = {
         "group": (
             "numRfBlocks",
             {  # repeating group * numRfBlocks
-                "spectrum001_064": U64,
-                "spectrum065_128": U64,
-                "spectrum129_192": U64,
-                "spectrum193_256": U64,
+                "groupSpan": (
+                    256,
+                    {
+                        "spectrum": U1,
+                    },
+                ),  # nested repeating group * 256
                 "span": U4,
                 "res": U4,
                 "center": U4,
@@ -968,25 +1004,50 @@ UBX_PAYLOADS_GET = {
             },
         ),
     },
+    "MON-SPT": {
+        "version": U1,
+        "numSensor": U1,
+        "numRes": U1,
+        "reserved0": U1,
+        "groupSensor": (
+            "numSensor",
+            {  # repeating group * numSensor
+                "sensorId": U1,
+                "drvVer": X1,
+                "testState": U1,
+                "drvFileName": U1,
+            },
+        ),
+        "groupRes": (
+            "numRes",
+            {  # repeating group * numRes
+                "sensorIdRes": U2,
+                "sensorType": U2,
+                "resType": U2,
+                "reserved1": U2,
+                "value": I4,
+            },
+        ),
+    },
     "MON-TXBUF": {
-        "pending0": U2,
-        "pending1": U2,
-        "pending2": U2,
-        "pending3": U2,
-        "pending4": U2,
-        "pending5": U2,
-        "usage0": U1,
-        "usage1": U1,
-        "usage2": U1,
-        "usage3": U1,
-        "usage4": U1,
-        "usage5": U1,
-        "peakUsage0": U1,
-        "peakUsage1": U1,
-        "peakUsage2": U1,
-        "peakUsage3": U1,
-        "peakUsage4": U1,
-        "peakUsage5": U1,
+        "groupPending": (
+            6,
+            {
+                "pending": U2,
+            },
+        ),  # repeating group * 6
+        "groupUsage": (
+            6,
+            {
+                "usage": U1,
+            },
+        ),  # repeating group * 6
+        "groupPeakUsage": (
+            6,
+            {
+                "peakUsage": U1,
+            },
+        ),  # repeating group * 6
         "tUsage": U1,
         "tPeakUsage": U1,
         "errors": X1,
@@ -1002,6 +1063,17 @@ UBX_PAYLOADS_GET = {
     # Messages in the NAV class are used to output navigation data such as position, altitude and velocity in a
     # number of formats. Additionally, status flags and accuracy figures are output. The messages are generated with
     # the configured navigation/measurement rate.
+    "NAV-ATT": {
+        "iTOW": U4,
+        "version": U1,
+        "reserved0": U3,
+        "roll": I4,
+        "pitch": I4,
+        "heading": I4,
+        "accRoll": U4,
+        "accPitch": U4,
+        "accHeading": U4,
+    },
     "NAV-AOPSTATUS": {
         "iTOW": U4,
         "config": U1,
@@ -1328,7 +1400,7 @@ UBX_PAYLOADS_GET = {
         "ttff": U4,
         "msss": U4,
     },
-    "NAV-SVINFO": {
+    "NAV-SVINFO": {  # deprecated - use NAV-SAT
         "iTOW": U4,
         "numCh": U1,
         "globalFlags": X1,
@@ -1477,23 +1549,23 @@ UBX_PAYLOADS_GET = {
     },
     "RXM-MEASX": {
         "version": U1,
-        "reserved1": U3,
+        "reserved0": U3,
         "gpsTOW": U4,
         "gloTOW": U4,
         "bdsTOW": U4,
-        "reserved2": U4,
+        "reserved1": U4,
         "qzssTOW": U4,
         "gpsTOWacc": U2,
         "gloTOWacc": U2,
         "bdsTOWacc": U2,
-        "reserved3": U2,
+        "reserved2": U2,
         "qzssTOWacc": U2,
-        "numCh": U1,
+        "numSv": U1,
         "flags": U1,
-        "reserved4": U8,
+        "reserved3": U8,
         "group": (
-            "numCh",
-            {  # repeating group * numCh
+            "numSv",
+            {  # repeating group * numSv
                 "gnssId": U1,
                 "svId": U1,
                 "cNo": U1,
@@ -1505,7 +1577,46 @@ UBX_PAYLOADS_GET = {
                 "codePhase": U4,
                 "intCodePhase": U1,
                 "pseuRangeRMSErr": U1,
-                "reserved5": U2,
+                "reserved4": U2,
+            },
+        ),
+    },
+    "RXM-PMP-V0": {
+        "version": U1,
+        "reserved0": U1,
+        "timeTag": U4,
+        "uniqueWord1": U4,
+        "uniqueWord2": U4,
+        "serviceIdentifier": U2,
+        "spare": U1,
+        "uniqueWordBitErrors": U1,
+        "groupUserData": (
+            504,
+            {
+                "userData": U1,
+            },
+        ),  # repeating group * 504
+        "fecBits": U2,
+        "ebno": U1,
+        "reserved1": U1,
+    },
+    "RXM-PMP-V1": {
+        "version": U1,
+        "reserved0": U1,
+        "numBytesUserData": U2,
+        "timeTag": U4,
+        "uniqueWord1": U4,
+        "uniqueWord2": U4,
+        "serviceIdentifier": U2,
+        "spare": U1,
+        "uniqueWordBitErrors": U1,
+        "fecBits": U2,
+        "ebno": U1,
+        "reserved1": U1,
+        "groupUserData": (
+            "numBytesUserData",
+            {  # repeating group * numBytesUserData
+                "userData": U1,
             },
         ),
     },
@@ -1531,22 +1642,41 @@ UBX_PAYLOADS_GET = {
         "trkStat": X1,
         "reserved3": U1,
     },
-    "RXM-RLM": {
-        "version": U1,
-        "type": U1,
+    "RXM-RLM-S": {
+        "version": U1,  # 0x00
+        "type": U1,  # 0x01
         "svId": U1,
-        "reserved1": U1,
-        "beacon": U8,
-        "beacon2": U1,
-        "beacon3": U1,
-        "beacon4": U1,
-        "beacon5": U1,
-        "beacon6": U1,
-        "beacon7": U1,
-        "beacon8": U1,
+        "reserved0": U1,
+        "groupBeacon": (
+            8,
+            {
+                "beacon": U1,
+            },
+        ),
         "message": U1,
         "params1": U1,
         "params2": U1,
+        "reserved1": U1,
+    },
+    "RXM-RLM-L": {
+        "version": U1,  # 0x00
+        "type": U1,  # 0x02
+        "svId": U1,
+        "reserved0": U1,
+        "groupBeacon": (
+            8,
+            {
+                "beacon": U1,
+            },
+        ),
+        "message": U1,
+        "groupParams": (
+            12,
+            {
+                "params": U1,
+            },
+        ),
+        "reserved1": U3,
     },
     "RXM-RTCM": {
         "version": U1,
@@ -1558,12 +1688,12 @@ UBX_PAYLOADS_GET = {
     "RXM-SFRBX": {
         "gnssId": U1,
         "svId": U1,
-        "reserved1": U1,
+        "reserved0": U1,
         "freqId": U1,
         "numWords": U1,
         "chn": U1,
         "version": U1,
-        "reserved2": U1,
+        "reserved1": U1,
         "group": ("numWords", {"dwrd": U4}),  # repeating group * numWords
     },
     "RXM-SVSI": {

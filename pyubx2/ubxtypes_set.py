@@ -9,35 +9,40 @@ NB: Attribute names must be unique within each message class/id
 NB: Repeating groups must be defined as a tuple thus:
     'group': ('numr', {dict})
     where
-    - 'numr' is the name of the preceding attribute containing the number
-       of repeats, or 'None' if there isn't one
-    - {dict} is the nested dictionary containing the repeating attributes
+    - 'numr' is either:
+       a) an integer representing a fixed number of repeats e.g 32
+       b) a string representing the name of a preceding attribute
+          containing the number of repeats e.g. 'numCh'
+       c) 'None' for an indeterminate number of repeats
+    - {dict} is the nested dictionary containing the repeating
+      attributes
 
 Created on 27 Sep 2020
 
 @author: semuadmin
 """
-# pylint: disable=unused-import, too-many-lines, line-too-long
+# pylint: disable=too-many-lines, line-too-long
 
 from pyubx2.ubxtypes_core import (
-    U1,
-    I1,
-    X1,
-    U2,
-    I2,
-    X2,
-    U3,
-    U4,
-    I4,
-    X4,
-    R4,
-    U6,
-    U40,
-    U64,
-    R8,
     C2,
     C6,
     C32,
+    I1,
+    I2,
+    I4,
+    R4,
+    R8,
+    U1,
+    U2,
+    U3,
+    U4,
+    U6,
+    U8,
+    U40,
+    U64,
+    X1,
+    X2,
+    X4,
 )
 
 UBX_PAYLOADS_SET = {
@@ -142,6 +147,10 @@ UBX_PAYLOADS_SET = {
         "rotY": R4,
         "rotZ": R4,
         "scale": R4,
+    },
+    "CFG-DGNSS": {
+        "dgnssMode": U1,
+        "reserved0": U3,
     },
     "CFG-DOSC": {
         "version": U1,
@@ -401,6 +410,12 @@ UBX_PAYLOADS_SET = {
         "maxSlewRate": U2,
         "flags": X4,
     },
+    "CFG-SPT": {
+        "version": U1,
+        "reserved0": U1,
+        "sensorId": U2,
+        "reserved1": U8,
+    },
     "CFG-TMODE2": {
         "timeMode": U1,
         "reserved1": U1,
@@ -411,6 +426,22 @@ UBX_PAYLOADS_SET = {
         "fixedPosAcc": U4,
         "svinMinDur": U4,
         "svinAccLimit": U4,
+    },
+    "CFG-TMODE3": {
+        "version": U1,
+        "reserved0": U1,
+        "flags": X2,
+        "ecefXOrLat": I4,
+        "ecefYOrLon": I4,
+        "ecefZOrAlt": I4,
+        "ecefXOrLatHP": I1,
+        "ecefYOrLonHP": I1,
+        "ecefZOrAltHP": I1,
+        "reserved1": U1,
+        "fixedPosAcc": U4,
+        "svinMinDur": U4,
+        "svinAccLimit": U4,
+        "reserved2": U8,
     },
     "CFG-TP5": {
         "tpIdx": U1,
@@ -588,41 +619,17 @@ UBX_PAYLOADS_SET = {
     "MGA-BDS-HEALTH": {
         "type": U1,  # 0x04
         "version": U1,
-        "reserved1": U2,
-        "healthCode01": U2,
-        "healthCode02": U2,
-        "healthCode03": U2,
-        "healthCode04": U2,
-        "healthCode05": U2,
-        "healthCode06": U2,
-        "healthCode07": U2,
-        "healthCode08": U2,
-        "healthCode09": U2,
-        "healthCode10": U2,
-        "healthCode11": U2,
-        "healthCode12": U2,
-        "healthCode13": U2,
-        "healthCode14": U2,
-        "healthCode15": U2,
-        "healthCode16": U2,
-        "healthCode17": U2,
-        "healthCode18": U2,
-        "healthCode19": U2,
-        "healthCode20": U2,
-        "healthCode21": U2,
-        "healthCode22": U2,
-        "healthCode23": U2,
-        "healthCode24": U2,
-        "healthCode25": U2,
-        "healthCode26": U2,
-        "healthCode27": U2,
-        "healthCode28": U2,
-        "healthCode29": U2,
-        "healthCode30": U2,
-        "reserved2": U4,
+        "reserved0": U2,
+        "grouphealthcode": (
+            30,
+            {
+                "healthCode": U2,
+            },
+        ),  # repeating group * 30
+        "reserved1": U4,
     },
     "MGA-BDS-UTC": {
-        "type": U1,
+        "type": U1,  # 0x05
         "version": U1,
         "reserved1": U2,
         "a0UTC": I4,
@@ -636,7 +643,7 @@ UBX_PAYLOADS_SET = {
         "reserved3": U2,
     },
     "MGA-BDS-IONO": {
-        "type": U1,
+        "type": U1,  # 0x06
         "version": U1,
         "reserved1": U2,
         "alpha0": I1,
@@ -845,40 +852,14 @@ UBX_PAYLOADS_SET = {
     "MGA-GPS-HEALTH": {
         "type": U1,
         "version": U1,
-        "reserved1": U2,
-        "healthCode01": U1,
-        "healthCode02": U1,
-        "healthCode03": U1,
-        "healthCode04": U1,
-        "healthCode05": U1,
-        "healthCode06": U1,
-        "healthCode07": U1,
-        "healthCode08": U1,
-        "healthCode09": U1,
-        "healthCode10": U1,
-        "healthCode11": U1,
-        "healthCode12": U1,
-        "healthCode13": U1,
-        "healthCode14": U1,
-        "healthCode15": U1,
-        "healthCode16": U1,
-        "healthCode17": U1,
-        "healthCode18": U1,
-        "healthCode19": U1,
-        "healthCode20": U1,
-        "healthCode21": U1,
-        "healthCode22": U1,
-        "healthCode23": U1,
-        "healthCode24": U1,
-        "healthCode25": U1,
-        "healthCode26": U1,
-        "healthCode27": U1,
-        "healthCode28": U1,
-        "healthCode29": U1,
-        "healthCode30": U1,
-        "healthCode31": U1,
-        "healthCode32": U1,
-        "reserved": U4,
+        "reserved0": U2,
+        "grouphealthcode": (
+            32,
+            {
+                "healthCode": U1,
+            },
+        ),  # repeating group * 32
+        "reserved1": U4,
     },
     "MGA-GPS-UTC": {
         "type": U1,
@@ -1039,13 +1020,14 @@ UBX_PAYLOADS_SET = {
     "MGA-QZSS-HEALTH": {
         "type": U1,
         "version": U1,
-        "reserved1": U2,
-        "healthCode1": U1,
-        "healthCode2": U1,
-        "healthCode3": U1,
-        "healthCode4": U1,
-        "healthCode5": U1,
-        "reserved2": U3,
+        "reserved0": U2,
+        "grouphealthcode": (
+            5,
+            {
+                "healthCode": U1,
+            },
+        ),  # repeating group * 5
+        "reserved1": U3,
     },
     # ********************************************************************
     # Navigation Results Messages: i.e. Position, Speed, Time, Acceleration, Heading, DOP, SVs used.
@@ -1057,7 +1039,17 @@ UBX_PAYLOADS_SET = {
     # Receiver Manager Messages: i.e. Satellite Status, RTC Status.
     # Messages in the RXM class are used to output status and result data from the Receiver Manager. The output
     # rate is not bound to the navigation/measurement rate and messages can also be generated on events.
-    "RXM-PMREQ": {"duration": U4, "flags": X4},
+    "RXM-PMREQ-S": {
+        "duration": U4,
+        "flags": X4,
+    },  # this appears to be a deprecated version
+    "RXM-PMREQ": {
+        "version": U1,  # 0x00
+        "reserved0": U3,
+        "duration": U4,
+        "flags": X4,
+        "wakeupSources": X4,
+    },
     # ********************************************************************
     # Timing Messages: i.e. Time Pulse Output, Time Mark Results.
     # Messages in the TIM class are used to output timing information from the receiver, like Time Pulse and Time

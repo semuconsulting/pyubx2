@@ -13,7 +13,6 @@ from .ubxtypes_core import *
 from .ubxtypes_get import *
 from .ubxtypes_poll import *
 from .ubxtypes_set import *
+from .ubxhelpers import *
 
 version = __version__
-
-parse = UBXMessage.parse

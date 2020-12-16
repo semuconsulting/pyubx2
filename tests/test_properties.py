@@ -20,10 +20,10 @@ class FillTest(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def testFill_CFGMSG(self):  # test header in bytes property
-        EXPECTED_RESULT = "b'\\xb5b'"
-        res = UBXMessage('CFG', 'CFG-MSG', POLL, msgClass=240, msgID=5)
-        self.assertEqual(str(res.header), EXPECTED_RESULT)
+#     def testFill_CFGMSG(self):  # test header in bytes property
+#         EXPECTED_RESULT = "b'\\xb5b'"
+#         res = UBXMessage('CFG', 'CFG-MSG', POLL, msgClass=240, msgID=5)
+#         self.assertEqual(str(res.header), EXPECTED_RESULT)
 
     def testFill_CFGMSG2(self):  # test msg_cls in bytes property
         EXPECTED_RESULT = "b'\\x06'"

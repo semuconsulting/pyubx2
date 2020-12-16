@@ -1,9 +1,6 @@
-# pylint: disable=fixme, line-too-long
+# pylint: disable=line-too-long
 """
 UBX Protocol core globals and constants
-
-Based on u-blox Generation 9 SPG receiver datasheet:
-https://www.u-blox.com/en/docs/UBX-190359401
 
 Created on 27 Sep 2020
 
@@ -30,40 +27,56 @@ GNSSLIST = {
 """
 THESE ARE THE UBX PROTOCOL PAYLOAD ATTRIBUTE TYPES
 """
-U1 = "U01"  # Unsigned Int 1 byte
-U2 = "U02"  # Unsigned Int 2 bytes
-U3 = "U03"  # Unsigned Int 3 bytes
-U4 = "U04"  # Unsigned Int 4 bytes
-U5 = "U05"  # Unsigned Int 5 bytes
-U6 = "U06"  # Unsigned Int 6 bytes
-U8 = "U08"  # Unsigned Int 8 bytes
-U9 = "U09"  # Unsigned Int 9 bytes
-U12 = "U12"  # Unsigned Int 12 bytes
-U40 = "U40"  # Unsigned Int 40 bytes
-U64 = "U64"  # Unsigned Int 64 bytes
-I1 = "I01"  # Signed Int 2's complement 1 byte
-I2 = "I02"  # Signed Int 2's complement 2 bytes
-I4 = "I04"  # Signed Int 2's complement 4 bytes
-I8 = "I08"  # Signed Int 2's complement 8 bytes
-X1 = "X01"  # Bitfield 1 byte
-X2 = "X02"  # Bitfield 2 bytes
-X4 = "X04"  # Bitfield 4 bytes
-X6 = "X06"  # Bitfield 6 bytes
-X8 = "X08"  # Bitfield 8 bytes
-R4 = "R04"  # Float (IEEE 754) Single Precision 4 bytes
-R8 = "R08"  # Float (IEEE 754) Double Precision 8 bytes
-C2 = "C02"  # ASCII / ISO 8859.1 Encoding 2 bytes
-C6 = "C06"  # ASCII / ISO 8859.1 Encoding 6 bytes
-C10 = "C10"  # ASCII / ISO 8859.1 Encoding 10 bytes
-C30 = "C30"  # ASCII / ISO 8859.1 Encoding 30 bytes
-C32 = "C32"  # ASCII / ISO 8859.1 Encoding 32 bytes
+C2 = "C002"  # ASCII / ISO 8859.1 Encoding 2 bytes
+C6 = "C006"  # ASCII / ISO 8859.1 Encoding 6 bytes
+C10 = "C010"  # ASCII / ISO 8859.1 Encoding 10 bytes
+C30 = "C030"  # ASCII / ISO 8859.1 Encoding 30 bytes
+C32 = "C032"  # ASCII / ISO 8859.1 Encoding 32 bytes
 CH = "CH"  # ASCII / ISO 8859.1 Encoding Variable Length
-E1 = "E01"  # Unsigned Int Enumeration 1 byte
-E2 = "E02"  # Unsigned Int Enumeration 2 bytes
-E4 = "E04"  # Unsigned Int Enumeration 4 bytes
-L = "L01"  # Boolean stored as U01
+E1 = "E001"  # Unsigned Int Enumeration 1 byte
+E2 = "E002"  # Unsigned Int Enumeration 2 bytes
+E4 = "E004"  # Unsigned Int Enumeration 4 bytes
+I1 = "I001"  # Signed Int 2's complement 1 byte
+I2 = "I002"  # Signed Int 2's complement 2 bytes
+I4 = "I004"  # Signed Int 2's complement 4 bytes
+I8 = "I008"  # Signed Int 2's complement 8 bytes
+L = "L001"  # Boolean stored as U01
+U1 = "U001"  # Unsigned Int 1 byte
+U2 = "U002"  # Unsigned Int 2 bytes
+U3 = "U003"  # Unsigned Int 3 bytes
+U4 = "U004"  # Unsigned Int 4 bytes
+U5 = "U005"  # Unsigned Int 5 bytes
+U6 = "U006"  # Unsigned Int 6 bytes
+U8 = "U008"  # Unsigned Int 8 bytes
+U9 = "U009"  # Unsigned Int 9 bytes
+U12 = "U012"  # Unsigned Int 12 bytes
+U40 = "U040"  # Unsigned Int 40 bytes
+U64 = "U064"  # Unsigned Int 64 bytes
+X1 = "X001"  # Bitfield 1 byte
+X2 = "X002"  # Bitfield 2 bytes
+X4 = "X004"  # Bitfield 4 bytes
+X6 = "X006"  # Bitfield 6 bytes
+X8 = "X008"  # Bitfield 8 bytes
+R4 = "R004"  # Float (IEEE 754) Single Precision 4 bytes
+R8 = "R008"  # Float (IEEE 754) Double Precision 8 bytes
 
 VALID_TYPES = (
+    C2,
+    C6,
+    C10,
+    C30,
+    C32,
+    CH,
+    E1,
+    E2,
+    E4,
+    I1,
+    I2,
+    I4,
+    I8,
+    L,
+    R4,
+    R8,
     U1,
     U2,
     U3,
@@ -75,32 +88,13 @@ VALID_TYPES = (
     U12,
     U40,
     U64,
-    I1,
-    I2,
-    I4,
-    I8,
     X1,
     X2,
     X4,
     X6,
     X8,
-    R4,
-    R8,
-    C2,
-    C6,
-    C10,
-    C30,
-    C32,
-    CH,
-    E1,
-    E2,
-    E4,
-    L,
 )
 
-"""
-THESE ARE THE UBX PROTOCOL MESSAGE CLASSES
-"""
 UBX_CLASSES = {
     b"\x01": "NAV",  # Navigation Results: Position, Speed, Time, Acc, Heading, DOP, SVs used
     b"\x02": "RXM",  # Receiver Manager Messages: Satellite Status, RTC Status
@@ -143,6 +137,7 @@ UBX_MSGIDS = {
     b"\x06\x93": "CFG-BATCH",
     b"\x06\x09": "CFG-CFG",
     b"\x06\x06": "CFG-DAT",
+    b"\x06\x70": "CFG-DGNSS",
     b"\x06\x61": "CFG-DOSC",
     b"\x06\x85": "CFG-DYNSEED",
     b"\x06\x60": "CFG-ESRC",
@@ -167,7 +162,9 @@ UBX_MSGIDS = {
     b"\x06\x11": "CFG-RXM",
     b"\x06\x16": "CFG-SBAS",
     b"\x06\x62": "CFG-SMGR",
+    b"\x06\x64": "CFG-SPT",
     b"\x06\x3d": "CFG-TMODE2",
+    b"\x06\x71": "CFG-TMODE3",
     b"\x06\x31": "CFG-TP5",
     b"\x06\x53": "CFG-TXSLOT",
     b"\x06\x1b": "CFG-USB",
@@ -254,21 +251,25 @@ UBX_MSGIDS = {
     # ***************************************************************
     b"\x0a\x36": "MON-COMMS",
     b"\x0a\x28": "MON-GNSS",
-    b"\x0a\x0b": "MON-HW2",
     b"\x0a\x09": "MON-HW",
-    b"\x0a\x02": "MON-IO",
-    b"\x0a\x06": "MON-MSGPP",
+    b"\x0a\x0b": "MON-HW2",
+    b"\x0a\x37": "MON-HW3",
+    b"\x0a\x02": "MON-IO",  # deprecated, use MON-COMMS
+    b"\x0a\x06": "MON-MSGPP",  # deprecated, use MON-COMMS
     b"\x0a\x27": "MON-PATCH",
-    b"\x0a\x07": "MON-RXBUF",
+    b"\x0a\x38": "MON-RF",
+    b"\x0a\x07": "MON-RXBUF",  # deprecated, use MON-COMMS
     b"\x0a\x21": "MON-RXR",
     b"\x0a\x2e": "MON-SMGR",
     b"\x0a\x31": "MON-SPAN",
+    b"\x0a\x2f": "MON-SPT",
     b"\x0a\x08": "MON-TXBUF",
     b"\x0a\x04": "MON-VER",
     # ***************************************************************
     # Navigation messages
     # ***************************************************************
     b"\x01\x60": "NAV-AOPSTATUS",
+    b"\x01\x05": "NAV-ATT",
     b"\x01\x22": "NAV-CLOCK",
     b"\x01\x36": "NAV-COV",
     b"\x01\x31": "NAV-DGPS",
@@ -292,7 +293,7 @@ UBX_MSGIDS = {
     b"\x01\x42": "NAV-SLAS",
     b"\x01\x06": "NAV-SOL",
     b"\x01\x03": "NAV-STATUS",
-    b"\x01\x30": "NAV-SVINFO",
+    b"\x01\x30": "NAV-SVINFO",  # deprecated, use NAV-SAT
     b"\x01\x3b": "NAV-SVIN",
     b"\x01\x24": "NAV-TIMEBDS",
     b"\x01\x25": "NAV-TIMEGAL",
@@ -308,9 +309,10 @@ UBX_MSGIDS = {
     # ***************************************************************
     b"\x02\x61": "RXM-IMES",
     b"\x02\x14": "RXM-MEASX",
-    b"\x02\x41": "RXM-PMREQ",
+    b"\x02\x72": "RXM-PMP",  # 2 versions
+    b"\x02\x41": "RXM-PMREQ",  # 2 versions
     b"\x02\x15": "RXM-RAWX",
-    b"\x02\x59": "RXM-RLM",
+    b"\x02\x59": "RXM-RLM",  # 2 versions
     b"\x02\x32": "RXM-RTCM",
     b"\x02\x13": "RXM-SFRBX",
     b"\x02\x20": "RXM-SVSI",
@@ -413,6 +415,7 @@ UBX_CONFIG_MESSAGES = {
     b"\x0a\x28": "MON-GNSS",
     b"\x0a\x09": "MON-HW",
     b"\x0a\x0b": "MON-HW2",
+    b"\x0a\x37": "MON-HW3",
     # b'\x0a\x37': 'MON-HW3',
     b"\x0a\x02": "MON-IO",
     b"\x0a\x06": "MON-MSGPP",
@@ -442,6 +445,7 @@ UBX_CONFIG_MESSAGES = {
     b"\x10\x15": "ESF-INS",
     b"\x10\x10": "ESF-STATUS",
     b"\xf0\x0a": "DTM",  # Datum Reference
+    b"\xf0\x45": "GAQ",  # Poll Standard Message - Talker ID GA (Galileo)
     b"\xf0\x44": "GBQ",  # Poll Standard Message - Talker ID GB (BeiDou)
     b"\xf0\x09": "GBS",  # GNSS Satellite Fault Detection
     b"\xf0\x00": "GGA",  # Global positioning system fix data
@@ -449,22 +453,24 @@ UBX_CONFIG_MESSAGES = {
     b"\xf0\x43": "GLQ",  # Poll Standard Message - Talker ID GL (GLONASS)
     b"\xf0\x42": "GNQ",  # Poll Standard Message - Talker ID GN (Any GNSS)
     b"\xf0\x0d": "GNS",  # GNSS Fix Data
-    b"\xf0\x40": "GPQ",  # Poll Standard Message - Talker ID GP (GPS, SBAS, QZSS)
+    b"\xf0\x40": "GPQ",  # Poll Standard Message - Talker ID GP (GPS, SBAS)
+    b"\xf0\x47": "GQQ",  # Poll Standard Message - Talker ID GQ (QZSS)
     b"\xf0\x06": "GRS",  # GNSS Range Residuals
     b"\xf0\x02": "GSA",  # GNSS DOP and Active Satellites
     b"\xf0\x07": "GST",  # GNSS Pseudo Range Error Statistics
     b"\xf0\x03": "GSV",  # GNSS Satellites in View
+    b"\xf0\x0b": "RLM",  # Return Link Message
     b"\xf0\x04": "RMC",  # Recommended Minimum data
     b"\xf0\x0e": "THS",  # TRUE Heading and Status
     b"\xf0\x41": "TXT",  # Text Transmission
     b"\xf0\x0f": "VLW",  # Dual Ground Water Distance
     b"\xf0\x05": "VTG",  # Course over ground and Groundspeed
     b"\xf0\x08": "ZDA",  # Time and Date
-    b"\xf1\x00": "UBX-00",  # Lat/Long Position Data
-    b"\xf1\x03": "UBX-03",  # Satellite Status
-    b"\xf1\x04": "UBX-04",  # Time of Day and Clock Information
+    b"\xf1\x00": "UBX-00",  # aka PUBX-POSITION Lat/Long Position Data
+    b"\xf1\x03": "UBX-03",  # aka PUBX-SVSTATUS Satellite Status
+    b"\xf1\x04": "UBX-04",  # aka PUBX-TIME Time of Day and Clock Information
     b"\xf1\x05": "UBX-05",  # Lat/Long Position Data
     b"\xf1\x06": "UBX-06",  # Lat/Long Position Data
     b"\xf1\x40": "UBX-40",  # Set NMEA message output rate
-    b"\xf1\x41": "UBX-41",  # Set Protocols and Baudrate
+    b"\xf1\x41": "UBX-41",  # aka PUBX-CONFIG Set Protocols and Baudrate
 }

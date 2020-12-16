@@ -1,5 +1,5 @@
 ---
-name: **pyubx2** bug report
+name: pyubx2 bug report
 
 about: Create a report to help us improve
 

@@ -141,6 +141,16 @@ class ExceptionTest(unittest.TestCase):
         with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
             UBXMessage.config_poll(0, 0, keys)
 
+    def testFill_MGASET(self):  #  test MGA-PMREQ SET constructor without payload keyword
+        EXPECTED_ERROR = "MGA message definitions must include type or payload keyword"
+        with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
+            UBXMessage(b'\x13', b'\x03', SET, a0UTC=15, wnRec=23, wnLSF=41)
+
+    def testFill_RXMPMREQSET3(self):  #  test RXM-PMREQ SET constructor without version or payload keyword
+        EXPECTED_ERROR = "RXM-PMREQ message definitions must include version or payload keyword"
+        with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
+            UBXMessage('RXM', 'RXM-PMREQ', SET, duration=67305985, flags=b'\x01\x02\x03\x04')
+
 #     # can only be tested by temporarily removing a valid message definition
 #     def testIdentity(self):  # test for invalid message identity
 #         EXPECTED_ERROR = "Unknown UBX message type class {'b\x77'} id {'b\x88'}"

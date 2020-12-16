@@ -20,8 +20,8 @@ This is an independent project and we have no affiliation whatsoever with u-blox
 ![Contributors](https://img.shields.io/github/contributors/semuconsulting/pyubx2.svg)
 ![Open Issues](https://img.shields.io/github/issues-raw/semuconsulting/pyubx2)
 
-At time of writing the library implements a comprehensive set of inbound and outbound messages as defined in 
-the standard [u-blox generation 9 protocol](https://www.u-blox.com/en/docs/UBX-19035940), but is readily 
+At time of writing the library implements a comprehensive set of inbound and outbound messages for
+generation 9 and earlier u-blox GPS/GNSS devices [(NEO-9*, ZED-F9*)](https://www.u-blox.com/en/positioning-chips-and-modules), but is readily 
 [extensible](#extensibility).
 
 Contributions and feedback welcome - see CONTRIBUTING.MD
@@ -126,12 +126,13 @@ You can create a `UBXMessage` object by calling the constructor with the followi
 The 'ubxClass' and 'ubxID' parameters may be passed as lookup strings, integers or bytes.
 
 The 'mode' parameter signifies whether the message payload refers to a: 
-* GET message (i.e. output *from* the receiver)
+* GET message (i.e. output *from* the receiver - these would typically be generated via the `UBXMessage.parse()` method but can also be created manually)
 * SET message (i.e. input *to* the receiver)
 * POLL message (i.e. input *to* the receiver in anticipation of a response back)
 
 The message payload can be defined via keyword parameters in one of three ways:
-1. A single keyword parameter of `payload` containing the full payload as a sequence of bytes (any other keyword parameters will be ignored). **NB**: messages containing variable length payloads *must* be defined using a `payload` keyword.
+1. A single keyword parameter of `payload` containing the full payload as a sequence of bytes (any other keyword parameters will be ignored). **NB**: the `payload` keyword *must* be used for command (SET) messages which have more than one payload definition for the same
+message class and ID (e.g. RXM-PMREQ).
 2. One or more keyword parameters corresponding to individual message attributes. Any attributes not explicitly provided as keyword
 parameters will be set to a nominal value according to their type.
 3. If no keyword parameters are passed, the payload is assumed to be null.
@@ -160,6 +161,22 @@ any of the following constructor formats will work:
 <UBX(CFG-MSG, msgClass=NMEA-Standard, msgID=VTG)>
 ```
 
+### Serializing
+
+The `UBXMessage` class implements a `serialize()` method to convert a `UBXMessage` object to a bytes array suitable for writing to an output stream.
+
+e.g. to create and send a `CFG-MSG` message which sets the NMEA GLL message rate to '1' on the receiver's UART1 and USB ports (assuming an output serial stream has been created as `serialOut`):
+
+```python
+>>> from pyubx2 import UBXMessage, SET
+>>> msg = UBXMessage('CFG','CFG-MSG', SET, msgClass=240, msgID=1, rateUART1=1, rateUSB=1)
+>>> print(msg)
+<UBX(CFG-MSG, msgClass=NMEA-Standard, msgID=GLL, rateDDC=0, rateUART1=1, rateUART2=0, rateUSB=1, rateSPI=0, reserved=0)>
+>>> output = msg.serialize()
+>>> output
+b'\xb5b\x06\x01\x08\x00\xf0\x01\x00\x01\x00\x01\x00\x00\x036'
+>>> serialOut.write(output)
+```
 
 ### <a name="configinterface">Configuration Interface</a>
 
@@ -167,9 +184,9 @@ any of the following constructor formats will work:
 
 Generation 9 of the UBX protocol introduced the concept of a device configuration interface with configurable parameters being set or unset (del) in the designated memory layer(s) via the CFG-VALSET and CFG-VALDEL message types, or queried via the CFG-VALGET message type. *Legacy CFG message types continue to be supported but are now deprecated*.
 
-Individual configuration parameters are designated by keys, which may be in string (keyname) or integer (keyID) format. Keynames and their corresponding hexadecimal keyIDs and data types are defined in `ubxtypes_configdb.py` as `UBX_CONFIG_DATABASE`. Two static helper methods are available to convert keyname to keyID and vice versa - `UBXMessage.cfgname2key()` and `UBXMessage.cfgkey2name()`.
-
 Optionally, batches of CFG-VALSET and CFG-VALDEL messages can be applied transactionally, with the combined configuration only being committed at the end of the transaction.
+
+Individual configuration parameters are designated by keys, which may be in string (keyname) or integer (keyID) format. Keynames and their corresponding hexadecimal keyIDs and data types are defined in `ubxtypes_configdb.py` as `UBX_CONFIG_DATABASE`. Two static helper methods are available to convert keyname to keyID and vice versa - `UBXMessage.cfgname2key()` and `UBXMessage.cfgkey2name()`.
 
 Dedicated static methods are provided to create these message types - `UBXMessage.config_set()`, `UBXMessage.config_del()` and `UBXMessage.config_poll()`. 
 
@@ -223,8 +240,8 @@ Parameters:
 1. layer - 0 = Volatile RAM, 1 = Battery-Backed RAM (BBR), 2 = External Flash, 7 = Default (readonly)
 1. position - unsigned integer representing number of items to be skipped before returning result
 (used when number of matches for an individual query exceeds 64)
-1. keys - an array of up to 64 keys in either keyID (int) or keyname (str) format. keyIDs can be
-wildcards - see UBX device interface specification for details.
+1. keys - an array of up to 64 keys in either keyID (int) or keyname (str) format. keyIDs can use
+wildcards - see example below and UBX device interface specification for details.
 
 ```python
 >>> from pyubx2 import UBXMessage
@@ -256,23 +273,6 @@ Wild card query to retrieve all CFG_MSGOUT (keyID 0x2091*) parameters (set bits 
 <UBX(CFG-VALGET, version=0, layers=b'\x01', position=b'\x80\x00', keys_01=546439167)>
 ```
 
-### Serializing
-
-The `UBXMessage` class implements a `serialize()` method to convert a `UBXMessage` object to a bytes array suitable for writing to an output stream.
-
-e.g. to create and send a `CFG-MSG` message which sets the NMEA GLL message rate to '1' on the receiver's UART1 and USB ports (assuming an output serial stream has been created as `serialOut`):
-
-```python
->>> from pyubx2 import UBXMessage, SET
->>> msg = UBXMessage('CFG','CFG-MSG', SET, msgClass=240, msgID=1, rateUART1=1, rateUSB=1)
->>> print(msg)
-<UBX(CFG-MSG, msgClass=NMEA-Standard, msgID=GLL, rateDDC=0, rateUART1=1, rateUART2=0, rateUSB=1, rateSPI=0, reserved=0)>
->>> output = msg.serialize()
->>> output
-b'\xb5b\x06\x01\x08\x00\xf0\x01\x00\x01\x00\x01\x00\x00\x036'
->>> serialOut.write(output)
-```
-
 ## Examples
 
 The following examples can be found in the `\examples` folder:
@@ -296,19 +296,23 @@ rates on the receiver's UART and USB ports. You can see the results using `ubxst
 
 The UBX protocol is principally defined in the modules `ubxtypes_*.py` as a series of dictionaries. Additional message types 
 can be readily added to the appropriate dictionary. Message payload definitions must conform to the following rules:
-* attribute names must be unique within each message class
-* attribute types must be one of the valid types (I1, U2, X4, etc.)
-* repeating groups must be defined as a tuple ('numr', {dict}), where 'numr' is the name of
-the preceding attribute containing the number of repeats (or 'None' if there isn't one), 
-and {dict} is the nested dictionary of repeating items. See NAV-SVINFO by way of example.
-* repeating attribute names are parsed with a two-digit suffix (svid_01, svid_02, etc.)
 
-Typically, adding new message types simply requires dictionary updates to one or more `ubxtypes_*.py` modules. Code changes in 
-`UBXMessage.py` are not normally necessary.
-Exceptional processing is generally only required in the following circumstances:
-1. Multiple message types share the same UBX Class and ID, and the identity (payload definition) can only be determined by
-examining one or more bytes/bits in the raw payload (e.g. MGA and legacy CFG-NMEA message types).
-2. The message contains optional elements and/or indeterminate repeating groups (e.g. ESF-MEAS message type).
+```
+1. attribute names must be unique within each message class
+2. attribute types must be one of the valid types (I1, U2, X4, etc.)
+3. repeating groups must be defined as a tuple ('numr', {dict}), where:
+   'numr' is either:
+     a. an integer representing a fixed number of repeats e.g. 32
+     b. a string representing the name of a preceding attribute containing the number of repeats e.g. 'numCh'
+     c. 'None' for an indeterminate repeating group
+   {dict} is the nested dictionary of repeating items
+```
+
+See CFG-VALGET, NAV-SVINFO and RXM-RLM by way of examples. Repeating attribute names are parsed with a two-digit suffix (svid_01, svid_02, etc.). Nested repeating groups are supported (e.g. MON-SPAN).
+
+In most cases, a UBX message's content (payload) is uniquely defined by its class, id and mode; accommodating the message simply requires the addition of an appropriate dictionary entry to the relevant `ubxtypes_*.py` module.
+
+In exceptional cases the combination of class, id and mode is *not* sufficient to define the message's content. Under these circumstances, it may be necessary to modify the code in `ubxmessage.py` to examine elements of the payload itself in order to determine the appropriate dictionary definition. This currently applies to ESF-MEAS, CFG-NMEA, RXM-PMP, RXM-PMREQ, RXM-RLM and most MGA message types.
 
 ## Graphical Client
 
