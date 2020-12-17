@@ -24,6 +24,11 @@ class ExceptionTest(unittest.TestCase):
     def tearDown(self):
         pass
 
+    def testInvMode(self):  # test invalid mode
+        EXPECTED_ERROR = "Invalid mode 3 - must be 0, 1 or 2"
+        with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
+            UBXMessage('CFG', 'CFG-MSG', 3, msgClass=240, msgID=5)
+
     def testAckCkT(self):  # bad checksum
         EXPECTED_ERROR = "Message checksum (.*) invalid - should be (.*)"
         ack_ack_badck = b'\xb5b\x05\x01\x02\x00\x06\x01\x0f\x37'
@@ -150,6 +155,31 @@ class ExceptionTest(unittest.TestCase):
         EXPECTED_ERROR = "RXM-PMREQ message definitions must include version or payload keyword"
         with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
             UBXMessage('RXM', 'RXM-PMREQ', SET, duration=67305985, flags=b'\x01\x02\x03\x04')
+
+    def testFill_RXMPMPGET(self):  #  test RXM-PMP GET constructor without version or payload keyword
+        EXPECTED_ERROR = "RXM-PMP message definitions must include version or payload keyword"
+        with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
+            UBXMessage('RXM', 'RXM-PMP', GET, timeTag=0)
+
+    def testFill_RXMRLMGET(self):  #  test RXM-RLM GET constructor without type or payload keyword
+        EXPECTED_ERROR = "RXM-RLM message definitions must include type or payload keyword"
+        with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
+            UBXMessage('RXM', 'RXM-RLM', GET, version=0, svId=23)
+
+    def testFill_CFGNMEAGET(self):  #  test CFG-NMEA GET constructor without payload keyword
+        EXPECTED_ERROR = "CFG-NMEA message definitions must include payload keyword"
+        with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
+            UBXMessage('CFG', 'CFG-NMEA', GET, filter=0, nmeaVerson=64)
+
+    def testFill_ESFMEASGET(self):  #  test ESF-MEAS GET constructor without payload keyword
+        EXPECTED_ERROR = "ESF-MEAS message definitions must include flags or payload keyword"
+        with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
+            UBXMessage('ESF', 'ESF-MEAS', GET, timeTag=0, id=23)
+
+    def testFill_CFGVALGET1(self):  #  test CFG-VALGET GET constructor without payload keyword
+        EXPECTED_ERROR = "CFG-VALGET message definitions must include payload keyword"
+        with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
+            UBXMessage('CFG', 'CFG-VALGET', GET, version=0, layer=0)
 
 #     # can only be tested by temporarily removing a valid message definition
 #     def testIdentity(self):  # test for invalid message identity

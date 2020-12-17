@@ -35,7 +35,7 @@ class UBXMessage:
         :param object msgID: str, int or byte:
         :param int mode: SET, GET or POLL
         :param kwargs: payload key value pairs
-
+        :raise UBXMessageError
         """
 
         # object is mutable during initialisation only
@@ -44,6 +44,9 @@ class UBXMessage:
         self._payload = b""
         self._length = b""
         self._checksum = b""
+
+        if mode not in (0, 1, 2):
+            raise ube.UBXMessageError(f"Invalid mode {mode} - must be 0, 1 or 2")
 
         # accommodate different formats of msgClass and msgID
         if isinstance(ubxClass, str) and isinstance(
@@ -129,7 +132,6 @@ class UBXMessage:
 
         :param str att: attribute type e.g. 'U002'
         :param int offset: payload offset
-        :param str key: attribute keyword
         :param int index: repeating group index
         :param **kwargs: payload key value pairs
         :return (offset, index[])
@@ -234,10 +236,16 @@ class UBXMessage:
 
         :param int offset: payload offset
         :param **kwargs:  payload key value pairs
+        :raise UBXMessageError
         """
 
         KEYLEN = 4
-        self._payload = kwargs["payload"]
+        if "payload" in kwargs:
+            self._payload = kwargs["payload"]
+        else:
+            raise ube.UBXMessageError(
+                "CFG-VALGET message definitions must include payload keyword"
+            )
         cfglen = len(self._payload[offset:])
 
         i = 0
@@ -337,7 +345,7 @@ class UBXMessage:
     def _get_rxmpmreq_version(self, **kwargs) -> dict:
         """
         Select appropriate RXM-PMREQ payload definition by checking
-        the version keyword or payload length
+        the 'version' keyword or payload length
 
         :param **kwargs: payload key value pairs
         :return dictionary representing payload definition
@@ -369,10 +377,18 @@ class UBXMessage:
         :param **kwargs: payload key value pairs
         :return dictionary representing payload definition
         :rtype dict
+        :raise UBXMessageError
         """
         # pylint: disable=no-self-use
 
-        ver = kwargs["payload"][0:1]
+        if "version" in kwargs:
+            ver = self.val2bytes(kwargs["version"], ubt.U1)
+        elif "payload" in kwargs:
+            ver = kwargs["payload"][0:1]
+        else:
+            raise ube.UBXMessageError(
+                "RXM-PMP message definitions must include version or payload keyword"
+            )
         if ver == b"\x00":
             pdict = ubg.UBX_PAYLOADS_GET["RXM-PMP-V0"]
         else:
@@ -382,16 +398,24 @@ class UBXMessage:
     def _get_rxmrlm_version(self, **kwargs) -> dict:
         """
         Select appropriate RXM-PMP payload definition by checking
-        the payload length
+        value of 'type' attribute (2nd byte of payload)
 
         :param **kwargs: payload key value pairs
         :return dictionary representing payload definition
         :rtype dict
+        :raise UBXMessageError
         """
         # pylint: disable=no-self-use
 
-        lpd = len(kwargs["payload"])
-        if lpd == 16:
+        if "type" in kwargs:
+            typ = self.val2bytes(kwargs["type"], ubt.U1)
+        elif "payload" in kwargs:
+            typ = kwargs["payload"][1:2]
+        else:
+            raise ube.UBXMessageError(
+                "RXM-RLM message definitions must include type or payload keyword"
+            )
+        if typ == b"\x01":
             pdict = ubg.UBX_PAYLOADS_GET["RXM-RLM-S"]  # short
         else:
             pdict = ubg.UBX_PAYLOADS_GET["RXM-RLM-L"]  # long
@@ -405,10 +429,16 @@ class UBXMessage:
         :param **kwargs: payload key value pairs
         :return dictionary representing payload definition
         :rtype dict
+        :raise UBXMessageError
         """
         # pylint: disable=no-self-use
 
-        lpd = len(kwargs["payload"])
+        if "payload" in kwargs:
+            lpd = len(kwargs["payload"])
+        else:
+            raise ube.UBXMessageError(
+                "CFG-NMEA message definitions must include payload keyword"
+            )
         if lpd == 4:
             pdict = ubg.UBX_PAYLOADS_GET["CFG-NMEAvX"]
         elif lpd == 12:
@@ -426,10 +456,18 @@ class UBXMessage:
         :param **kwargs: payload key value pairs
         :return dictionary representing payload definition
         :rtype dict
+        :raise UBXMessageError
         """
         # pylint: disable=no-self-use
 
-        flags = kwargs["payload"][4:6]  # bytes
+        if "flags" in kwargs:
+            flags = kwargs["flags"]
+        elif "payload" in kwargs:
+            flags = kwargs["payload"][4:6]
+        else:
+            raise ube.UBXMessageError(
+                "ESF-MEAS message definitions must include flags or payload keyword"
+            )
         flags = int(flags.hex(), 16)  # int
         calibTtagValid = flags >> 3 & 1  # test bit 3
         if calibTtagValid:
