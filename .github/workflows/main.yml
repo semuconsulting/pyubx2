@@ -28,9 +28,4 @@ jobs:
         pylint -E pyubx2
     - name: Test with pytest
       run: |
-<<<<<<< HEAD
         python tests/testsuite.py
-
-=======
-        python tests/testsuite.py
->>>>>>> refs/heads/G10enhancements
