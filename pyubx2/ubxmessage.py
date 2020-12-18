@@ -471,7 +471,7 @@ class UBXMessage:
         return pdict
 
     def _calc_num_repeats(
-        self, att: str, payload: bytes, offset: int, offsetend: int=0
+        self, att: str, payload: bytes, offset: int, offsetend: int = 0
     ) -> int:
         """
         Deduce number of items in 'variable by size' repeating group by
@@ -654,7 +654,7 @@ class UBXMessage:
         return self._payload
 
     @staticmethod
-    def parse(message: bytes, validate: bool=False) -> object:
+    def parse(message: bytes, validate: bool = False) -> object:
         """
         Parse UBX byte stream to UBXMessage object.
 
