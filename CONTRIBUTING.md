@@ -23,7 +23,7 @@ Please help us keep our issue list small by adding fixes: #{$ISSUE_NO} to the co
 
 While we endeavour to test on as wide a variety of u-blox devices as possible, as a volunteer project we only have a limited number of devices available. We particularly welcome testing contributions relating to specialised devices (e.g. high precision HP, real-time kinetics RTK, automotive dead-reckoning ADR, etc.).
 
-We use python's native unittest framework for local unit testing, complemented by the Travis CI automated build and testing workflow. We endeavour to have 100% code coverage.
+We use python's native unittest framework for local unit testing, complemented by the GitHub Actions automated build and testing workflow. We endeavour to have 100% code coverage.
 
 Please write unittest examples for new code you create and add them to the /tests folder following the naming convention test_*.py.
 
