@@ -45,7 +45,9 @@ class UBXReader:
         """
         Return next item in iteration.
 
-        :return tuple: (raw_data as bytes, parsed_data as UBXMessage)
+        :return tuple of (raw_data as bytes, parsed_data as UBXMessage)
+        :rtype tuple
+        :raise StopIteration
         """
 
         (raw_data, parsed_data) = self.read()
@@ -57,7 +59,8 @@ class UBXReader:
         """
         Read the binary data from the serial buffer.
 
-        :return tuple: (raw_data as bytes, parsed_data as UBXMessage)
+        :return tuple of (raw_data as bytes, parsed_data as UBXMessage)
+        :rtype tuple
         :raise UBXStreamError
         """
 

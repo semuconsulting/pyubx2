@@ -79,6 +79,7 @@ class UBXMessage:
             if len(kwargs) == 0:  # if no kwargs, assume null payload
                 self._payload = None
             else:
+                self._payload = kwargs.get("payload", b"")
                 pdict = self._get_dict(**kwargs)  # get appropriate payload dict
                 for key in pdict.keys():  # process each attribute in dict
                     (offset, index) = self._set_attribute(
@@ -102,7 +103,7 @@ class UBXMessage:
             ) from err
 
     def _set_attribute(
-        self, offset: int, pdict: dict, key: str, index: int, **kwargs
+        self, offset: int, pdict: dict, key: str, index: list, **kwargs
     ) -> tuple:
         """
         Recursive routine to set individual or grouped payload attributes
@@ -110,7 +111,7 @@ class UBXMessage:
         :param int offset: payload offset
         :param dict pdict: dict representing payload definition
         :param str key: attribute keyword
-        :param int index: repeating group index
+        :param list index: repeating group index array
         :param **kwargs: payload key value pairs
         :return (offset, index[])
         :rtype tuple
@@ -125,14 +126,14 @@ class UBXMessage:
         return (offset, index)
 
     def _set_attribute_group(
-        self, att: str, offset: int, index: int, **kwargs
+        self, att: str, offset: int, index: list, **kwargs
     ) -> tuple:
         """
         Process (nested) group of attributes
 
         :param str att: attribute type e.g. 'U002'
         :param int offset: payload offset
-        :param int index: repeating group index
+        :param list index: repeating group index array
         :param **kwargs: payload key value pairs
         :return (offset, index[])
         :rtype tuple
@@ -152,7 +153,7 @@ class UBXMessage:
             # derive or retrieve number of items in group
             if isinstance(numr, int):  # fixed number of repeats
                 rng = numr
-            elif numr == "None":  # indeterminate number of repeats
+            elif numr == "None":  # number of repeats 'variable by size'
                 rng = self._calc_num_repeats(attd, self._payload, offset, 0)
             elif numr == "ESF-MEAS-CT":  # special handling for ESF-MEAS
                 rng = self._calc_num_repeats(attd, self._payload, offset, 4)
@@ -167,12 +168,12 @@ class UBXMessage:
                         offset, attd, key1, index, **kwargs
                     )
 
-        index.pop()  # remove the nested group index
+        index.pop()  # remove this (nested) group index
 
         return (offset, index)
 
     def _set_attribute_single(
-        self, att: str, offset: int, key: str, index: int, **kwargs
+        self, att: str, offset: int, key: str, index: list, **kwargs
     ) -> int:
         """
         Set individual attribute value
@@ -180,7 +181,7 @@ class UBXMessage:
         :param str att: attribute type e.g. 'U002'
         :param int offset: payload offset
         :param str key: attribute keyword
-        :param int index: repeating group index
+        :param list index: repeating group index array
         :param **kwargs: payload key value pairs
         :return offset
         :rtype int
@@ -194,9 +195,7 @@ class UBXMessage:
                 keyr = keyr + "_{0:0=2d}".format(i)
 
         # determine attribute size (bytes)
-        if (
-            att == ubt.CH
-        ):  # payload is a single variable length string (e.g. INF message)
+        if att == ubt.CH:  # variable length string
             atts = len(self._payload)
         else:
             atts = attsiz(att)
@@ -204,13 +203,8 @@ class UBXMessage:
         # if payload keyword has been provided,
         # use the appropriate offset of the provided payload
         if "payload" in kwargs:
-            self._payload = kwargs["payload"]
-            if att == ubt.CH:
-                valb = self._payload
-            else:
-                valb = self._payload[offset : offset + atts]
+            valb = self._payload[offset : offset + atts]
             val = self.bytes2val(valb, att)
-
         else:
             # if individual attribute keyword has been provided
             if keyr in kwargs:
@@ -477,14 +471,14 @@ class UBXMessage:
         return pdict
 
     def _calc_num_repeats(
-        self, att: str, payload: bytes, offset: int, offsetend: int = 0
+        self, att: str, payload: bytes, offset: int, offsetend: int=0
     ) -> int:
         """
-        Deduce number of items in 'indeterminate' repeating group by
+        Deduce number of items in 'variable by size' repeating group by
         dividing length of remaining payload by length of group.
 
-        This assumes there is only one such repeating group per message,
-        payload, which is true for all currently supported types.
+        This is predicated on there being only one such repeating group
+        per message payload, which is true for all currently supported types.
 
         :param str att: attribute type
         :param bytes payload : raw payload
@@ -660,7 +654,7 @@ class UBXMessage:
         return self._payload
 
     @staticmethod
-    def parse(message: bytes, validate: bool = False) -> object:
+    def parse(message: bytes, validate: bool=False) -> object:
         """
         Parse UBX byte stream to UBXMessage object.
 
@@ -760,6 +754,8 @@ class UBXMessage:
         :raise UBXTypeError
         """
 
+        if att == ubt.CH:  # single variable-length string (e.g. INF-NOTICE)
+            return val.encode("utf-8", "backslashreplace")
         atts = attsiz(att)
         if atttyp(att) in ("C", "X"):  # byte or char
             valb = val

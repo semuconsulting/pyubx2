@@ -40,6 +40,11 @@ class FillTest(unittest.TestCase):
         res = UBXMessage('CFG', 'CFG-MSG', SET, msgClass=240, msgID=1, rateUART1=1, rateUSB=1)
         self.assertEqual(str(res), EXPECTED_RESULT)
 
+    def testFill_INFNOTICE(self):  # test INF-NOTICE variable length message constructor fill
+        EXPECTED_RESULT = "<UBX(INF-NOTICE, message=Lorem ipsum dolor sit amet)>"
+        res = UBXMessage('INF', 'INF-NOTICE', GET, message='Lorem ipsum dolor sit amet')
+        self.assertEqual(str(res), EXPECTED_RESULT)
+
     def testFill_CFGNMEA(self):  # test SET constructor fill, set all values
         EXPECTED_RESULT = "<UBX(CFG-NMEA, filter=b'E', nmeaVersion=64, numSV=4, flags=b'\\x14', gnssToFilter=b'\\x00\\x00\\x00\\x00', svNumbering=0, mainTalkerId=0, gsvTalkerId=0, version=0, bdsTalkerId=b'\\x00\\x00', reserved1=0)>"
         res = UBXMessage('CFG', 'CFG-NMEA', SET, filter=b'\x45', nmeaVersion=64, numSV=4, flags=b'\x14')
