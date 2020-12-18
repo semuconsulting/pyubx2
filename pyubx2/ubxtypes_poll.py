@@ -11,7 +11,7 @@ Created on 27 Sep 2020
 
 @author: semuadmin
 """
-# pylint: disable=unused-import, too-many-lines, line-too-long
+# pylint: disable=too-many-lines, line-too-long
 
 from pyubx2.ubxtypes_core import U1, U2, U4
 

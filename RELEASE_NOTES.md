@@ -1,6 +1,14 @@
 # pyubx2 Release Notes
 
-### RELEASE 0.3.1-beta PROVISIONAL
+### RELEASE 0.3.2-beta PROVISIONAL
+
+Mainly validation and error message enhancements.
+
+ENHANCEMENTS:
+
+1. Validation and error messaging enhanced for 'special case' message types which have multiple payload definitions (CFG-NMEA, RXM-PMP, RXM-RLM, ESF-MEAS). Will now raise `UBXMessageError` if message constructor does not contain the keyword(s) necessary to determine which payload definition to use (e.g. `version`, `type`, `flags` or the entire `payload`).
+
+### RELEASE 0.3.1-beta
 
 ENHANCEMENTS:
 

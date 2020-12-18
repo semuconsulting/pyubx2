@@ -13,7 +13,8 @@ NB: Repeating groups must be defined as a tuple thus:
        a) an integer representing a fixed number of repeats e.g 32
        b) a string representing the name of a preceding attribute
           containing the number of repeats e.g. 'numCh'
-       c) 'None' for an indeterminate number of repeats
+       c) 'None' for a 'variable by size' repeating group
+          (only one such group is permitted per message type)
     - {dict} is the nested dictionary containing the repeating
       attributes
 

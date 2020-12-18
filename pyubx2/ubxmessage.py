@@ -35,7 +35,7 @@ class UBXMessage:
         :param object msgID: str, int or byte:
         :param int mode: SET, GET or POLL
         :param kwargs: payload key value pairs
-
+        :raise UBXMessageError
         """
 
         # object is mutable during initialisation only
@@ -44,6 +44,9 @@ class UBXMessage:
         self._payload = b""
         self._length = b""
         self._checksum = b""
+
+        if mode not in (0, 1, 2):
+            raise ube.UBXMessageError(f"Invalid mode {mode} - must be 0, 1 or 2")
 
         # accommodate different formats of msgClass and msgID
         if isinstance(ubxClass, str) and isinstance(
@@ -76,6 +79,7 @@ class UBXMessage:
             if len(kwargs) == 0:  # if no kwargs, assume null payload
                 self._payload = None
             else:
+                self._payload = kwargs.get("payload", b"")
                 pdict = self._get_dict(**kwargs)  # get appropriate payload dict
                 for key in pdict.keys():  # process each attribute in dict
                     (offset, index) = self._set_attribute(
@@ -99,7 +103,7 @@ class UBXMessage:
             ) from err
 
     def _set_attribute(
-        self, offset: int, pdict: dict, key: str, index: int, **kwargs
+        self, offset: int, pdict: dict, key: str, index: list, **kwargs
     ) -> tuple:
         """
         Recursive routine to set individual or grouped payload attributes
@@ -107,7 +111,7 @@ class UBXMessage:
         :param int offset: payload offset
         :param dict pdict: dict representing payload definition
         :param str key: attribute keyword
-        :param int index: repeating group index
+        :param list index: repeating group index array
         :param **kwargs: payload key value pairs
         :return (offset, index[])
         :rtype tuple
@@ -122,15 +126,14 @@ class UBXMessage:
         return (offset, index)
 
     def _set_attribute_group(
-        self, att: str, offset: int, index: int, **kwargs
+        self, att: str, offset: int, index: list, **kwargs
     ) -> tuple:
         """
         Process (nested) group of attributes
 
         :param str att: attribute type e.g. 'U002'
         :param int offset: payload offset
-        :param str key: attribute keyword
-        :param int index: repeating group index
+        :param list index: repeating group index array
         :param **kwargs: payload key value pairs
         :return (offset, index[])
         :rtype tuple
@@ -150,7 +153,7 @@ class UBXMessage:
             # derive or retrieve number of items in group
             if isinstance(numr, int):  # fixed number of repeats
                 rng = numr
-            elif numr == "None":  # indeterminate number of repeats
+            elif numr == "None":  # number of repeats 'variable by size'
                 rng = self._calc_num_repeats(attd, self._payload, offset, 0)
             elif numr == "ESF-MEAS-CT":  # special handling for ESF-MEAS
                 rng = self._calc_num_repeats(attd, self._payload, offset, 4)
@@ -165,12 +168,12 @@ class UBXMessage:
                         offset, attd, key1, index, **kwargs
                     )
 
-        index.pop()  # remove the nested group index
+        index.pop()  # remove this (nested) group index
 
         return (offset, index)
 
     def _set_attribute_single(
-        self, att: str, offset: int, key: str, index: int, **kwargs
+        self, att: str, offset: int, key: str, index: list, **kwargs
     ) -> int:
         """
         Set individual attribute value
@@ -178,7 +181,7 @@ class UBXMessage:
         :param str att: attribute type e.g. 'U002'
         :param int offset: payload offset
         :param str key: attribute keyword
-        :param int index: repeating group index
+        :param list index: repeating group index array
         :param **kwargs: payload key value pairs
         :return offset
         :rtype int
@@ -192,9 +195,7 @@ class UBXMessage:
                 keyr = keyr + "_{0:0=2d}".format(i)
 
         # determine attribute size (bytes)
-        if (
-            att == ubt.CH
-        ):  # payload is a single variable length string (e.g. INF message)
+        if att == ubt.CH:  # variable length string
             atts = len(self._payload)
         else:
             atts = attsiz(att)
@@ -202,13 +203,8 @@ class UBXMessage:
         # if payload keyword has been provided,
         # use the appropriate offset of the provided payload
         if "payload" in kwargs:
-            self._payload = kwargs["payload"]
-            if att == ubt.CH:
-                valb = self._payload
-            else:
-                valb = self._payload[offset : offset + atts]
+            valb = self._payload[offset : offset + atts]
             val = self.bytes2val(valb, att)
-
         else:
             # if individual attribute keyword has been provided
             if keyr in kwargs:
@@ -234,10 +230,16 @@ class UBXMessage:
 
         :param int offset: payload offset
         :param **kwargs:  payload key value pairs
+        :raise UBXMessageError
         """
 
         KEYLEN = 4
-        self._payload = kwargs["payload"]
+        if "payload" in kwargs:
+            self._payload = kwargs["payload"]
+        else:
+            raise ube.UBXMessageError(
+                "CFG-VALGET message definitions must include payload keyword"
+            )
         cfglen = len(self._payload[offset:])
 
         i = 0
@@ -337,7 +339,7 @@ class UBXMessage:
     def _get_rxmpmreq_version(self, **kwargs) -> dict:
         """
         Select appropriate RXM-PMREQ payload definition by checking
-        the version keyword or payload length
+        the 'version' keyword or payload length
 
         :param **kwargs: payload key value pairs
         :return dictionary representing payload definition
@@ -369,10 +371,18 @@ class UBXMessage:
         :param **kwargs: payload key value pairs
         :return dictionary representing payload definition
         :rtype dict
+        :raise UBXMessageError
         """
         # pylint: disable=no-self-use
 
-        ver = kwargs["payload"][0:1]
+        if "version" in kwargs:
+            ver = self.val2bytes(kwargs["version"], ubt.U1)
+        elif "payload" in kwargs:
+            ver = kwargs["payload"][0:1]
+        else:
+            raise ube.UBXMessageError(
+                "RXM-PMP message definitions must include version or payload keyword"
+            )
         if ver == b"\x00":
             pdict = ubg.UBX_PAYLOADS_GET["RXM-PMP-V0"]
         else:
@@ -382,16 +392,24 @@ class UBXMessage:
     def _get_rxmrlm_version(self, **kwargs) -> dict:
         """
         Select appropriate RXM-PMP payload definition by checking
-        the payload length
+        value of 'type' attribute (2nd byte of payload)
 
         :param **kwargs: payload key value pairs
         :return dictionary representing payload definition
         :rtype dict
+        :raise UBXMessageError
         """
         # pylint: disable=no-self-use
 
-        lpd = len(kwargs["payload"])
-        if lpd == 16:
+        if "type" in kwargs:
+            typ = self.val2bytes(kwargs["type"], ubt.U1)
+        elif "payload" in kwargs:
+            typ = kwargs["payload"][1:2]
+        else:
+            raise ube.UBXMessageError(
+                "RXM-RLM message definitions must include type or payload keyword"
+            )
+        if typ == b"\x01":
             pdict = ubg.UBX_PAYLOADS_GET["RXM-RLM-S"]  # short
         else:
             pdict = ubg.UBX_PAYLOADS_GET["RXM-RLM-L"]  # long
@@ -405,10 +423,16 @@ class UBXMessage:
         :param **kwargs: payload key value pairs
         :return dictionary representing payload definition
         :rtype dict
+        :raise UBXMessageError
         """
         # pylint: disable=no-self-use
 
-        lpd = len(kwargs["payload"])
+        if "payload" in kwargs:
+            lpd = len(kwargs["payload"])
+        else:
+            raise ube.UBXMessageError(
+                "CFG-NMEA message definitions must include payload keyword"
+            )
         if lpd == 4:
             pdict = ubg.UBX_PAYLOADS_GET["CFG-NMEAvX"]
         elif lpd == 12:
@@ -426,10 +450,18 @@ class UBXMessage:
         :param **kwargs: payload key value pairs
         :return dictionary representing payload definition
         :rtype dict
+        :raise UBXMessageError
         """
         # pylint: disable=no-self-use
 
-        flags = kwargs["payload"][4:6]  # bytes
+        if "flags" in kwargs:
+            flags = kwargs["flags"]
+        elif "payload" in kwargs:
+            flags = kwargs["payload"][4:6]
+        else:
+            raise ube.UBXMessageError(
+                "ESF-MEAS message definitions must include flags or payload keyword"
+            )
         flags = int(flags.hex(), 16)  # int
         calibTtagValid = flags >> 3 & 1  # test bit 3
         if calibTtagValid:
@@ -442,11 +474,11 @@ class UBXMessage:
         self, att: str, payload: bytes, offset: int, offsetend: int = 0
     ) -> int:
         """
-        Deduce number of items in 'indeterminate' repeating group by
+        Deduce number of items in 'variable by size' repeating group by
         dividing length of remaining payload by length of group.
 
-        This assumes there is only one such repeating group per message,
-        payload, which is true for all currently supported types.
+        This is predicated on there being only one such repeating group
+        per message payload, which is true for all currently supported types.
 
         :param str att: attribute type
         :param bytes payload : raw payload
@@ -722,6 +754,8 @@ class UBXMessage:
         :raise UBXTypeError
         """
 
+        if att == ubt.CH:  # single variable-length string (e.g. INF-NOTICE)
+            return val.encode("utf-8", "backslashreplace")
         atts = attsiz(att)
         if atttyp(att) in ("C", "X"):  # byte or char
             valb = val

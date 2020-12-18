@@ -125,13 +125,12 @@ You can create a `UBXMessage` object by calling the constructor with the followi
 The 'ubxClass' and 'ubxID' parameters may be passed as lookup strings, integers or bytes.
 
 The 'mode' parameter signifies whether the message payload refers to a: 
-* GET message (i.e. output *from* the receiver - these would typically be generated via the `UBXMessage.parse()` method but can also be created manually)
+* GET message (i.e. output *from* the receiver - **NB** these would normally be generated via the `UBXMessage.parse()` or `UBXReader.read()` methods but can also be created manually)
 * SET message (i.e. input *to* the receiver)
 * POLL message (i.e. input *to* the receiver in anticipation of a response back)
 
 The message payload can be defined via keyword parameters in one of three ways:
-1. A single keyword parameter of `payload` containing the full payload as a sequence of bytes (any other keyword parameters will be ignored). **NB**: the `payload` keyword *must* be used for certain message types which have more than one payload definition for the same
-message class and ID.
+1. A single keyword parameter of `payload` containing the full payload as a sequence of bytes (any other keyword parameters will be ignored). **NB** the `payload` keyword *must* be used for message types which have a 'variable by size' repeating group.
 2. One or more keyword parameters corresponding to individual message attributes. Any attributes not explicitly provided as keyword
 parameters will be set to a nominal value according to their type.
 3. If no keyword parameters are passed, the payload is assumed to be null.
@@ -177,7 +176,7 @@ b'\xb5b\x06\x01\x08\x00\xf0\x01\x00\x01\x00\x01\x00\x00\x036'
 >>> serialOut.write(output)
 ```
 
-### <a name="configinterface">Configuration Interface</a>
+## <a name="configinterface">Configuration Interface</a>
 
 **CFG-VALSET, CFG-VALDEL and CFG-VALGET message types**
 
@@ -303,7 +302,7 @@ can be readily added to the appropriate dictionary. Message payload definitions 
    'numr' is either:
      a. an integer representing a fixed number of repeats e.g. 32
      b. a string representing the name of a preceding attribute containing the number of repeats e.g. 'numCh'
-     c. 'None' for an indeterminate repeating group
+     c. 'None' for a 'variable by size' repeating group. Only one such group is permitted per payload and it must be at the end.
    {dict} is the nested dictionary of repeating items
 ```
 
