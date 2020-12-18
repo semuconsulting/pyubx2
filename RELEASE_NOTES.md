@@ -1,8 +1,8 @@
 # pyubx2 Release Notes
 
-### RELEASE 0.3.2-beta PROVISIONAL
+### RELEASE 0.3.2-beta
 
-Mainly validation and error message enhancements.
+Mainly validation and error message enhancements. Switch from Travis CI to Github Actions workflow.
 
 ENHANCEMENTS:
 
