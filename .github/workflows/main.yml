@@ -28,4 +28,4 @@ jobs:
         pylint -E pyubx2
     - name: Test with pytest
       run: |
-        pytest test.py --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html
+        py.test
