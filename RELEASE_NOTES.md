@@ -1,5 +1,11 @@
 # pyubx2 Release Notes
 
+### RELEASE 0.3.3-beta
+
+ENHANCEMENTS:
+
+1. Add CFG-MSGOUT-RTCM configuration database keys - thanks to lyngklip for contribution.
+
 ### RELEASE 0.3.2-beta
 
 Mainly validation and error message enhancements. Switch from Travis CI to Github Actions workflow.
