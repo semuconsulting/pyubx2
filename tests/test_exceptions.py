@@ -1,12 +1,13 @@
 '''
+Exception handling tests for UBXMessage constructor and parse
+
 Created on 3 Oct 2020
 
 *** NB: must be saved in UTF-8 format ***
 
-Exception handling tests for UBXMessage constructor and parse
-
 @author: semuadmin
 '''
+# pylint: disable=line-too-long, invalid-name, missing-docstring, no-member
 
 import unittest
 

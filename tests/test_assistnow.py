@@ -1,11 +1,11 @@
 '''
-Created on 23 Nov 2020
-
 Test MGA-GPS-ALM and MGA-GPS-EPH message payloads created by u-blox uCenter AssistNow Utility
+
+Created on 23 Nov 2020
 
 @author: semuadmin
 '''
-# pylint: disable=line-too-long, no-member
+# pylint: disable=line-too-long, invalid-name, missing-docstring, no-member
 
 import unittest
 

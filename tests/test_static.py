@@ -1,14 +1,17 @@
 '''
+Property and Static method tests for pyubx2.UBXMessage
+
 Created on 3 Oct 2020
 
-Static method tests for pyubx2.UBXMessage
+*** NB: must be saved in UTF-8 format ***
 
 @author: semuadmin
 '''
+# pylint: disable=line-too-long, invalid-name, missing-docstring, no-member
 
 import unittest
 
-from pyubx2 import UBXMessage, UBX_CLASSES
+from pyubx2 import UBXMessage, UBX_CLASSES, POLL
 import pyubx2.ubxtypes_core as ubt
 from pyubx2.ubxhelpers import itow2utc, gpsfix2str, dop2str, gnss2str, key_from_val
 
@@ -20,6 +23,22 @@ class StaticTest(unittest.TestCase):
 
     def tearDown(self):
         pass
+
+    def testFill_CFGMSG2(self):  # test msg_cls in bytes property
+        EXPECTED_RESULT = "b'\\x06'"
+        res = UBXMessage('CFG', 'CFG-MSG', POLL, msgClass=240, msgID=5)
+        self.assertEqual(str(res.msg_cls), EXPECTED_RESULT)
+
+    def testFill_CFGMSG3(self):  # test msg_id in bytes property
+        EXPECTED_RESULT = "b'\\x01'"
+        res = UBXMessage('CFG', 'CFG-MSG', POLL, msgClass=240, msgID=5)
+        self.assertEqual(str(res.msg_id), EXPECTED_RESULT)
+
+    def testFill_CFGMSG4(self):  # test msg length property
+        # EXPECTED_RESULT = "b'\\x02\\x00'"
+        EXPECTED_RESULT = 2
+        res = UBXMessage('CFG', 'CFG-MSG', POLL, msgClass=240, msgID=5)
+        self.assertEqual(res.length, EXPECTED_RESULT)
 
     def testVal2Bytes(self):  # test conversion of value to bytes
         INPUTS = [(2345, ubt.U2), (-2346789, ubt.I4), (b'\x44\x55', ubt.X2), (23.12345678, ubt.R4), (-23.12345678912345, ubt.R8)]

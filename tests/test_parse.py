@@ -1,11 +1,13 @@
 '''
+Parse method tests for pyubx2.UBXMessage
+
 Created on 3 Oct 2020
 
-Parse method tests for pyubx2.UBXMessage
+*** NB: must be saved in UTF-8 format ***
 
 @author: semuadmin
 '''
-# pylint: disable=line-too-long, no-member
+# pylint: disable=line-too-long, invalid-name, missing-docstring, no-member
 
 import unittest
 

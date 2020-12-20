@@ -1,12 +1,13 @@
 '''
+Stream method tests for pyubx2.UBXReader
+
 Created on 3 Oct 2020 
 
 *** NB: must be saved in UTF-8 format ***
 
-Stream method tests for pyubx2.UBXReader
-
 @author: semuadmin
 '''
+# pylint: disable=line-too-long, invalid-name, missing-docstring, no-member
 
 import os
 import unittest

@@ -1,10 +1,11 @@
 '''
-Created on 3 Oct 2020
-
 Test suite for pyubx2
+
+Created on 3 Oct 2020
 
 @author: semuadmin
 '''
+# pylint: disable=line-too-long, invalid-name, missing-docstring, no-member
 
 import os
 import sys
