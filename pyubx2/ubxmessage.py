@@ -106,7 +106,7 @@ class UBXMessage:
         self, offset: int, pdict: dict, key: str, index: list, **kwargs
     ) -> tuple:
         """
-        Recursive routine to set individual or grouped payload attributes
+        Recursive routine to set individual or grouped payload attributes.
 
         :param int offset: payload offset
         :param dict pdict: dict representing payload definition
@@ -129,7 +129,7 @@ class UBXMessage:
         self, att: str, offset: int, index: list, **kwargs
     ) -> tuple:
         """
-        Process (nested) group of attributes
+        Process (nested) group of attributes.
 
         :param str att: attribute type e.g. 'U002'
         :param int offset: payload offset
@@ -176,7 +176,7 @@ class UBXMessage:
         self, att: str, offset: int, key: str, index: list, **kwargs
     ) -> int:
         """
-        Set individual attribute value
+        Set individual attribute value.
 
         :param str att: attribute type e.g. 'U002'
         :param int offset: payload offset
@@ -226,7 +226,7 @@ class UBXMessage:
     def _set_cfgval_attributes(self, offset: int, **kwargs):
         """
         Parse CFG-VALGET payload to set of configuration
-        key value pairs
+        key value pairs.
 
         :param int offset: payload offset
         :param **kwargs:  payload key value pairs
@@ -261,7 +261,7 @@ class UBXMessage:
 
     def _do_len_checksum(self):
         """
-        Calculate and format payload length and checksum as bytes"""
+        Calculate and format payload length and checksum as bytes."""
 
         if self._payload is None:
             self._length = self.val2bytes(0, ubt.U2)
@@ -312,7 +312,7 @@ class UBXMessage:
     def _get_mga_version(self, mode: int, **kwargs) -> dict:
         """
         Select appropriate MGA payload definition by checking
-        value of 'type' attribute (1st byte of payload)
+        value of 'type' attribute (1st byte of payload).
 
         :param str mode: 0=GET, 1=SET, 2=POLL
         :param **kwargs: payload key value pairs
@@ -339,7 +339,7 @@ class UBXMessage:
     def _get_rxmpmreq_version(self, **kwargs) -> dict:
         """
         Select appropriate RXM-PMREQ payload definition by checking
-        the 'version' keyword or payload length
+        the 'version' keyword or payload length.
 
         :param **kwargs: payload key value pairs
         :return dictionary representing payload definition
@@ -366,7 +366,7 @@ class UBXMessage:
     def _get_rxmpmp_version(self, **kwargs) -> dict:
         """
         Select appropriate RXM-PMP payload definition by checking
-        value of 'version' attribute (1st byte of payload)
+        value of 'version' attribute (1st byte of payload).
 
         :param **kwargs: payload key value pairs
         :return dictionary representing payload definition
@@ -392,7 +392,7 @@ class UBXMessage:
     def _get_rxmrlm_version(self, **kwargs) -> dict:
         """
         Select appropriate RXM-PMP payload definition by checking
-        value of 'type' attribute (2nd byte of payload)
+        value of 'type' attribute (2nd byte of payload).
 
         :param **kwargs: payload key value pairs
         :return dictionary representing payload definition
@@ -418,7 +418,7 @@ class UBXMessage:
     def _get_cfgnmea_version(self, **kwargs) -> dict:
         """
         Select appropriate payload definition version for older
-        generations of CFG-NMEA message by checking payload length
+        generations of CFG-NMEA message by checking payload length.
 
         :param **kwargs: payload key value pairs
         :return dictionary representing payload definition
@@ -471,7 +471,7 @@ class UBXMessage:
         return pdict
 
     def _calc_num_repeats(
-        self, att: str, payload: bytes, offset: int, offsetend: int = 0
+        self, att: str, payload: bytes, offset: int, offsetend: int=0
     ) -> int:
         """
         Deduce number of items in 'variable by size' repeating group by
@@ -557,7 +557,7 @@ class UBXMessage:
 
     def __setattr__(self, name, value):
         """
-        Override setattr to make object immutable after instantiation
+        Override setattr to make object immutable after instantiation.
 
         :param str name
         :param object value
@@ -573,7 +573,7 @@ class UBXMessage:
 
     def serialize(self) -> bytes:
         """
-        Serialize message
+        Serialize message.
 
         :return serialized output
         :rtype bytes
@@ -613,7 +613,7 @@ class UBXMessage:
     @property
     def msg_cls(self) -> bytes:
         """
-        Class id getter
+        Class id getter.
 
         :return message class as bytes
         :rtype bytes
@@ -623,7 +623,7 @@ class UBXMessage:
     @property
     def msg_id(self) -> bytes:
         """
-        Message id getter
+        Message id getter.
 
         :return message id as bytes
         :rtype bytes
@@ -634,7 +634,7 @@ class UBXMessage:
     @property
     def length(self) -> int:
         """
-        Payload length getter
+        Payload length getter.
 
         :return payload length as integer
         :rtype int
@@ -645,7 +645,7 @@ class UBXMessage:
     @property
     def payload(self) -> bytes:
         """
-        Payload getter - returns the raw payload bytes
+        Payload getter - returns the raw payload bytes.
 
         :return raw payload as bytes
         :rtype bytes
@@ -654,7 +654,7 @@ class UBXMessage:
         return self._payload
 
     @staticmethod
-    def parse(message: bytes, validate: bool = False) -> object:
+    def parse(message: bytes, validate: bool=False) -> object:
         """
         Parse UBX byte stream to UBXMessage object.
 
@@ -745,7 +745,7 @@ class UBXMessage:
     @staticmethod
     def val2bytes(val, att: str) -> bytes:
         """
-        Return bytes from value for given UBX attribute type
+        Return bytes from value for given UBX attribute type.
 
         :param object val: value
         :param str att: attribute type
@@ -774,7 +774,7 @@ class UBXMessage:
     @staticmethod
     def bytes2val(valb: bytes, att: str) -> object:
         """
-        Return value from bytes for given UBX attribute type
+        Return value from bytes for given UBX attribute type.
 
         :param bytes valb: value in byte format
         :param str att: attribute type
@@ -802,7 +802,7 @@ class UBXMessage:
     @staticmethod
     def calc_checksum(content: bytes) -> bytes:
         """
-        Calculate checksum using 8-bit Fletcher's algorithm
+        Calculate checksum using 8-bit Fletcher's algorithm.
 
         :param bytes content: message content, excluding header and checksum bytes
         :return checksum
@@ -823,7 +823,7 @@ class UBXMessage:
     @staticmethod
     def isvalid_checksum(message: bytes) -> bool:
         """
-        Validate input message's checksum
+        Validate input message's checksum.
 
         :param bytes message: message including header and checksum
         :return checksum valid flag
