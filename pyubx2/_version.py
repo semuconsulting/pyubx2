@@ -6,4 +6,4 @@ Created on 2 Oct 2020
 @author: semuadmin
 """
 
-__version__ = "0.3.3"
+__version__ = "0.3.4"

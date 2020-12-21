@@ -14,5 +14,6 @@ from .ubxtypes_get import *
 from .ubxtypes_poll import *
 from .ubxtypes_set import *
 from .ubxhelpers import *
+from .ubxtypes_configdb import *
 
 version = __version__

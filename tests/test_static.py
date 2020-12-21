@@ -41,16 +41,16 @@ class StaticTest(unittest.TestCase):
         self.assertEqual(res.length, EXPECTED_RESULT)
 
     def testVal2Bytes(self):  # test conversion of value to bytes
-        INPUTS = [(2345, ubt.U2), (-2346789, ubt.I4), (b'\x44\x55', ubt.X2), (23.12345678, ubt.R4), (-23.12345678912345, ubt.R8)]
-        EXPECTED_RESULTS = [b'\x29\x09', b'\xdb\x30\xdc\xff', b'\x44\x55', b'\xd7\xfc\xb8\x41', b'\x1f\xc1\x37\xdd\x9a\x1f\x37\xc0']
+        INPUTS = [(2345, ubt.U2), (2345, ubt.E2), (1, ubt.L), (-2346789, ubt.I4), (b'\x44\x55', ubt.X2), (23.12345678, ubt.R4), (-23.12345678912345, ubt.R8)]
+        EXPECTED_RESULTS = [b'\x29\x09', b'\x29\x09', b'\x01', b'\xdb\x30\xdc\xff', b'\x44\x55', b'\xd7\xfc\xb8\x41', b'\x1f\xc1\x37\xdd\x9a\x1f\x37\xc0']
         for i, inp in enumerate(INPUTS):
             (val, att) = inp
             res = UBXMessage.val2bytes(val, att)
             self.assertEqual(res, EXPECTED_RESULTS[i])
 
     def testBytes2Val(self):  # test conversion of bytes to value
-        INPUTS = [(b'\x29\x09', ubt.U2), (b'\xdb\x30\xdc\xff', ubt.I4), (b'\x44\x55', ubt.X2), (b'\xd7\xfc\xb8\x41', ubt.R4), (b'\x1f\xc1\x37\xdd\x9a\x1f\x37\xc0', ubt.R8)]
-        EXPECTED_RESULTS = [2345, -2346789, b'\x44\x55', 23.12345678, -23.12345678912345]
+        INPUTS = [(b'\x29\x09', ubt.U2), (b'\x29\x09', ubt.E2), (b'\x01', ubt.L), (b'\xdb\x30\xdc\xff', ubt.I4), (b'\x44\x55', ubt.X2), (b'\xd7\xfc\xb8\x41', ubt.R4), (b'\x1f\xc1\x37\xdd\x9a\x1f\x37\xc0', ubt.R8)]
+        EXPECTED_RESULTS = [2345, 2345, 1, -2346789, b'\x44\x55', 23.12345678, -23.12345678912345]
         for i, inp in enumerate(INPUTS):
             (valb, att) = inp
             res = UBXMessage.bytes2val(valb, att)

@@ -1,5 +1,16 @@
 # pyubx2 Release Notes
 
+### RELEASE 0.3.4-beta
+
+ENHANCEMENTS:
+
+1. test cases rationalised.
+
+FIXES:
+
+1. UBXMessage.bytes2val() fixed to recognise "E" and "L" attribute types; test coverage duly enhanced
+2. ubxtypes_configdb.py import added to __init__.py.
+
 ### RELEASE 0.3.3-beta
 
 ENHANCEMENTS:
