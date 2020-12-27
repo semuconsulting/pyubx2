@@ -126,12 +126,12 @@ class UBXMessage:
         return (offset, index)
 
     def _set_attribute_group(
-        self, att: str, offset: int, index: list, **kwargs
+        self, att: tuple, offset: int, index: list, **kwargs
     ) -> tuple:
         """
         Process (nested) group of attributes.
 
-        :param str att: attribute type e.g. 'U002'
+        :param tuple att: tuple of (num repeats, attribute dict)
         :param int offset: payload offset
         :param list index: repeating group index array
         :param **kwargs: payload key value pairs
@@ -140,7 +140,7 @@ class UBXMessage:
         """
 
         index.append(0)  # add a (nested) group index
-        numr, attd = att
+        numr, attd = att  # number of repeats, attribute dictionary
         # if CFG-VALGET message, use dedicated method to
         # parse as configuration key value pairs
         if (
@@ -201,7 +201,7 @@ class UBXMessage:
             atts = attsiz(att)
 
         # if payload keyword has been provided,
-        # use the appropriate offset of the provided payload
+        # use the appropriate offset of the payload
         if "payload" in kwargs:
             valb = self._payload[offset : offset + atts]
             val = self.bytes2val(valb, att)
@@ -480,7 +480,7 @@ class UBXMessage:
         This is predicated on there being only one such repeating group
         per message payload, which is true for all currently supported types.
 
-        :param str att: attribute type
+        :param str att: attribute type e.g. 'U004'
         :param bytes payload : raw payload
         :param int offset: number of bytes in payload before repeating group
         :param int offsetend: number of bytes in payload after repeating group
