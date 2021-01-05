@@ -311,6 +311,7 @@ UBX_MSGIDS = {
     b"\x02\x14": "RXM-MEASX",
     b"\x02\x72": "RXM-PMP",  # 2 versions
     b"\x02\x41": "RXM-PMREQ",  # 2 versions
+    b"\x02\x10": "RXM-RAW",
     b"\x02\x15": "RXM-RAWX",
     b"\x02\x59": "RXM-RLM",  # 2 versions
     b"\x02\x32": "RXM-RTCM",
@@ -406,6 +407,7 @@ UBX_CONFIG_MESSAGES = {
     b"\x02\x61": "RXM-IMES",
     b"\x02\x14": "RXM-MEASX",
     b"\x02\x41": "RXM-PMREQ",
+    b"\x02\x10": "RXM-RAW",
     b"\x02\x15": "RXM-RAWX",
     b"\x02\x59": "RXM-RLM",
     b"\x02\x32": "RXM-RTCM",

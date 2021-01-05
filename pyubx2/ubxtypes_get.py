@@ -1621,6 +1621,24 @@ UBX_PAYLOADS_GET = {
             },
         ),
     },
+    "RXM-RAW": {
+        "iTOW": I4,
+        "week": I2,
+        "numSV": U1,
+        "reserved1": U1,
+        "group": (
+            "numSV",
+            {  # repeating group * numSV
+                "cpMes": R8,
+                "prMes": R8,
+                "doMes": R4,
+                "sv": U1,
+                "mesQI": I1,
+                "cno": I1,
+                "lli": U1,
+            },
+        ),
+    },
     "RXM-RAWX": {
         "rcvTow": R8,
         "week": U2,
