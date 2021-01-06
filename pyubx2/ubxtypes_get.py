@@ -1663,7 +1663,7 @@ UBX_PAYLOADS_GET = {
                 "doStdev": X1,
                 "trkStat": X1,
                 "reserved3": U1,
-            }
+            },
         ),
     },
     "RXM-RLM-S": {

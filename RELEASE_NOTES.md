@@ -1,5 +1,15 @@
 # pyubx2 Release Notes
 
+### RELEASE 0.3.5-beta
+
+ENHANCEMENTS:
+
+1. Add legacy RXM_RAW message  - Tx to Ts Ahmed for contribution.
+
+FIXES:
+
+1. Fix missing repeat in RXM_RAWX message - Tx to Ts Ahmed for contribution.
+
 ### RELEASE 0.3.4-beta
 
 ENHANCEMENTS:
