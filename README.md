@@ -21,7 +21,7 @@ This is an independent project and we have no affiliation whatsoever with u-blox
 ![Open Issues](https://img.shields.io/github/issues-raw/semuconsulting/pyubx2)
 
 At time of writing the library implements a comprehensive set of inbound and outbound messages for
-generation 9 and earlier u-blox GPS/GNSS devices [(NEO-9*, ZED-F9*)](https://www.u-blox.com/en/positioning-chips-and-modules), but is readily 
+generation 9 and earlier u-blox GPS/GNSS devices [(NEO-M9*, NEO-D9*, RCB-F9*, ZED-F9*, etc.)](https://www.u-blox.com/en/positioning-chips-and-modules), but is readily 
 [extensible](#extensibility).
 
 Contributions and feedback welcome - see CONTRIBUTING.MD
@@ -84,6 +84,8 @@ You can parse individual UBX messages using the `UBXMessage.parse(data, validate
 If the optional 'validate' parameter is set to `True`, `parse` will validate the supplied UBX message header, payload length and checksum. 
 If any of these are not consistent with the message content, it will raise a `UBXParseError`. Otherwise, the function will automatically
 generate the appropriate payload length and checksum.
+
+Attributes within repeating groups are parsed with a two-digit suffix (svid_01, svid_02, etc.).
 
 Example:
 
