@@ -24,7 +24,9 @@ At time of writing the library implements a comprehensive set of inbound and out
 generation 9 and earlier u-blox GPS/GNSS devices [(NEO-M9*, NEO-D9*, RCB-F9*, ZED-F9*, etc.)](https://www.u-blox.com/en/positioning-chips-and-modules), but is readily 
 [extensible](#extensibility).
 
-Contributions and feedback welcome - see CONTRIBUTING.MD
+Contributions welcome - please refer to [CONTRIBUTING.MD](https://github.com/semuconsulting/pyubx2/blob/master/CONTRIBUTING.md).
+
+[Bug reports](https://github.com/semuconsulting/pyubx2/blob/master/.github/ISSUE_TEMPLATE/bug_report.md) and [Feature requests](https://github.com/semuconsulting/pyubx2/blob/master/.github/ISSUE_TEMPLATE/feature_request.md) - please use the templates provided.
 
 ## <a name="installation">Installation</a>
 
@@ -50,8 +52,7 @@ data (as bytes) and the parsed data (as a `UBXMessage` object). The function is 
 data stream object is thread-safe. `UBXReader` also implements an iterator.
 
 The `UBXReader` constructor includes an optional `validate` flag which governs behaviour if the stream includes non-UBX data.
-If set to 'False' (the default), it will ignore such data and continue with the next valid UBX message. If set to 'True', it
-will raise a `UBXStreamError`.
+If set to 'False' (the default), it will ignore such data and continue with the next valid UBX message. If set to 'True', it will raise a `UBXStreamError`. **NB:** if the `validate` flag is set to 'False', the `UBXReader.read()` function will block until it receives a UBX message.
 
 Examples:
 
