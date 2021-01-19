@@ -1,5 +1,11 @@
 # pyubx2 Release Notes
 
+### RELEASE 0.3.6-beta
+
+FIXES:
+
+1. Fix NAV-TIMEUTC message payload and textNAV test case - Tx to phsommer for contribution.
+
 ### RELEASE 0.3.5-beta
 
 ENHANCEMENTS:

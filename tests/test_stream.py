@@ -57,7 +57,7 @@ class StreamTest(unittest.TestCase):
         "<UBX(NAV-TIMEGLO, iTOW=14:04:51, TOD=61489, fTOD=-77299, Nt=294, N4=7, valid=b'\\x03', tAcc=41)>",
         "<UBX(NAV-TIMEBDS, iTOW=14:04:51, SOW=223493, fSOW=-77264, week=772, leapS=4, valid=b'\\x07', tAcc=3374)>",
         "<UBX(NAV-TIMEGAL, iTOW=14:04:51, galTow=223507, fGalTow=-77264, galWno=1104, leapS=18, valid=b'\\x07', tAcc=3374)>",
-        "<UBX(NAV-TIMEUTC, iTOW=14:04:51, tAcc=38, nano=838860800, year=65234, month=255, day=228, hour=7, min=10, sec=20, validflags=b'\\x0e')>",
+        "<UBX(NAV-TIMEUTC, iTOW=14:04:51, tAcc=38, nano=-77262, year=2020, month=10, day=20, hour=14, min=4, sec=49, validflags=b'7')>",
         "<UBX(NAV-TIMELS, iTOW=14:04:51, version=0, reserved1=0, srcOfCurrLs=2, currLs=18, srcOfLsChange=2, lsChange=0, timeToLsEvent=34854912, dateOfLsGpsWn=2185, dateOfLsGpsDn=7, reserved2=0, valid=b'\\x03')>",
         "<UBX(NAV-CLOCK, iTOW=14:04:51, clkB=77264, clkD=346, tAcc=38, fAcc=1902)>",
         "<UBX(NAV-SBAS, iTOW=14:04:51, geo=0, mode:=0, sys=0, service=b'\\x00', numCh=0, reserved0=0)>",
