@@ -1498,7 +1498,7 @@ UBX_PAYLOADS_GET = {
     },
     "NAV-TIMEUTC": {
         "iTOW": U4,
-        "tAcc": U1,
+        "tAcc": U4,
         "nano": I4,
         "year": U2,
         "month": U1,
