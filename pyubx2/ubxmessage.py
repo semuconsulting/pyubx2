@@ -654,7 +654,7 @@ class UBXMessage:
         return self._payload
 
     @staticmethod
-    def parse(message: bytes, validate: bool = False) -> object:
+    def parse(message: bytes, validate: bool = False, mode: int = 0) -> object:
         """
         Parse UBX byte stream to UBXMessage object.
 
@@ -663,10 +663,14 @@ class UBXMessage:
 
         :param bytes message
         :param bool validate: Default value = False
+        :param int mode: message mode (0=GET, 1=SET, 2=POLL)
         :return UBXMessage object
         :rtype UBXMessage
         :raise UBXParseError
         """
+
+        if mode not in (0, 1, 2):
+            raise ube.UBXParseError(f"Invalid message mode {mode} - must be 0, 1 or 2")
 
         lenm = len(message)
         hdr = message[0:2]
@@ -700,9 +704,15 @@ class UBXMessage:
                 raise ube.UBXParseError(
                     (f"Message checksum {ckm}" f" invalid - should be {ckv}")
                 )
-        if payload is None:
-            return UBXMessage(clsid, msgid, ubt.GET)
-        return UBXMessage(clsid, msgid, ubt.GET, payload=payload)
+        try:
+            if payload is None:
+                return UBXMessage(clsid, msgid, mode)
+            return UBXMessage(clsid, msgid, mode, payload=payload)
+        except KeyError as err:
+            modestr = ["GET", "SET", "POLL"][mode]
+            raise ube.UBXParseError(
+                (f"Unknown message type clsid {clsid}, msgid {msgid}, mode {modestr}")
+            ) from err
 
     @staticmethod
     def msgclass2bytes(msgClass: int, msgID: int) -> bytes:

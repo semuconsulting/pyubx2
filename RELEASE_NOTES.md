@@ -1,5 +1,11 @@
 # pyubx2 Release Notes
 
+### RELEASE 0.3.7-beta
+
+ENHANCEMENTS:
+
+1. Add provision to stream or parse input (SET/POLL) message types as well as just output (GET).
+
 ### RELEASE 0.3.6-beta
 
 FIXES:

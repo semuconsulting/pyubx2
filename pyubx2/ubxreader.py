@@ -26,15 +26,19 @@ class UBXReader:
     UBXReader class.
     """
 
-    def __init__(self, stream, validate=False):
+    def __init__(self, stream, validate: bool = False, mode: int = 0):
         """Constructor.
 
         :param stream: stream
         :param validate: bool
+        :param mode: message mode (0=GET, 1=SET, 2=POLL)
         """
 
         self._stream = stream
         self._validate = validate
+        if mode not in (0, 1, 2):
+            mode = 0
+        self._mode = mode
 
     def __iter__(self):
         """Iterator."""
@@ -88,7 +92,7 @@ class UBXReader:
                 plb = byten[0:leni]
                 cksum = byten[leni : leni + 2]
                 raw_data = ubt.UBX_HDR + clsid + msgid + lenb + plb + cksum
-                parsed_data = UBXMessage.parse(raw_data)
+                parsed_data = UBXMessage.parse(raw_data, False, self._mode)
                 reading = False
             else:  # it's not a UBX message
                 if self._validate:  # raise error and quit

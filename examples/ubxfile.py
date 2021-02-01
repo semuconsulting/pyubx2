@@ -57,14 +57,14 @@ class UBXStreamer:
                 print(f"Error closing file {err}")
         self._connected = False
 
-    def reader(self, validate):
+    def reader(self, validate=False, mode=0):
         """
         Reads and parses UBX message data from stream
         using UBXReader iterator method
         """
 
         i = 0
-        self._ubxreader = UBXReader(self._stream, validate)
+        self._ubxreader = UBXReader(self._stream, validate, mode)
 
         for msg in self._ubxreader:  # invokes iterator method
             try:
@@ -88,13 +88,16 @@ if __name__ == "__main__":
     print("Do you want to validate the data stream (y/n)? (n) ", end="")
     val = input() or "n"
     VALD = val in ("Y", "y", "YES,", "yes", "True")
+    print("Message mode (0=GET (output), 1=SET (input), 2=POLL (poll)? (0) ", end="")
+    mode = input() or "0"
+    MODED = int(mode)
 
     print("Instantiating UBXStreamer class...")
     ubf = UBXStreamer(filefqn)
     print(f"Opening file {filefqn}...")
     ubf.open()
     print("Starting file reader")
-    ubf.reader(VALD)
+    ubf.reader(VALD, MODED)
     print("\n\nClosing file...")
     ubf.close()
     print("Test Complete")

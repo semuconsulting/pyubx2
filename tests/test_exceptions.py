@@ -182,6 +182,11 @@ class ExceptionTest(unittest.TestCase):
         with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
             UBXMessage('CFG', 'CFG-VALGET', GET, version=0, layer=0)
 
+    def testParseMode(self):  # test invalid parse message mode
+        EXPECTED_ERROR = "Invalid message mode 3 - must be 0, 1 or 2"
+        with self.assertRaisesRegex(UBXParseError, EXPECTED_ERROR):
+            UBXMessage.parse(b'\xb5b\x05\x01\x02\x00\x06\x01\x0f\x38', True, 3)
+
 #     # can only be tested by temporarily removing a valid message definition
 #     def testIdentity(self):  # test for invalid message identity
 #         EXPECTED_ERROR = "Unknown UBX message type class {'b\x77'} id {'b\x88'}"

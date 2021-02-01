@@ -54,6 +54,9 @@ data stream object is thread-safe. `UBXReader` also implements an iterator.
 The `UBXReader` constructor includes an optional `validate` flag which governs behaviour if the stream includes non-UBX data.
 If set to 'False' (the default), it will ignore such data and continue with the next valid UBX message. If set to 'True', it will raise a `UBXStreamError`. **NB:** if the `validate` flag is set to 'False', the `UBXReader.read()` function will block until it receives a UBX message.
 
+The `UBXReader` constructor also includes an optional 'mode' flag which signifies whether the message stream is an output (0=GET)
+or input (1=SET, 2=POLL). Ordinarily this can be left at the default 0 (GET).
+
 Examples:
 
 * Serial input - this example will ignore any non-UBX data.
@@ -85,6 +88,8 @@ You can parse individual UBX messages using the `UBXMessage.parse(data, validate
 If the optional 'validate' parameter is set to `True`, `parse` will validate the supplied UBX message header, payload length and checksum. 
 If any of these are not consistent with the message content, it will raise a `UBXParseError`. Otherwise, the function will automatically
 generate the appropriate payload length and checksum.
+
+An additional optional 'mode' parameter allows you to specify either output (0=GET) or input (1=SET, 2=POLL) message modes. Ordinarily this can be left at the default 0 (GET).
 
 Attributes within repeating groups are parsed with a two-digit suffix (svid_01, svid_02, etc.).
 

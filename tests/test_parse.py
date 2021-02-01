@@ -55,6 +55,7 @@ class ParseTest(unittest.TestCase):
                 b'\xb5b\x10\x02\x18\x00\xee\x23\x01\x00\x18\x18\x00\x00\xe8\x11\x00\x10\xfa\x07\x00\x11\xa1\x22\x00\x12\xee\x23\x01\x00\x6e\xf9',
                 b'\xb5b\x10\x02\x1c\x00\x94\x21\x01\x00\x18\x20\x00\x00\xff\x05\x00\x0e\xf3\xfe\xff\x0d\x4d\x0b\x00\x05\x51\x0a\x00\x0c\x94\x21\x01\x00\xa5\x52'
             ]
+        self.mga_ini1 = b'\xb5b\x13\x40\x14\x00\x01\x00\x01\x02\x01\x02\x03\x04\x01\x02\x03\x04\x01\x02\x03\x04\x01\x02\x03\x04\x93\xc8'
 
     def tearDown(self):
         pass
@@ -261,6 +262,10 @@ class ParseTest(unittest.TestCase):
         mon_span += b'\x42\xc3'
         res = UBXMessage.parse(mon_span, True)
         self.assertEqual(str(res), "<UBX(MON-SPAN, version=0, numRfBlocks=0, reserved0=513)>")
+
+    def testMGAINI1(self):  # test parser of MGA-INI input message
+        res = UBXMessage.parse(self.mga_ini1, True, 1)
+        self.assertEqual(str(res), "<UBX(MGA-INI-POS_LLH, type=1, version=0, reserved1=513, lat=67305985, lon=67305985, alt=67305985, posAcc=67305985)>")
 
 
 if __name__ == "__main__":
