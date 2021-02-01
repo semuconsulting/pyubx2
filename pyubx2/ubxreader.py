@@ -29,15 +29,17 @@ class UBXReader:
     def __init__(self, stream, validate: bool = False, mode: int = 0):
         """Constructor.
 
-        :param stream: stream
-        :param validate: bool
-        :param mode: message mode (0=GET, 1=SET, 2=POLL)
+        :param stream stream: input data stream
+        :param bool validate: validate (y/n)
+        :param int mode: message mode (0=GET, 1=SET, 2=POLL)
+        :raise UBXStreamError
         """
+
+        if mode not in (0, 1, 2):
+            raise UBXStreamError(f"Invalid stream mode {mode} - must be 0, 1 or 2")
 
         self._stream = stream
         self._validate = validate
-        if mode not in (0, 1, 2):
-            mode = 0
         self._mode = mode
 
     def __iter__(self):

@@ -6,7 +6,7 @@ Created on 27 Sep 2020
 # pylint: disable=wrong-import-position, invalid-name
 
 from ._version import __version__
-from .exceptions import UBXMessageError, UBXParseError, UBXTypeError
+from .exceptions import UBXMessageError, UBXParseError, UBXTypeError, UBXStreamError
 from .ubxmessage import UBXMessage
 from .ubxreader import UBXReader
 from .ubxtypes_core import *

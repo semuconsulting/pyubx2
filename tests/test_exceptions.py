@@ -11,7 +11,7 @@ Created on 3 Oct 2020
 
 import unittest
 
-from pyubx2 import UBXMessage, UBXTypeError, UBXParseError, UBXMessageError, GET, SET, POLL
+from pyubx2 import UBXMessage, UBXReader, UBXTypeError, UBXParseError, UBXMessageError, UBXStreamError, GET, SET, POLL
 
 
 class ExceptionTest(unittest.TestCase):
@@ -20,6 +20,7 @@ class ExceptionTest(unittest.TestCase):
         self.bad_hdr = b'\xb0b\x05\x01\x02\x00\x06\x01\x0f\x38'
         self.bad_len = b'\xb5b\x05\x01\x03\x00\x06\x01\x0f\x37'
         self.bad_msg = b'\xb5b\x66\x66\x02\x00\x06\x01\xd5\x77'
+        self.mga_ini = b'\xb5b\x13\x40\x14\x00\x01\x00\x01\x02\x01\x02\x03\x04\x01\x02\x03\x04\x01\x02\x03\x04\x01\x02\x03\x04\x93\xc8'
         self.maxDiff = None
 
     def tearDown(self):
@@ -186,6 +187,16 @@ class ExceptionTest(unittest.TestCase):
         EXPECTED_ERROR = "Invalid message mode 3 - must be 0, 1 or 2"
         with self.assertRaisesRegex(UBXParseError, EXPECTED_ERROR):
             UBXMessage.parse(b'\xb5b\x05\x01\x02\x00\x06\x01\x0f\x38', True, 3)
+
+    def testParseMode2(self):  # test parser with incorrect mode for input message
+        EXPECTED_ERROR = "Unknown message type clsid (.*), msgid (.*), mode GET"
+        with self.assertRaisesRegex(UBXParseError, EXPECTED_ERROR):
+            UBXMessage.parse(self.mga_ini, True)
+
+    def testStreamMode(self):  # test invalid stream message mode
+        EXPECTED_ERROR = "Invalid stream mode 3 - must be 0, 1 or 2"
+        with self.assertRaisesRegex(UBXStreamError, EXPECTED_ERROR):
+            UBXReader(None, True, 3)
 
 #     # can only be tested by temporarily removing a valid message definition
 #     def testIdentity(self):  # test for invalid message identity
