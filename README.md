@@ -20,9 +20,8 @@ This is an independent project and we have no affiliation whatsoever with u-blox
 ![Contributors](https://img.shields.io/github/contributors/semuconsulting/pyubx2.svg)
 ![Open Issues](https://img.shields.io/github/issues-raw/semuconsulting/pyubx2)
 
-At time of writing the library implements a comprehensive set of inbound and outbound messages for
-generation 9 and earlier u-blox GPS/GNSS devices [(NEO-M9*, NEO-D9*, RCB-F9*, ZED-F9*, etc.)](https://www.u-blox.com/en/positioning-chips-and-modules), but is readily 
-[extensible](#extensibility).
+At time of writing the library implements a comprehensive set of inbound (SET/POLL) and outbound (GET) messages for
+u-blox GPS/GNSS devices from generation 6 through generation 10 [(NEO-M6*, NEO-M7*, NEO-M8*, NEO-M9*, NEO-D9*, RCB-F9*, ZED-F9*, MAX-M10S, etc.)](https://www.u-blox.com/en/positioning-chips-and-modules), but is readily [extensible](#extensibility).
 
 Contributions welcome - please refer to [CONTRIBUTING.MD](https://github.com/semuconsulting/pyubx2/blob/master/CONTRIBUTING.md).
 
@@ -129,8 +128,6 @@ You can create a `UBXMessage` object by calling the constructor with the followi
 3. mode (0=GET, 1=SET, 2=POLL)
 4. (optional) a series of keyword parameters representing the message payload
 
-**NB:** Once instantiated, a `UBXMessage` object is immutable.
-
 The 'ubxClass' and 'ubxID' parameters may be passed as lookup strings, integers or bytes.
 
 The 'mode' parameter signifies whether the message payload refers to a: 
@@ -167,6 +164,8 @@ any of the following constructor formats will work:
 >>> print(msg3)
 <UBX(CFG-MSG, msgClass=NMEA-Standard, msgID=VTG)>
 ```
+
+**NB:** Once instantiated, a `UBXMessage` object is immutable.
 
 ### Serializing
 
