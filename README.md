@@ -194,7 +194,7 @@ Optionally, batches of CFG-VALSET and CFG-VALDEL messages can be applied transac
 
 Individual configuration parameters are designated by keys, which may be in string (keyname) or integer (keyID) format. Keynames and their corresponding hexadecimal keyIDs and data types are defined in `ubxtypes_configdb.py` as `UBX_CONFIG_DATABASE`. Two static helper methods are available to convert keyname to keyID and vice versa - `UBXMessage.cfgname2key()` and `UBXMessage.cfgkey2name()`.
 
-Dedicated static methods are provided to create these message types - `UBXMessage.config_set()`, `UBXMessage.config_del()` and `UBXMessage.config_poll()`. 
+Dedicated static methods are provided to create these message types - `UBXMessage.config_set()`, `UBXMessage.config_del()` and `UBXMessage.config_poll()`. The following examples assume an output serial stream has been created as `serialOut`.
 
 **UBXMessage.config_set() (CFG-VALSET)**
 
@@ -215,6 +215,7 @@ keyID (int) or keyname (str) format
 >>> msg = UBXMessage.config_set(layers, transaction, cfgData)
 >>> print(msg)
 <UBX(CFG-VALSET, version=0, layers=b'\x01', transaction=0, reserved0=0, cfgData_01=1, cfgData_02=0 ...)>
+>>> serialOut.write(msg.serialize())
 ```
 
 **UBXMessage.config_del() (CFG-VALDEL)**
@@ -235,6 +236,7 @@ Parameters:
 >>> msg = UBXMessage.config_del(layers, transaction, keys)
 >>> print(msg)
 <UBX(CFG-VALDEL, version=0, layers=b'\x04', transaction=b'\x00', reserved0=0, keys_01=1079115777, keys_02=1079181313)>
+>>> serialOut.write(msg.serialize())
 ```
 
 **UBXMessage.config_poll() (CFG-VALGET)**
@@ -257,6 +259,7 @@ wildcards - see example below and UBX device interface specification for details
 >>> msg = UBXMessage.config_poll(layer, position, keys)
 >>> print(msg)
 <UBX(CFG-VALGET, version=0, layers=b'\x01', position=b'\x00\x00', keys_01=1079115777, keys_02=1079181313)>
+>>> serialOut.write(msg.serialize())
 ```
 
 Wild card query to retrieve all CFG_MSGOUT (keyID 0x2091*) parameters (set bits 0..15 of the keyID to 0xffff):
@@ -269,14 +272,17 @@ Wild card query to retrieve all CFG_MSGOUT (keyID 0x2091*) parameters (set bits 
 >>> msg1of3 = UBXMessage.config_poll(layer, position, keys)
 >>> print(msg1of3)
 <UBX(CFG-VALGET, version=0, layers=b'\x01', position=b'\x00\x00', keys_01=546439167)>
+>>> serialOut.write(msg1of3.serialize())
 >>> position = 64 # retrieve next 64 results
 >>> msg2of3 = UBXMessage.config_poll(layer, position, keys)
 >>> print(msg2of3)
 <UBX(CFG-VALGET, version=0, layers=b'\x01', position=b'@\x00', keys_01=546439167)>
+>>> serialOut.write(msg2of3.serialize())
 >>> position = 128 # retrieve next 64 results
 >>> msg3of3 = UBXMessage.config_poll(layer, position, keys)
 >>> print(msg3of3)
 <UBX(CFG-VALGET, version=0, layers=b'\x01', position=b'\x80\x00', keys_01=546439167)>
+>>> serialOut.write(msg3of3.serialize())
 ```
 
 ## Examples
