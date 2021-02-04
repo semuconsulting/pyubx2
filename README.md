@@ -174,6 +174,8 @@ The `UBXMessage` class implements a `serialize()` method to convert a `UBXMessag
 e.g. to create and send a `CFG-MSG` message which sets the NMEA GLL message rate to '1' on the receiver's UART1 and USB ports (assuming an output serial stream has been created as `serialOut`):
 
 ```python
+>>> from serial import Serial
+>>> serialOut = Serial('COM7', 38400, timeout=5)
 >>> from pyubx2 import UBXMessage, SET
 >>> msg = UBXMessage('CFG','CFG-MSG', SET, msgClass=240, msgID=1, rateUART1=1, rateUSB=1)
 >>> print(msg)
