@@ -31,6 +31,9 @@ Contributions welcome - please refer to [CONTRIBUTING.MD](https://github.com/sem
 
 `pyubx2` is compatible with Python 3.6+ and has no third-party library dependencies.
 
+In the following, `python` & `pip` refer to the python3 executables. You may need to type 
+`python3` or `pip3`, depending on your particular environment.
+
 ![Python version](https://img.shields.io/pypi/pyversions/pyubx2.svg?style=flat)
 [![PyPI version](https://img.shields.io/pypi/v/pyubx2.svg?style=flat)](https://pypi.org/project/pyubx2/)
 ![PyPI downloads](https://img.shields.io/pypi/dm/pyubx2.svg?style=flat)
@@ -38,7 +41,19 @@ Contributions welcome - please refer to [CONTRIBUTING.MD](https://github.com/sem
 The recommended way to install the latest version of `pyubx2` is with
 [pip](http://pypi.python.org/pypi/pip/):
 
-`python -m pip install --upgrade pyubx2`
+```shell
+>>> python -m pip install --upgrade pyubx2
+```
+
+If required, `pyubx2` can also be installed using virtualenv, e.g.:
+
+```shell
+>>> python -m pip install --user --upgrade virtualenv
+>>> python -m venv env
+>>> source env/bin/activate
+(env) >>> python -m pip install --upgrade pyubx2
+```
+
 
 ## Reading (Streaming)
 
@@ -182,7 +197,7 @@ e.g. to create and send a `CFG-MSG` message which sets the NMEA GLL message rate
 <UBX(CFG-MSG, msgClass=NMEA-Standard, msgID=GLL, rateDDC=0, rateUART1=1, rateUART2=0, rateUSB=1, rateSPI=0, reserved=0)>
 >>> output = msg.serialize()
 >>> output
-b'\xb5b\x06\x01\x08\x00\xf0\x01\x00\x01\x00\x01\x00\x00\x036'
+b'\xb5b\x06\x01\x08\x00\xf0\x01\x00\x01\x00\x01\x00\x00\x022'
 >>> serialOut.write(output)
 ```
 
