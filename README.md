@@ -116,7 +116,7 @@ Example:
 <UBX(ACK-ACK, clsID=CFG, msgID=CFG-MSG)>
 >>> msg = UBXMessage.parse(b'\xb5b\x01\x12$\x000D\n\x18\xfd\xff\xff\xff\xf1\xff\xff\xff\xfc\xff\xff\xff\x10\x00\x00\x00\x0f\x00\x00\x00\x83\xf5\x01\x00A\x00\x00\x00\xf0\xdfz\x00\xd0\xa6')
 >>> print(msg)
-<UBX(NAV-VELNED, iTOW=403327000, velN=-1, velE=-21, velD=-4, speed=22, gSpeed=21, heading=128387, sAcc=67, cAcc=8056455)>
+<UBX(NAV-VELNED, iTOW=16:01:50, velN=-3, velE=-15, velD=-4, speed=16, gSpeed=15, heading=128387, sAcc=65, cAcc=8052720)>
 ```
 
 The `UBXMessage` object exposes different public properties depending on its message type or 'identity',
@@ -124,7 +124,7 @@ e.g. the `NAV-POSLLH` message has the following properties:
 
 ```python
 >>> msg
-<UBX(NAV-POSLLH, iTOW=403667000, lon=-21601284, lat=526206345, height=86327, hMSL=37844, hAcc=38885, vAcc=16557)>
+<UBX(NAV-POSLLH, iTOW=16:01:54, lon=-21601284, lat=526206345, height=86327, hMSL=37844, hAcc=38885, vAcc=16557)>
 >>>msg.identity
 'NAV-POSLLH'
 >>>msg.lat/10**7, msg.lon/10**7
