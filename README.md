@@ -12,7 +12,7 @@ This is an independent project and we have no affiliation whatsoever with u-blox
 ### Current Status
 
 ![Status](https://img.shields.io/pypi/status/pyubx2)
-![Release](https://img.shields.io/github/v/release/semuconsulting/pyubx2?include_prereleases)
+![Release](https://img.shields.io/github/v/release/semuconsulting/pyubx2)
 ![Build](https://img.shields.io/github/workflow/status/semuconsulting/pyubx2/pyubx2)
 ![Codecov](https://img.shields.io/codecov/c/github/semuconsulting/pyubx2)
 ![Release Date](https://img.shields.io/github/release-date-pre/semuconsulting/pyubx2)
