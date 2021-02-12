@@ -78,7 +78,7 @@ Examples:
 ```python
 >>> from serial import Serial
 >>> from pyubx2 import UBXReader
->>> stream = Serial('COM6', 9600, timeout=3)
+>>> stream = Serial('/dev/tty.usbmodem14101', 9600, timeout=3)
 >>> ubr = UBXReader(stream)
 >>> (raw_data, parsed_data) = ubr.read()
 ```
@@ -86,10 +86,8 @@ Examples:
 * File input (using iterator) - this example will produce a `UBXStreamError` if non-UBX data is encountered.
 
 ```python
->>> import os
 >>> from pyubx2 import UBXReader
->>> file = os.path.join(os.path.dirname(__file__), 'ubxdata.bin')
->>> stream = open(file, 'rb')
+>>> stream = open('ubxdata.bin', 'rb')
 >>> ubr = UBXReader(stream, True)
 >>> for (raw_data, parsed_data) in ubr: print(parsed_data)
 ...
