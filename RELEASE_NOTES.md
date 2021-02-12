@@ -1,5 +1,9 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.0.1
+
+Update development status to Production/Stable.
+
 ### RELEASE 1.0.0
 
 Marked to major version 1.0.0.
