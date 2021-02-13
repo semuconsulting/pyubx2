@@ -318,6 +318,8 @@ rates on the receiver's UART and USB ports. You can see the results using `ubxst
 1. `ubxtracker.py` illustrates a simple CLI tool to convert a binary UBX data dump 
 (e.g. as produced by the [PyGPSClient](http://github.com/semuconsulting/PyGPSClient)'s data logging facility) to a `*.gpx` track file using pyubx2.UBXReader.
 
+1. `ubxdump.py` is a simple command line utility to stream the parsed UBX output of a u-blox &copy; GNSS device on a specified port.
+
 
 ## <a name="extensibility">Extensibility</a>
 
