@@ -20,9 +20,8 @@ from io import BufferedReader
 from threading import Thread
 from time import sleep
 
-from pyubx2 import UBXMessage, POLL, UBX_CONFIG_MESSAGES
+from pyubx2 import UBXMessage, POLL, UBX_MSGIDS
 from pyubx2.ubxreader import UBXReader
-from pyubx2.exceptions import UBXStreamError
 from serial import Serial, SerialException, SerialTimeoutException
 
 import pyubx2.exceptions as ube
@@ -148,7 +147,7 @@ if __name__ == "__main__":
 
     # set PORT, BAUDRATE and TIMEOUT as appropriate
     if platform == "win32":
-        PORT = "COM7"
+        PORT = "COM13"
     else:
         PORT = "/dev/tty.usbmodem14101"
     BAUDRATE = 9600
@@ -164,7 +163,7 @@ if __name__ == "__main__":
     print("Starting reader thread...")
     ubp.start_read_thread()
 
-    print("\nPolling receiver...\n\n")
+    print("\nPolling receiver configuration...\n")
     # poll the receiver configuration
     for port in (0, 1, 2, 3, 4):  # I2C, UART1, UART2, USB, SPI
         msg = UBXMessage("CFG", "CFG-PRT", POLL, portID=port)
@@ -175,18 +174,16 @@ if __name__ == "__main__":
         ubp.send(msg.serialize())
         sleep(1)
 
-    # poll all the current message rates
-    for payload in UBX_CONFIG_MESSAGES:
-        msg = UBXMessage("CFG", "CFG-MSG", POLL, payload=payload)
-        ubp.send(msg.serialize())
-        sleep(1)
+    # poll a selection of current navigation message rates using CFG-MSG
+    print("\nPolling navigation message rates...\n")
+    for msgid in UBX_MSGIDS.keys():
+        if msgid[0] in (1, 240, 241):  # NAV, NMEA-Standard, NMEA-Proprietary
+            msg = UBXMessage("CFG", "CFG-MSG", POLL, payload=msgid)
+            ubp.send(msg.serialize())
+            sleep(1)
     print("\n\nPolling complete, waiting for final responses...\n\n")
 
     sleep(3)
-    # ... or wait for the input buffer to clear - this will only work
-    # if the receiver is not pumping out unsolicited UBX messages
-    #     while ubp.waiting():
-    #         print(".", end="")
 
     print("\n\nStopping reader thread...")
     ubp.stop_read_thread()

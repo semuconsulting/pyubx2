@@ -1,8 +1,15 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.0.2
+
+Code streamlining.
+
+1. De-duplicate CFG-MSG definitions in ubxtypes_core.py. Definitions UBX_CONFIG_CATEGORIES & UBX_CONFIG_MESSAGES
+are now incorporated into UBX_CLASSES & UBX_MSGIDS. NB: PyGPSClient GUI will require update to v0.2.23.
+
 ### RELEASE 1.0.1
 
-Update development status to Production/Stable.
+1. Update development status to Production/Stable.
 
 ### RELEASE 1.0.0
 

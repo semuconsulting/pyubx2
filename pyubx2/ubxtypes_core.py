@@ -110,6 +110,9 @@ UBX_CLASSES = {
     b"\x21": "LOG",  # Logging Messages: Log creation, deletion, info and retrieval
     b"\x27": "SEC",  # Security Feature Messages
     b"\x28": "HNR",  # High Rate Navigation Messages
+    b"\xf0": "NMEA-Standard",  # Standard NMEA Messages: Used for message rate configuration via CFG-MSG
+    b"\xf1": "NMEA-Proprietary",  # Proprietary NMEA Messages: Used for message rate configuration via CFG-MSG
+    b"\xf5": "RTCM",  # RTCM Messages: Used for message rate configuration via CFG-MSG
     b"\x66": "FOO",  # Dummy message class for testing
 }
 
@@ -339,113 +342,9 @@ UBX_MSGIDS = {
     # Firmware update messages
     # ***************************************************************
     b"\x09\x14": "UPD-SOS",
-    b"\x66\x66": "FOO-BAR",  # Dummy message for testing
-}
-
-"""
-THESE ARE THE CONFIG MESSAGE CATEGORIES (CFG-MSG)
-"""
-UBX_CONFIG_CATEGORIES = {
-    b"\x01": "UBX-NAV",
-    b"\x02": "UBX-RXM",
-    b"\x05": "UBX-ACK",
-    b"\x09": "UBX-ESF",
-    b"\x0a": "UBX-MON",
-    b"\x0b": "UBX-AID",
-    b"\x0d": "UBX-TIM",
-    b"\x10": "UBX-ESF",
-    b"\x13": "UBX-MGA",
-    b"\x21": "UBX-LOG",
-    b"\x27": "UBX-SEC",
-    b"\x28": "UBX-HNR",
-    b"\xf0": "NMEA-Standard",
-    b"\xf1": "NMEA-Proprietary",
-    b"\xf5": "RTCM",
-}
-
-"""
-THESE ARE THE CONFIG MESSAGE TYPES (CFG-MSG)
-NB: Available messages will depend on the receiver
-"""
-UBX_CONFIG_MESSAGES = {
-    b"\x01\x60": "NAV-AOPSTATUS",
-    b"\x01\x05": "NAV-ATT",
-    b"\x01\x22": "NAV-CLOCK",
-    b"\x01\x36": "NAV-COV",
-    b"\x01\x31": "NAV-DGPS",
-    b"\x01\x04": "NAV-DOP",
-    b"\x01\x3d": "NAV-EELL",
-    b"\x01\x40": "NAV-EKFSTATUS",
-    b"\x01\x61": "NAV-EOE",
-    b"\x01\x39": "NAV-GEOFENCE",
-    b"\x01\x13": "NAV-HPPOSECEF",
-    b"\x01\x14": "NAV-HPPOSLLH",
-    b"\x01\x28": "NAV-NMI",
-    b"\x01\x09": "NAV-ODO",
-    b"\x01\x34": "NAV-ORB",
-    b"\x01\x01": "NAV-POSECEF",
-    b"\x01\x02": "NAV-POSLLH",
-    b"\x01\x07": "NAV-PVT",
-    b"\x01\x3c": "NAV-RELPOSNED",
-    b"\x01\x35": "NAV-SAT",
-    b"\x01\x32": "NAV-SBAS",
-    b"\x01\x43": "NAV-SIG",
-    b"\x01\x42": "NAV-SLAS",
-    b"\x01\x06": "NAV-SOL",
-    b"\x01\x03": "NAV-STATUS",
-    b"\x01\x30": "NAV-SVINFO",
-    b"\x01\x3b": "NAV-SVIN",
-    b"\x01\x24": "NAV-TIMEBDS",
-    b"\x01\x25": "NAV-TIMEGAL",
-    b"\x01\x23": "NAV-TIMEGLO",
-    b"\x01\x20": "NAV-TIMEGPS",
-    b"\x01\x26": "NAV-TIMELS",
-    b"\x01\x27": "NAV-TIMEQZSS",
-    b"\x01\x21": "NAV-TIMEUTC",
-    b"\x01\x11": "NAV-VELECEF",
-    b"\x01\x12": "NAV-VELNED",
-    b"\x02\x61": "RXM-IMES",
-    b"\x02\x14": "RXM-MEASX",
-    b"\x02\x41": "RXM-PMREQ",
-    b"\x02\x10": "RXM-RAW",
-    b"\x02\x15": "RXM-RAWX",
-    b"\x02\x59": "RXM-RLM",
-    b"\x02\x32": "RXM-RTCM",
-    b"\x02\x13": "RXM-SFRBX",
-    b"\x02\x20": "RXM-SVSI",
-    b"\x0a\x36": "MON-COMMS",
-    b"\x0a\x28": "MON-GNSS",
-    b"\x0a\x09": "MON-HW",
-    b"\x0a\x0b": "MON-HW2",
-    b"\x0a\x37": "MON-HW3",
-    b"\x0a\x02": "MON-IO",
-    b"\x0a\x06": "MON-MSGPP",
-    b"\x0a\x27": "MON-PATCH",
-    b"\x0a\x38": "MON-RF",
-    b"\x0a\x07": "MON-RXBUF",
-    b"\x0a\x21": "MON-RXR",
-    b"\x0a\x2e": "MON-SMGR",
-    b"\x0a\x31": "MON-SPAN",
-    b"\x0a\x2f": "MON-SPT",
-    b"\x0a\x08": "MON-TXBUF",
-    b"\x0a\x04": "MON-VER",
-    b"\x21\x11": "LOG-BATCH",
-    b"\x21\x07": "LOG-CREATE",
-    b"\x21\x03": "LOG-ERASE",
-    b"\x21\x0e": "LOG-FINDTIME",
-    b"\x21\x08": "LOG-INFO",
-    b"\x21\x0f": "LOG-RETRIEVEPOSEXTRA",
-    b"\x21\x0b": "LOG-RETRIEVEPOS",
-    b"\x21\x0d": "LOG-RETRIEVESTRING",
-    b"\x21\x09": "LOG-RETRIEVE",
-    b"\x21\x10": "LOG-RETRIEVEBATCH",
-    b"\x21\x04": "LOG-STRING",
-    b"\x28\x01": "HNR-ATT",
-    b"\x28\x02": "HNR-INS",
-    b"\x28\x00": "HNR-PVT",
-    b"\x10\x14": "ESF-ALG",
-    b"\x10\x15": "ESF-INS",
-    b"\x10\x10": "ESF-STATUS",
+    # ***************************************************************
+    # NMEA Standard message types (used by CFG-MSG)
+    # ***************************************************************
     b"\xf0\x0a": "DTM",  # Datum Reference
     b"\xf0\x45": "GAQ",  # Poll Standard Message - Talker ID GA (Galileo)
     b"\xf0\x44": "GBQ",  # Poll Standard Message - Talker ID GB (BeiDou)
@@ -468,6 +367,9 @@ UBX_CONFIG_MESSAGES = {
     b"\xf0\x0f": "VLW",  # Dual Ground Water Distance
     b"\xf0\x05": "VTG",  # Course over ground and Groundspeed
     b"\xf0\x08": "ZDA",  # Time and Date
+    # ***************************************************************
+    # NMEA Proprietary message types (used by CFG-MSG)
+    # ***************************************************************
     b"\xf1\x00": "UBX-00",  # aka PUBX-POSITION Lat/Long Position Data
     b"\xf1\x03": "UBX-03",  # aka PUBX-SVSTATUS Satellite Status
     b"\xf1\x04": "UBX-04",  # aka PUBX-TIME Time of Day and Clock Information
@@ -475,4 +377,8 @@ UBX_CONFIG_MESSAGES = {
     b"\xf1\x06": "UBX-06",  # Lat/Long Position Data
     b"\xf1\x40": "UBX-40",  # Set NMEA message output rate
     b"\xf1\x41": "UBX-41",  # aka PUBX-CONFIG Set Protocols and Baudrate
+    # ***************************************************************
+    # Dummy message for testing only
+    # ***************************************************************
+    b"\x66\x66": "FOO-BAR",
 }

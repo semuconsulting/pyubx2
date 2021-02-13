@@ -28,7 +28,7 @@ from sys import platform
 from time import sleep
 from serial import Serial, SerialException, SerialTimeoutException
 
-from pyubx2 import UBXMessage, SET, UBX_CONFIG_MESSAGES
+from pyubx2 import UBXMessage, SET, UBX_MSGIDS
 import pyubx2.exceptions as ube
 
 
@@ -91,7 +91,7 @@ class UBXSetter:
             msgs = []
 
             # compile all the UBX-NAV config message types
-            for key, val in UBX_CONFIG_MESSAGES.items():
+            for key, val in UBX_MSGIDS.items():
                 if val[0:3] == "NAV":
                     msgs.append(key)
 
@@ -111,7 +111,7 @@ if __name__ == "__main__":
 
     # set PORT, BAUDRATE and TIMEOUT as appropriate
     if platform == "win32":
-        PORT = "COM7"
+        PORT = "COM13"
     else:
         PORT = "/dev/tty.usbmodem14101"
     BAUDRATE = 9600

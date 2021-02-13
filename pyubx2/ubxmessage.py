@@ -530,10 +530,10 @@ class UBXMessage:
                 if self._ubxClass == b"\x06" and self._ubxID == b"\x01":  # CFG-MSG
                     if att == "msgClass":
                         clsid = self.val2bytes(val, ubt.U1)
-                        val = ubt.UBX_CONFIG_CATEGORIES[clsid]
+                        val = ubt.UBX_CLASSES[clsid]
                     if att == "msgID" and clsid:
                         msgid = self.val2bytes(val, ubt.U1)
-                        val = ubt.UBX_CONFIG_MESSAGES[clsid + msgid]
+                        val = ubt.UBX_MSGIDS[clsid + msgid]
                 stg += att + "=" + str(val)
                 if i < len(self.__dict__) - 1:
                     stg += ", "

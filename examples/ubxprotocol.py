@@ -96,7 +96,7 @@ if __name__ == "__main__":
 
     # set PORT, BAUDRATE and TIMEOUT as appropriate
     if platform == "win32":
-        PORT = "COM7"
+        PORT = "COM13"
     else:
         PORT = "/dev/tty.usbmodem14101"
     BAUDRATE = 9600
