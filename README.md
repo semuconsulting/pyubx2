@@ -145,8 +145,8 @@ The 'ubxClass' and 'ubxID' parameters may be passed as lookup strings, integers 
 
 The 'mode' parameter signifies whether the message payload refers to a: 
 * GET message (i.e. output *from* the receiver - **NB** these would normally be generated via the `UBXMessage.parse()` or `UBXReader.read()` methods but can also be created manually)
-* SET message (i.e. input *to* the receiver)
-* POLL message (i.e. input *to* the receiver in anticipation of a response back)
+* SET message (i.e. command input *to* the receiver)
+* POLL message (i.e. query input *to* the receiver in anticipation of a response back)
 
 The message payload can be defined via keyword parameters in one of three ways:
 1. A single keyword parameter of `payload` containing the full payload as a sequence of bytes (any other keyword parameters will be ignored). **NB** the `payload` keyword *must* be used for message types which have a 'variable by size' repeating group.
@@ -286,17 +286,17 @@ Wild card query to retrieve all CFG_MSGOUT (keyID 0x2091*) parameters (set bits 
 >>> keys = [0x2091ffff]
 >>> msg1of3 = UBXMessage.config_poll(layer, position, keys)
 >>> print(msg1of3)
-<UBX(CFG-VALGET, version=0, layers=b'\x01', position=b'\x00\x00', keys_01=546439167)>
+<UBX(CFG-VALGET, version=0, layer=1, position=0, keys_01=546439167)>
 >>> serialOut.write(msg1of3.serialize())
 >>> position = 64 # retrieve next 64 results
 >>> msg2of3 = UBXMessage.config_poll(layer, position, keys)
 >>> print(msg2of3)
-<UBX(CFG-VALGET, version=0, layers=b'\x01', position=b'@\x00', keys_01=546439167)>
+<UBX(CFG-VALGET, version=0, layer=1, position=64, keys_01=546439167)>
 >>> serialOut.write(msg2of3.serialize())
 >>> position = 128 # retrieve next 64 results
 >>> msg3of3 = UBXMessage.config_poll(layer, position, keys)
 >>> print(msg3of3)
-<UBX(CFG-VALGET, version=0, layers=b'\x01', position=b'\x80\x00', keys_01=546439167)>
+<UBX(CFG-VALGET, version=0, layer=1, position=128, keys_01=546439167)>
 >>> serialOut.write(msg3of3.serialize())
 ```
 
