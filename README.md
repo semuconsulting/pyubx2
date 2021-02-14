@@ -42,16 +42,16 @@ The recommended way to install the latest version of `pyubx2` is with
 [pip](http://pypi.python.org/pypi/pip/):
 
 ```shell
->>> python -m pip install --upgrade pyubx2
+python -m pip install --upgrade pyubx2
 ```
 
 If required, `pyubx2` can also be installed using virtualenv, e.g.:
 
 ```shell
->>> python -m pip install --user --upgrade virtualenv
->>> python -m venv env
->>> source env/bin/activate
-(env) >>> python -m pip install --upgrade pyubx2
+python -m pip install --user --upgrade virtualenv
+python -m venv env
+source env/bin/activate
+(env) python -m pip install --upgrade pyubx2
 ```
 
 
