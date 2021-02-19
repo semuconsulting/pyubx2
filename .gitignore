@@ -17,5 +17,6 @@ Pipfile*.*
 /pyubx2/__pycache__
 *.pyc
 /examples/ubxsandpit.py
+/examples/temp*.py
 /.pytest_cache/
 pylint_report.txt

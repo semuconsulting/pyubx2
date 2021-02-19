@@ -1,5 +1,11 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.0.3
+
+FIXES:
+
+1. Fixed bug in UBXReader.read() which cause looping with certain mixed protocol streams.
+
 ### RELEASE 1.0.2
 
 Code streamlining.

@@ -121,13 +121,13 @@ The `UBXMessage` object exposes different public properties depending on its mes
 e.g. the `NAV-POSLLH` message has the following properties:
 
 ```python
->>> msg
+>>> print(msg)
 <UBX(NAV-POSLLH, iTOW=16:01:54, lon=-21601284, lat=526206345, height=86327, hMSL=37844, hAcc=38885, vAcc=16557)>
->>>msg.identity
+>>> msg.identity
 'NAV-POSLLH'
->>>msg.lat/10**7, msg.lon/10**7
+>>> msg.lat/10**7, msg.lon/10**7
 (52.6206345, -2.1601284)
->>>msg.hMSL/10**3
+>>> msg.hMSL/10**3
 37.844
 ```
 

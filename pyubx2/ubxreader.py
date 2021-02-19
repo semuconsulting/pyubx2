@@ -75,12 +75,19 @@ class UBXReader:
         raw_data = None
         parsed_data = None
 
-        byte1 = stm.read(2)  # read the first two bytes
+        byte1 = stm.read(1)  # read the first byte
 
         while reading:
-            if len(byte1) < 2:  # EOF
+            is_ubx = False
+            if len(byte1) < 1:  # EOF
                 break
-            if byte1 == ubt.UBX_HDR:  # it's a UBX message
+            if byte1 == b"\xb5":
+                byte2 = stm.read(1)
+                if len(byte2) < 1:  # EOF
+                    break
+                if byte2 == b"\x62":
+                    is_ubx = True
+            if is_ubx:  # it's a UBX message
                 byten = stm.read(4)
                 if len(byten) < 4:  # EOF
                     break
@@ -96,10 +103,10 @@ class UBXReader:
                 raw_data = ubt.UBX_HDR + clsid + msgid + lenb + plb + cksum
                 parsed_data = UBXMessage.parse(raw_data, False, self._mode)
                 reading = False
-            else:  # it's not a UBX message
+            else:  # it's not a UBX message (NMEA or something else)
                 if self._validate:  # raise error and quit
-                    nmeawarn = NMEAMSG if byte1 in (b"$G", b"$P") else ""
+                    nmeawarn = NMEAMSG if byte1 == b"\x24" else ""  # "$"
                     raise UBXStreamError(f"Unknown data header {byte1}. {nmeawarn}")
-                byte1 = stm.read(2)  # read next 2 bytes and carry on
+                byte1 = stm.read(1)  # read next byte and carry on
 
         return (raw_data, parsed_data)
