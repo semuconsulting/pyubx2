@@ -29,6 +29,7 @@ class StreamTest(unittest.TestCase):
         self.streamBADHDR = open(os.path.join(dirname, 'pygpsdata-BADHDR.log'), 'rb')
         self.streamBADEOF1 = open(os.path.join(dirname, 'pygpsdata-BADEOF1.log'), 'rb')
         self.streamBADEOF2 = open(os.path.join(dirname, 'pygpsdata-BADEOF2.log'), 'rb')
+        self.streamBADEOF3 = open(os.path.join(dirname, 'pygpsdata-BADEOF3.log'), 'rb')
 
     def tearDown(self):
         self.streamNAV.close()
@@ -39,6 +40,7 @@ class StreamTest(unittest.TestCase):
         self.streamBADHDR.close()
         self.streamBADEOF1.close()
         self.streamBADEOF2.close()
+        self.streamBADEOF3.close()
 
     def testNAV(self):
         EXPECTED_RESULTS = (
@@ -196,6 +198,15 @@ class StreamTest(unittest.TestCase):
         i = 0
         raw = 0
         ubxreader = UBXReader(self.streamBADEOF2)
+        while raw is not None:
+            (raw, _) = ubxreader.read()
+            i += 1
+        self.assertEqual(i, 3)
+
+    def testBADEOF3(self):  # premature EOF after first byte of header
+        i = 0
+        raw = 0
+        ubxreader = UBXReader(self.streamBADEOF3)
         while raw is not None:
             (raw, _) = ubxreader.read()
             i += 1
