@@ -1,5 +1,5 @@
 '''
-Property and Static method tests for pyubx2.UBXMessage
+Helper, Property and Static method tests for pyubx2.UBXMessage
 
 Created on 3 Oct 2020
 
@@ -13,7 +13,7 @@ import unittest
 
 from pyubx2 import UBXMessage, UBX_CLASSES, POLL
 import pyubx2.ubxtypes_core as ubt
-from pyubx2.ubxhelpers import itow2utc, gpsfix2str, dop2str, gnss2str, key_from_val
+from pyubx2.ubxhelpers import calc_checksum, isvalid_checksum, itow2utc, gpsfix2str, dop2str, gnss2str, key_from_val
 
 
 class StaticTest(unittest.TestCase):
@@ -70,15 +70,15 @@ class StaticTest(unittest.TestCase):
         self.assertEqual(res, (b'\x0A'))
 
     def testCalcChecksum(self):
-        res = UBXMessage.calc_checksum(b'\x06\x01\x02\x00\xf0\x05')
+        res = calc_checksum(b'\x06\x01\x02\x00\xf0\x05')
         self.assertEqual(res, b'\xfe\x16')
 
     def testGoodChecksum(self):
-        res = UBXMessage.isvalid_checksum(b'\xb5b\x06\x01\x02\x00\xf0\x05\xfe\x16')
+        res = isvalid_checksum(b'\xb5b\x06\x01\x02\x00\xf0\x05\xfe\x16')
         self.assertTrue(res)
 
     def testBadChecksum(self):
-        res = UBXMessage.isvalid_checksum(b'\xb5b\x06\x01\x02\x00\xf0\x05\xfe\x15')
+        res = isvalid_checksum(b'\xb5b\x06\x01\x02\x00\xf0\x05\xfe\x15')
         self.assertFalse(res)
 
     def testitow2utc(self):

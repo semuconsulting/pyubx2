@@ -4,7 +4,7 @@ UBX Protocol core globals and constants
 
 Created on 27 Sep 2020
 
-@author: semuadmin
+:author: semuadmin
 """
 
 UBX_HDR = b"\xB5\x62"
@@ -24,9 +24,9 @@ GNSSLIST = {
     6: "GLONASS",
 }
 
-"""
-THESE ARE THE UBX PROTOCOL PAYLOAD ATTRIBUTE TYPES
-"""
+# **************************************************
+# THESE ARE THE UBX PROTOCOL PAYLOAD ATTRIBUTE TYPES
+# **************************************************
 C2 = "C002"  # ASCII / ISO 8859.1 Encoding 2 bytes
 C6 = "C006"  # ASCII / ISO 8859.1 Encoding 6 bytes
 C10 = "C010"  # ASCII / ISO 8859.1 Encoding 10 bytes
@@ -95,6 +95,9 @@ VALID_TYPES = (
     X8,
 )
 
+# ***********************************************
+# THESE ARE THE UBX PROTOCOL CORE MESSAGE CLASSES
+# ***********************************************
 UBX_CLASSES = {
     b"\x01": "NAV",  # Navigation Results: Position, Speed, Time, Acc, Heading, DOP, SVs used
     b"\x02": "RXM",  # Receiver Manager Messages: Satellite Status, RTC Status
@@ -116,10 +119,10 @@ UBX_CLASSES = {
     b"\x66": "FOO",  # Dummy message class for testing
 }
 
-"""
-THESE ARE THE UBX PROTOCOL CORE MESSAGE IDENTITIES
-Payloads for each of these identities are defined in the ubxtypes_* modules
-"""
+# ***************************************************************************
+# THESE ARE THE UBX PROTOCOL CORE MESSAGE IDENTITIES
+# Payloads for each of these identities are defined in the ubxtypes_* modules
+# ***************************************************************************
 UBX_MSGIDS = {
     b"\x05\x01": "ACK-ACK",
     b"\x05\x00": "ACK-NAK",

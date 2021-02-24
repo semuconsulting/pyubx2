@@ -11,7 +11,7 @@ Created on 21 Oct 2020
 
 import unittest
 
-from pyubx2 import UBXMessage, GET, SET, POLL
+from pyubx2 import UBXMessage, UBXReader, GET, SET, POLL
 
 
 class FillTest(unittest.TestCase):
@@ -60,7 +60,7 @@ class FillTest(unittest.TestCase):
     def testFill_CFGNMEAPARSE(self):  # check that raw payload is correctly populated and parses back to original message
         EXPECTED_RESULT = "<UBX(CFG-NMEA, filter=b'\\x00', nmeaVersion=35, numSV=1, flags=b'\\x00', gnssToFilter=b'\\x00\\x00\\x00\\x00', svNumbering=0, mainTalkerId=0, gsvTalkerId=0, version=0, bdsTalkerId=b'\\x00\\x00', reserved1=0)>"
         res = UBXMessage('CFG', 'CFG-NMEA', SET, nmeaVersion=35, numSV=1)
-        res2 = UBXMessage.parse(res.serialize())
+        res2 = UBXReader.parse(res.serialize())
         self.assertEqual(str(res2), EXPECTED_RESULT)
 
     def testFill_CFGNMEAPOLL(self):  # test POLL constructor, no payload
@@ -71,7 +71,7 @@ class FillTest(unittest.TestCase):
     def testFill_CFGNMEAPOLL2(self):  # test POLL constructor, no payload
         EXPECTED_RESULT = "<UBX(CFG-NMEA)>"
         res = UBXMessage('CFG', 'CFG-NMEA', POLL)
-        res2 = UBXMessage.parse(res.serialize())
+        res2 = UBXReader.parse(res.serialize())
         self.assertEqual(str(res2), EXPECTED_RESULT)
 
     def testFill_CFGGNSS(self):  #  test CFG-GNSS SET multiple repeats in group
@@ -92,7 +92,7 @@ class FillTest(unittest.TestCase):
     def testFill_CFGDOSCPARSE(self):  # test CFG-DOSC check that raw payload is correctly populated and parses back to original message
         EXPECTED_RESULT = "<UBX(CFG-DOSC, version=37, numOsc=1, reserved1=0, oscId_01=8, reserved2_01=0, flags_01=b'\\x00\\x00', freq_01=53, phaseOffset_01=26, withTemp_01=0, withAge_01=0, timeToTemp_01=0, reserved3_01=0, gainVco_01=4, gainUncertainty_01=123, reserved4_01=0)>"
         res = UBXMessage('CFG', 'CFG-DOSC', SET, version=37, numOsc=1, oscId_01=8, freq_01=53, phaseOffset_01=26, gainVco_01=4, gainUncertainty_01=123)
-        res2 = UBXMessage.parse(res.serialize())
+        res2 = UBXReader.parse(res.serialize())
         self.assertEqual(str(res2), EXPECTED_RESULT)
 
     def testFill_CFGDOSC2(self):  # test CFG-DOSC empty group
@@ -108,13 +108,13 @@ class FillTest(unittest.TestCase):
     def testFill_CFGDATPARSE(self):  # check that raw payload is correctly populated and parses back to original message
         EXPECTED_RESULT = "<UBX(CFG-DAT, datumNum=4, datumName=b'WGS-84', majA=4321.123456789128, flat=-2964.00469836, dX=-1.2345677614212036, dY=27.406539916992188, dZ=0.0, rotX=0.0, rotY=0.0, rotZ=0.0, scale=0.0)>"
         res = UBXMessage('CFG', 'CFG-DAT', SET, datumNum=4, datumName=b'WGS-84', majA=4321.123456789128, flat=-2964.00469836, dX=-1.2345678, dY=27.40654)
-        res2 = UBXMessage.parse(res.serialize())
+        res2 = UBXReader.parse(res.serialize())
         self.assertEqual(str(res2), EXPECTED_RESULT)
 
     def testFill_CFGDATPARSE2(self):  # check that raw payload is correctly populated and parses back to original message
         EXPECTED_RESULT = "<UBX(CFG-DAT, datumNum=4, datumName=b'WGS-84', majA=0.0, flat=0.0, dX=-1.2345677614212036, dY=27.406539916992188, dZ=0.0, rotX=0.0, rotY=0.0, rotZ=0.0, scale=0.0)>"
         res = UBXMessage('CFG', 'CFG-DAT', SET, datumNum=4, datumName=b'WGS-84', dX=-1.2345678, dY=27.40654)
-        res2 = UBXMessage.parse(res.serialize())
+        res2 = UBXReader.parse(res.serialize())
         self.assertEqual(str(res2), EXPECTED_RESULT)
 
     def testEVAL(self):  # test eval of repr

@@ -1,5 +1,16 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.0.4
+
+Some refactoring of static and helper methods. Improved Sphinx-compliant docstrings.
+
+ENHANCEMENTS:
+
+1. Static parse() method moved from UBXMessage to UBXReader. **NB:** If you were invoking parse() indirectly via the `UBXReader.read()` method, the change is transparent. If you were invoking `UBXMessage.parse()` directly, this will need to be changed to `UBXReader.parse()`. **NB:** If you're using PyGPSClient, this will need to be updated to v0.2.27-beta.
+2. Static `calc_checksum()` and `isvalid_checksum()` methods moved from UBXMessage to ubxhelpers.py as stand-alone methods. 
+3. Minor enhancements to mixed data stream validation and exception reporting.
+4. Docstrings updated for better sphinx-apidoc compliance.
+
 ### RELEASE 1.0.3
 
 FIXES:

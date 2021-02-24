@@ -20,7 +20,7 @@ NB: Repeating groups must be defined as a tuple thus
 
 Created on 27 Sep 2020
 
-@author: semuadmin
+:author: semuadmin
 """
 # pylint: disable=too-many-lines, line-too-long
 

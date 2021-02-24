@@ -9,7 +9,7 @@ NB: Attribute names must be unique within each message class/id
 
 Created on 27 Sep 2020
 
-@author: semuadmin
+:author: semuadmin
 """
 # pylint: disable=too-many-lines, line-too-long
 

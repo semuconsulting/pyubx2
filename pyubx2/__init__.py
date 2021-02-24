@@ -1,7 +1,9 @@
 """
 Created on 27 Sep 2020
 
-@author: semuadmin
+:author: semuadmin
+:copyright: SEMU Consulting © 2020
+:license: BSD 3-Clause
 """
 # pylint: disable=wrong-import-position, invalid-name
 

@@ -6,18 +6,18 @@ Being one of our contributors, you agree and confirm that:
 
 * The work is all your own.
 * Your work will be distributed under a BSD 3-Clause License once your pull request is merged.
-* You submitted work fulfils or mostly fulfils our styles and standards.
+* You submitted work fulfils or mostly fulfils our coding conventions, styles and standards.
 
 Please help us keep our issue list small by adding fixes: #{$ISSUE_NO} to the commit message of pull requests that resolve open issues. GitHub will use this tag to auto close the issue when the PR is merged.
 
 ## Coding conventions
 
   * This is open source software. We endeavour to make the code as transparent as possible.
-  * We endeavour to keep the core code as generic and reusable as possible, and limit the amount of exceptional processing dedicated to
-  specific UBX message types (though this is sometimes unavoidable).
+  * We endeavour to keep the core code as generic and reusable as possible, and limit the amount of exceptional processing dedicated to specific UBX message types (though this is sometimes unavoidable).
   * We use [Eclipse PyDev](https://www.pydev.org/) for development and testing, but you are at liberty to use your preferred IDE.
+  * We document the code in accordance with [Sphinx](https://www.sphinx-doc.org/en/master/) docstring conventions.
   * We use [pylint](https://pypi.org/project/pylint/) (>=2.6.0) for code analysis.
-  * We use [black](https://pypi.org/project/black/) (>= 20.8) for code formatting and ask that you do the same.
+  * We use [black](https://pypi.org/project/black/) (>= 20.8) for code formatting.
 
 ## Testing
 

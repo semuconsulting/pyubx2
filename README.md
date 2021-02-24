@@ -95,7 +95,7 @@ Examples:
 
 ## Parsing
 
-You can parse individual UBX messages using the `UBXMessage.parse(data, validate=False)` function, which takes a bytes array containing a binary UBX message and returns a `UBXMessage` object.
+You can parse individual UBX messages using the static `UBXReader.parse(data, validate=False)` function, which takes a bytes array containing a binary UBX message and returns a `UBXMessage` object.
 
 If the optional 'validate' parameter is set to `True`, `parse` will validate the supplied UBX message header, payload length and checksum. 
 If any of these are not consistent with the message content, it will raise a `UBXParseError`. Otherwise, the function will automatically
@@ -108,11 +108,11 @@ Attributes within repeating groups are parsed with a two-digit suffix (svid_01, 
 Example:
 
 ```python
->>> from pyubx2 import UBXMessage
->>> msg = UBXMessage.parse(b'\xb5b\x05\x01\x02\x00\x06\x01\x0f\x38', True)
+>>> from pyubx2 import UBXReader
+>>> msg = UBXReader.parse(b'\xb5b\x05\x01\x02\x00\x06\x01\x0f\x38', True)
 >>> print(msg)
 <UBX(ACK-ACK, clsID=CFG, msgID=CFG-MSG)>
->>> msg = UBXMessage.parse(b'\xb5b\x01\x12$\x000D\n\x18\xfd\xff\xff\xff\xf1\xff\xff\xff\xfc\xff\xff\xff\x10\x00\x00\x00\x0f\x00\x00\x00\x83\xf5\x01\x00A\x00\x00\x00\xf0\xdfz\x00\xd0\xa6')
+>>> msg = UBXReader.parse(b'\xb5b\x01\x12$\x000D\n\x18\xfd\xff\xff\xff\xf1\xff\xff\xff\xfc\xff\xff\xff\x10\x00\x00\x00\x0f\x00\x00\x00\x83\xf5\x01\x00A\x00\x00\x00\xf0\xdfz\x00\xd0\xa6')
 >>> print(msg)
 <UBX(NAV-VELNED, iTOW=16:01:50, velN=-3, velE=-15, velD=-4, speed=16, gSpeed=15, heading=128387, sAcc=65, cAcc=8052720)>
 ```
@@ -144,7 +144,7 @@ You can create a `UBXMessage` object by calling the constructor with the followi
 The 'ubxClass' and 'ubxID' parameters may be passed as lookup strings, integers or bytes.
 
 The 'mode' parameter signifies whether the message payload refers to a: 
-* GET message (i.e. output *from* the receiver - **NB** these would normally be generated via the `UBXMessage.parse()` or `UBXReader.read()` methods but can also be created manually)
+* GET message (i.e. output *from* the receiver - **NB** these would normally be generated via the `UBXReader.read()` or `UBXReader.parse()` methods but can also be created manually)
 * SET message (i.e. command input *to* the receiver)
 * POLL message (i.e. query input *to* the receiver in anticipation of a response back)
 

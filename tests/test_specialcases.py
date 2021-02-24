@@ -13,7 +13,7 @@ Created on 3 Oct 2020
 
 import unittest
 
-from pyubx2 import UBXMessage, SET, GET
+from pyubx2 import UBXMessage, UBXReader, SET, GET
 import pyubx2.ubxtypes_configdb as ubxcdb
 
 
@@ -29,39 +29,39 @@ class SpecialTest(unittest.TestCase):
         pass
 
     def testCfg_Rinv2(self):
-        res = UBXMessage.parse(self.cfg_rinv2, True)
+        res = UBXReader.parse(self.cfg_rinv2, True)
         self.assertIsInstance(res, UBXMessage)
 
     def testCfg_Rinv2ID(self):
-        res = UBXMessage.parse(self.cfg_rinv2, True)
+        res = UBXReader.parse(self.cfg_rinv2, True)
         self.assertEqual(res.identity, 'CFG-RINV')
 
     def testCfg_Rinv2Str(self):
-        res = UBXMessage.parse(self.cfg_rinv2, True)
+        res = UBXReader.parse(self.cfg_rinv2, True)
         self.assertEqual(str(res), "<UBX(CFG-RINV, flags=b'\\x03', data_01=7, data_02=4)>")
 
     def testCfg_Rinv7(self):
-        res = UBXMessage.parse(self.cfg_rinv7, True)
+        res = UBXReader.parse(self.cfg_rinv7, True)
         self.assertIsInstance(res, UBXMessage)
 
     def testCfg_Rinv7ID(self):
-        res = UBXMessage.parse(self.cfg_rinv7, True)
+        res = UBXReader.parse(self.cfg_rinv7, True)
         self.assertEqual(res.identity, 'CFG-RINV')
 
     def testCfg_Rinv7Str(self):
-        res = UBXMessage.parse(self.cfg_rinv7, True)
+        res = UBXReader.parse(self.cfg_rinv7, True)
         self.assertEqual(str(res), "<UBX(CFG-RINV, flags=b'\\x03', data_01=1, data_02=2, data_03=3, data_04=4, data_05=5, data_06=6, data_07=7)>")
 
     def testCfg_Rinv0(self):
-        res = UBXMessage.parse(self.cfg_rinv0, True)
+        res = UBXReader.parse(self.cfg_rinv0, True)
         self.assertIsInstance(res, UBXMessage)
 
     def testCfg_Rinv0ID(self):
-        res = UBXMessage.parse(self.cfg_rinv0, True)
+        res = UBXReader.parse(self.cfg_rinv0, True)
         self.assertEqual(res.identity, 'CFG-RINV')
 
     def testCfg_Rinv0Str(self):
-        res = UBXMessage.parse(self.cfg_rinv0, True)
+        res = UBXReader.parse(self.cfg_rinv0, True)
         self.assertEqual(str(res), "<UBX(CFG-RINV, flags=b'\\x03')>")
 
     def testFill_RXMPMREQSET(self):  #  test RXM-PMREQ SET constructor long version with payload keyword
