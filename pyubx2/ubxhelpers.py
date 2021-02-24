@@ -4,19 +4,60 @@ outside the UBXMessage or UBXReader classes
 
 Created on 15 Dec 2020
 
-@author: semuadmin
+:author: semuadmin
+:copyright: SEMU Consulting © 2020
+:license: BSD 3-Clause
 """
 
 from datetime import datetime, timedelta
 from pyubx2.ubxtypes_core import GNSSLIST
 
 
+def calc_checksum(content: bytes) -> bytes:
+    """
+    Calculate checksum using 8-bit Fletcher's algorithm.
+
+    :param bytes content: message content, excluding header and checksum bytes
+    :return: checksum
+    :rtype: bytes
+
+    """
+
+    check_a = 0
+    check_b = 0
+
+    for char in content:
+        check_a += char
+        check_a &= 0xFF
+        check_b += check_a
+        check_b &= 0xFF
+
+    return bytes((check_a, check_b))
+
+
+def isvalid_checksum(message: bytes) -> bool:
+    """
+    Validate message checksum.
+
+    :param bytes message: message including header and checksum bytes
+    :return: checksum valid flag
+    :rtype: bool
+
+    """
+
+    lenm = len(message)
+    ckm = message[lenm - 2 : lenm]
+    return ckm == calc_checksum(message[2 : lenm - 2])
+
+
 def atttyp(att: str) -> str:
     """
-    Helper function to return attribute type as string
+    Helper function to return attribute type as string.
+
     :param str: attribute type e.g. 'U002'
-    :return type of attribute as string e.g. 'U'
-    :rtype str
+    :return: type of attribute as string e.g. 'U'
+    :rtype: str
+
     """
 
     return att[0:1]
@@ -24,10 +65,12 @@ def atttyp(att: str) -> str:
 
 def attsiz(att: str) -> int:
     """
-    Helper function to return attribute size in bytes
+    Helper function to return attribute size in bytes.
+
     :param str: attribute type e.g. 'U002'
-    :return size of attribute in bytes
-    :rtype int
+    :return: size of attribute in bytes
+    :rtype: int
+
     """
 
     return int(att[1:4])
@@ -35,11 +78,12 @@ def attsiz(att: str) -> int:
 
 def itow2utc(itow: int) -> datetime.time:
     """
-    Convert GPS Time Of Week to UTC time
+    Convert GPS Time Of Week to UTC time.
 
     :param int itow: GPS Time Of Week
-    :return UTC time hh.mm.ss
-    :rtype datetime.time
+    :return: UTC time hh.mm.ss
+    :rtype: datetime.time
+
     """
 
     utc = datetime(1980, 1, 6) + timedelta(seconds=(itow / 1000) - (35 - 19))
@@ -48,11 +92,12 @@ def itow2utc(itow: int) -> datetime.time:
 
 def gpsfix2str(fix: int) -> str:
     """
-    Convert GPS fix integer to descriptive string
+    Convert GPS fix integer to descriptive string.
 
-    :param int fix: GPS fix time
-    :return GPS fix type as string
-    :rtype str
+    :param int fix: GPS fix type (0-5)
+    :return: GPS fix type as string
+    :rtype: str
+
     """
 
     if fix == 5:
@@ -72,11 +117,12 @@ def gpsfix2str(fix: int) -> str:
 
 def dop2str(dop: float) -> str:
     """
-    Convert Dilution of Precision float to descriptive string
+    Convert Dilution of Precision float to descriptive string.
 
     :param float dop: dilution of precision as float
-    :return dilution of precision as string
-    :rtype str
+    :return: dilution of precision as string
+    :rtype: str
+
     """
 
     if dop == 1:
@@ -97,11 +143,12 @@ def dop2str(dop: float) -> str:
 def gnss2str(gnss_id: int) -> str:
     """
     Convert GNSS ID to descriptive string
-    ('GPS','GLONASS', etc.)
+    ('GPS', 'GLONASS', etc.).
 
     :param int gnss_id: GNSS identifier as integer (0-6)
-    :return GNSS identifier as string
-    :rtype str
+    :return: GNSS identifier as string
+    :rtype: str
+
     """
 
     try:
@@ -114,11 +161,12 @@ def key_from_val(dictionary: dict, value) -> str:
     """
     Helper method - get dictionary key corresponding to (unique) value.
 
-    :param dict dictionary
+    :param dict dictionary: dictionary
     :param object value: unique dictionary value
-    :return dictionary key
-    :rtype str
-    :raises KeyError: if no key found for value
+    :return: dictionary key
+    :rtype: str
+    :raises: KeyError: if no key found for value
+
     """
 
     val = None

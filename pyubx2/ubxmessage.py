@@ -1,9 +1,11 @@
 """
-UBX Message Protocol Class
+Main UBX Message Protocol Class.
 
 Created on 26 Sep 2020
 
-@author: semuadmin
+:author: semuadmin
+:copyright: SEMU Consulting © 2020
+:license: BSD 3-Clause
 """
 # pylint: disable=invalid-name
 
@@ -14,7 +16,14 @@ import pyubx2.ubxtypes_get as ubg
 import pyubx2.ubxtypes_set as ubs
 import pyubx2.ubxtypes_poll as ubp
 import pyubx2.ubxtypes_configdb as ubcdb
-from pyubx2.ubxhelpers import atttyp, attsiz, itow2utc, gnss2str, key_from_val
+from pyubx2.ubxhelpers import (
+    calc_checksum,
+    atttyp,
+    attsiz,
+    itow2utc,
+    gnss2str,
+    key_from_val,
+)
 
 
 class UBXMessage:
@@ -35,7 +44,8 @@ class UBXMessage:
         :param object msgID: str, int or byte:
         :param int mode: SET, GET or POLL
         :param kwargs: payload key value pairs
-        :raise UBXMessageError
+        :raises: UBXMessageError
+
         """
 
         # object is mutable during initialisation only
@@ -68,7 +78,8 @@ class UBXMessage:
         Where a named attribute is absent, set to a nominal value (zeros or blanks).
 
         :param **kwargs: payload key value pairs
-        :raise UBXTypeError
+        :raises: UBXTypeError
+
         """
 
         offset = 0  # payload offset in bytes
@@ -113,8 +124,9 @@ class UBXMessage:
         :param str key: attribute keyword
         :param list index: repeating group index array
         :param **kwargs: payload key value pairs
-        :return (offset, index[])
-        :rtype tuple
+        :return: (offset, index[])
+        :rtype: tuple
+
         """
 
         att = pdict[key]  # get attribute type
@@ -135,8 +147,9 @@ class UBXMessage:
         :param int offset: payload offset
         :param list index: repeating group index array
         :param **kwargs: payload key value pairs
-        :return (offset, index[])
-        :rtype tuple
+        :return: (offset, index[])
+        :rtype: tuple
+
         """
 
         index.append(0)  # add a (nested) group index
@@ -183,8 +196,9 @@ class UBXMessage:
         :param str key: attribute keyword
         :param list index: repeating group index array
         :param **kwargs: payload key value pairs
-        :return offset
-        :rtype int
+        :return: offset
+        :rtype: int
+
         """
         # pylint: disable=no-member
 
@@ -230,7 +244,8 @@ class UBXMessage:
 
         :param int offset: payload offset
         :param **kwargs:  payload key value pairs
-        :raise UBXMessageError
+        :raises: UBXMessageError
+
         """
 
         KEYLEN = 4
@@ -265,12 +280,10 @@ class UBXMessage:
 
         if self._payload is None:
             self._length = self.val2bytes(0, ubt.U2)
-            self._checksum = self.calc_checksum(
-                self._ubxClass + self._ubxID + self._length
-            )
+            self._checksum = calc_checksum(self._ubxClass + self._ubxID + self._length)
         else:
             self._length = self.val2bytes(len(self._payload), ubt.U2)
-            self._checksum = self.calc_checksum(
+            self._checksum = calc_checksum(
                 self._ubxClass + self._ubxID + self._length + self._payload
             )
 
@@ -281,8 +294,9 @@ class UBXMessage:
         definitions exist for the same ubxClass/ubxID.
 
         :param **kwargs: payload key value pairs
-        :return dictionary representing payload definition
-        :rtype dict
+        :return: dictionary representing payload definition
+        :rtype: dict
+
         """
 
         if self._mode == ubt.POLL:
@@ -316,9 +330,10 @@ class UBXMessage:
 
         :param str mode: 0=GET, 1=SET, 2=POLL
         :param **kwargs: payload key value pairs
-        :return dictionary representing payload definition
-        :rtype dict
-        :raise UBXMessageError
+        :return: dictionary representing payload definition
+        :rtype: dict
+        :raises: UBXMessageError
+
         """
 
         if "type" in kwargs:
@@ -342,9 +357,10 @@ class UBXMessage:
         the 'version' keyword or payload length.
 
         :param **kwargs: payload key value pairs
-        :return dictionary representing payload definition
-        :rtype dict
-        :raise UBXMessageError
+        :return: dictionary representing payload definition
+        :rtype: dict
+        :raises: UBXMessageError
+
         """
         # pylint: disable=no-self-use
 
@@ -369,9 +385,10 @@ class UBXMessage:
         value of 'version' attribute (1st byte of payload).
 
         :param **kwargs: payload key value pairs
-        :return dictionary representing payload definition
-        :rtype dict
-        :raise UBXMessageError
+        :return: dictionary representing payload definition
+        :rtype: dict
+        :raises: UBXMessageError
+
         """
         # pylint: disable=no-self-use
 
@@ -395,9 +412,10 @@ class UBXMessage:
         value of 'type' attribute (2nd byte of payload).
 
         :param **kwargs: payload key value pairs
-        :return dictionary representing payload definition
-        :rtype dict
-        :raise UBXMessageError
+        :return: dictionary representing payload definition
+        :rtype: dict
+        :raises: UBXMessageError
+
         """
         # pylint: disable=no-self-use
 
@@ -421,9 +439,10 @@ class UBXMessage:
         generations of CFG-NMEA message by checking payload length.
 
         :param **kwargs: payload key value pairs
-        :return dictionary representing payload definition
-        :rtype dict
-        :raise UBXMessageError
+        :return: dictionary representing payload definition
+        :rtype: dict
+        :raises: UBXMessageError
+
         """
         # pylint: disable=no-self-use
 
@@ -448,9 +467,10 @@ class UBXMessage:
         in the'flags' attribute.
 
         :param **kwargs: payload key value pairs
-        :return dictionary representing payload definition
-        :rtype dict
-        :raise UBXMessageError
+        :return: dictionary representing payload definition
+        :rtype: dict
+        :raises: UBXMessageError
+
         """
         # pylint: disable=no-self-use
 
@@ -484,8 +504,8 @@ class UBXMessage:
         :param bytes payload : raw payload
         :param int offset: number of bytes in payload before repeating group
         :param int offsetend: number of bytes in payload after repeating group
-        :return number of repeats
-        :rtype int
+        :return: number of repeats
+        :rtype: int
 
         """
         # pylint: disable=no-self-use
@@ -500,8 +520,9 @@ class UBXMessage:
         """
         Human readable representation.
 
-        :return human readable representation
-        :rtype str
+        :return: human readable representation
+        :rtype: str
+
         """
 
         clsid = None
@@ -547,8 +568,9 @@ class UBXMessage:
 
         eval(repr(obj)) = obj
 
-        :return machine readable representation
-        :rtype str
+        :return: machine readable representation
+        :rtype: str
+
         """
 
         if self._payload is None:
@@ -561,7 +583,8 @@ class UBXMessage:
 
         :param str name
         :param object value
-        :raise UBXMessageError
+        :raises: UBXMessageError
+
         """
 
         if self._immutable:
@@ -575,8 +598,9 @@ class UBXMessage:
         """
         Serialize message.
 
-        :return serialized output
-        :rtype bytes
+        :return: serialized output
+        :rtype: bytes
+
         """
 
         output = ubt.UBX_HDR + self._ubxClass + self._ubxID + self._length
@@ -590,9 +614,10 @@ class UBXMessage:
         """
         Returns identity in plain text form e.g. 'CFG-MSG'.
 
-        :return message identity
-        :rtype str
-        :raise UBXMessageError
+        :return: message identity
+        :rtype: str
+        :raises: UBXMessageError
+
         """
 
         try:
@@ -615,8 +640,9 @@ class UBXMessage:
         """
         Class id getter.
 
-        :return message class as bytes
-        :rtype bytes
+        :return: message class as bytes
+        :rtype: bytes
+
         """
         return self._ubxClass
 
@@ -625,8 +651,9 @@ class UBXMessage:
         """
         Message id getter.
 
-        :return message id as bytes
-        :rtype bytes
+        :return: message id as bytes
+        :rtype: bytes
+
         """
 
         return self._ubxID
@@ -636,8 +663,9 @@ class UBXMessage:
         """
         Payload length getter.
 
-        :return payload length as integer
-        :rtype int
+        :return: payload length as integer
+        :rtype: int
+
         """
 
         return UBXMessage.bytes2val(self._length, ubt.U2)
@@ -647,72 +675,12 @@ class UBXMessage:
         """
         Payload getter - returns the raw payload bytes.
 
-        :return raw payload as bytes
-        :rtype bytes
+        :return: raw payload as bytes
+        :rtype: bytes
+
         """
 
         return self._payload
-
-    @staticmethod
-    def parse(message: bytes, validate: bool = False, mode: int = 0) -> object:
-        """
-        Parse UBX byte stream to UBXMessage object.
-
-        Includes option to validate incoming payload length and checksum
-        (UXBMessage will calculate and assign it's own values anyway).
-
-        :param bytes message
-        :param bool validate: Default value = False
-        :param int mode: message mode (0=GET, 1=SET, 2=POLL)
-        :return UBXMessage object
-        :rtype UBXMessage
-        :raise UBXParseError
-        """
-
-        if mode not in (0, 1, 2):
-            raise ube.UBXParseError(f"Invalid message mode {mode} - must be 0, 1 or 2")
-
-        lenm = len(message)
-        hdr = message[0:2]
-        clsid = message[2:3]
-        msgid = message[3:4]
-        lenb = message[4:6]
-        if lenb == b"\x00\x00":
-            payload = None
-            leni = 0
-        else:
-            payload = message[6 : lenm - 2]
-            leni = len(payload)
-        ckm = message[lenm - 2 : lenm]
-        if payload is not None:
-            ckv = UBXMessage.calc_checksum(clsid + msgid + lenb + payload)
-        else:
-            ckv = UBXMessage.calc_checksum(clsid + msgid + lenb)
-        if validate:
-            if hdr != ubt.UBX_HDR:
-                raise ube.UBXParseError(
-                    (f"Invalid message header {hdr}" f" - should be {ubt.UBX_HDR}")
-                )
-            if leni != UBXMessage.bytes2val(lenb, ubt.U2):
-                raise ube.UBXParseError(
-                    (
-                        f"Invalid payload length {lenb}"
-                        f" - should be {UBXMessage.val2bytes(leni, ubt.U2)}"
-                    )
-                )
-            if ckm != ckv:
-                raise ube.UBXParseError(
-                    (f"Message checksum {ckm}" f" invalid - should be {ckv}")
-                )
-        try:
-            if payload is None:
-                return UBXMessage(clsid, msgid, mode)
-            return UBXMessage(clsid, msgid, mode, payload=payload)
-        except KeyError as err:
-            modestr = ["GET", "SET", "POLL"][mode]
-            raise ube.UBXParseError(
-                (f"Unknown message type clsid {clsid}, msgid {msgid}, mode {modestr}")
-            ) from err
 
     @staticmethod
     def msgclass2bytes(msgClass: int, msgID: int) -> bytes:
@@ -720,10 +688,11 @@ class UBXMessage:
         Convert message class/id integers to bytes
         e.g. 6, 1 to b'/x06/x01'.
 
-        :param int msgClass
-        :param int msgID
-        :return message class as bytes
-        :rtype bytes
+        :param int msgClass: message class
+        :param int msgID: message ID
+        :return: message class as bytes
+        :rtype: bytes
+
         """
 
         msgClass = UBXMessage.val2bytes(msgClass, ubt.U1)
@@ -736,11 +705,12 @@ class UBXMessage:
         Convert plain text UBX message class to bytes
         e.g. 'CFG-MSG' to b'/x06/x01'.
 
-        :param str msgClass
-        :param str msgID
-        :return message class as bytes
-        :rtype bytes
-        :raise UBXMessageError
+        :param str msgClass: message class
+        :param str msgID: message ID
+        :return: message class as bytes
+        :rtype: bytes
+        :raises: UBXMessageError
+
         """
 
         try:
@@ -755,13 +725,14 @@ class UBXMessage:
     @staticmethod
     def val2bytes(val, att: str) -> bytes:
         """
-        Return bytes from value for given UBX attribute type.
+        Convert value to bytes for given UBX attribute type.
 
-        :param object val: value
-        :param str att: attribute type
-        :return value as bytes
-        :rtype bytes
-        :raise UBXTypeError
+        :param object val: value e.g. 25
+        :param str att: attribute type e.g. 'U004'
+        :return: value as bytes
+        :rtype: bytes
+        :raises: UBXTypeError
+
         """
 
         if att == ubt.CH:  # single variable-length string (e.g. INF-NOTICE)
@@ -784,13 +755,14 @@ class UBXMessage:
     @staticmethod
     def bytes2val(valb: bytes, att: str) -> object:
         """
-        Return value from bytes for given UBX attribute type.
+        Convert bytes to value for given UBX attribute type.
 
-        :param bytes valb: value in byte format
-        :param str att: attribute type
-        :return value
-        :rtype object
-        :raise UBXTypeError
+        :param bytes valb: value in byte format e.g. b'\x19\x00\x00\x00'
+        :param str att: attribute type e.g. 'U004'
+        :return: value
+        :rtype: object
+        :raises: UBXTypeError
+
         """
 
         if att == ubt.CH:  # single variable-length string (e.g. INF-NOTICE)
@@ -810,50 +782,16 @@ class UBXMessage:
         return val
 
     @staticmethod
-    def calc_checksum(content: bytes) -> bytes:
-        """
-        Calculate checksum using 8-bit Fletcher's algorithm.
-
-        :param bytes content: message content, excluding header and checksum bytes
-        :return checksum
-        :rtype bytes
-        """
-
-        check_a = 0
-        check_b = 0
-
-        for char in content:
-            check_a += char
-            check_a &= 0xFF
-            check_b += check_a
-            check_b &= 0xFF
-
-        return bytes((check_a, check_b))
-
-    @staticmethod
-    def isvalid_checksum(message: bytes) -> bool:
-        """
-        Validate input message's checksum.
-
-        :param bytes message: message including header and checksum
-        :return checksum valid flag
-        :rtype bool
-        """
-
-        lenm = len(message)
-        ckm = message[lenm - 2 : lenm]
-        return ckm == UBXMessage.calc_checksum(message[2 : lenm - 2])
-
-    @staticmethod
     def cfgname2key(name: str) -> tuple:
         """
         Return hexadecimal key and data type for given
         configuration database key name.
 
         :param str name: config database key name as string
-        :return tuple of (key: int, type: str)
-        :rtype tuple: (int, str)
-        :raise UBXMessageError
+        :return: tuple of (key, type)
+        :rtype: tuple: (int, str)
+        :raises: UBXMessageError
+
         """
         try:
             return ubcdb.UBX_CONFIG_DATABASE[name]
@@ -869,9 +807,10 @@ class UBXMessage:
         configuration database hexadecimal key.
 
         :param int keyID: config key as integer
-        :return tuple of (keyname: str, type: str)
-        :rtype tuple: (str, str)
-        :raise UBXMessageError
+        :return: tuple of (keyname, type)
+        :rtype: tuple: (str, str)
+        :raises: UBXMessageError
+
         """
 
         val = None
@@ -891,9 +830,10 @@ class UBXMessage:
         :param int layers: memory layer(s) (1=RAM, 2=BBR, 4=Flash)
         :param int transaction: 0=no txn, 1=start txn, 2=continue txn, 3=apply txn
         :param list cfgData: list of up to 64 tuples (key, value)
-        :return UBXMessage CFG-VALSET
-        :rtype UBXMessage
-        :raise UBXMessageError
+        :return: UBXMessage CFG-VALSET
+        :rtype: UBXMessage
+        :raises: UBXMessageError
+
         """
 
         num = len(cfgData)
@@ -933,9 +873,10 @@ class UBXMessage:
         :param int layers: memory layer(s) 2=BBR, 4=Flash
         :param int transaction: 0=no txn, 1=start txn, 2=continue txn, 3=apply txn
         :param list keys: array of up to 64 keys as int (keyID) or string (keyname)
-        :return UBXMessage CFG-VALDEL
-        :rtype UBXMessage
-        :raise UBXMessageError
+        :return: UBXMessage CFG-VALDEL
+        :rtype: UBXMessage
+        :raises: UBXMessageError
+
         """
 
         num = len(keys)
@@ -968,9 +909,10 @@ class UBXMessage:
         :param int layer: memory layer 0=RAM, 1=BBR, 2=Flash, 7 = Default
         :param int position: number of keys to skip before returning result
         :param list keys: array of up to 64 keys as int (keyID) or str (keyname)
-        :return UBXMessage CFG-VALGET
-        :rtype UBXMessage
-        :raise UBXMessageError
+        :return: UBXMessage CFG-VALGET
+        :rtype: UBXMessage
+        :raises: UBXMessageError
+
         """
 
         num = len(keys)
