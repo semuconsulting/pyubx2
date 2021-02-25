@@ -8,6 +8,7 @@ Pipfile*.*
 /htmlcov
 /build
 /dist
+/docs
 /references
 /pyubx2_*
 /pyubx2-*

@@ -23,7 +23,7 @@ This is an independent project and we have no affiliation whatsoever with u-blox
 At time of writing the library implements a comprehensive set of inbound (SET/POLL) and outbound (GET) messages for
 u-blox GPS/GNSS devices from generation 6 through generation 10 [(NEO-M6*, NEO-M7*, NEO-M8*, NEO-M9*, NEO-D9*, RCB-F9*, ZED-F9*, MAX-M10S, etc.)](https://www.u-blox.com/en/positioning-chips-and-modules), but is readily [extensible](#extensibility). Refer to `UBX_MSGIDS` in [ubxtypes_core.py](https://github.com/semuconsulting/pyubx2/blob/master/pyubx2/ubxtypes_core.py) for the complete dictionary of messages currently supported.
 
-Sphinx API Documentation in HTML format is available in the [docs](https://github.com/semuconsulting/pyubx2/tree/master/docs/_build/html) folder.
+Sphinx API Documentation in HTML format is available at [http://semuconsulting.com/pyubx2](http://semuconsulting.com/pyubx2).
 
 Contributions welcome - please refer to [CONTRIBUTING.MD](https://github.com/semuconsulting/pyubx2/blob/master/CONTRIBUTING.md).
 
