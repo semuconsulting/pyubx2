@@ -136,12 +136,12 @@ e.g. the `NAV-POSLLH` message has the following properties:
 (see [below](#configinterface) for special methods relating to the UBX configuration interface)
 
 You can create a `UBXMessage` object by calling the constructor with the following parameters:
-1. ubxClass
-2. ubxID
+1. message class (must be a valid class from `pyubx2.UBX_CLASSES`)
+2. message id (must be a valid id from `pyubx2.UBX_MSGIDS`)
 3. mode (0=GET, 1=SET, 2=POLL)
 4. (optional) a series of keyword parameters representing the message payload
 
-The 'ubxClass' and 'ubxID' parameters may be passed as lookup strings, integers or bytes.
+The 'message class' and 'message id' parameters may be passed as lookup strings, integers or bytes.
 
 The 'mode' parameter signifies whether the message payload refers to a: 
 * GET message (i.e. output *from* the receiver - **NB** these would normally be generated via the `UBXReader.read()` or `UBXReader.parse()` methods but can also be created manually)

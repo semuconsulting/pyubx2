@@ -1,0 +1,948 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>pyubx2 package &mdash; pyubx2 1.0.4 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> pyubx2
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">pyubx2 package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-pyubx2.exceptions">pyubx2.exceptions module</a></li>
+<li><a class="reference internal" href="#module-pyubx2.ubxhelpers">pyubx2.ubxhelpers module</a></li>
+<li><a class="reference internal" href="#module-pyubx2.ubxmessage">pyubx2.ubxmessage module</a></li>
+<li><a class="reference internal" href="#module-pyubx2.ubxreader">pyubx2.ubxreader module</a></li>
+<li><a class="reference internal" href="#module-pyubx2.ubxtypes_configdb">pyubx2.ubxtypes_configdb module</a></li>
+<li><a class="reference internal" href="#module-pyubx2.ubxtypes_core">pyubx2.ubxtypes_core module</a></li>
+<li><a class="reference internal" href="#module-pyubx2.ubxtypes_get">pyubx2.ubxtypes_get module</a></li>
+<li><a class="reference internal" href="#module-pyubx2.ubxtypes_poll">pyubx2.ubxtypes_poll module</a></li>
+<li><a class="reference internal" href="#module-pyubx2.ubxtypes_set">pyubx2.ubxtypes_set module</a></li>
+<li><a class="reference internal" href="#module-pyubx2">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pyubx2</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>pyubx2 package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/pyubx2.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="pyubx2-package">
+<h1>pyubx2 package<a class="headerlink" href="#pyubx2-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-pyubx2.exceptions">
+<span id="pyubx2-exceptions-module"></span><h2>pyubx2.exceptions module<a class="headerlink" href="#module-pyubx2.exceptions" title="Permalink to this headline">¶</a></h2>
+<p>UBX Custom Exception Types</p>
+<p>Created on 27 Sep 2020</p>
+<dl class="field-list simple">
+<dt class="field-odd">author</dt>
+<dd class="field-odd"><p>semuadmin</p>
+</dd>
+<dt class="field-even">copyright</dt>
+<dd class="field-even"><p>SEMU Consulting © 2020</p>
+</dd>
+<dt class="field-odd">license</dt>
+<dd class="field-odd"><p>BSD 3-Clause</p>
+</dd>
+</dl>
+<dl class="py exception">
+<dt id="pyubx2.exceptions.UBXMessageError">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">pyubx2.exceptions.</span></code><code class="sig-name descname"><span class="pre">UBXMessageError</span></code><a class="headerlink" href="#pyubx2.exceptions.UBXMessageError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>UBX Undefined message class/id.
+Essentially a prompt to add missing payload types to UBX_PAYLOADS.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="pyubx2.exceptions.UBXParseError">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">pyubx2.exceptions.</span></code><code class="sig-name descname"><span class="pre">UBXParseError</span></code><a class="headerlink" href="#pyubx2.exceptions.UBXParseError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>UBX Parsing error.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="pyubx2.exceptions.UBXStreamError">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">pyubx2.exceptions.</span></code><code class="sig-name descname"><span class="pre">UBXStreamError</span></code><a class="headerlink" href="#pyubx2.exceptions.UBXStreamError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>UBX Streaming error.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="pyubx2.exceptions.UBXTypeError">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">pyubx2.exceptions.</span></code><code class="sig-name descname"><span class="pre">UBXTypeError</span></code><a class="headerlink" href="#pyubx2.exceptions.UBXTypeError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>UBX Undefined payload attribute type.
+Essentially a prompt to fix incorrect payload definitions to UBX_PAYLOADS.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pyubx2.ubxhelpers">
+<span id="pyubx2-ubxhelpers-module"></span><h2>pyubx2.ubxhelpers module<a class="headerlink" href="#module-pyubx2.ubxhelpers" title="Permalink to this headline">¶</a></h2>
+<p>Collection of UBX helper methods which can be used
+outside the UBXMessage or UBXReader classes</p>
+<p>Created on 15 Dec 2020</p>
+<dl class="field-list simple">
+<dt class="field-odd">author</dt>
+<dd class="field-odd"><p>semuadmin</p>
+</dd>
+<dt class="field-even">copyright</dt>
+<dd class="field-even"><p>SEMU Consulting © 2020</p>
+</dd>
+<dt class="field-odd">license</dt>
+<dd class="field-odd"><p>BSD 3-Clause</p>
+</dd>
+</dl>
+<dl class="py function">
+<dt id="pyubx2.ubxhelpers.attsiz">
+<code class="sig-prename descclassname"><span class="pre">pyubx2.ubxhelpers.</span></code><code class="sig-name descname"><span class="pre">attsiz</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">att</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">int</span><a class="headerlink" href="#pyubx2.ubxhelpers.attsiz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function to return attribute size in bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>str</strong> – attribute type e.g. ‘U002’</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>size of attribute in bytes</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pyubx2.ubxhelpers.atttyp">
+<code class="sig-prename descclassname"><span class="pre">pyubx2.ubxhelpers.</span></code><code class="sig-name descname"><span class="pre">atttyp</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">att</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#pyubx2.ubxhelpers.atttyp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function to return attribute type as string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>str</strong> – attribute type e.g. ‘U002’</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>type of attribute as string e.g. ‘U’</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pyubx2.ubxhelpers.calc_checksum">
+<code class="sig-prename descclassname"><span class="pre">pyubx2.ubxhelpers.</span></code><code class="sig-name descname"><span class="pre">calc_checksum</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">content</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bytes</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bytes</span><a class="headerlink" href="#pyubx2.ubxhelpers.calc_checksum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate checksum using 8-bit Fletcher’s algorithm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>content</strong> (<em>bytes</em>) – message content, excluding header and checksum bytes</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>checksum</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bytes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pyubx2.ubxhelpers.dop2str">
+<code class="sig-prename descclassname"><span class="pre">pyubx2.ubxhelpers.</span></code><code class="sig-name descname"><span class="pre">dop2str</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dop</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#pyubx2.ubxhelpers.dop2str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert Dilution of Precision float to descriptive string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dop</strong> (<em>float</em>) – dilution of precision as float</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>dilution of precision as string</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pyubx2.ubxhelpers.gnss2str">
+<code class="sig-prename descclassname"><span class="pre">pyubx2.ubxhelpers.</span></code><code class="sig-name descname"><span class="pre">gnss2str</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gnss_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#pyubx2.ubxhelpers.gnss2str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert GNSS ID to descriptive string
+(‘GPS’, ‘GLONASS’, etc.).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>gnss_id</strong> (<em>int</em>) – GNSS identifier as integer (0-6)</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>GNSS identifier as string</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pyubx2.ubxhelpers.gpsfix2str">
+<code class="sig-prename descclassname"><span class="pre">pyubx2.ubxhelpers.</span></code><code class="sig-name descname"><span class="pre">gpsfix2str</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fix</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#pyubx2.ubxhelpers.gpsfix2str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert GPS fix integer to descriptive string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fix</strong> (<em>int</em>) – GPS fix type (0-5)</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>GPS fix type as string</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pyubx2.ubxhelpers.isvalid_checksum">
+<code class="sig-prename descclassname"><span class="pre">pyubx2.ubxhelpers.</span></code><code class="sig-name descname"><span class="pre">isvalid_checksum</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bytes</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="headerlink" href="#pyubx2.ubxhelpers.isvalid_checksum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate message checksum.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>message</strong> (<em>bytes</em>) – message including header and checksum bytes</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>checksum valid flag</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pyubx2.ubxhelpers.itow2utc">
+<code class="sig-prename descclassname"><span class="pre">pyubx2.ubxhelpers.</span></code><code class="sig-name descname"><span class="pre">itow2utc</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">itow</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None.datetime.time</span><a class="headerlink" href="#pyubx2.ubxhelpers.itow2utc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert GPS Time Of Week to UTC time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>itow</strong> (<em>int</em>) – GPS Time Of Week</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>UTC time hh.mm.ss</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>datetime.time</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="pyubx2.ubxhelpers.key_from_val">
+<code class="sig-prename descclassname"><span class="pre">pyubx2.ubxhelpers.</span></code><code class="sig-name descname"><span class="pre">key_from_val</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dictionary</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#pyubx2.ubxhelpers.key_from_val" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper method - get dictionary key corresponding to (unique) value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dictionary</strong> (<em>dict</em>) – dictionary</p></li>
+<li><p><strong>value</strong> (<em>object</em>) – unique dictionary value</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>dictionary key</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p>KeyError: if no key found for value</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pyubx2.ubxmessage">
+<span id="pyubx2-ubxmessage-module"></span><h2>pyubx2.ubxmessage module<a class="headerlink" href="#module-pyubx2.ubxmessage" title="Permalink to this headline">¶</a></h2>
+<p>Main UBX Message Protocol Class.</p>
+<p>Created on 26 Sep 2020</p>
+<dl class="field-list simple">
+<dt class="field-odd">author</dt>
+<dd class="field-odd"><p>semuadmin</p>
+</dd>
+<dt class="field-even">copyright</dt>
+<dd class="field-even"><p>SEMU Consulting © 2020</p>
+</dd>
+<dt class="field-odd">license</dt>
+<dd class="field-odd"><p>BSD 3-Clause</p>
+</dd>
+</dl>
+<dl class="py class">
+<dt id="pyubx2.ubxmessage.UBXMessage">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">pyubx2.ubxmessage.</span></code><code class="sig-name descname"><span class="pre">UBXMessage</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ubxClass</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ubxID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyubx2.ubxmessage.UBXMessage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>UBX Message Class.</p>
+<dl class="py method">
+<dt id="pyubx2.ubxmessage.UBXMessage.bytes2val">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">bytes2val</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">valb</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bytes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">att</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">object</span><a class="headerlink" href="#pyubx2.ubxmessage.UBXMessage.bytes2val" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert bytes to value for given UBX attribute type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>valb</strong> (<em>bytes</em>) – value in byte format e.g. b’'</p></li>
+<li><p><strong>att</strong> (<em>str</em>) – attribute type e.g. ‘U004’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>value</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>object</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p>UBXTypeError</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyubx2.ubxmessage.UBXMessage.cfgkey2name">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">cfgkey2name</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keyID</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">tuple</span><a class="headerlink" href="#pyubx2.ubxmessage.UBXMessage.cfgkey2name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return key name and data type for given
+configuration database hexadecimal key.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>keyID</strong> (<em>int</em>) – config key as integer</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>tuple of (keyname, type)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple: (str, str)</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p>UBXMessageError</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyubx2.ubxmessage.UBXMessage.cfgname2key">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">cfgname2key</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">tuple</span><a class="headerlink" href="#pyubx2.ubxmessage.UBXMessage.cfgname2key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return hexadecimal key and data type for given
+configuration database key name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – config database key name as string</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>tuple of (key, type)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple: (int, str)</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p>UBXMessageError</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyubx2.ubxmessage.UBXMessage.config_del">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">config_del</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layers</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transaction</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">object</span><a class="headerlink" href="#pyubx2.ubxmessage.UBXMessage.config_del" title="Permalink to this definition">¶</a></dt>
+<dd><p>Construct CFG-VALDEL message from an array of
+configuration database keys, which can be in int (keyID)
+or str (keyname) format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layers</strong> (<em>int</em>) – memory layer(s) 2=BBR, 4=Flash</p></li>
+<li><p><strong>transaction</strong> (<em>int</em>) – 0=no txn, 1=start txn, 2=continue txn, 3=apply txn</p></li>
+<li><p><strong>keys</strong> (<em>list</em>) – array of up to 64 keys as int (keyID) or string (keyname)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>UBXMessage CFG-VALDEL</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pyubx2.ubxmessage.UBXMessage" title="pyubx2.ubxmessage.UBXMessage">UBXMessage</a></p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p>UBXMessageError</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyubx2.ubxmessage.UBXMessage.config_poll">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">config_poll</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">object</span><a class="headerlink" href="#pyubx2.ubxmessage.UBXMessage.config_poll" title="Permalink to this definition">¶</a></dt>
+<dd><p>Construct CFG-VALGET message from an array of
+configuration database keys, which can be in int (keyID)
+or str (keyname) format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layer</strong> (<em>int</em>) – memory layer 0=RAM, 1=BBR, 2=Flash, 7 = Default</p></li>
+<li><p><strong>position</strong> (<em>int</em>) – number of keys to skip before returning result</p></li>
+<li><p><strong>keys</strong> (<em>list</em>) – array of up to 64 keys as int (keyID) or str (keyname)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>UBXMessage CFG-VALGET</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pyubx2.ubxmessage.UBXMessage" title="pyubx2.ubxmessage.UBXMessage">UBXMessage</a></p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p>UBXMessageError</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyubx2.ubxmessage.UBXMessage.config_set">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">config_set</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layers</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transaction</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cfgData</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">object</span><a class="headerlink" href="#pyubx2.ubxmessage.UBXMessage.config_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Construct CFG-VALSET message from an array of
+configuration database (key, value) tuples. Keys
+can be in int (keyID) or str (keyname) format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layers</strong> (<em>int</em>) – memory layer(s) (1=RAM, 2=BBR, 4=Flash)</p></li>
+<li><p><strong>transaction</strong> (<em>int</em>) – 0=no txn, 1=start txn, 2=continue txn, 3=apply txn</p></li>
+<li><p><strong>cfgData</strong> (<em>list</em>) – list of up to 64 tuples (key, value)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>UBXMessage CFG-VALSET</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pyubx2.ubxmessage.UBXMessage" title="pyubx2.ubxmessage.UBXMessage">UBXMessage</a></p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p>UBXMessageError</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyubx2.ubxmessage.UBXMessage.identity">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">identity</span></code><a class="headerlink" href="#pyubx2.ubxmessage.UBXMessage.identity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns identity in plain text form e.g. ‘CFG-MSG’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>message identity</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p>UBXMessageError</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyubx2.ubxmessage.UBXMessage.length">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">length</span></code><a class="headerlink" href="#pyubx2.ubxmessage.UBXMessage.length" title="Permalink to this definition">¶</a></dt>
+<dd><p>Payload length getter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>payload length as integer</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyubx2.ubxmessage.UBXMessage.msg_cls">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">msg_cls</span></code><a class="headerlink" href="#pyubx2.ubxmessage.UBXMessage.msg_cls" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class id getter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>message class as bytes</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bytes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyubx2.ubxmessage.UBXMessage.msg_id">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">msg_id</span></code><a class="headerlink" href="#pyubx2.ubxmessage.UBXMessage.msg_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Message id getter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>message id as bytes</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bytes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyubx2.ubxmessage.UBXMessage.msgclass2bytes">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">msgclass2bytes</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msgClass</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">msgID</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bytes</span><a class="headerlink" href="#pyubx2.ubxmessage.UBXMessage.msgclass2bytes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert message class/id integers to bytes
+e.g. 6, 1 to b’/x06/x01’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msgClass</strong> (<em>int</em>) – message class</p></li>
+<li><p><strong>msgID</strong> (<em>int</em>) – message ID</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>message class as bytes</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bytes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyubx2.ubxmessage.UBXMessage.msgstr2bytes">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">msgstr2bytes</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msgClass</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">msgID</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bytes</span><a class="headerlink" href="#pyubx2.ubxmessage.UBXMessage.msgstr2bytes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert plain text UBX message class to bytes
+e.g. ‘CFG-MSG’ to b’/x06/x01’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msgClass</strong> (<em>str</em>) – message class</p></li>
+<li><p><strong>msgID</strong> (<em>str</em>) – message ID</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>message class as bytes</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bytes</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p>UBXMessageError</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyubx2.ubxmessage.UBXMessage.payload">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">payload</span></code><a class="headerlink" href="#pyubx2.ubxmessage.UBXMessage.payload" title="Permalink to this definition">¶</a></dt>
+<dd><p>Payload getter - returns the raw payload bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>raw payload as bytes</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bytes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyubx2.ubxmessage.UBXMessage.serialize">
+<code class="sig-name descname"><span class="pre">serialize</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">bytes</span><a class="headerlink" href="#pyubx2.ubxmessage.UBXMessage.serialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Serialize message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>serialized output</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bytes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyubx2.ubxmessage.UBXMessage.val2bytes">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">val2bytes</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">att</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bytes</span><a class="headerlink" href="#pyubx2.ubxmessage.UBXMessage.val2bytes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert value to bytes for given UBX attribute type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>val</strong> (<em>object</em>) – value e.g. 25</p></li>
+<li><p><strong>att</strong> (<em>str</em>) – attribute type e.g. ‘U004’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>value as bytes</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bytes</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p>UBXTypeError</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pyubx2.ubxreader">
+<span id="pyubx2-ubxreader-module"></span><h2>pyubx2.ubxreader module<a class="headerlink" href="#module-pyubx2.ubxreader" title="Permalink to this headline">¶</a></h2>
+<p>UBXReader class.</p>
+<p>Reads and parses individual UBX messages from any stream which supports a read(n) -&gt; bytes method.</p>
+<p>Returns both the raw binary data (as bytes) and the parsed data (as a UBXMessage object).</p>
+<p>If the ‘validate’ parameter is set to ‘True’, the reader will raise a UBXStreamerError if
+it encounters any non-UBX data. Otherwise, it will ignore the non-UBX data and attempt
+to carry on.</p>
+<p>Created on 2 Oct 2020</p>
+<dl class="field-list simple">
+<dt class="field-odd">author</dt>
+<dd class="field-odd"><p>semuadmin</p>
+</dd>
+<dt class="field-even">copyright</dt>
+<dd class="field-even"><p>SEMU Consulting © 2020</p>
+</dd>
+<dt class="field-odd">license</dt>
+<dd class="field-odd"><p>BSD 3-Clause</p>
+</dd>
+</dl>
+<dl class="py class">
+<dt id="pyubx2.ubxreader.UBXReader">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">pyubx2.ubxreader.</span></code><code class="sig-name descname"><span class="pre">UBXReader</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stream</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyubx2.ubxreader.UBXReader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>UBXReader class.</p>
+<dl class="py method">
+<dt id="pyubx2.ubxreader.UBXReader.parse">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">parse</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bytes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">object</span><a class="headerlink" href="#pyubx2.ubxreader.UBXReader.parse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse UBX byte stream to UBXMessage object.</p>
+<p>Includes option to validate incoming payload length and checksum
+(the UBXMessage constructor can calculate and assign its own values anyway).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>message</strong> (<em>bytes</em>) – binary message to parse</p></li>
+<li><p><strong>validate</strong> (<em>bool</em>) – whether to validate message length and checksum (True/False)</p></li>
+<li><p><strong>mode</strong> (<em>int</em>) – message mode (0=GET, 1=SET, 2=POLL)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>UBXMessage object</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pyubx2.ubxmessage.UBXMessage" title="pyubx2.ubxmessage.UBXMessage">UBXMessage</a></p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p>UBXParseError</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyubx2.ubxreader.UBXReader.read">
+<code class="sig-name descname"><span class="pre">read</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">)</span> <span class="pre">-&gt;</span> <span class="pre">(&lt;class</span> <span class="pre">'bytes'&gt;</span></em>, <em class="sig-param"><span class="pre">&lt;class</span> <span class="pre">'pyubx2.ubxmessage.UBXMessage'&gt;</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyubx2.ubxreader.UBXReader.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the binary data from the stream buffer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>tuple of (raw_data as bytes, parsed_data as UBXMessage)</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>tuple</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p>UBXStreamError</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pyubx2.ubxtypes_configdb">
+<span id="pyubx2-ubxtypes-configdb-module"></span><h2>pyubx2.ubxtypes_configdb module<a class="headerlink" href="#module-pyubx2.ubxtypes_configdb" title="Permalink to this headline">¶</a></h2>
+<p>UBX Protocol Configuration Database Keys</p>
+<p>Used by CFG-VALGET, CFG-VALSET and CFG-VALDEL message types</p>
+<p>Format:
+“keyname”: (keyID, “type”)</p>
+<p>Created on 30 Nov 2020</p>
+<dl class="field-list simple">
+<dt class="field-odd">author</dt>
+<dd class="field-odd"><p>semuadmin</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="module-pyubx2.ubxtypes_core">
+<span id="pyubx2-ubxtypes-core-module"></span><h2>pyubx2.ubxtypes_core module<a class="headerlink" href="#module-pyubx2.ubxtypes_core" title="Permalink to this headline">¶</a></h2>
+<p>UBX Protocol core globals and constants</p>
+<p>Created on 27 Sep 2020</p>
+<dl class="field-list simple">
+<dt class="field-odd">author</dt>
+<dd class="field-odd"><p>semuadmin</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="module-pyubx2.ubxtypes_get">
+<span id="pyubx2-ubxtypes-get-module"></span><h2>pyubx2.ubxtypes_get module<a class="headerlink" href="#module-pyubx2.ubxtypes_get" title="Permalink to this headline">¶</a></h2>
+<p>UBX Protocol Output payload definitions</p>
+<p>THESE ARE THE PAYLOAD DEFINITIONS FOR _GET_ MESSAGES _FROM_ THE RECEIVER
+(i.e. Periodic Navigation Data, Poll Responses, Info messages)</p>
+<p>NB: Attribute names must be unique within each message class/id</p>
+<dl>
+<dt>NB: Repeating groups must be defined as a tuple thus</dt><dd><p>‘group’: (‘numr’, {dict})
+where
+- ‘numr’ is either:</p>
+<blockquote>
+<div><ol class="loweralpha simple">
+<li><p>an integer representing a fixed number of repeats e.g 32</p></li>
+<li><p>a string representing the name of a preceding attribute
+containing the number of repeats e.g. ‘numCh’</p></li>
+<li><p>‘None’ for a ‘variable by size’ repeating group
+(only one such group is permitted per message type)</p></li>
+</ol>
+</div></blockquote>
+<ul class="simple">
+<li><p>{dict} is the nested dictionary containing the repeating
+attributes</p></li>
+</ul>
+</dd>
+</dl>
+<p>Created on 27 Sep 2020</p>
+<dl class="field-list simple">
+<dt class="field-odd">author</dt>
+<dd class="field-odd"><p>semuadmin</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="module-pyubx2.ubxtypes_poll">
+<span id="pyubx2-ubxtypes-poll-module"></span><h2>pyubx2.ubxtypes_poll module<a class="headerlink" href="#module-pyubx2.ubxtypes_poll" title="Permalink to this headline">¶</a></h2>
+<p>UBX Protocol Polling payload definitions</p>
+<p>THESE ARE THE PAYLOAD DEFINITIONS FOR _POLL_ MESSAGES _TO_ THE RECEIVER
+Response payloads are defined in UBX_PAYLOADS_GET</p>
+<p>NB: Attribute names must be unique within each message class/id</p>
+<p>Created on 27 Sep 2020</p>
+<dl class="field-list simple">
+<dt class="field-odd">author</dt>
+<dd class="field-odd"><p>semuadmin</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="module-pyubx2.ubxtypes_set">
+<span id="pyubx2-ubxtypes-set-module"></span><h2>pyubx2.ubxtypes_set module<a class="headerlink" href="#module-pyubx2.ubxtypes_set" title="Permalink to this headline">¶</a></h2>
+<p>UBX Protocol Input payload definitions</p>
+<p>THESE ARE THE PAYLOAD DEFINITIONS FOR _SET_ MESSAGES _TO_ THE RECEIVER</p>
+<p>NB: Attribute names must be unique within each message class/id</p>
+<dl>
+<dt>NB: Repeating groups must be defined as a tuple thus:</dt><dd><p>‘group’: (‘numr’, {dict})
+where
+- ‘numr’ is either:</p>
+<blockquote>
+<div><ol class="loweralpha simple">
+<li><p>an integer representing a fixed number of repeats e.g 32</p></li>
+<li><p>a string representing the name of a preceding attribute
+containing the number of repeats e.g. ‘numCh’</p></li>
+<li><p>‘None’ for a ‘variable by size’ repeating group
+(only one such group is permitted per message type)</p></li>
+</ol>
+</div></blockquote>
+<ul class="simple">
+<li><p>{dict} is the nested dictionary containing the repeating
+attributes</p></li>
+</ul>
+</dd>
+</dl>
+<p>Created on 27 Sep 2020</p>
+<dl class="field-list simple">
+<dt class="field-odd">author</dt>
+<dd class="field-odd"><p>semuadmin</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="module-pyubx2">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pyubx2" title="Permalink to this headline">¶</a></h2>
+<p>Created on 27 Sep 2020</p>
+<dl class="field-list simple">
+<dt class="field-odd">author</dt>
+<dd class="field-odd"><p>semuadmin</p>
+</dd>
+<dt class="field-even">copyright</dt>
+<dd class="field-even"><p>SEMU Consulting © 2020</p>
+</dd>
+<dt class="field-odd">license</dt>
+<dd class="field-odd"><p>BSD 3-Clause</p>
+</dd>
+</dl>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, SEMU Consulting.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
