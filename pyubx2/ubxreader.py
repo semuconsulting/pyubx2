@@ -5,7 +5,7 @@ Reads and parses individual UBX messages from any stream which supports a read(n
 
 Returns both the raw binary data (as bytes) and the parsed data (as a UBXMessage object).
 
-If the 'validate' parameter is set to 'True', the reader will raise a UBXStreamerError if
+If the 'ubx_only' parameter is set to 'True', the reader will raise a UBXStreamerError if
 it encounters any non-UBX data. Otherwise, it will ignore the non-UBX data and attempt
 to carry on.
 
@@ -21,7 +21,7 @@ from pyubx2.ubxhelpers import calc_checksum
 import pyubx2.ubxtypes_core as ubt
 import pyubx2.exceptions as ube
 
-NMEAMSG = "Looks like NMEA data. Set validate to 'False' to ignore."
+NMEAMSG = "Looks like NMEA data. Set ubx_only flag to 'False' to ignore."
 
 
 class UBXReader:
@@ -29,13 +29,13 @@ class UBXReader:
     UBXReader class.
     """
 
-    def __init__(self, stream, validate: bool = False, mode: int = 0):
+    def __init__(self, stream, ubx_only: bool = False, mode: int = 0):
         """Constructor.
 
         :param stream stream: input data stream
-        :param bool validate: validate (y/n)
-        :param int mode: message mode (0=GET, 1=SET, 2=POLL)
-        :raises: UBXStreamError
+        :param bool ubx_only: check for non-UBX data (False (ignore - default), True (reject))
+        :param int mode: message mode (0=GET (default), 1=SET, 2=POLL)
+        :raises: UBXStreamError (if mode is invalid)
 
         """
 
@@ -43,7 +43,7 @@ class UBXReader:
             raise ube.UBXStreamError(f"Invalid stream mode {mode} - must be 0, 1 or 2")
 
         self._stream = stream
-        self._validate = validate
+        self._ubx_only = ubx_only
         self._mode = mode
 
     def __iter__(self):
@@ -72,7 +72,7 @@ class UBXReader:
 
         :return: tuple of (raw_data as bytes, parsed_data as UBXMessage)
         :rtype: tuple
-        :raises: UBXStreamError
+        :raises: UBXStreamError (if ubx_only=True and stream includes non-UBX data)
 
         """
 
@@ -114,7 +114,7 @@ class UBXReader:
                 byte1 = self._stream.read(1)
                 if prevbyte == b"\x24" and byte1 in (b"\x47", b"\x50"):  # "$G" or "$P"
                     is_nmea = True  # looks like an NMEA message
-                if self._validate:  # raise error and quit
+                if self._ubx_only:  # raise error and quit
                     nmeawarn = NMEAMSG if is_nmea else ""
                     raise ube.UBXStreamError(
                         f"Unknown data header {prevbyte + byte1}. {nmeawarn}"
@@ -131,11 +131,11 @@ class UBXReader:
         (the UBXMessage constructor can calculate and assign its own values anyway).
 
         :param bytes message: binary message to parse
-        :param bool validate: whether to validate message length and checksum (True/False)
-        :param int mode: message mode (0=GET, 1=SET, 2=POLL)
+        :param bool validate: validate message length and checksum (False (default), True)
+        :param int mode: message mode (0=GET (default), 1=SET, 2=POLL)
         :return: UBXMessage object
         :rtype: UBXMessage
-        :raises: UBXParseError
+        :raises: UBXParseError (if data stream contains invalid data or unknown message type)
 
         """
 

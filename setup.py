@@ -26,6 +26,7 @@ setuptools.setup(
     project_urls={
         "Bug Tracker": "https://github.com/semuconsulting/pyubx2",
         "Documentation": "https://github.com/semuconsulting/pyubx2",
+        "Sphinx API Documentation": "http://semuconsulting.com/pyubx2",
         "Source Code": "https://github.com/semuconsulting/pyubx2",
     },
     classifiers=[

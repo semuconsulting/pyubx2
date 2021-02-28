@@ -174,3 +174,25 @@ def key_from_val(dictionary: dict, value) -> str:
         if val == value:
             return key
     raise KeyError(f"No key found for value {value}")
+
+
+def get_bits(bitfield: bytes, bitmask: int) -> int:
+    """
+    Get integer value of specified (masked) bit(s) in a UBX bitfield (attribute type 'X')
+
+    e.g. to get value of bits 6,7 in bitfield b'\\\\x89' (binary 0b10001001)::
+
+        get_bits(b'\\x89', 0b11000000) = get_bits(b'\\x89', 192) = 2
+
+    :param bytes bitfield: bitfield byte(s)
+    :param int bitmask: bitmask as integer (= Σ(2**n), where n is the number of the bit)
+    :return: value of masked bit(s)
+    :rtype: int
+    """
+
+    i = 0
+    val = int(bitfield.hex(), 16)
+    while bitmask & 1 == 0:
+        bitmask = bitmask >> 1
+        i += 1
+    return val >> i & bitmask

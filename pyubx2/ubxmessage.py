@@ -23,6 +23,7 @@ from pyubx2.ubxhelpers import (
     itow2utc,
     gnss2str,
     key_from_val,
+    get_bits,
 )
 
 
@@ -40,10 +41,10 @@ class UBXMessage:
         Otherwise, any named attributes will be assigned the value given, all others will
         be assigned a nominal value according to type.
 
-        :param object msgClass: str, int or byte:
-        :param object msgID: str, int or byte:
-        :param int mode: SET, GET or POLL
-        :param kwargs: payload key value pairs
+        :param object msgClass: message class as str, int or byte
+        :param object msgID: message ID as str, int or byte
+        :param int mode: mode (0=GET, 1=SET, 2=POLL)
+        :param kwargs: optional payload key/value pairs
         :raises: UBXMessageError
 
         """
@@ -77,7 +78,7 @@ class UBXMessage:
         Populate UBXMessage from named attribute keywords.
         Where a named attribute is absent, set to a nominal value (zeros or blanks).
 
-        :param **kwargs: payload key value pairs
+        :param kwargs: optional payload key/value pairs
         :raises: UBXTypeError
 
         """
@@ -123,7 +124,7 @@ class UBXMessage:
         :param dict pdict: dict representing payload definition
         :param str key: attribute keyword
         :param list index: repeating group index array
-        :param **kwargs: payload key value pairs
+        :param kwargs: optional payload key/value pairs
         :return: (offset, index[])
         :rtype: tuple
 
@@ -143,10 +144,10 @@ class UBXMessage:
         """
         Process (nested) group of attributes.
 
-        :param tuple att: tuple of (num repeats, attribute dict)
+        :param tuple att: attribute group - tuple of (num repeats, attribute dict)
         :param int offset: payload offset
         :param list index: repeating group index array
-        :param **kwargs: payload key value pairs
+        :param kwargs: optional payload key/value pairs
         :return: (offset, index[])
         :rtype: tuple
 
@@ -195,7 +196,7 @@ class UBXMessage:
         :param int offset: payload offset
         :param str key: attribute keyword
         :param list index: repeating group index array
-        :param **kwargs: payload key value pairs
+        :param kwargs: optional payload key/value pairs
         :return: offset
         :rtype: int
 
@@ -243,7 +244,7 @@ class UBXMessage:
         key value pairs.
 
         :param int offset: payload offset
-        :param **kwargs:  payload key value pairs
+        :param **kwargs:  optional payload key/value pairs
         :raises: UBXMessageError
 
         """
@@ -293,7 +294,7 @@ class UBXMessage:
         Certain message types need special handling as alternate payload
         definitions exist for the same ubxClass/ubxID.
 
-        :param **kwargs: payload key value pairs
+        :param kwargs: optional payload key/value pairs
         :return: dictionary representing payload definition
         :rtype: dict
 
@@ -328,8 +329,8 @@ class UBXMessage:
         Select appropriate MGA payload definition by checking
         value of 'type' attribute (1st byte of payload).
 
-        :param str mode: 0=GET, 1=SET, 2=POLL
-        :param **kwargs: payload key value pairs
+        :param str mode: mode (0=GET, 1=SET, 2=POLL)
+        :param kwargs: optional payload key/value pairs
         :return: dictionary representing payload definition
         :rtype: dict
         :raises: UBXMessageError
@@ -356,7 +357,7 @@ class UBXMessage:
         Select appropriate RXM-PMREQ payload definition by checking
         the 'version' keyword or payload length.
 
-        :param **kwargs: payload key value pairs
+        :param kwargs: optional payload key/value pairs
         :return: dictionary representing payload definition
         :rtype: dict
         :raises: UBXMessageError
@@ -384,7 +385,7 @@ class UBXMessage:
         Select appropriate RXM-PMP payload definition by checking
         value of 'version' attribute (1st byte of payload).
 
-        :param **kwargs: payload key value pairs
+        :param kwargs: optional payload key/value pairs
         :return: dictionary representing payload definition
         :rtype: dict
         :raises: UBXMessageError
@@ -411,7 +412,7 @@ class UBXMessage:
         Select appropriate RXM-PMP payload definition by checking
         value of 'type' attribute (2nd byte of payload).
 
-        :param **kwargs: payload key value pairs
+        :param kwargs: optional payload key/value pairs
         :return: dictionary representing payload definition
         :rtype: dict
         :raises: UBXMessageError
@@ -438,7 +439,7 @@ class UBXMessage:
         Select appropriate payload definition version for older
         generations of CFG-NMEA message by checking payload length.
 
-        :param **kwargs: payload key value pairs
+        :param kwargs: optional payload key/value pairs
         :return: dictionary representing payload definition
         :rtype: dict
         :raises: UBXMessageError
@@ -466,7 +467,7 @@ class UBXMessage:
         ESF-MEAS message by checking bit 3 (calibTtagValid)
         in the'flags' attribute.
 
-        :param **kwargs: payload key value pairs
+        :param kwargs: optional payload key/value pairs
         :return: dictionary representing payload definition
         :rtype: dict
         :raises: UBXMessageError
@@ -482,8 +483,7 @@ class UBXMessage:
             raise ube.UBXMessageError(
                 "ESF-MEAS message definitions must include flags or payload keyword"
             )
-        flags = int(flags.hex(), 16)  # int
-        calibTtagValid = flags >> 3 & 1  # test bit 3
+        calibTtagValid = get_bits(flags, 8)  # get bit 3 in flags
         if calibTtagValid:
             pdict = ubg.UBX_PAYLOADS_GET["ESF-MEAS-CT"]
         else:
@@ -581,8 +581,8 @@ class UBXMessage:
         """
         Override setattr to make object immutable after instantiation.
 
-        :param str name
-        :param object value
+        :param str name: attribute name
+        :param object value: attribute value
         :raises: UBXMessageError
 
         """
@@ -612,9 +612,9 @@ class UBXMessage:
     @property
     def identity(self) -> str:
         """
-        Returns identity in plain text form e.g. 'CFG-MSG'.
+        Returns identity in plain text form.
 
-        :return: message identity
+        :return: message identity e.g. 'CFG-MSG'
         :rtype: str
         :raises: UBXMessageError
 
@@ -685,12 +685,11 @@ class UBXMessage:
     @staticmethod
     def msgclass2bytes(msgClass: int, msgID: int) -> bytes:
         """
-        Convert message class/id integers to bytes
-        e.g. 6, 1 to b'/x06/x01'.
+        Convert message class/id integers to bytes.
 
-        :param int msgClass: message class
-        :param int msgID: message ID
-        :return: message class as bytes
+        :param int msgClass: message class as integer e.g. 6
+        :param int msgID: message ID as integer e.g. 1
+        :return: message class as bytes e.g. b'/x06/x01'
         :rtype: bytes
 
         """
@@ -702,12 +701,11 @@ class UBXMessage:
     @staticmethod
     def msgstr2bytes(msgClass: str, msgID: str) -> bytes:
         """
-        Convert plain text UBX message class to bytes
-        e.g. 'CFG-MSG' to b'/x06/x01'.
+        Convert plain text UBX message class to bytes.
 
-        :param str msgClass: message class
-        :param str msgID: message ID
-        :return: message class as bytes
+        :param str msgClass: message class as str e.g. 'CFG'
+        :param str msgID: message ID as str e.g. 'CFG-MSG'
+        :return: message class as bytes e.g. b'/x06/x01'
         :rtype: bytes
         :raises: UBXMessageError
 
@@ -727,9 +725,9 @@ class UBXMessage:
         """
         Convert value to bytes for given UBX attribute type.
 
-        :param object val: value e.g. 25
+        :param object val: attribute value e.g. 25
         :param str att: attribute type e.g. 'U004'
-        :return: value as bytes
+        :return: attribute value as bytes
         :rtype: bytes
         :raises: UBXTypeError
 
@@ -757,9 +755,9 @@ class UBXMessage:
         """
         Convert bytes to value for given UBX attribute type.
 
-        :param bytes valb: value in byte format e.g. b'\x19\x00\x00\x00'
+        :param bytes valb: attribute value in byte format e.g. b'\\\\x19\\\\x00\\\\x00\\\\x00'
         :param str att: attribute type e.g. 'U004'
-        :return: value
+        :return: attribute value as int, float, str or bytes
         :rtype: object
         :raises: UBXTypeError
 
@@ -787,7 +785,7 @@ class UBXMessage:
         Return hexadecimal key and data type for given
         configuration database key name.
 
-        :param str name: config database key name as string
+        :param str name: config key as string e.g. "CFG_NMEA_PROTVER"
         :return: tuple of (key, type)
         :rtype: tuple: (int, str)
         :raises: UBXMessageError
@@ -806,7 +804,7 @@ class UBXMessage:
         Return key name and data type for given
         configuration database hexadecimal key.
 
-        :param int keyID: config key as integer
+        :param int keyID: config key as integer e.g. 0x20930001
         :return: tuple of (keyname, type)
         :rtype: tuple: (str, str)
         :raises: UBXMessageError
@@ -870,7 +868,7 @@ class UBXMessage:
         configuration database keys, which can be in int (keyID)
         or str (keyname) format.
 
-        :param int layers: memory layer(s) 2=BBR, 4=Flash
+        :param int layers: memory layer(s) (2=BBR, 4=Flash)
         :param int transaction: 0=no txn, 1=start txn, 2=continue txn, 3=apply txn
         :param list keys: array of up to 64 keys as int (keyID) or string (keyname)
         :return: UBXMessage CFG-VALDEL
@@ -906,7 +904,7 @@ class UBXMessage:
         configuration database keys, which can be in int (keyID)
         or str (keyname) format.
 
-        :param int layer: memory layer 0=RAM, 1=BBR, 2=Flash, 7 = Default
+        :param int layer: memory layer (0=RAM, 1=BBR, 2=Flash, 7 = Default)
         :param int position: number of keys to skip before returning result
         :param list keys: array of up to 64 keys as int (keyID) or str (keyname)
         :return: UBXMessage CFG-VALGET

@@ -13,7 +13,7 @@ import unittest
 
 from pyubx2 import UBXMessage, UBX_CLASSES, POLL
 import pyubx2.ubxtypes_core as ubt
-from pyubx2.ubxhelpers import calc_checksum, isvalid_checksum, itow2utc, gpsfix2str, dop2str, gnss2str, key_from_val
+from pyubx2.ubxhelpers import calc_checksum, isvalid_checksum, itow2utc, gpsfix2str, dop2str, gnss2str, key_from_val, get_bits
 
 
 class StaticTest(unittest.TestCase):
@@ -118,6 +118,13 @@ class StaticTest(unittest.TestCase):
         (key, typ) = UBXMessage.cfgkey2name(0x20510001)
         self.assertEqual(key, "CFG_I2C_ADDRESS")
         self.assertEqual(typ, ubt.U1)
+
+    def testgetbits(self):
+        INPUTS = [(b'\x89', 192), (b'\xc9', 3), (b'\x89', 9), (b'\xc9', 9), (b'\x18\x18', 8), (b'\x18\x20', 8)]
+        EXPECTED_RESULTS = [2, 1, 9, 9, 1, 0]
+        for i, (vb, mask) in enumerate(INPUTS):
+            vi = get_bits(vb, mask)
+            self.assertEqual(vi, EXPECTED_RESULTS[i])
 
 
 if __name__ == "__main__":
