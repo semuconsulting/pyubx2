@@ -67,8 +67,7 @@ Individual input UBX messages can then be read using the `UBXReader.read()` func
 data (as bytes) and the parsed data (as a `UBXMessage` object). The function is thread-safe in so far as the incoming
 data stream object is thread-safe. `UBXReader` also implements an iterator.
 
-The `UBXReader` constructor includes an optional `validate` flag which governs behaviour if the stream includes non-UBX data.
-If set to 'False' (the default), it will ignore such data and continue with the next valid UBX message. If set to 'True', it will raise a `UBXStreamError`. **NB:** if the `validate` flag is set to 'False', the `UBXReader.read()` function will block until it receives a UBX message.
+The `UBXReader` constructor includes an optional `ubx_only` flag which governs behaviour if the stream includes non-UBX data (e.g. NMEA data). If set to 'False' (the default), it will ignore such data and continue with the next valid UBX message. If set to 'True', it will raise a `UBXStreamError`. **NB:** if the `ubx_only` flag is set to 'False', the `UBXReader.read()` function will block until it receives a UBX message (or the input stream times out).
 
 The `UBXReader` constructor also includes an optional 'mode' flag which signifies whether the message stream is an output (0=GET)
 or input (1=SET, 2=POLL). Ordinarily this can be left at the default 0 (GET).
