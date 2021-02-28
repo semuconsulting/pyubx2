@@ -1,5 +1,12 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.0.5
+
+ENHANCEMENTS:
+
+1. Added additional helper method `get_bits()` to find value of specified (masked) bit(s) in a UBX bitfield ('X') attribute. See docstring for usage.
+2. Docstrings updated.
+
 ### RELEASE 1.0.4
 
 Some refactoring of static and helper methods. Improved Sphinx-compliant docstrings.
