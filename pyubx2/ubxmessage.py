@@ -483,7 +483,7 @@ class UBXMessage:
             raise ube.UBXMessageError(
                 "ESF-MEAS message definitions must include flags or payload keyword"
             )
-        calibTtagValid = get_bits(flags, 8)  # get bit 3 in flags
+        calibTtagValid = get_bits(flags, 0b00001000)  # get bit 3 in flags
         if calibTtagValid:
             pdict = ubg.UBX_PAYLOADS_GET["ESF-MEAS-CT"]
         else:
@@ -491,7 +491,7 @@ class UBXMessage:
         return pdict
 
     def _calc_num_repeats(
-        self, att: str, payload: bytes, offset: int, offsetend: int = 0
+        self, attd: dict, payload: bytes, offset: int, offsetend: int = 0
     ) -> int:
         """
         Deduce number of items in 'variable by size' repeating group by
@@ -500,7 +500,7 @@ class UBXMessage:
         This is predicated on there being only one such repeating group
         per message payload, which is true for all currently supported types.
 
-        :param str att: attribute type e.g. 'U004'
+        :param dict attd: grouped attribute dictionary
         :param bytes payload : raw payload
         :param int offset: number of bytes in payload before repeating group
         :param int offsetend: number of bytes in payload after repeating group
@@ -512,7 +512,7 @@ class UBXMessage:
 
         lenpayload = len(payload) - offset - offsetend
         lengroup = 0
-        for _, val in att.items():
+        for _, val in attd.items():
             lengroup += attsiz(val)
         return int(lenpayload / lengroup)
 
