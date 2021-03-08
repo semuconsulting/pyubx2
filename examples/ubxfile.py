@@ -39,11 +39,14 @@ class UBXStreamer:
         Open file.
         """
 
+        self._connected = False
         try:
             self._stream = open(self._filename, "rb")
             self._connected = True
         except Exception as err:
             print(f"Error opening file {err}")
+
+        return self._connected
 
     def close(self):
         """
@@ -56,6 +59,8 @@ class UBXStreamer:
             except Exception as err:
                 print(f"Error closing file {err}")
         self._connected = False
+
+        return self._connected
 
     def reader(self, validate=False, mode=0):
         """
@@ -95,9 +100,9 @@ if __name__ == "__main__":
     print("Instantiating UBXStreamer class...")
     ubf = UBXStreamer(filefqn)
     print(f"Opening file {filefqn}...")
-    ubf.open()
-    print("Starting file reader")
-    ubf.reader(VALD, MODED)
-    print("\n\nClosing file...")
-    ubf.close()
-    print("Test Complete")
+    if ubf.open():
+        print("Starting file reader")
+        ubf.reader(VALD, MODED)
+        print("\n\nClosing file...")
+        ubf.close()
+        print("Test Complete")

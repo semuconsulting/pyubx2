@@ -32,7 +32,7 @@ class UBXStreamer:
     UBXStreamer class.
     """
 
-    def __init__(self, port, baudrate, timeout=5):
+    def __init__(self, port, baudrate, timeout=5, ubx_only=False):
         """
         Constructor.
         """
@@ -45,6 +45,7 @@ class UBXStreamer:
         self._port = port
         self._baudrate = baudrate
         self._timeout = timeout
+        self._ubx_only = ubx_only
 
     def __del__(self):
         """
@@ -59,14 +60,17 @@ class UBXStreamer:
         Open serial connection.
         """
 
+        self._connected = False
         try:
             self._serial_object = Serial(
                 self._port, self._baudrate, timeout=self._timeout
             )
-            self._ubxreader = UBXReader(BufferedReader(self._serial_object), False)
+            self._ubxreader = UBXReader(BufferedReader(self._serial_object), self._ubx_only)
             self._connected = True
         except (SerialException, SerialTimeoutException) as err:
             print(f"Error connecting to serial port {err}")
+
+        return self._connected
 
     def disconnect(self):
         """
@@ -79,6 +83,8 @@ class UBXStreamer:
             except (SerialException, SerialTimeoutException) as err:
                 print(f"Error disconnecting from serial port {err}")
         self._connected = False
+
+        return self._connected
 
     def start_read_thread(self):
         """
@@ -145,48 +151,54 @@ class UBXStreamer:
 
 if __name__ == "__main__":
 
-    # set PORT, BAUDRATE and TIMEOUT as appropriate
-    if platform == "win32":
-        PORT = "COM13"
-    else:
-        PORT = "/dev/tty.usbmodem14101"
-    BAUDRATE = 9600
-    TIMEOUT = 1
-    NMEA = 0
-    UBX = 1
-    BOTH = 2
+    YES = ("Y", "y", "YES,", "yes", "True")
+    NO = ("N", "n", "NO,", "no", "False")
+    PAUSE = 1
+
+    print("Enter port: ", end="")
+    val = input().strip('"')
+    prt = val
+    print("Enter baud rate (9600): ", end="")
+    val = input().strip('"') or '9600'
+    baud = int(val)
+    print("Enter timeout (0): ", end="")
+    val = input().strip('"') or '0'
+    timout = float(val)
+    print("Do you want to ignore any non-UBX data (y/n)? (y) ", end="")
+    val = input() or "y"
+    ubxonly = val in NO
 
     print("Instantiating UBXStreamer class...")
-    ubp = UBXStreamer(PORT, BAUDRATE, TIMEOUT)
-    print(f"Connecting to serial port {PORT} at {BAUDRATE} baud...")
-    ubp.connect()
-    print("Starting reader thread...")
-    ubp.start_read_thread()
+    ubp = UBXStreamer(prt, baud, timout, ubxonly)
+    print(f"Connecting to serial port {prt} at {baud} baud...")
+    if ubp.connect():
+        print("Starting reader thread...")
+        ubp.start_read_thread()
 
-    print("\nPolling receiver configuration...\n")
-    # poll the receiver configuration
-    for port in (0, 1, 2, 3, 4):  # I2C, UART1, UART2, USB, SPI
-        msg = UBXMessage("CFG", "CFG-PRT", POLL, portID=port)
-        ubp.send(msg.serialize())
-        sleep(1)
-    for msgtype in ("CFG-USB", "CFG-NMEA", "CFG-NAV5"):
-        msg = UBXMessage("CFG", msgtype, POLL)
-        ubp.send(msg.serialize())
-        sleep(1)
-
-    # poll a selection of current navigation message rates using CFG-MSG
-    print("\nPolling navigation message rates...\n")
-    for msgid in UBX_MSGIDS.keys():
-        if msgid[0] in (1, 240, 241):  # NAV, NMEA-Standard, NMEA-Proprietary
-            msg = UBXMessage("CFG", "CFG-MSG", POLL, payload=msgid)
+        print("\nPolling receiver configuration...\n")
+        # poll the receiver configuration
+        for prt in (0, 1, 2, 3, 4):  # I2C, UART1, UART2, USB, SPI
+            msg = UBXMessage("CFG", "CFG-PRT", POLL, portID=prt)
             ubp.send(msg.serialize())
-            sleep(1)
-    print("\n\nPolling complete, waiting for final responses...\n\n")
+            sleep(PAUSE)
+        for msgtype in ("CFG-USB", "CFG-NMEA", "CFG-NAV5"):
+            msg = UBXMessage("CFG", msgtype, POLL)
+            ubp.send(msg.serialize())
+            sleep(PAUSE)
 
-    sleep(3)
+        # poll a selection of current navigation message rates using CFG-MSG
+        print("\nPolling navigation message rates...\n")
+        for msgid in UBX_MSGIDS.keys():
+            if msgid[0] in (1, 240, 241):  # NAV, NMEA-Standard, NMEA-Proprietary
+                msg = UBXMessage("CFG", "CFG-MSG", POLL, payload=msgid)
+                ubp.send(msg.serialize())
+                sleep(1)
+        print("\n\nPolling complete, waiting for final responses...\n\n")
 
-    print("\n\nStopping reader thread...")
-    ubp.stop_read_thread()
-    print("Disconnecting from serial port...")
-    ubp.disconnect()
-    print("Test Complete")
+        sleep(PAUSE)
+
+        print("\n\nStopping reader thread...")
+        ubp.stop_read_thread()
+        print("Disconnecting from serial port...")
+        ubp.disconnect()
+        print("Test Complete")

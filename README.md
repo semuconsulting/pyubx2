@@ -51,9 +51,11 @@ If required, `pyubx2` can also be installed using virtualenv, e.g.:
 
 ```shell
 python -m pip install --user --upgrade virtualenv
-python -m venv env
-source env/bin/activate
+python -m virtualenv env
+source env/bin/activate (or env\Scripts\activate on Windows)
 (env) python -m pip install --upgrade pyubx2
+...
+deactivate
 ```
 
 
@@ -316,7 +318,7 @@ via CFG-VALSET, CF-VALDEL and CFG-VALGET messages.
 1. `ubxconfig.py` illustrates how to invoke legacy (pre-Generation 9) configuration messages to set the UBX-NAV* message 
 rates on the receiver's UART and USB ports. You can see the results using `ubxstreamer.py`.
 
-1. `ubxtracker.py` illustrates a simple CLI tool to convert a binary UBX data dump 
+1. `gpxtracker.py` illustrates a simple CLI tool to convert a binary UBX data dump 
 (e.g. as produced by the [PyGPSClient](http://github.com/semuconsulting/PyGPSClient)'s data logging facility) to a `*.gpx` track file using pyubx2.UBXReader.
 
 1. `ubxdump.py` is a simple command line utility to stream the parsed UBX output of a u-blox &copy; GNSS device on a specified port.
