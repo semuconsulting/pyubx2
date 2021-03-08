@@ -117,15 +117,15 @@ class FillTest(unittest.TestCase):
         res2 = UBXReader.parse(res.serialize())
         self.assertEqual(str(res2), EXPECTED_RESULT)
 
-    def testEVAL(self):  # test eval of repr
-        res = UBXMessage('CFG', 'CFG-MSG', POLL, msgClass=240, msgID=5)
-        reseval = eval(repr(res))
-        assert type(reseval) is UBXMessage
+    def testEVAL(self):  # double check that eval of repr(msg) reproduces original message
+        res1 = UBXMessage('CFG', 'CFG-MSG', POLL, msgClass=240, msgID=5)
+        res2 = eval(repr(res1))
+        self.assertEqual(str(res1), str(res2))
 
-    def testEVAL2(self):  # test eval of repr
-        res = UBXMessage('CFG', 'CFG-MSG', SET, msgClass=240, msgID=5, rateUART1=1, rateUSB=1)
-        reseval = eval(repr(res))
-        assert type(reseval) is UBXMessage
+    def testEVAL2(self):  # double check that eval of repr(msg) reproduces original message
+        res1 = UBXMessage('CFG', 'CFG-MSG', SET, msgClass=240, msgID=5, rateUART1=1, rateUSB=1)
+        res2 = eval(repr(res1))
+        self.assertEqual(str(res1), str(res2))
 
     def testFill_CFGVALGET(self):  #  test CFG-VALGET POLL constructor
         EXPECTED_RESULT = "<UBX(CFG-VALGET, version=0, layer=1, position=0, keys_01=1079115777, keys_02=1079181313)>"
