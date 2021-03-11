@@ -61,12 +61,16 @@ deactivate
 
 ## Reading (Streaming)
 
+```
+class pyubx2.ubxreader.UBXReader(stream, ubx_only: bool = False, mode: int = 0)
+```
+
 You can create a `UBXReader` object by calling the constructor with an active stream object. 
 The stream object can be any data stream which supports a `read(n) -> bytes` method (e.g. File or Serial, with 
 or without a buffer wrapper).
 
 Individual input UBX messages can then be read using the `UBXReader.read()` function, which returns both the raw binary
-data (as bytes) and the parsed data (as a `UBXMessage` object). The function is thread-safe in so far as the incoming
+data (as bytes) and the parsed data (as a `UBXMessage` object, via the `parse()` method). The function is thread-safe in so far as the incoming
 data stream object is thread-safe. `UBXReader` also implements an iterator.
 
 The `UBXReader` constructor includes an optional `ubx_only` flag which governs behaviour if the stream includes non-UBX data (e.g. NMEA data). If set to 'False' (the default), it will ignore such data and continue with the next valid UBX message. If set to 'True', it will raise a `UBXStreamError`. **NB:** if the `ubx_only` flag is set to 'False', the `UBXReader.read()` function will block until it receives a UBX message (or the input stream times out).
@@ -137,6 +141,10 @@ e.g. the `NAV-POSLLH` message has the following properties:
 ## Generating
 
 (see [below](#configinterface) for special methods relating to the UBX configuration interface)
+
+```
+class pyubx2.ubxmessage.UBXMessage(ubxClass, ubxID, mode: int, **kwargs)
+```
 
 You can create a `UBXMessage` object by calling the constructor with the following parameters:
 1. message class (must be a valid class from `pyubx2.UBX_CLASSES`)

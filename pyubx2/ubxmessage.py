@@ -221,15 +221,11 @@ class UBXMessage:
             valb = self._payload[offset : offset + atts]
             val = self.bytes2val(valb, att)
         else:
-            # if individual attribute keyword has been provided
-            if keyr in kwargs:
-                val = kwargs[keyr]
-            # else set attribute to nominal value (0)
-            else:
-                if atttyp(att) in ("X", "C"):  # byte or char
-                    val = b"\x00" * atts
-                else:
-                    val = 0
+            # if individual keyword has been provided,
+            # set to provided keyword,
+            # else set to nominal value
+            val = kwargs.get(keyr,  self.nomval(att))
+
             valb = self.val2bytes(val, att)
             self._payload += valb
 
@@ -775,6 +771,30 @@ class UBXMessage:
             val = struct.unpack("<f", valb)[0]
         elif att == ubt.R8:  # double precision floating point
             val = struct.unpack("<d", valb)[0]
+        else:
+            raise ube.UBXTypeError(f"Unknown attribute type {att}")
+        return val
+
+    @staticmethod
+    def nomval(att: str) -> object:
+        """
+        Get nominal value for given UBX attribute type.
+
+        :param str att: attribute type e.g. 'U004'
+        :return: attribute value as int, float, str or bytes
+        :rtype: object
+        :raises: UBXTypeError
+
+        """
+
+        if att == "CH":
+            val = ""
+        elif atttyp(att) in ("X", "C"):
+            val = b"\x00" * attsiz(att)
+        elif atttyp(att) == "R":
+            val = 0.0
+        elif atttyp(att) in ("E", "I", "L", "U"):
+            val = 0
         else:
             raise ube.UBXTypeError(f"Unknown attribute type {att}")
         return val

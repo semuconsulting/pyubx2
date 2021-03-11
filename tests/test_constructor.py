@@ -101,7 +101,7 @@ class FillTest(unittest.TestCase):
         self.assertEqual(str(res), EXPECTED_RESULT)
 
     def testFill_CFGDAT(self):  # test CFG-DAT floating point attribute, single and double precision
-        EXPECTED_RESULT = "<UBX(CFG-DAT, datumNum=4, datumName=b'WGS-84', majA=4321.123456789128, flat=-2964.00469836, dX=-1.2345678, dY=27.40654, dZ=0, rotX=0, rotY=0, rotZ=0, scale=0)>"
+        EXPECTED_RESULT = "<UBX(CFG-DAT, datumNum=4, datumName=b'WGS-84', majA=4321.123456789128, flat=-2964.00469836, dX=-1.2345678, dY=27.40654, dZ=0.0, rotX=0.0, rotY=0.0, rotZ=0.0, scale=0.0)>"
         res = UBXMessage('CFG', 'CFG-DAT', SET, datumNum=4, datumName=b'WGS-84', majA=4321.123456789128, flat=-2964.00469836, dX=-1.2345678, dY=27.40654)
         self.assertEqual(str(res), EXPECTED_RESULT)
 
