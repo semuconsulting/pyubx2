@@ -82,7 +82,7 @@ class StreamTest(unittest.TestCase):
                 i += 1
 
     def testMIX2VAL(self):  # test mixed UBX/NMEA stream with validate set to True
-        EXPECTED_ERROR = "Unknown data header b'$G'. Looks like NMEA data. Set ubx_only flag to 'False' to ignore."
+        EXPECTED_ERROR = "Unknown data header b'$G'. Looks like NMEA data. Set ubxonly flag to 'False' to ignore."
         ubxreader = UBXReader(self.streamMIX2, True)
         with self.assertRaises(UBXStreamError) as context:
             (_, _) = ubxreader.read()
@@ -106,7 +106,7 @@ class StreamTest(unittest.TestCase):
 
         i = 0
         raw = 0
-        ubxreader = UBXReader(self.streamINF)
+        ubxreader = UBXReader(self.streamINF, ubxonly=False)
         while raw is not None:
             (raw, parsed) = ubxreader.read()
             if raw is not None:
@@ -164,8 +164,8 @@ class StreamTest(unittest.TestCase):
             i += 1
 
     def testIterator2(self):  # test iterator function with mixed data stream
-        EXPECTED_ERROR = "Unknown data header b'$G'. Looks like NMEA data. Set ubx_only flag to 'False' to ignore."
-        ubxreader = UBXReader(self.streamMIX, True)
+        EXPECTED_ERROR = "Unknown data header b'$G'. Looks like NMEA data. Set ubxonly flag to 'False' to ignore."
+        ubxreader = UBXReader(self.streamMIX, ubxonly=True)
         with self.assertRaises(UBXStreamError) as context:
             i = 0
 #             (raw, parsed) = ubxreader.read()
@@ -181,7 +181,7 @@ class StreamTest(unittest.TestCase):
         )
         i = 0
         raw = 0
-        ubxreader = UBXReader(self.streamMIX, False)
+        ubxreader = UBXReader(self.streamMIX, ubxonly=False)
         while raw is not None and i < 3:
             (raw, parsed) = ubxreader.read()
             if raw is not None:

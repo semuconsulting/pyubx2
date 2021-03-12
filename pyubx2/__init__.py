@@ -10,7 +10,7 @@ Created on 27 Sep 2020
 from ._version import __version__
 from .exceptions import UBXMessageError, UBXParseError, UBXTypeError, UBXStreamError
 from .ubxmessage import UBXMessage
-from .ubxreader import UBXReader
+from .ubxreader import UBXReader, VALCKSUM, VALNONE
 from .ubxtypes_core import *
 from .ubxtypes_get import *
 from .ubxtypes_poll import *

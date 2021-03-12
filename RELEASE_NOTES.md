@@ -1,5 +1,12 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.0.6
+
+ENHANCEMENTS:
+
+1. UBXReader updated to accept **kwargs: 'ubxonly' and 'msgmode'. Will continue to accept *args for backwards compatibility, but these are now deprecated and may be removed in future versions.
+2. Minor enhancements to nominal value assignments - floats will now get nominal value of 0.0.
+
 ### RELEASE 1.0.5
 
 ENHANCEMENTS:

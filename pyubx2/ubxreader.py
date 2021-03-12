@@ -5,7 +5,7 @@ Reads and parses individual UBX messages from any stream which supports a read(n
 
 Returns both the raw binary data (as bytes) and the parsed data (as a UBXMessage object).
 
-If the 'ubx_only' parameter is set to 'True', the reader will raise a UBXStreamerError if
+If the 'ubxonly' parameter is set to 'True', the reader will raise a UBXStreamerError if
 it encounters any non-UBX data. Otherwise, it will ignore the non-UBX data and attempt
 to carry on.
 
@@ -21,7 +21,10 @@ from pyubx2.ubxhelpers import calc_checksum
 import pyubx2.ubxtypes_core as ubt
 import pyubx2.exceptions as ube
 
-NMEAMSG = "Looks like NMEA data. Set ubx_only flag to 'False' to ignore."
+NMEAMSG = "Looks like NMEA data. Set ubxonly flag to 'False' to ignore."
+# parser validation flag values
+VALNONE = 0
+VALCKSUM = 1
 
 
 class UBXReader:
@@ -29,22 +32,36 @@ class UBXReader:
     UBXReader class.
     """
 
-    def __init__(self, stream, ubx_only: bool = False, mode: int = 0):
+    def __init__(self, stream, *args, **kwargs):
         """Constructor.
 
         :param stream stream: input data stream
-        :param bool ubx_only: check for non-UBX data (False (ignore - default), True (reject))
-        :param int mode: message mode (0=GET (default), 1=SET, 2=POLL)
+        :param bool ubxonly (kwarg): check for non-UBX data (False (ignore - default), True (reject))
+        :param int msgmode (kwarg): message mode (0=GET (default), 1=SET, 2=POLL)
         :raises: UBXStreamError (if mode is invalid)
 
         """
 
-        if mode not in (0, 1, 2):
-            raise ube.UBXStreamError(f"Invalid stream mode {mode} - must be 0, 1 or 2")
+        ubx_only = kwargs.get("ubxonly", False)
+        msgmode = kwargs.get("msgmode", 0)
+        validate = kwargs.get("validate", VALCKSUM)
+
+        # accept args for backwards compatibility if no kwargs
+        if len(kwargs) == 0:
+            if len(args) > 0:
+                ubx_only = args[0]
+            if len(args) > 1:
+                msgmode = args[1]
+
+        if msgmode not in (0, 1, 2):
+            raise ube.UBXStreamError(
+                f"Invalid stream mode {msgmode} - must be 0, 1 or 2"
+            )
 
         self._stream = stream
         self._ubx_only = ubx_only
-        self._mode = mode
+        self._validate = validate
+        self._mode = msgmode
 
     def __iter__(self):
         """Iterator."""
@@ -72,7 +89,7 @@ class UBXReader:
 
         :return: tuple of (raw_data as bytes, parsed_data as UBXMessage)
         :rtype: tuple
-        :raises: UBXStreamError (if ubx_only=True and stream includes non-UBX data)
+        :raises: UBXStreamError (if ubxonly=True and stream includes non-UBX data)
 
         """
 
@@ -123,7 +140,7 @@ class UBXReader:
         return (raw_data, parsed_data)
 
     @staticmethod
-    def parse(message: bytes, validate: bool = False, mode: int = 0) -> object:
+    def parse(message: bytes, *args, **kwargs) -> object:
         """
         Parse UBX byte stream to UBXMessage object.
 
@@ -131,16 +148,28 @@ class UBXReader:
         (the UBXMessage constructor can calculate and assign its own values anyway).
 
         :param bytes message: binary message to parse
-        :param bool validate: validate message length and checksum (False (default), True)
-        :param int mode: message mode (0=GET (default), 1=SET, 2=POLL)
+        :param int validate (kwarg): validate checksum (VALCKSUM (1)=True (default), VALNONE (0)=False)
+        :param int msgmode (kwarg): message mode (0=GET (default), 1=SET, 2=POLL)
         :return: UBXMessage object
         :rtype: UBXMessage
         :raises: UBXParseError (if data stream contains invalid data or unknown message type)
 
         """
 
-        if mode not in (0, 1, 2):
-            raise ube.UBXParseError(f"Invalid message mode {mode} - must be 0, 1 or 2")
+        msgmode = kwargs.get("msgmode", ubt.GET)
+        validate = kwargs.get("validate", VALCKSUM)
+
+        # accept args for backwards compatibility if no kwargs
+        if len(kwargs) == 0:
+            if len(args) > 0:
+                validate = args[0]
+            if len(args) > 1:
+                msgmode = args[1]
+
+        if msgmode not in (0, 1, 2):
+            raise ube.UBXParseError(
+                f"Invalid message mode {msgmode} - must be 0, 1 or 2"
+            )
 
         lenm = len(message)
         hdr = message[0:2]
@@ -158,7 +187,7 @@ class UBXReader:
             ckv = calc_checksum(clsid + msgid + lenb + payload)
         else:
             ckv = calc_checksum(clsid + msgid + lenb)
-        if validate:
+        if validate & VALCKSUM:
             if hdr != ubt.UBX_HDR:
                 raise ube.UBXParseError(
                     (f"Invalid message header {hdr}" f" - should be {ubt.UBX_HDR}")
@@ -176,10 +205,10 @@ class UBXReader:
                 )
         try:
             if payload is None:
-                return UBXMessage(clsid, msgid, mode)
-            return UBXMessage(clsid, msgid, mode, payload=payload)
+                return UBXMessage(clsid, msgid, msgmode)
+            return UBXMessage(clsid, msgid, msgmode, payload=payload)
         except KeyError as err:
-            modestr = ["GET", "SET", "POLL"][mode]
+            modestr = ["GET", "SET", "POLL"][msgmode]
             raise ube.UBXParseError(
                 (f"Unknown message type clsid {clsid}, msgid {msgid}, mode {modestr}")
             ) from err

@@ -222,9 +222,9 @@ class UBXMessage:
             val = self.bytes2val(valb, att)
         else:
             # if individual keyword has been provided,
-            # set to provided keyword,
-            # else set to nominal value
-            val = kwargs.get(keyr,  self.nomval(att))
+            # set to provided value, else set to
+            # nominal value
+            val = kwargs.get(keyr, self.nomval(att))
 
             valb = self.val2bytes(val, att)
             self._payload += valb

@@ -62,7 +62,7 @@ deactivate
 ## Reading (Streaming)
 
 ```
-class pyubx2.ubxreader.UBXReader(stream, ubx_only: bool = False, mode: int = 0)
+class pyubx2.ubxreader.UBXReader(stream, *args, **kwargs)
 ```
 
 You can create a `UBXReader` object by calling the constructor with an active stream object. 
@@ -70,13 +70,13 @@ The stream object can be any data stream which supports a `read(n) -> bytes` met
 or without a buffer wrapper).
 
 Individual input UBX messages can then be read using the `UBXReader.read()` function, which returns both the raw binary
-data (as bytes) and the parsed data (as a `UBXMessage` object, via the `parse()` method). The function is thread-safe in so far as the incoming
-data stream object is thread-safe. `UBXReader` also implements an iterator.
+data (as bytes) and the parsed data (as a `UBXMessage` object, via the `parse()` method). The function is thread-safe in so far as the incoming data stream object is thread-safe. `UBXReader` also implements an iterator.
 
-The `UBXReader` constructor includes an optional `ubx_only` flag which governs behaviour if the stream includes non-UBX data (e.g. NMEA data). If set to 'False' (the default), it will ignore such data and continue with the next valid UBX message. If set to 'True', it will raise a `UBXStreamError`. **NB:** if the `ubx_only` flag is set to 'False', the `UBXReader.read()` function will block until it receives a UBX message (or the input stream times out).
+The constructor accepts the following optional keyword arguments:
 
-The `UBXReader` constructor also includes an optional 'mode' flag which signifies whether the message stream is an output (0=GET)
-or input (1=SET, 2=POLL). Ordinarily this can be left at the default 0 (GET).
+* `ubxonly`: True = raise error if stream contains non-UBX data, False = ignore non-UBX data (default)
+* `msgmode`: 0 = GET (default), 1 = SET 2 = POLL
+
 
 Examples:
 
@@ -95,20 +95,19 @@ Examples:
 ```python
 >>> from pyubx2 import UBXReader
 >>> stream = open('ubxdata.bin', 'rb')
->>> ubr = UBXReader(stream, True)
+>>> ubr = UBXReader(stream, ubxonly=True)
 >>> for (raw_data, parsed_data) in ubr: print(parsed_data)
 ...
 ```
 
 ## Parsing
 
-You can parse individual UBX messages using the static `UBXReader.parse(data, validate=False)` function, which takes a bytes array containing a binary UBX message and returns a `UBXMessage` object.
+You can parse individual UBX messages using the static `UBXReader.parse(data)` function, which takes a bytes array containing a binary UBX message and returns a `UBXMessage` object.
 
-If the optional 'validate' parameter is set to `True`, `parse` will validate the supplied UBX message header, payload length and checksum. 
-If any of these are not consistent with the message content, it will raise a `UBXParseError`. Otherwise, the function will automatically
-generate the appropriate payload length and checksum.
+The `parse()` method accepts the following optional keyword arguments:
 
-An additional optional 'mode' parameter allows you to specify either output (0=GET) or input (1=SET, 2=POLL) message modes. Ordinarily this can be left at the default 0 (GET).
+* `validate`: VALCKSUM (1) = validate message checksum and length (default), VALNONE (0) = ignore invalid checksum or length
+* `msgmode`: 0 = GET (default), 1 = SET 2 = POLL
 
 Attributes within repeating groups are parsed with a two-digit suffix (svid_01, svid_02, etc.).
 
