@@ -37,6 +37,7 @@ class UBXReader:
 
         :param stream stream: input data stream
         :param bool ubxonly (kwarg): check for non-UBX data (False (ignore - default), True (reject))
+        :param int validate (kwarg): validate checksum (VALCKSUM (1)=True (default), VALNONE (0)=False)
         :param int msgmode (kwarg): message mode (0=GET (default), 1=SET, 2=POLL)
         :raises: UBXStreamError (if mode is invalid)
 
@@ -124,7 +125,9 @@ class UBXReader:
                 plb = byten[0:leni]
                 cksum = byten[leni : leni + 2]
                 raw_data = ubt.UBX_HDR + clsid + msgid + lenb + plb + cksum
-                parsed_data = self.parse(raw_data, False, self._mode)
+                parsed_data = self.parse(
+                    raw_data, validate=self._validate, msgmode=self._mode
+                )
                 reading = False
             else:  # it's not a UBX message (NMEA or something else)
                 prevbyte = byte1
