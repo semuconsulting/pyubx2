@@ -18,7 +18,7 @@ Created on 27 Oct 2020
 import os
 from datetime import datetime
 from time import strftime
-from pyubx2.ubxreader import UBXReader
+from pyubx2.ubxreader import UBXReader, VALCKSUM
 import pyubx2.exceptions as ube
 
 XML_HDR = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
@@ -69,14 +69,14 @@ class UBXTracker:
         if self._connected and self._infile:
             self._infile.close()
 
-    def reader(self, validate=False):
+    def reader(self):
         """
         Reads and parses UBX message data from stream
         using UBXReader iterator method
         """
 
         i = 0
-        self._ubxreader = UBXReader(self._infile, validate)
+        self._ubxreader = UBXReader(self._infile, validate=VALCKSUM)
 
         self.write_gpx_hdr()
 
@@ -87,7 +87,7 @@ class UBXTracker:
                         datetime(
                             msg.year, msg.month, msg.day, msg.hour, msg.min, msg.second
                         ).isoformat()
-                        + "Z"
+                        +"Z"
                     )
                     if msg.fixType == 3:
                         fix = "3d"

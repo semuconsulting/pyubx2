@@ -15,7 +15,6 @@ Created on 2 Oct 2020
 @author: semuadmin
 """
 
-from sys import platform
 from io import BufferedReader
 from threading import Thread
 from time import sleep
@@ -65,7 +64,7 @@ class UBXStreamer:
             self._serial_object = Serial(
                 self._port, self._baudrate, timeout=self._timeout
             )
-            self._ubxreader = UBXReader(BufferedReader(self._serial_object), self._ubx_only)
+            self._ubxreader = UBXReader(BufferedReader(self._serial_object), ubxonly=self._ubx_only)
             self._connected = True
         except (SerialException, SerialTimeoutException) as err:
             print(f"Error connecting to serial port {err}")
@@ -161,8 +160,8 @@ if __name__ == "__main__":
     print("Enter baud rate (9600): ", end="")
     val = input().strip('"') or '9600'
     baud = int(val)
-    print("Enter timeout (0): ", end="")
-    val = input().strip('"') or '0'
+    print("Enter timeout (0.1): ", end="")
+    val = input().strip('"') or '0.1'
     timout = float(val)
     print("Do you want to ignore any non-UBX data (y/n)? (y) ", end="")
     val = input() or "y"

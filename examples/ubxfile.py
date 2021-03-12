@@ -69,7 +69,7 @@ class UBXStreamer:
         """
 
         i = 0
-        self._ubxreader = UBXReader(self._stream, validate, mode)
+        self._ubxreader = UBXReader(self._stream, validate=validate, msgmode=mode)
 
         for msg in self._ubxreader:  # invokes iterator method
             try:

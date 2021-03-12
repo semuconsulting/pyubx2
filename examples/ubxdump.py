@@ -4,7 +4,7 @@ Simple command line utility to stream the parsed UBX output of a u-blox GNSS dev
 Usage (all args are optional):
 ubxdump.py port="COM13" baud=9600 timeout=5 ubx_only=0 raw=0
 
-If ubx_only=True (1), streaming will terminate on any non-UBX data (e.g. NMEA).
+If ubxonly=True (1), streaming will terminate on any non-UBX data (e.g. NMEA).
 """
 
 import sys
@@ -25,12 +25,12 @@ def stream_ubx(**kwargs):
         port = kwargs.get("port", PORT).strip('"')
         baud = int(kwargs.get("baud", BAUD))
         timeout = int(kwargs.get("timeout", TIMEOUT))
-        ubx_only = int(kwargs.get("ubx_only", 0))
+        ubxonly = int(kwargs.get("ubxonly", 0))
         rawformat = int(kwargs.get("raw", 0))
         print(f"\nStreaming from {port} at {baud} baud in",
               f"{'raw' if rawformat else 'parsed'} format...\n")
         stream = Serial(port, baud, timeout=timeout)
-        ubr = UBXReader(stream, ubx_only)
+        ubr = UBXReader(stream, ubxonly=ubxonly)
         for (raw, parsed) in ubr:
             if rawformat:
                 print(raw)
@@ -49,7 +49,7 @@ if __name__ == "__main__":
                 "the parsed UBX output of a u-blox GNSS device.\n\n",
                 "Usage (all args are optional): ubxdump.py",
                 "port=\"COM13\" baud=9600 timeout=5",
-                "ubx_only=0 raw=0\n\n Type Ctrl-C to terminate.",
+                "ubxonly=0 raw=0\n\n Type Ctrl-C to terminate.",
             )
             sys.exit()
 
