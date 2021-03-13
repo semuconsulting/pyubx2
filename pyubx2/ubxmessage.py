@@ -30,7 +30,7 @@ from pyubx2.ubxhelpers import (
 class UBXMessage:
     """UBX Message Class."""
 
-    def __init__(self, ubxClass, ubxID, mode: int, **kwargs):
+    def __init__(self, ubxClass, ubxID, msgmode: int, **kwargs):
         """Constructor.
 
         If no keyword parms are passed, the payload is taken to be empty.
@@ -43,7 +43,7 @@ class UBXMessage:
 
         :param object msgClass: message class as str, int or byte
         :param object msgID: message ID as str, int or byte
-        :param int mode: mode (0=GET, 1=SET, 2=POLL)
+        :param int msgmode: message mode (0=GET, 1=SET, 2=POLL)
         :param kwargs: optional payload key/value pairs
         :raises: UBXMessageError
 
@@ -51,13 +51,13 @@ class UBXMessage:
 
         # object is mutable during initialisation only
         super().__setattr__("_immutable", False)
-        self._mode = mode
+        self._mode = msgmode
         self._payload = b""
         self._length = b""
         self._checksum = b""
 
-        if mode not in (0, 1, 2):
-            raise ube.UBXMessageError(f"Invalid mode {mode} - must be 0, 1 or 2")
+        if msgmode not in (0, 1, 2):
+            raise ube.UBXMessageError(f"Invalid msgmode {msgmode} - must be 0, 1 or 2.")
 
         # accommodate different formats of msgClass and msgID
         if isinstance(ubxClass, str) and isinstance(

@@ -27,7 +27,7 @@ class ExceptionTest(unittest.TestCase):
         pass
 
     def testInvMode(self):  # test invalid mode
-        EXPECTED_ERROR = "Invalid mode 3 - must be 0, 1 or 2"
+        EXPECTED_ERROR = "Invalid msgmode 3 - must be 0, 1 or 2"
         with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
             UBXMessage('CFG', 'CFG-MSG', 3, msgClass=240, msgID=5)
 
