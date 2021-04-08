@@ -1,5 +1,11 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.0.7
+
+ENHANCEMENTS:
+
+1. Addition CFG-SIGNAL L2 keys added to `ubxtypes_configdb.py` - thanks to horace1024 for contribution.
+
 ### RELEASE 1.0.6
 
 ENHANCEMENTS:

@@ -282,7 +282,7 @@ wildcards - see example below and UBX device interface specification for details
 >>> keys = ["CFG_UART1_BAUDRATE", 0x40530001]
 >>> msg = UBXMessage.config_poll(layer, position, keys)
 >>> print(msg)
-<UBX(CFG-VALGET, version=0, layers=b'\x01', position=b'\x00\x00', keys_01=1079115777, keys_02=1079181313)>
+<UBX(CFG-VALGET, version=0, layer=1, position=0, keys_01=1079115777, keys_02=1079181313)>
 >>> serialOut.write(msg.serialize())
 ```
 
@@ -354,8 +354,8 @@ However, there are a handful of message types which have multiple possible paylo
 
 ## Graphical Client
 
-A python/tkinter graphical GPS client which supports both NMEA and UBX protocols (via pynmea2 and pyubx2 
-respectively) is under development at: 
+A python/tkinter graphical GPS client which supports both NMEA and UBX protocols (via pynmeagps and pyubx2 
+respectively) is available at: 
 
 [http://github.com/semuconsulting/PyGPSClient](http://github.com/semuconsulting/PyGPSClient)
 
