@@ -11,7 +11,7 @@ import sys
 from serial import Serial
 from pyubx2 import UBXReader
 
-PORT = 'COM13'
+PORT = "COM13"
 BAUD = 9600
 TIMEOUT = 5
 
@@ -27,8 +27,10 @@ def stream_ubx(**kwargs):
         timeout = int(kwargs.get("timeout", TIMEOUT))
         ubxonly = int(kwargs.get("ubxonly", 0))
         rawformat = int(kwargs.get("raw", 0))
-        print(f"\nStreaming from {port} at {baud} baud in",
-              f"{'raw' if rawformat else 'parsed'} format...\n")
+        print(
+            f"\nStreaming from {port} at {baud} baud in",
+            f"{'raw' if rawformat else 'parsed'} format...\n",
+        )
         stream = Serial(port, baud, timeout=timeout)
         ubr = UBXReader(stream, ubxonly=ubxonly)
         for (raw, parsed) in ubr:
@@ -48,7 +50,7 @@ if __name__ == "__main__":
                 " ubxdump.py is a simple command line utility to stream",
                 "the parsed UBX output of a u-blox GNSS device.\n\n",
                 "Usage (all args are optional): ubxdump.py",
-                "port=\"COM13\" baud=9600 timeout=5",
+                'port="COM13" baud=9600 timeout=5',
                 "ubxonly=0 raw=0\n\n Type Ctrl-C to terminate.",
             )
             sys.exit()

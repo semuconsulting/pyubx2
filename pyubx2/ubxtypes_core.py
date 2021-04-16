@@ -47,6 +47,7 @@ U3 = "U003"  # Unsigned Int 3 bytes
 U4 = "U004"  # Unsigned Int 4 bytes
 U5 = "U005"  # Unsigned Int 5 bytes
 U6 = "U006"  # Unsigned Int 6 bytes
+U7 = "U007"  # Unsigned Int 7 bytes
 U8 = "U008"  # Unsigned Int 8 bytes
 U9 = "U009"  # Unsigned Int 9 bytes
 U12 = "U012"  # Unsigned Int 12 bytes
@@ -83,6 +84,7 @@ VALID_TYPES = (
     U4,
     U5,
     U6,
+    U7,
     U8,
     U9,
     U12,
@@ -146,10 +148,15 @@ UBX_MSGIDS = {
     b"\x06\x70": "CFG-DGNSS",
     b"\x06\x61": "CFG-DOSC",
     b"\x06\x85": "CFG-DYNSEED",
+    b"\x06\x56": "CFG-ESFALG",
+    b"\x06\x4c": "CFG-ESFA",
+    b"\x06\x4d": "CFG-ESFG",
+    b"\x06\x82": "CFG-ESFWT",
     b"\x06\x60": "CFG-ESRC",
     b"\x06\x84": "CFG-FIXSEED",
     b"\x06\x69": "CFG-GEOFENCE",
     b"\x06\x3e": "CFG-GNSS",
+    b"\x06\x5c": "CFG-HNR",
     b"\x06\x02": "CFG-INF",
     b"\x06\x39": "CFG-ITFM",
     b"\x06\x47": "CFG-LOGFILTER",
@@ -167,6 +174,8 @@ UBX_MSGIDS = {
     b"\x06\x04": "CFG-RST",
     b"\x06\x11": "CFG-RXM",
     b"\x06\x16": "CFG-SBAS",
+    b"\x06\x88": "CFG-SENIF",
+    b"\x06\x8D": "CFG-SLAS",
     b"\x06\x62": "CFG-SMGR",
     b"\x06\x64": "CFG-SPT",
     b"\x06\x3d": "CFG-TMODE2",

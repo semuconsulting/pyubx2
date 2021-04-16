@@ -1,5 +1,15 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.0.8
+
+ENHANCEMENTS:
+
+1. Add following GET/SET message types: CFG-ESFALG, CFG-ESFA, CFG-ESFG, CFG-ESFWT, CFG-HNR, CFG-SENIF, CFG-SLAS
+
+FIXES:
+
+1. Fix incorrect HNR-PVT payload definition
+
 ### RELEASE 1.0.7
 
 ENHANCEMENTS:

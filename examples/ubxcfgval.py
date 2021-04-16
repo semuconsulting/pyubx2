@@ -65,7 +65,9 @@ class UBXStreamer:
             self._serial_object = Serial(
                 self._port, self._baudrate, timeout=self._timeout
             )
-            self._ubxreader = UBXReader(BufferedReader(self._serial_object), validate=VALCKSUM)
+            self._ubxreader = UBXReader(
+                BufferedReader(self._serial_object), validate=VALCKSUM
+            )
             self._connected = True
         except (SerialException, SerialTimeoutException) as err:
             print(f"Error connecting to serial port {err}")
@@ -193,12 +195,16 @@ if __name__ == "__main__":
     print("Starting reader thread...")
     ubp.start_read_thread()
 
-    print("\nPolling UART configuration in the volatile RAM memory layer via CFG-VALGET...")
+    print(
+        "\nPolling UART configuration in the volatile RAM memory layer via CFG-VALGET..."
+    )
     print("(This should result in ACK-ACK and CFG-VALGET responses)")
     ubp.poll_uart(0)
     sleep(2)
     print("\nPolling UART configuration in the BBR memory layer via CFG-VALGET...")
-    print("(This should result in an ACK-NAK response in the absence of an existing BBR configuration setting)")
+    print(
+        "(This should result in an ACK-NAK response in the absence of an existing BBR configuration setting)"
+    )
     ubp.poll_uart(1)
     sleep(2)
     print("\nSetting UART configuration in the BBR memory layer via CFG-VALSET...")
@@ -214,10 +220,14 @@ if __name__ == "__main__":
     ubp.unset_uart(2)
     sleep(2)
     print("\nPolling UART configuration in the BBR memory layer via CFG-VALGET...")
-    print("(This should result in an ACK-NAK response as the BBR configuration setting has now been removed)")
+    print(
+        "(This should result in an ACK-NAK response as the BBR configuration setting has now been removed)"
+    )
     ubp.poll_uart(1)
     sleep(2)
-    print("\nPolling UART configuration in the volatile RAM memory layer via CFG-VALGET...")
+    print(
+        "\nPolling UART configuration in the volatile RAM memory layer via CFG-VALGET..."
+    )
     print("(This should result in ACK-ACK and CFG-VALGET responses)")
     ubp.poll_uart(0)
     sleep(5)

@@ -87,7 +87,7 @@ class UBXTracker:
                         datetime(
                             msg.year, msg.month, msg.day, msg.hour, msg.min, msg.second
                         ).isoformat()
-                        +"Z"
+                        + "Z"
                     )
                     if msg.fixType == 3:
                         fix = "3d"
