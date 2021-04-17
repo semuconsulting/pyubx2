@@ -26,6 +26,7 @@ class StreamTest(unittest.TestCase):
         self.streamRXM = open(os.path.join(dirname, 'pygpsdata-RXM.log'), 'rb')
         self.streamMIX = open(os.path.join(dirname, 'pygpsdata-MIXED.log'), 'rb')
         self.streamMIX2 = open(os.path.join(dirname, 'pygpsdata-MIXED2.log'), 'rb')
+        self.streamHNR = open(os.path.join(dirname, 'pygpsdata-HNR.log'), 'rb')
         self.streamBADHDR = open(os.path.join(dirname, 'pygpsdata-BADHDR.log'), 'rb')
         self.streamBADEOF1 = open(os.path.join(dirname, 'pygpsdata-BADEOF1.log'), 'rb')
         self.streamBADEOF2 = open(os.path.join(dirname, 'pygpsdata-BADEOF2.log'), 'rb')
@@ -37,6 +38,7 @@ class StreamTest(unittest.TestCase):
         self.streamRXM.close()
         self.streamMIX.close()
         self.streamMIX2.close()
+        self.streamHNR.close()
         self.streamBADHDR.close()
         self.streamBADEOF1.close()
         self.streamBADEOF2.close()
@@ -143,6 +145,32 @@ class StreamTest(unittest.TestCase):
         i = 0
         raw = 0
         ubxreader = UBXReader(self.streamRXM)
+        while raw is not None:
+            (raw, parsed) = ubxreader.read()
+            if raw is not None:
+                self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
+                i += 1
+
+    def testHNR(self):  # test 20Hz high rate navigation messages
+        EXPECTED_RESULTS = (
+            "<UBX(HNR-PVT, iTOW=09:15:01.400000, year=2021, month=4, day=16, hour=9, min=14, second=59, valid=b'7', nano=400000109, gpsFix=3, flags=b'\\x1d', reserved1=3999, lon=45161898, lat=518927505, height=68308, hMSL=22326, gSpeed=477, speed=502, headMot=26585090, headVeh=26585090, hAcc=36541, vAcc=49102, sAcc=1557, headAcc=3887061, reserved2=775501108)>",
+            "<UBX(HNR-PVT, iTOW=09:15:01.450000, year=2021, month=4, day=16, hour=9, min=14, second=59, valid=b'7', nano=450000110, gpsFix=3, flags=b'\\x1d', reserved1=4499, lon=45161895, lat=518927505, height=68316, hMSL=22334, gSpeed=477, speed=502, headMot=26585090, headVeh=26585090, hAcc=36541, vAcc=49102, sAcc=1557, headAcc=3887061, reserved2=775501108)>",
+            "<UBX(HNR-PVT, iTOW=09:15:01.500000, year=2021, month=4, day=16, hour=9, min=14, second=59, valid=b'7', nano=500000111, gpsFix=3, flags=b'\\x1d', reserved1=4999, lon=45161891, lat=518927505, height=68324, hMSL=22342, gSpeed=477, speed=502, headMot=26585090, headVeh=26585090, hAcc=36541, vAcc=49102, sAcc=1557, headAcc=3887061, reserved2=775501108)>",
+            "<UBX(HNR-PVT, iTOW=09:15:01.550000, year=2021, month=4, day=16, hour=9, min=14, second=59, valid=b'7', nano=550000112, gpsFix=3, flags=b'\\x1d', reserved1=5499, lon=45161888, lat=518927505, height=68332, hMSL=22350, gSpeed=477, speed=502, headMot=26585090, headVeh=26585090, hAcc=36541, vAcc=49102, sAcc=1557, headAcc=3887061, reserved2=775501108)>",
+            "<UBX(HNR-PVT, iTOW=09:15:01.600000, year=2021, month=4, day=16, hour=9, min=14, second=59, valid=b'7', nano=600000112, gpsFix=3, flags=b'\\x1d', reserved1=5999, lon=45161884, lat=518927505, height=68340, hMSL=22358, gSpeed=477, speed=502, headMot=26585090, headVeh=26585090, hAcc=36541, vAcc=49102, sAcc=1557, headAcc=3887061, reserved2=775501108)>",
+            "<UBX(HNR-PVT, iTOW=09:15:01.650000, year=2021, month=4, day=16, hour=9, min=14, second=59, valid=b'7', nano=650000113, gpsFix=3, flags=b'\\x1d', reserved1=6499, lon=45161881, lat=518927505, height=68348, hMSL=22366, gSpeed=477, speed=502, headMot=26585090, headVeh=26585090, hAcc=36541, vAcc=49102, sAcc=1557, headAcc=3887061, reserved2=775501108)>",
+            "<UBX(HNR-PVT, iTOW=09:15:01.700000, year=2021, month=4, day=16, hour=9, min=14, second=59, valid=b'7', nano=700000114, gpsFix=3, flags=b'\\x1d', reserved1=6999, lon=45161877, lat=518927505, height=68356, hMSL=22374, gSpeed=477, speed=502, headMot=26585090, headVeh=26585090, hAcc=36541, vAcc=49102, sAcc=1557, headAcc=3887061, reserved2=775501108)>",
+            "<UBX(HNR-PVT, iTOW=09:15:01.750000, year=2021, month=4, day=16, hour=9, min=14, second=59, valid=b'7', nano=750000115, gpsFix=3, flags=b'\\x1d', reserved1=7499, lon=45161874, lat=518927505, height=68364, hMSL=22382, gSpeed=477, speed=502, headMot=26585090, headVeh=26585090, hAcc=36541, vAcc=49102, sAcc=1557, headAcc=3887061, reserved2=775501108)>",
+            "<UBX(HNR-PVT, iTOW=09:15:01.800000, year=2021, month=4, day=16, hour=9, min=14, second=59, valid=b'7', nano=800000115, gpsFix=3, flags=b'\\x1d', reserved1=7999, lon=45161870, lat=518927506, height=68372, hMSL=22390, gSpeed=477, speed=502, headMot=26585090, headVeh=26585090, hAcc=36541, vAcc=49102, sAcc=1557, headAcc=3887061, reserved2=775501108)>",
+            "<UBX(HNR-PVT, iTOW=09:15:01.850000, year=2021, month=4, day=16, hour=9, min=14, second=59, valid=b'7', nano=850000116, gpsFix=3, flags=b'\\x1d', reserved1=8499, lon=45161867, lat=518927506, height=68380, hMSL=22398, gSpeed=477, speed=502, headMot=26585090, headVeh=26585090, hAcc=36541, vAcc=49102, sAcc=1557, headAcc=3887061, reserved2=775501108)>",
+            "<UBX(HNR-PVT, iTOW=09:15:01.900000, year=2021, month=4, day=16, hour=9, min=14, second=59, valid=b'7', nano=900000117, gpsFix=3, flags=b'\\x1d', reserved1=8999, lon=45161863, lat=518927506, height=68388, hMSL=22406, gSpeed=477, speed=502, headMot=26585090, headVeh=26585090, hAcc=36541, vAcc=49102, sAcc=1557, headAcc=3887061, reserved2=775501108)>",
+            "<UBX(HNR-PVT, iTOW=09:15:01.950000, year=2021, month=4, day=16, hour=9, min=14, second=59, valid=b'7', nano=950000118, gpsFix=3, flags=b'\\x1d', reserved1=9499, lon=45161860, lat=518927506, height=68396, hMSL=22414, gSpeed=477, speed=502, headMot=26585090, headVeh=26585090, hAcc=36541, vAcc=49102, sAcc=1557, headAcc=3887061, reserved2=775501108)>",
+            "<UBX(HNR-PVT, iTOW=09:15:02, year=2021, month=4, day=16, hour=9, min=15, second=0, valid=b'7', nano=118, gpsFix=3, flags=b'\\x1d', reserved1=9999, lon=45161857, lat=518927506, height=68404, hMSL=22422, gSpeed=477, speed=502, headMot=26585090, headVeh=26585090, hAcc=36541, vAcc=49102, sAcc=1557, headAcc=3887061, reserved2=775501108)>",
+        )
+
+        i = 0
+        raw = 0
+        ubxreader = UBXReader(self.streamHNR, ubxonly=False)
         while raw is not None:
             (raw, parsed) = ubxreader.read()
             if raw is not None:
