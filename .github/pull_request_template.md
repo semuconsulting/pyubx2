@@ -6,13 +6,13 @@ Please include a summary of the change and which issue is fixed. Please also inc
 
 Fixes # (issue)
 
-## How Has This Been Tested?
+## Testing
 
 Please test all changes, however trivial, against the supplied unittest suite `tests/testsuite.py`.
-Please describe any test cases you have added to this suite to maintain >= 99% code coverage.
+Please describe any test cases you have amended or added to this suite to maintain >= 99% code coverage.
 
-- [ ] Additional Test A
-- [ ] Additional Test B
+- [ ] Test A
+- [ ] Test B
 
 ## Checklist:
 
