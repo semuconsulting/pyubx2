@@ -1,5 +1,15 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.0.9
+
+ENHANCEMENTS:
+
+1. Add CFG_BDS_USE_PRN_1_TO_5 to list of configuration keyIDs in ubxtypes_configdb.py - thanks to Nerolf05 for contribution.
+
+FIXES:
+
+1. Fix incorrect CFG-TMODE configuration keyIDs in ubxtypes_configdb.py.
+
 ### RELEASE 1.0.8
 
 ENHANCEMENTS:
