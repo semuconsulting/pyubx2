@@ -1,7 +1,7 @@
 pyubx2
 =======
 
-`pyubx2` is an original python library for the UBX protocol. UBX is a proprietary binary protocol implemented on u-blox &copy; GPS/GNSS receiver modules.
+`pyubx2` is an original Python library for the UBX protocol. UBX is a proprietary binary protocol implemented on u-blox &copy; GPS/GNSS receiver modules.
 
 The `pyubx2` homepage is located at [http://github.com/semuconsulting/pyubx2](http://github.com/semuconsulting/pyubx2).
 
@@ -21,7 +21,7 @@ This is an independent project and we have no affiliation whatsoever with u-blox
 At time of writing the library implements a comprehensive set of inbound (SET/POLL) and outbound (GET) messages for
 u-blox GPS/GNSS devices from generation 6 through generation 10 [(NEO-M6*, NEO-M7*, NEO-M8*, NEO-M9*, NEO-D9*, RCB-F9*, ZED-F9*, MAX-M10S, etc.)](https://www.u-blox.com/en/positioning-chips-and-modules), but is readily [extensible](#extensibility). Refer to `UBX_MSGIDS` in [ubxtypes_core.py](https://github.com/semuconsulting/pyubx2/blob/master/pyubx2/ubxtypes_core.py) for the complete dictionary of messages currently supported.
 
-Sphinx API Documentation in HTML format is available at [http://semuconsulting.com/pyubx2](http://semuconsulting.com/pyubx2).
+Sphinx API Documentation in HTML format is available at [https://www.semuconsulting.com/pyubx2](https://www.semuconsulting.com/pyubx2).
 
 Contributions welcome - please refer to [CONTRIBUTING.MD](https://github.com/semuconsulting/pyubx2/blob/master/CONTRIBUTING.md).
 
@@ -31,7 +31,7 @@ Contributions welcome - please refer to [CONTRIBUTING.MD](https://github.com/sem
 
 `pyubx2` is compatible with Python 3.6+ and has no third-party library dependencies.
 
-In the following, `python` & `pip` refer to the python3 executables. You may need to type 
+In the following, `python` & `pip` refer to the Python 3 executables. You may need to type 
 `python3` or `pip3`, depending on your particular environment.
 
 ![Python version](https://img.shields.io/pypi/pyversions/pyubx2.svg?style=flat)
@@ -216,7 +216,7 @@ Generation 9 of the UBX protocol introduced the concept of a device configuratio
 
 Optionally, batches of CFG-VALSET and CFG-VALDEL messages can be applied transactionally, with the combined configuration only being committed at the end of the transaction.
 
-Individual configuration parameters are designated by keys, which may be in string (keyname) or integer (keyID) format. Keynames and their corresponding hexadecimal keyIDs and data types are defined in `ubxtypes_configdb.py` as `UBX_CONFIG_DATABASE`. Two static helper methods are available to convert keyname to keyID and vice versa - `UBXMessage.cfgname2key()` and `UBXMessage.cfgkey2name()`.
+Individual configuration parameters are designated by keys, which may be in string (keyname) or hexadecimal integer (keyID) format. Keynames and their corresponding hexadecimal keyIDs and data types are defined in [ubxtypes_configdb.py](https://github.com/semuconsulting/pyubx2/blob/master/pyubx2/ubxtypes_configdb.py) as `UBX_CONFIG_DATABASE`. Two static helper methods are available to convert keyname to keyID and vice versa - `UBXMessage.cfgname2key()` and `UBXMessage.cfgkey2name()`.
 
 Dedicated static methods are provided to create these message types - `UBXMessage.config_set()`, `UBXMessage.config_del()` and `UBXMessage.config_poll()`. The following examples assume an output serial stream has been created as `serialOut`.
 
@@ -318,22 +318,18 @@ The following examples can be found in the `\examples` folder:
 1. `ubxfile.py` illustrates how to implement a binary file reader for UBX messages using 
 the pyubx2.UBXReader iterator function. 
 
-1. `ubxcfgval.py` illustrates how to invoke the Generation 9 configuration interface to set the UART1/2 baud rates
-via CFG-VALSET, CF-VALDEL and CFG-VALGET messages.
+1. `ubxcfgval.py` illustrates how to invoke the Generation 9 configuration interface via CFG-VALSET, CF-VALDEL and CFG-VALGET messages.
 
-1. `ubxconfig.py` illustrates how to invoke legacy (pre-Generation 9) configuration messages to set the UBX-NAV* message 
-rates on the receiver's UART and USB ports. You can see the results using `ubxstreamer.py`.
+1. `ubxconfig.py` illustrates how to invoke legacy (pre-Generation 9) configuration messages (CFG-MSG).
 
-1. `gpxtracker.py` illustrates a simple CLI tool to convert a binary UBX data dump 
-(e.g. as produced by the [PyGPSClient](http://github.com/semuconsulting/PyGPSClient)'s data logging facility) to a `*.gpx` track file using pyubx2.UBXReader.
+1. `gpxtracker.py` illustrates a simple CLI tool to convert a binary UBX data dump to a `*.gpx` track file.
 
 1. `ubxdump.py` is a simple command line utility to stream the parsed UBX output of a u-blox &copy; GNSS device on a specified port.
 
 
 ## <a name="extensibility">Extensibility</a>
 
-The UBX protocol is principally defined in the modules `ubxtypes_*.py` as a series of dictionaries. Additional message types 
-can be readily added to the appropriate dictionary. Message payload definitions must conform to the following rules:
+The UBX protocol is principally defined in the modules `ubxtypes_*.py` as a series of dictionaries. Message payload definitions must conform to the following rules:
 
 ```
 1. attribute names must be unique within each message class
@@ -346,9 +342,9 @@ can be readily added to the appropriate dictionary. Message payload definitions 
    {dict} is the nested dictionary of repeating items
 ```
 
-See CFG-VALGET, NAV-SVINFO and RXM-RLM by way of examples. Repeating attribute names are parsed with a two-digit suffix (svid_01, svid_02, etc.). Nested repeating groups are supported (e.g. MON-SPAN).
+Repeating attribute names are parsed with a two-digit suffix (svid_01, svid_02, etc.). Nested repeating groups are supported. See CFG-VALGET, MON-SPAN, NAV-SAT and RXM-RLM by way of examples.
 
-In most cases, a UBX message's content (payload) is uniquely defined by its class, id and mode; accommodating the message simply requires the addition of an appropriate dictionary entry to the relevant `ubxtypes_*.py` module.
+In most cases, a UBX message's content (payload) is uniquely defined by its class, id and mode; accommodating the message simply requires the addition of an appropriate dictionary entry to the relevant `ubxtypes_*.py` module(s).
 
 However, there are a handful of message types which have multiple possible payload definitions for the same class, id and mode, with no consistency as to how to differentiate between them. Under these circumstances, it may be necessary to modify the code in `ubxmessage.py` to examine elements of the payload itself in order to determine the appropriate dictionary definition. This currently applies to ESF-MEAS, CFG-NMEA, RXM-PMP, RXM-PMREQ, RXM-RLM and most MGA message types.
 
