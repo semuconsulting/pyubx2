@@ -1,5 +1,15 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.0.10
+
+FIXES:
+
+1. Fix typo error in NAV-SBAS payload - thanks to Nerofl05 for contribution.
+
+ENHANCEMENTS:
+
+1. Add msgmode getter method to `ubxmessage.py` -  - thanks to Nerofl05 for contribution.
+
 ### RELEASE 1.0.9
 
 ENHANCEMENTS:

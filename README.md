@@ -3,7 +3,7 @@ pyubx2
 
 `pyubx2` is an original Python library for the UBX protocol. UBX is a proprietary binary protocol implemented on u-blox &copy; GPS/GNSS receiver modules.
 
-The `pyubx2` homepage is located at [http://github.com/semuconsulting/pyubx2](http://github.com/semuconsulting/pyubx2).
+The `pyubx2` homepage is located at [https://github.com/semuconsulting/pyubx2](https://github.com/semuconsulting/pyubx2).
 
 This is an independent project and we have no affiliation whatsoever with u-blox &copy;.
 
