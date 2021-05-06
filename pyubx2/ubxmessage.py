@@ -677,17 +677,17 @@ class UBXMessage:
         """
 
         return self._payload
-    
+
     @property
-    def mode(self) -> int:
+    def msgmode(self) -> int:
         """
         Message mode getter.
-        
+
         :return: msgmode as integer
         :rtype: int
-        
+
         """
-        
+
         return self._mode
 
     @staticmethod
