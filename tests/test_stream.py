@@ -65,7 +65,7 @@ class StreamTest(unittest.TestCase):
             "<UBX(NAV-TIMELS, iTOW=09:08:09, version=0, reserved1=0, srcOfCurrLs=255, currLs=18, srcOfLsChange=6, lsChange=0, timeToLsEvent=-32887, dateOfLsGpsWn=2146, dateOfLsGpsDn=1, reserved2=0, valid=b'\\x03')>",
             "<UBX(NAV-TIMEQZSS, iTOW=09:08:09, qzssTow=119305, fQzssTow=332986, qzssWno=2146, leapS=18, valid=b'\\x07', tAcc=3406)>",
             "<UBX(NAV-CLOCK, iTOW=09:08:09, clkB=667014, clkD=-71, tAcc=71, fAcc=5239)>",
-            "<UBX(NAV-SBAS, iTOW=09:08:09, geo=0, mode:=0, sys=0, service=b'\\x00', numCh=0, reserved0=0)>",
+            "<UBX(NAV-SBAS, iTOW=09:08:09, geo=0, mode=0, sys=0, service=b'\\x00', numCh=0, reserved0=0)>",
             "<UBX(NAV-SLAS, iTOW=09:08:09, version=0, reserved1=0, gmsLon=0, gmsLat=0, gmsCode=0, qzssSvId=0, serviceFlags=b'\\x00', cnt=0)>",
             "<UBX(NAV-AOPSTATUS, iTOW=09:08:09, config=1, status=0, reserved0=0, reserved1=10, avail=0, reserved2=0, reserved3=0)>",
             "<UBX(NAV-ODO, version=0, reserved0=466035, iTOW=09:08:09, distance=0, totalDistance=0, distanceStd=0)>",
