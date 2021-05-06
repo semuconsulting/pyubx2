@@ -1365,7 +1365,7 @@ UBX_PAYLOADS_GET = {
     "NAV-SBAS": {
         "iTOW": U4,
         "geo": U1,
-        "mode:": U1,
+        "mode": U1,
         "sys": I1,
         "service": X1,
         "numCh": U1,
