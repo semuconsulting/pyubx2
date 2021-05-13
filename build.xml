@@ -1,22 +1,35 @@
 <?xml version = "1.0"?>
 <project name="pyubx2" default="build">
+	<property name="module.name" value="pyubx2" />
 	<property name="version" value="1.0.10" />
-	<condition property="python" value="python" else="/Library/Frameworks/Python.framework/Versions/3.9/bin/python3">
+	<condition property="python" value="python">
 		<os family="windows" />
 	</condition>
-	<condition property="make" value="docs/make.bat" else="docs/make">
+	<condition property="python" value="/Library/Frameworks/Python.framework/Versions/3.9/bin/python3">
+		<os family="mac" />
+	</condition>
+	<condition property="python" value="/usr/bin/python3">
+		<os family="unix" />
+	</condition>
+	<condition property="make" value="docs/make.bat">
 		<os family="windows" />
+	</condition>
+	<condition property="make" value="/usr/bin/make">
+		<os family="mac" />
+	</condition>
+	<condition property="make" value="/usr/bin/make">
+		<os family="unix" />
 	</condition>
 	<property name="sphinx" value="sphinx-apidoc" />
 	<property name="test_args" value="tests/testsuite.py" />
-	<property name="analyse_args" value="-m pylint --reports=y ${ant.project.name}" />
-	<property name="format_args" value="-m black ${ant.project.name}" />
+	<property name="analyse_args" value="-m pylint --reports=y ${module.name}" />
+	<property name="format_args" value="-m black ${module.name}" />
 	<property name="build_args" value="setup.py sdist bdist_wheel" />
 	<property name="deploy_args" value="-m twine upload --config-file .pypirc dist/*" />
 	<property name="install_args" value="-m pip install dist/${ant.project.name}-${version}.tar.gz --user --force-reinstall" />
-	<property name="coverage_args" value="-m coverage run --source=${ant.project.name} -m pytest" />
+	<property name="coverage_args" value="-m coverage run --source=${module.name} -m pytest" />
 	<property name="coverage_html_args" value="-m coverage html" />
-	<property name="apidoc_args" value="-f -o docs pyubx2" />
+	<property name="apidoc_args" value="-f -o docs ${module.name}" />
 	<property name="html_args" value="html" />
 	<target name="clean">
 		<echo>Cleaning...</echo>
@@ -24,8 +37,6 @@
 			<fileset dir="build" />
 			<fileset dir="dist" />
 			<fileset dir="htmlcov" />
-			<fileset dir="doc" />
-			<fileset dir=".pytest_cache" />
 			<fileset dir="${ant.project.name}.egg-info/" />
 			<fileset dir="${ant.project.name}-*/" />
 			<fileset dir="${ant.project.name}/__pycache__" includes="*.nbc, *.nbi, *.pyc" />
@@ -69,7 +80,7 @@
 		<exec executable="${sphinx}">
 			<arg line="${apidoc_args}"/>
   		</exec>
-  		<exec executable="${make}">
+  		<exec executable="${make}" dir="${user.dir}/docs">
 			<arg line="${html_args}"/>
   		</exec>
    	</target>
@@ -79,7 +90,7 @@
 			<arg line="${install_args}"/>
   		</exec>
    	</target>
-	<target name = "deploy" depends="test">
+	<target name = "deploy" depends="build">
 		<echo>Deploying...</echo>
 		<exec executable="${python}">
 			<arg line="${deploy_args}"/>
