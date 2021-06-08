@@ -1336,7 +1336,7 @@ UBX_PAYLOADS_GET = {
         "relPosD": I4,
         "relPosLength": I4,
         "relPosHeading": I4,
-        "reserved1": U1,
+        "reserved1": U4,
         "relPosHPN": I1,
         "relPosHPE": I1,
         "relPosHPD": I1,
@@ -1346,7 +1346,7 @@ UBX_PAYLOADS_GET = {
         "accD": U4,
         "accLength": U4,
         "accHeading": U4,
-        "reserved2": U1,
+        "reserved2": U4,
         "flags": X4,
     },
     "NAV-SAT": {
