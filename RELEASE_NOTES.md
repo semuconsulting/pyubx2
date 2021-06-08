@@ -1,5 +1,11 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.0.11
+
+FIXES:
+
+1. Fix NAV-RELPOSNED payload definition - thanks to nikitamankovskii for contribution.
+
 ### RELEASE 1.0.10
 
 FIXES:
