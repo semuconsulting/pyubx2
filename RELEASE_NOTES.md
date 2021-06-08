@@ -6,6 +6,8 @@ FIXES:
 
 1. Fix NAV-RELPOSNED payload definition - thanks to nikitamankovskii for contribution.
 
+NB: At time of writing there appears to be an active issue with GitHub Actions CodeCov uploads which is causing the build to fail for spurious reasons. There's nothing actually wrong with the code or the repo.
+
 ### RELEASE 1.0.10
 
 FIXES:
