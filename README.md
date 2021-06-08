@@ -45,7 +45,7 @@ The recommended way to install the latest version of `pyubx2` is with
 python -m pip install --upgrade pyubx2
 ```
 
-If required, `pyubx2` can also be installed using virtualenv, e.g.:
+If required, `pyubx2` can also be installed into a virtual environment, e.g.:
 
 ```shell
 python -m pip install --user --upgrade virtualenv
