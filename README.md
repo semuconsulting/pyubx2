@@ -7,6 +7,8 @@ The `pyubx2` homepage is located at [https://github.com/semuconsulting/pyubx2](h
 
 This is an independent project and we have no affiliation whatsoever with u-blox &copy;.
 
+**FYI** There is a companion library [pynmeagps](http://github.com/semuconsulting/pynmeagps), which handles standard NMEA 0183 GNSS/GPS messages.
+
 ### Current Status
 
 ![Status](https://img.shields.io/pypi/status/pyubx2)
