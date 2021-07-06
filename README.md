@@ -89,6 +89,7 @@ Examples:
 >>> stream = Serial('/dev/tty.usbmodem14101', 9600, timeout=3)
 >>> ubr = UBXReader(stream)
 >>> (raw_data, parsed_data) = ubr.read()
+print(parsed_data)
 ```
 
 * File input (using iterator) - this example will produce a `UBXStreamError` if non-UBX data is encountered.
