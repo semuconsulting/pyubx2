@@ -102,19 +102,24 @@ class FillTest(unittest.TestCase):
 
     def testFill_CFGDAT(self):  # test CFG-DAT floating point attribute, single and double precision
         EXPECTED_RESULT = "<UBX(CFG-DAT, datumNum=4, datumName=b'WGS-84', majA=4321.123456789128, flat=-2964.00469836, dX=-1.2345678, dY=27.40654, dZ=0.0, rotX=0.0, rotY=0.0, rotZ=0.0, scale=0.0)>"
-        res = UBXMessage('CFG', 'CFG-DAT', SET, datumNum=4, datumName=b'WGS-84', majA=4321.123456789128, flat=-2964.00469836, dX=-1.2345678, dY=27.40654)
+        res = UBXMessage('CFG', 'CFG-DAT', GET, datumNum=4, datumName=b'WGS-84', majA=4321.123456789128, flat=-2964.00469836, dX=-1.2345678, dY=27.40654)
+        self.assertEqual(str(res), EXPECTED_RESULT)
+
+    def testFill_CFGDAT2(self):  # test CFG-DAT floating point attribute, single and double precision
+        EXPECTED_RESULT = "<UBX(CFG-DAT, majA=4321.123456789128, flat=-2964.00469836, dX=-1.2345678, dY=27.40654, dZ=0.0, rotX=0.0, rotY=0.0, rotZ=0.0, scale=0.0)>"
+        res = UBXMessage('CFG', 'CFG-DAT', SET, majA=4321.123456789128, flat=-2964.00469836, dX=-1.2345678, dY=27.40654)
         self.assertEqual(str(res), EXPECTED_RESULT)
 
     def testFill_CFGDATPARSE(self):  # check that raw payload is correctly populated and parses back to original message
         EXPECTED_RESULT = "<UBX(CFG-DAT, datumNum=4, datumName=b'WGS-84', majA=4321.123456789128, flat=-2964.00469836, dX=-1.2345677614212036, dY=27.406539916992188, dZ=0.0, rotX=0.0, rotY=0.0, rotZ=0.0, scale=0.0)>"
-        res = UBXMessage('CFG', 'CFG-DAT', SET, datumNum=4, datumName=b'WGS-84', majA=4321.123456789128, flat=-2964.00469836, dX=-1.2345678, dY=27.40654)
+        res = UBXMessage('CFG', 'CFG-DAT', GET, datumNum=4, datumName=b'WGS-84', majA=4321.123456789128, flat=-2964.00469836, dX=-1.2345678, dY=27.40654)
         res2 = UBXReader.parse(res.serialize())
         self.assertEqual(str(res2), EXPECTED_RESULT)
 
     def testFill_CFGDATPARSE2(self):  # check that raw payload is correctly populated and parses back to original message
-        EXPECTED_RESULT = "<UBX(CFG-DAT, datumNum=4, datumName=b'WGS-84', majA=0.0, flat=0.0, dX=-1.2345677614212036, dY=27.406539916992188, dZ=0.0, rotX=0.0, rotY=0.0, rotZ=0.0, scale=0.0)>"
-        res = UBXMessage('CFG', 'CFG-DAT', SET, datumNum=4, datumName=b'WGS-84', dX=-1.2345678, dY=27.40654)
-        res2 = UBXReader.parse(res.serialize())
+        EXPECTED_RESULT = "<UBX(CFG-DAT, majA=0.0, flat=0.0, dX=-1.2345677614212036, dY=27.406539916992188, dZ=0.0, rotX=0.0, rotY=0.0, rotZ=0.0, scale=0.0)>"
+        res = UBXMessage('CFG', 'CFG-DAT', SET, dX=-1.2345678, dY=27.40654)
+        res2 = UBXReader.parse(res.serialize(), msgmode=SET)
         self.assertEqual(str(res2), EXPECTED_RESULT)
 
     def testEVAL(self):  # double check that eval of repr(msg) reproduces original message

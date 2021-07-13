@@ -43,29 +43,29 @@ class ExceptionTest(unittest.TestCase):
             UBXMessage('CFG', 'CFG-NMEA', SET, filter=45, nmeaVersion='xx', numSV=4, flags=14)
 
     def testFill_CFGDAT(self):  # incorrect type (string not integer)
-        EXPECTED_ERROR = "Incorrect type for attribute 'datumNum' in SET message class CFG-DAT"
+        EXPECTED_ERROR = "Incorrect type for attribute 'datumNum' in GET message class CFG-DAT"
         with self.assertRaisesRegex(UBXTypeError, EXPECTED_ERROR):
-            UBXMessage('CFG', 'CFG-DAT', SET, datumNum='xyz', datumName=123, majA='xcy', flat='xyx', dX='xyz', dY='xyx')
+            UBXMessage('CFG', 'CFG-DAT', GET, datumNum='xyz', datumName=123, majA='xcy', flat='xyx', dX='xyz', dY='xyx')
 
     def testFill_CFGDAT2(self):  # incorrect type (integer not string)
-        EXPECTED_ERROR = "Incorrect type for attribute 'datumName' in SET message class CFG-DAT"
+        EXPECTED_ERROR = "Incorrect type for attribute 'datumName' in GET message class CFG-DAT"
         with self.assertRaisesRegex(UBXTypeError, EXPECTED_ERROR):
-            UBXMessage('CFG', 'CFG-DAT', SET, datumNum=4, datumName=123, majA='xcy', flat='xyx', dX='xyz', dY='xyx')
+            UBXMessage('CFG', 'CFG-DAT', GET, datumNum=4, datumName=123, majA='xcy', flat='xyx', dX='xyz', dY='xyx')
 
     def testFill_CFGDAT3(self):  # incorrect type (signed not unsigned integer)
-        EXPECTED_ERROR = "Incorrect type for attribute 'datumNum' in SET message class CFG-DAT"
+        EXPECTED_ERROR = "Incorrect type for attribute 'datumNum' in GET message class CFG-DAT"
         with self.assertRaisesRegex(UBXTypeError, EXPECTED_ERROR):
-            UBXMessage('CFG', 'CFG-DAT', SET, datumNum=-4, datumName=b'WGS84', majA=123.45, flat=123.45, dX=123.45, dY=123.45)
+            UBXMessage('CFG', 'CFG-DAT', GET, datumNum=-4, datumName=b'WGS84', majA=123.45, flat=123.45, dX=123.45, dY=123.45)
 
     def testFill_CFGDAT4(self):  # incorrect type (string not float)
         EXPECTED_ERROR = "Incorrect type for attribute 'majA' in SET message class CFG-DAT"
         with self.assertRaisesRegex(UBXTypeError, EXPECTED_ERROR):
-            UBXMessage('CFG', 'CFG-DAT', SET, datumNum=4, datumName=b'WGS84', majA='xxx', flat=123.45, dX=123.45, dY=123.45)
+            UBXMessage('CFG', 'CFG-DAT', SET, majA='xxx', flat=123.45, dX=123.45, dY=123.45)
 
     def testFill_CFGDAT5(self):  # incorrect type (binary not float)
         EXPECTED_ERROR = "Incorrect type for attribute 'flat' in SET message class CFG-DAT"
         with self.assertRaisesRegex(UBXTypeError, EXPECTED_ERROR):
-            UBXMessage('CFG', 'CFG-DAT', SET, datumNum=4, datumName=b'WGS84', majA=123.45, flat=b'\xffffff', dX=123.45, dY=123.45)
+            UBXMessage('CFG', 'CFG-DAT', SET, majA=123.45, flat=b'\xffffff', dX=123.45, dY=123.45)
 
     def testFill_XXX(self):  # test for invalid message type
         EXPECTED_ERROR = "Undefined message, class XXX, id XXX-YYY"
