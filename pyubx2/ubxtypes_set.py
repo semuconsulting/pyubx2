@@ -139,8 +139,6 @@ UBX_PAYLOADS_SET = {
     },
     "CFG-CFG": {"clearMask": X4, "saveMask": X4, "loadMask": X4, "deviceMask": X1},
     "CFG-DAT": {
-        "datumNum": U2,
-        "datumName": C6,
         "majA": R8,
         "flat": R8,
         "dX": R4,
