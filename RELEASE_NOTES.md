@@ -1,5 +1,11 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.0.13
+
+FIXES:
+
+1. CFG-DAT SET payload definition corrected.
+
 ### RELEASE 1.0.12
 
 FIXES:
