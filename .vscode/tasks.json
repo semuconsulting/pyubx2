@@ -1,6 +1,9 @@
 {
     // See https://go.microsoft.com/fwlink/?LinkId=733558
     // for the documentation about the tasks.json format
+
+    // These Python project tasks assume you have installed
+    // and configured: black, coverage, pytest, Sphinx and wheel
     "version": "2.0.0",
     "tasks": [
         {
@@ -10,7 +13,7 @@
             "args": [
                 "-m",
                 "black",
-                "${workspaceFolderBasename}"
+                "${config:modulename}"
             ],
             "problemMatcher": []
         },
@@ -22,7 +25,7 @@
                 "-m",
                 "pylint",
                 "--reports=y",
-                "${workspaceFolderBasename}"
+                "${config:modulename}"
             ],
             "problemMatcher": []
         },
@@ -54,7 +57,7 @@
                 "-m",
                 "coverage",
                 "run",
-                "--source=${workspaceFolderBasename}",
+                "--source=${config:modulename}",
                 "-m",
                 "pytest"
             ],
@@ -81,7 +84,7 @@
                 "-f", 
                 "-o",
                 "docs",
-                "${workspaceFolderBasename}"
+                "${config:modulename}"
             ],
             "problemMatcher": []
         },
@@ -105,6 +108,22 @@
             },
             "dependsOrder": "sequence",
             "dependsOn": ["Sphinx"],
+            "problemMatcher": []
+        },
+        {
+            "label": "Install Locally",
+            "type": "process",
+            "command": "${config:python.pythonPath}",
+            "args": [
+                "-m",
+                "pip",
+                "install",
+                "${workspaceFolder}/dist/${config:modulename}-${config:moduleversion}.tar.gz",
+                "--user",
+                "--force-reinstall"
+            ],
+            "dependsOrder": "sequence",
+            "dependsOn": ["Format", "Analyze", "Build", "Test", "Coverage Report", "Sphinx HTML"],
             "problemMatcher": []
         },
     ]

@@ -10,5 +10,7 @@
     "python.testing.nosetestsEnabled": false,
     "python.testing.unittestEnabled": true,
     "python.formatting.provider": "black",
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "modulename": "${workspaceFolderBasename}",
+    "moduleversion": "1.0.13"
 }
