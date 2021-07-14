@@ -1,0 +1,111 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Format",
+            "type": "process",
+            "command": "${config:python.pythonPath}",
+            "args": [
+                "-m",
+                "black",
+                "${workspaceFolderBasename}"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Analyse",
+            "type": "process",
+            "command": "${config:python.pythonPath}",
+            "args": [
+                "-m",
+                "pylint",
+                "--reports=y",
+                "${workspaceFolderBasename}"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Build",
+            "type": "process",
+            "command": "${config:python.pythonPath}",
+            "args": [
+                "${workspaceFolder}/setup.py",
+                "sdist",
+                "bdist_wheel"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Test",
+            "type": "process",
+            "command": "${config:python.pythonPath}",
+            "args": [
+                "${workspaceFolder}/tests/testsuite.py"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Coverage",
+            "type": "process",
+            "command": "${config:python.pythonPath}",
+            "args": [
+                "-m",
+                "coverage",
+                "run",
+                "--source=${workspaceFolderBasename}",
+                "-m",
+                "pytest"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Coverage Report",
+            "type": "process",
+            "command": "${config:python.pythonPath}",
+            "args": [
+                "-m",
+                "coverage",
+                "html"
+            ],
+            "dependsOrder": "sequence",
+            "dependsOn": ["Coverage"],
+            "problemMatcher": []
+        },
+        {
+            "label": "Sphinx",
+            "type": "process",
+            "command": "sphinx-apidoc",
+            "args": [
+                "-f", 
+                "-o",
+                "docs",
+                "${workspaceFolderBasename}"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Sphinx HTML",
+            "type": "process",
+            "windows": {
+                "command": "${workspaceFolder}/docs/make.bat"
+            },
+            "linux": {
+                "command": "/usr/bin/make"
+            },
+            "osx": {
+                "command": "/usr/bin/make"
+            },
+            "args": [
+                "html"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/docs"
+            },
+            "dependsOrder": "sequence",
+            "dependsOn": ["Sphinx"],
+            "problemMatcher": []
+        },
+    ]
+}
