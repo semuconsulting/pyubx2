@@ -46,9 +46,8 @@
 			<fileset dir="build" />
 			<fileset dir="dist" />
 			<fileset dir="htmlcov" />
-			<fileset dir="${ant.project.name}.egg-info/" />
-			<fileset dir="${ant.project.name}-*/" />
-			<fileset dir="${ant.project.name}/__pycache__" includes="*.nbc, *.nbi, *.pyc" />
+			<fileset dir="docs/_build" />
+			<fileset dir="${ant.project.name}.egg-info" />
 		</delete>
 	</target>
 	<target name="format" depends="clean">
