@@ -1,7 +1,7 @@
 """
 UBX Protocol Configuration Database Keys
 
-Used by CFG-VALGET, CFG-VALSET and CFG-VALDEL message types
+Used by CFG_VALGET, CFG_VALSET and CFG_VALDEL message types
 
 Format:
 "keyname": (keyID, "type")
@@ -13,6 +13,7 @@ Created on 30 Nov 2020
 
 from pyubx2.ubxtypes_core import (
     E1,
+    E2,
     I1,
     I2,
     I4,
@@ -22,22 +23,23 @@ from pyubx2.ubxtypes_core import (
     U1,
     U2,
     U4,
+    U8,
     X1,
     X8,
 )
 
-# memory layer designators for CFG-VALSET & CFG-VALDEL
+# memory layer designators for CFG_VALSET & CFG_VALDEL
 SET_LAYER_RAM = 1
 SET_LAYER_BBR = 2
 SET_LAYER_FLASH = 4
 
-# memory layer designators for CFG-VALGET
+# memory layer designators for CFG_VALGET
 POLL_LAYER_RAM = 0
 POLL_LAYER_BBR = 1
 POLL_LAYER_FLASH = 2
 POLL_LAYER_DEFAULT = 7
 
-# transaction state designators for CFG-VALSET & CFG-VALDEL
+# transaction state designators for CFG_VALSET & CFG_VALDEL
 TXN_NONE = 0
 TXN_START = 1
 TXN_ONGOING = 2
@@ -518,7 +520,7 @@ UBX_CONFIG_DATABASE = {
     "CFG_MSGOUT_UBX_TIM_VRFY_UART1": (0x20910093, U1),
     "CFG_MSGOUT_UBX_TIM_VRFY_UART2": (0x20910094, U1),
     "CFG_MSGOUT_UBX_TIM_VRFY_USB": (0x20910095, U1),
-    # following two items output by NEO-9M but not listed in spec?
+    # following two items output by NEO_9M but not listed in spec?
     "CFG_MSGOUT_UBX_0x20910119": (0x20910119, U1),
     "CFG_MSGOUT_UBX_0x2091011A": (0x2091011A, U1),
     # CFG_NAVHPG High precision navigation configuration
@@ -606,6 +608,16 @@ UBX_CONFIG_DATABASE = {
     "CFG_PM_EXTINTINACTIVE": (0x10D0000E, L),
     "CFG_PM_EXTINTINACTIVITY": (0x40D0000F, U4),
     "CFG_PM_LIMITPEAKCURR": (0x10D00010, L),
+    # CFG_PMP Point to multipoint configuration
+    "CFG_PMP_CENTER_FREQUENCY": (0x40B10011, U4),
+    "CFG_PMP_SEARCH_WINDOW": (0x30B10012, U2),
+    "CFG_PMP_USE_SERVICE_ID": (0x10B10016, L),
+    "CFG_PMP_SERVICE_ID": (0x30B10017, U2),
+    "CFG_PMP_DATA_RATE": (0x30B10013, E2),
+    "CFG_PMP_USE_DESCRAMBLER": (0x10B10014, L),
+    "CFG_PMP_DESCRAMBLER_INIT": (0x30B10015, U2),
+    "CFG_PMP_USE_PRESCRAMBLING": (0x10B10019, L),
+    "CFG_PMP_UNIQUE_WORD": (0x50B1001A, U8),
     # CFG_QZSS QZSS system configuration
     "CFG_QZSS_USE_SLAS_DGNSS": (0x10370005, L),
     "CFG_QZSS_USE_SLAS_TESTMODE": (0x10370006, L),
@@ -638,9 +650,9 @@ UBX_CONFIG_DATABASE = {
     "CFG_SEC_CFG_LOCK_UNLOCKGRP2": (0x30F6000B, U2),
     # CFG_SFCORE Sensor fusion configuration
     "CFG_SFCORE_USE_S": (0x10080001, L),
-    # CFG-SFIMU: Sensor fusion inertial measurement unit configuration
-    "CFG_SFIMU-GYRO_TC_UPDATE_PERIOD": (0x30060007, U2),
-    "CFG-SFIMU-GYRO_RMSTHDL": (0x20060008, U1),
+    # CFG_SFIMU: Sensor fusion inertial measurement unit configuration
+    "CFG_SFIMU_GYRO_TC_UPDATE_PERIOD": (0x30060007, U2),
+    "CFG_SFIMU_GYRO_RMSTHDL": (0x20060008, U1),
     "CFG_SFIMU_GYRO_FREQUENCY": (0x20060009, U1),
     "CFG_SFIMU_GYRO_LATENCY": (0x3006000A, U2),
     "CFG_SFIMU_GYRO_ACCURACY": (0x3006000B, U2),
