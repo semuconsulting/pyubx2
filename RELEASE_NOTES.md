@@ -4,7 +4,7 @@
 
 ENHANCEMENTS:
 
-1. Additional configuration parameters added for ZED-F9R Receivers:
+1. Additional configuration parameters added for ZED-F9P & ZED-F9R Receivers:
    CFG_NAVHPG, CFG_RTCM, CFG_SFCORE, CFG-SFIMU, CFG_SFODO
 
 ### RELEASE 1.0.13
