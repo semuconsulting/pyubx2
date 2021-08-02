@@ -522,7 +522,7 @@ UBX_CONFIG_DATABASE = {
     "CFG_MSGOUT_UBX_0x20910119": (0x20910119, U1),
     "CFG_MSGOUT_UBX_0x2091011A": (0x2091011A, U1),
     # CFG_NAVHPG High precision navigation configuration
-    "CFG_NAVHPG_DGNSSMO": (0x20140011, E1),
+    "CFG_NAVHPG_DGNSSMODE": (0x20140011, E1),
     # CFG_NAVSPG Standard precision navigation configuration
     "CFG_NAVSPG_FIXMODE": (0x20110011, E1),
     "CFG_NAVSPG_INIFIX3D": (0x10110013, L),
@@ -623,6 +623,7 @@ UBX_CONFIG_DATABASE = {
     "CFG_RINV_CHUNK2": (0x50C70006, X8),
     "CFG_RINV_CHUNK3": (0x50C70007, X8),
     # CFG_RTCM RTCM Protocol configuration
+    "CFG_RTCM_DF003_OUT": (0x30090001, U2),
     "CFG_RTCM_DF003_IN": (0x30090008, U2),
     "CFG_RTCM_DF003_IN_FILTER": (0x20090009, E1),
     # CFG_SBAS SBAS configuration
