@@ -8,6 +8,8 @@ Format:
 
 Created on 30 Nov 2020
 
+Information sourced from u-blox Interface Specifications © 2013-2021, u-blox AG
+
 :author: semuadmin
 """
 
