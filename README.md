@@ -7,7 +7,7 @@ The `pyubx2` homepage is located at [https://github.com/semuconsulting/pyubx2](h
 
 This is an independent project and we have no affiliation whatsoever with u-blox.
 
-**FYI** There is a companion library [pynmeagps](http://github.com/semuconsulting/pynmeagps), which handles standard NMEA 0183 GNSS/GPS messages.
+**FYI** There is a companion library [pynmeagps](http://github.com/semuconsulting/pynmeagps), which handles standard NMEA 0183 &copy; GNSS/GPS messages.
 
 ### Current Status
 
@@ -356,7 +356,7 @@ However, there are a handful of message types which have multiple possible paylo
 A python/tkinter graphical GPS client which supports both NMEA and UBX protocols (via pynmeagps and pyubx2 
 respectively) is available at: 
 
-[http://github.com/semuconsulting/PyGPSClient](http://github.com/semuconsulting/PyGPSClient)
+[https://github.com/semuconsulting/PyGPSClient](https://github.com/semuconsulting/PyGPSClient)
 
 ## Author Information
 
