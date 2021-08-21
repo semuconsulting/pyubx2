@@ -316,6 +316,8 @@ Wild card query to retrieve all CFG_MSGOUT (keyID 0x2091*) parameters (set bits 
 
 The following examples can be found in the `\examples` folder:
 
+1. `ubxdump.py` is a simple command line utility to stream the parsed UBX output of a u-blox GNSS/GPS device on a specified port.
+
 1. `ubxstreamer.py` illustrates how to implement a threaded serial reader for UBX messages using pyubx2.UBXReader. 
 
 1. `ubxfile.py` illustrates how to implement a binary file reader for UBX messages using 
@@ -326,9 +328,6 @@ the pyubx2.UBXReader iterator function.
 1. `ubxconfig.py` illustrates how to invoke legacy (pre-Generation 9) configuration messages (CFG-MSG).
 
 1. `gpxtracker.py` illustrates a simple CLI tool to convert a binary UBX data dump to a `*.gpx` track file.
-
-1. `ubxdump.py` is a simple command line utility to stream the parsed UBX output of a u-blox &copy; GNSS device on a specified port.
-
 
 ## <a name="extensibility">Extensibility</a>
 
