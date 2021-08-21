@@ -2,7 +2,7 @@
 Simple command line utility to stream the parsed UBX output of a u-blox GNSS device.
 
 Usage (all args are optional):
-ubxdump.py port="COM13" baud=9600 timeout=5 ubx_only=0 raw=0
+ubxdump.py port="/dev/ttyACM1" baud=9600 timeout=5 ubx_only=0 raw=0
 
 If ubxonly=True (1), streaming will terminate on any non-UBX data (e.g. NMEA).
 """
@@ -11,14 +11,15 @@ import sys
 from serial import Serial
 from pyubx2 import UBXReader
 
-PORT = "COM13"
+# Default port settings - amend as required
+PORT = "/dev/ttyACM1"
 BAUD = 9600
 TIMEOUT = 5
 
 
 def stream_ubx(**kwargs):
     """
-    Stream output
+    Stream output to terminal
     """
 
     try:
@@ -50,7 +51,7 @@ if __name__ == "__main__":
                 " ubxdump.py is a simple command line utility to stream",
                 "the parsed UBX output of a u-blox GNSS device.\n\n",
                 "Usage (all args are optional): ubxdump.py",
-                'port="COM13" baud=9600 timeout=5',
+                f"port={PORT} baud={BAUD} timeout={TIMEOUT}",
                 "ubxonly=0 raw=0\n\n Type Ctrl-C to terminate.",
             )
             sys.exit()
