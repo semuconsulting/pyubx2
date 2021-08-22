@@ -89,7 +89,7 @@ Examples:
 >>> stream = Serial('/dev/tty.usbmodem14101', 9600, timeout=3)
 >>> ubr = UBXReader(stream)
 >>> (raw_data, parsed_data) = ubr.read()
-print(parsed_data)
+>>> print(parsed_data)
 ```
 
 * File input (using iterator) - this example will produce a `UBXStreamError` if non-UBX data is encountered.
@@ -316,8 +316,6 @@ Wild card query to retrieve all CFG_MSGOUT (keyID 0x2091*) parameters (set bits 
 
 The following examples can be found in the `\examples` folder:
 
-1. `ubxdump.py` is a simple command line utility to stream the parsed UBX output of a u-blox GNSS/GPS device on a specified port.
-
 1. `ubxstreamer.py` illustrates how to implement a threaded serial reader for UBX messages using pyubx2.UBXReader. 
 
 1. `ubxfile.py` illustrates how to implement a binary file reader for UBX messages using 
@@ -349,6 +347,20 @@ Repeating attribute names are parsed with a two-digit suffix (svid_01, svid_02, 
 In most cases, a UBX message's content (payload) is uniquely defined by its class, id and mode; accommodating the message simply requires the addition of an appropriate dictionary entry to the relevant `ubxtypes_*.py` module(s).
 
 However, there are a handful of message types which have multiple possible payload definitions for the same class, id and mode, with no consistency as to how to differentiate between them. Under these circumstances, it may be necessary to modify the code in `ubxmessage.py` to examine elements of the payload itself in order to determine the appropriate dictionary definition. This currently applies to ESF-MEAS, CFG-NMEA, RXM-PMP, RXM-PMREQ, RXM-RLM and most MGA message types.
+
+## <a name="cli">Command Line Utility</a>
+
+If `pyubx2` is installed using pip, a simple command line utility `ubxdump` is automatically installed into the Python 3 scripts (bin) directory. This utility streams the parsed UBX output of a u-blox GNSS device to the terminal.
+
+Assuming the Python 3 scripts (bin) directory is in your PATH, the utility may be invoked thus (all args are optional):
+
+`ubxdump port=/dev/ttyACM1 baud=9600 timeout=5 ubxonly=0 validate=1 raw=0`
+
+If `ubxonly` is set to True (1), streaming will terminate on any non-UBX data (e.g. NMEA).
+
+For help, type:
+
+`ubxdump -h`
 
 ## Graphical Client
 

@@ -20,6 +20,11 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/semuconsulting/pyubx2",
     packages=setuptools.find_packages(exclude=["tests", "examples", "docs"]),
+    entry_points={
+        "console_scripts": [
+            "ubxdump = pyubx2.ubxdump:main",
+        ]
+    },
     license="BSD 3-Clause 'Modified' License",
     keywords="pyubx2 GNSS GPS GLONASS UBX GIS u-blox",
     platforms="Windows, MacOS, Linux",
