@@ -5,7 +5,7 @@
 ENHANCEMENTS:
 
 1. The ubxdump.py example has been moved into the pyubx2cli module and configured as a setup entry point. It is now available as a 
-simple command line utility. See [Command Line Utility](https://github.com/semuconsulting/pyubx2/blob/master/README.md#cli) for usage.
+simple command line utility. See [Command Line Utility](https://github.com/semuconsulting/pyubx2/blob/master/README.md#command-line-utility) for usage.
 
 ### RELEASE 1.0.14
 
