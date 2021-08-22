@@ -22,7 +22,7 @@ setuptools.setup(
     packages=setuptools.find_packages(exclude=["tests", "examples", "docs"]),
     entry_points={
         "console_scripts": [
-            "ubxdump = pyubx2.ubxdump:main",
+            "ubxdump = pyubx2cli.ubxdump:main",
         ]
     },
     license="BSD 3-Clause 'Modified' License",

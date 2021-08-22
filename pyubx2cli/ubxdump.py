@@ -10,17 +10,17 @@ For help, type:
 ubxdump -h
 """
 
-import sys  # pragma: no cover
-from serial import Serial  # pragma: no cover
-from pyubx2 import UBXReader, GET, VALCKSUM  # pragma: no cover
+import sys
+from serial import Serial
+from pyubx2 import UBXReader, GET, VALCKSUM
 
 # Default port settings - amend as required
-PORT = "/dev/ttyACM1"  # pragma: no cover
-BAUD = 9600  # pragma: no cover
-TIMEOUT = 5  # pragma: no cover
+PORT = "/dev/ttyACM1"
+BAUD = 9600
+TIMEOUT = 5
 
 
-def stream_ubx(**kwargs):  # pragma: no cover
+def stream_ubx(**kwargs):
     """
     Stream output to terminal.
 
@@ -56,7 +56,7 @@ def stream_ubx(**kwargs):  # pragma: no cover
         print("\nStreaming terminated by user\n")
 
 
-def main():  # pragma: no cover
+def main():
     """
     CLI Entry point.
 
@@ -77,6 +77,6 @@ def main():  # pragma: no cover
     stream_ubx(**dict(arg.split("=") for arg in sys.argv[1:]))
 
 
-if __name__ == "__main__":  # pragma: no cover
+if __name__ == "__main__":
 
     main()
