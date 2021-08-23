@@ -358,7 +358,7 @@ Assuming the Python 3 scripts (bin) directory is in your PATH, the utility may b
 
 If `ubxonly` is set to True (1), streaming will terminate on any non-UBX data (e.g. NMEA).
 
-`filter` is an optional comma-separated list of specific UBX message identities to display e.g. `filter="NAV-PVT","NAV-CLOCK"` (defaults to "*" - all UBX messages).
+`filter` is an optional comma-separated list of specific UBX message identities to display e.g. `filter=NAV-PVT,NAV-CLOCK` (defaults to "*" - all UBX messages).
 
 For help, type:
 
