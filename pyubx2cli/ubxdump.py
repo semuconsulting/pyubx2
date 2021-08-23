@@ -8,6 +8,12 @@ If ubxonly=True (1), streaming will terminate on any non-UBX data (e.g. NMEA).
 
 For help, type:
 ubxdump -h
+
+Created on 20 Aug 2021
+
+:author: semuadmin
+:copyright: SEMU Consulting © 2021
+:license: BSD 3-Clause
 """
 
 import sys
@@ -51,7 +57,7 @@ def stream_ubx(**kwargs):
         stream = Serial(port, baud, timeout=timeout)
         ubr = UBXReader(stream, ubxonly=ubxonly, validate=validate, msgmode=GET)
         for (raw, parsed) in ubr:
-            if filter == "*" or parsed.identity in (filter):
+            if filter == "*" or parsed.identity in filter:
                 if rawformat:
                     print(raw)
                 else:
