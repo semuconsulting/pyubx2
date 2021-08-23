@@ -2,7 +2,7 @@
 Simple command line utility to stream the parsed UBX output of a u-blox GNSS device.
 
 Usage (all args are optional):
-ubxdump port="/dev/ttyACM1" baud=9600 timeout=5 ubxonly=0 validate=1 raw=0
+ubxdump port="/dev/ttyACM1" baud=9600 timeout=5 ubxonly=0 validate=1 raw=0 filter=*
 
 If ubxonly=True (1), streaming will terminate on any non-UBX data (e.g. NMEA).
 
@@ -30,6 +30,7 @@ def stream_ubx(**kwargs):
     :param int ubxonly (kwarg): set to True to generate error on non-UBX data (0)
     :param int validate (kwarg): validate checksum (1)
     :param int raw (kwarg): set to True to output raw binary data (0)
+    :param int filter (kwarg): comma-separated list of UBX message identities to display (*)
     :raises: UBXStreamError (if ubxonly flag is 1 and stream contains non-UBX data)
 
     """
@@ -41,17 +42,20 @@ def stream_ubx(**kwargs):
         ubxonly = int(kwargs.get("ubxonly", 0))
         validate = int(kwargs.get("validate", VALCKSUM))
         rawformat = int(kwargs.get("raw", 0))
+        filter = kwargs.get("filter", "*")
+        filtertxt = "" if filter == "*" else f", filtered by {filter}"
         print(
             f"\nStreaming from {port} at {baud} baud in",
-            f"{'raw' if rawformat else 'parsed'} format...\n",
+            f"{'raw' if rawformat else 'parsed'} format{filtertxt}...\n",
         )
         stream = Serial(port, baud, timeout=timeout)
         ubr = UBXReader(stream, ubxonly=ubxonly, validate=validate, msgmode=GET)
         for (raw, parsed) in ubr:
-            if rawformat:
-                print(raw)
-            else:
-                print(parsed)
+            if filter == "*" or parsed.identity in (filter):
+                if rawformat:
+                    print(raw)
+                else:
+                    print(parsed)
     except KeyboardInterrupt:
         print("\nStreaming terminated by user\n")
 
@@ -70,7 +74,7 @@ def main():
                 "the parsed UBX output of a u-blox GNSS device.\n\n",
                 "Usage (all args are optional): ubxdump",
                 f"port={PORT} baud={BAUD} timeout={TIMEOUT}",
-                "ubxonly=0 validate=1 raw=0\n\n Type Ctrl-C to terminate.",
+                "ubxonly=0 validate=1 raw=0 filter=*\n\n Type Ctrl-C to terminate.",
             )
             sys.exit()
 

@@ -1,11 +1,16 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.0.16
+
+ENHANCEMENTS:
+
+1. Message filter option added to ubxdump command line utility. See README for usage.
+
 ### RELEASE 1.0.15
 
 ENHANCEMENTS:
 
-1. The ubxdump.py example has been moved into the pyubx2cli module and configured as a setup entry point. It is now available as a 
-simple command line utility. See README for usage.
+1. The ubxdump.py example has been moved into the pyubx2cli module and configured as a setup entry point. It is now available as a simple command line utility. See README for usage.
 
 ### RELEASE 1.0.14
 
