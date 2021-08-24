@@ -27,6 +27,7 @@ Information sourced from u-blox Interface Specifications © 2013-2021, u-blox AG
 # pylint: disable=too-many-lines, line-too-long
 
 from pyubx2.ubxtypes_core import (
+    A256,
     C2,
     C6,
     C10,
@@ -1048,12 +1049,7 @@ UBX_PAYLOADS_GET = {
         "group": (
             "numRfBlocks",
             {  # repeating group * numRfBlocks
-                "groupSpan": (
-                    256,
-                    {
-                        "spectrum": U1,
-                    },
-                ),  # nested repeating group * 256
+                "spectrum": A256,  # parsed as array of 256 integers
                 "span": U4,
                 "res": U4,
                 "center": U4,

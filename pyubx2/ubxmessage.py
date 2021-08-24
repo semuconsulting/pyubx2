@@ -744,7 +744,7 @@ class UBXMessage:
         if att == ubt.CH:  # single variable-length string (e.g. INF-NOTICE)
             return val.encode("utf-8", "backslashreplace")
         atts = attsiz(att)
-        if atttyp(att) in ("C", "X"):  # byte or char
+        if atttyp(att) in ("C", "X", "A"):  # byte or char
             valb = val
         elif atttyp(att) in ("E", "L", "U"):  # unsigned integer
             valb = val.to_bytes(atts, byteorder="little", signed=False)
@@ -783,6 +783,11 @@ class UBXMessage:
             val = struct.unpack("<f", valb)[0]
         elif att == ubt.R8:  # double precision floating point
             val = struct.unpack("<d", valb)[0]
+        elif atttyp(att) == "A":  # array of bytes
+            atts = attsiz(att)
+            val = []
+            for i in range(atts):
+                val.append(valb[i])
         else:
             raise ube.UBXTypeError(f"Unknown attribute type {att}")
         return val
@@ -801,7 +806,7 @@ class UBXMessage:
 
         if att == "CH":
             val = ""
-        elif atttyp(att) in ("X", "C"):
+        elif atttyp(att) in ("X", "C", "A"):
             val = b"\x00" * attsiz(att)
         elif atttyp(att) == "R":
             val = 0.0
