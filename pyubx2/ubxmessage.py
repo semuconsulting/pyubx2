@@ -229,6 +229,14 @@ class UBXMessage:
             valb = self.val2bytes(val, att)
             self._payload += valb
 
+        # special handling for MON-SPAN spectrum attribute
+        # parse as an array of integers
+        if key == "spectrumRf":
+            val = []
+            for i in range(atts):
+                vali = valb[i]
+                val.append(vali)
+
         setattr(self, keyr, val)
         offset += atts
 

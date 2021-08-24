@@ -52,6 +52,7 @@ from pyubx2.ubxtypes_core import (
     X1,
     X2,
     X4,
+    X256,
 )
 
 UBX_PAYLOADS_GET = {
@@ -1048,12 +1049,7 @@ UBX_PAYLOADS_GET = {
         "group": (
             "numRfBlocks",
             {  # repeating group * numRfBlocks
-                "groupSpan": (
-                    256,
-                    {
-                        "spectrum": U1,
-                    },
-                ),  # nested repeating group * 256
+                "spectrumRf": X256,  # parsed as array of 256 integers
                 "span": U4,
                 "res": U4,
                 "center": U4,
