@@ -29,6 +29,7 @@ GNSSLIST = {
 # **************************************************
 # THESE ARE THE UBX PROTOCOL PAYLOAD ATTRIBUTE TYPES
 # **************************************************
+A256 = "A256"  # Array of bytes (only currently used for MON-SPAN spectrum)
 C2 = "C002"  # ASCII / ISO 8859.1 Encoding 2 bytes
 C6 = "C006"  # ASCII / ISO 8859.1 Encoding 6 bytes
 C10 = "C010"  # ASCII / ISO 8859.1 Encoding 10 bytes
@@ -60,11 +61,11 @@ X2 = "X002"  # Bitfield 2 bytes
 X4 = "X004"  # Bitfield 4 bytes
 X6 = "X006"  # Bitfield 6 bytes
 X8 = "X008"  # Bitfield 8 bytes
-X256 = "X256"  # Bitfield 256 bytes (only used for MON-SPAN spectrum)
 R4 = "R004"  # Float (IEEE 754) Single Precision 4 bytes
 R8 = "R008"  # Float (IEEE 754) Double Precision 8 bytes
 
 VALID_TYPES = (
+    A256,
     C2,
     C6,
     C10,
@@ -98,7 +99,6 @@ VALID_TYPES = (
     X4,
     X6,
     X8,
-    X256,
 )
 
 # ***********************************************

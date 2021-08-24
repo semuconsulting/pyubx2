@@ -229,14 +229,6 @@ class UBXMessage:
             valb = self.val2bytes(val, att)
             self._payload += valb
 
-        # special handling for MON-SPAN spectrum attribute
-        # parse as an array of integers
-        if key == "spectrumRf":
-            val = []
-            for i in range(atts):
-                vali = valb[i]
-                val.append(vali)
-
         setattr(self, keyr, val)
         offset += atts
 
@@ -752,7 +744,7 @@ class UBXMessage:
         if att == ubt.CH:  # single variable-length string (e.g. INF-NOTICE)
             return val.encode("utf-8", "backslashreplace")
         atts = attsiz(att)
-        if atttyp(att) in ("C", "X"):  # byte or char
+        if atttyp(att) in ("C", "X", "A"):  # byte or char
             valb = val
         elif atttyp(att) in ("E", "L", "U"):  # unsigned integer
             valb = val.to_bytes(atts, byteorder="little", signed=False)
@@ -791,6 +783,11 @@ class UBXMessage:
             val = struct.unpack("<f", valb)[0]
         elif att == ubt.R8:  # double precision floating point
             val = struct.unpack("<d", valb)[0]
+        elif atttyp(att) == "A":  # array of bytes
+            atts = attsiz(att)
+            val = []
+            for i in range(atts):
+                val.append(valb[i])
         else:
             raise ube.UBXTypeError(f"Unknown attribute type {att}")
         return val

@@ -6,7 +6,9 @@ ENHANCEMENTS:
 
 1. Message filter option added to ubxdump command line utility. See README for usage.
 
-2. For ease of processing and charting, MON-SPAN spectrum attribute now parsed as a single array of integers per Rf block e.g. `spectrumRf_01` rather than as 256 separate integers per Rf block e.g. `spectrum_01_01`, `spectrum_01_02`, etc. 
+2. New payload attribute type "A" added for byte arrays (e.g. MON-SPAN spectrum attribute).
+
+3. For ease of processing and charting, MON-SPAN spectrum attribute now parsed as a single array of integers per Rf block e.g. `spectrum_01` rather than as 256 separate integers per Rf block e.g. `spectrum_01_01`, `spectrum_01_02`, etc. 
 
 ### RELEASE 1.0.15
 
