@@ -806,7 +806,7 @@ class UBXMessage:
 
         if att == "CH":
             val = ""
-        elif atttyp(att) in ("X", "C"):
+        elif atttyp(att) in ("X", "C", "A"):
             val = b"\x00" * attsiz(att)
         elif atttyp(att) == "R":
             val = 0.0
