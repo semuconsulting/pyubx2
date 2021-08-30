@@ -2,7 +2,9 @@
 Simple command line utility to stream the parsed UBX output of a u-blox GNSS device.
 
 Usage (all args are optional):
-ubxdump port="/dev/ttyACM1" baud=9600 timeout=5 ubxonly=0 validate=1 raw=0 filter=*
+ubxdump port="/dev/ttyACM1" baud=9600 timeout=5 ubxonly=0 validate=1 output=0 filter=*
+
+output: 0 = parsed, 1 = binary, 2 = hexadecimal
 
 If ubxonly=True (1), streaming will terminate on any non-UBX data (e.g. NMEA).
 
@@ -20,6 +22,11 @@ import sys
 from serial import Serial
 from pyubx2 import UBXReader, GET, VALCKSUM
 
+# Output formats
+PARSED = 0
+BIN = 1
+HEX = 2
+
 # Default port settings - amend as required
 PORT = "/dev/ttyACM1"
 BAUD = 9600
@@ -35,7 +42,7 @@ def stream_ubx(**kwargs):
     :param int timeout (kwarg): timeout in seconds (5)
     :param int ubxonly (kwarg): set to True to generate error on non-UBX data (0)
     :param int validate (kwarg): validate checksum (1)
-    :param int raw (kwarg): set to True to output raw binary data (0)
+    :param int output (kwarg): 0=parsed, 1=binary, 2=hexadecimal (0)
     :param int filter (kwarg): comma-separated list of UBX message identities to display (*)
     :raises: UBXStreamError (if ubxonly flag is 1 and stream contains non-UBX data)
 
@@ -47,19 +54,21 @@ def stream_ubx(**kwargs):
         timeout = int(kwargs.get("timeout", TIMEOUT))
         ubxonly = int(kwargs.get("ubxonly", 0))
         validate = int(kwargs.get("validate", VALCKSUM))
-        rawformat = int(kwargs.get("raw", 0))
+        output = int(kwargs.get("output", PARSED))
         filter = kwargs.get("filter", "*")
         filtertxt = "" if filter == "*" else f", filtered by {filter}"
         print(
             f"\nStreaming from {port} at {baud} baud in",
-            f"{'raw' if rawformat else 'parsed'} format{filtertxt}...\n",
+            f"{['parsed','binary','hexadecimal'][output]} format{filtertxt}...\n",
         )
         stream = Serial(port, baud, timeout=timeout)
         ubr = UBXReader(stream, ubxonly=ubxonly, validate=validate, msgmode=GET)
         for (raw, parsed) in ubr:
             if filter == "*" or parsed.identity in filter:
-                if rawformat:
+                if output == BIN:
                     print(raw)
+                elif output == HEX:
+                    print(raw.hex())
                 else:
                     print(parsed)
     except KeyboardInterrupt:
@@ -80,7 +89,7 @@ def main():
                 "the parsed UBX output of a u-blox GNSS device.\n\n",
                 "Usage (all args are optional): ubxdump",
                 f"port={PORT} baud={BAUD} timeout={TIMEOUT}",
-                "ubxonly=0 validate=1 raw=0 filter=*\n\n Type Ctrl-C to terminate.",
+                "ubxonly=0 validate=1 output=0 filter=*\n\n Type Ctrl-C to terminate.",
             )
             sys.exit()
 

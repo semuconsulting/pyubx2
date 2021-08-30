@@ -354,11 +354,15 @@ If `pyubx2` is installed using pip, a simple command line utility `ubxdump` is a
 
 Assuming the Python 3 scripts (bin) directory is in your PATH, the utility may be invoked thus (all args are optional):
 
-`ubxdump port=/dev/ttyACM1 baud=9600 timeout=5 ubxonly=0 validate=1 raw=0 filter=*`
+`ubxdump port=/dev/ttyACM1 baud=9600 timeout=5 ubxonly=0 validate=1 output=0 filter=*`
 
-If `ubxonly` is set to True (1), streaming will terminate on any non-UBX data (e.g. NMEA).
+Args:
 
-`filter` is an optional comma-separated list of specific UBX message identities to display e.g. `filter=NAV-PVT,NAV-CLOCK` (defaults to "*" - all UBX messages).
+`output`: 0 = parsed (default), 1 = binary, 2 = hexadecimal 
+
+`ubxonly`: 0 = ignore non-UBX data (default), 1 = terminate on any non-UBX data (e.g. NMEA).
+
+`filter`: optional comma-separated list of specific UBX message identities to display e.g. `filter=NAV-PVT,NAV-CLOCK` (defaults to "*" - all UBX messages).
 
 For help, type:
 
