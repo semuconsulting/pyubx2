@@ -59,6 +59,21 @@ class ParseTest(unittest.TestCase):
         self.mga_ini1 = b"\xb5b\x13\x40\x14\x00\x01\x00\x01\x02\x01\x02\x03\x04\x01\x02\x03\x04\x01\x02\x03\x04\x01\x02\x03\x04\x93\xc8"
         self.mon_span = b"\xb5b\n1\x14\x01\x00\x01\x00\x00-+-,+-.,-.+,+.-..-,..//./00203017?9398:L]<@C;H<>=A@BDCGJNQRVY[_cgpqyz\x7f\x84\x8c\x90\x99\xa0\xa7\xae\xb0\xae\xaa\xa7\xa2\x9b\x97\x96\x94\x91\x90\x8e\x8c\x8c\x8c\x8b\x8b\x89\x88\x89\x89\x89\x8b\x88\x89\x8a\x89\x8a\x8a\x89\x8a\x8b\x8a\x8a\x8b\x8b\x8c\x8a\x8a\x8a\x8b\x88\x88\x87\x87\x86\x85\x85\x85\x84\x89\x84\x85\x83\x84\x84\x84\x85\x88\x87\x87\x88\x8a\x8a\x8a\x8a\x8b\x8e\x8c\x8d\x8d\x8f\x8e\x8d\x8f\x8e\x8f\x8f\x8e\x8f\x8f\x90\x91\x92\x93\x93\x93\x95\x94\x94\x94\x94\x95\x94\x95\x93\x93\x91\x92\x93\x92\x94\x95\x94\x95\x97\x97\x98\x97\x94\x90\x8d\x86\x82\x7fyupmg`]VRLEB?=;99665422202101///-//.-0-.-/..--,.-+-,--+.,,--,,-*\x00 \xa1\x07 \xa1\x07\x00@\xc4`^\x0c\x00\x00\x00\x15j"
 
+        self.RTCM = {
+                "1006": (b"\xb5b\x022\x08\x00\x02\x04\x00\x00j\x00\xee\x03\x9dA",
+                    "<UBX(RXM-RTCM, version=2, flags=b'\\x04', subType=0, refStation=106, msgType=1006)>"),
+                "1075": (b"\xb5b\x022\x08\x00\x02\x04\x00\x00j\x003\x04\xe3\xcc", 
+                    "<UBX(RXM-RTCM, version=2, flags=b'\\x04', subType=0, refStation=106, msgType=1075)>"),
+                "1085": (b"\xb5b\x022\x08\x00\x02\x04\x00\x00j\x00=\x04\xed\xe0", 
+                    "<UBX(RXM-RTCM, version=2, flags=b'\\x04', subType=0, refStation=106, msgType=1085)>"),
+                "1095": (b"\xb5b\x022\x08\x00\x02\x04\x00\x00j\x00G\x04\xf7\xf4", 
+                    "<UBX(RXM-RTCM, version=2, flags=b'\\x04', subType=0, refStation=106, msgType=1095)>"),
+                "1115": (b"\xb5b\x022\x08\x00\x02\x04\x00\x00j\x00[\x04\x0b\x1c", 
+                    "<UBX(RXM-RTCM, version=2, flags=b'\\x04', subType=0, refStation=106, msgType=1115)>"),
+                "1125": (b"\xb5b\x022\x08\x00\x02\x04\x00\x00j\x00e\x04\x150", 
+                    "<UBX(RXM-RTCM, version=2, flags=b'\\x04', subType=0, refStation=106, msgType=1125)>")
+        }
+
     def tearDown(self):
         pass
 
@@ -333,6 +348,10 @@ class ParseTest(unittest.TestCase):
             "<UBX(MGA-INI-POS_LLH, type=1, version=0, reserved1=513, lat=67305985, lon=67305985, alt=67305985, posAcc=67305985)>",
         )
 
+    def testRTCM(self): # test parser of RTCM-3X messages
+        for item in self.RTCM.values():
+            res = UBXReader.parse(item[0])
+            self.assertEqual(str(res), item[1])
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
