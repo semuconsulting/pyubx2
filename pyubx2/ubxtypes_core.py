@@ -394,6 +394,36 @@ UBX_MSGIDS = {
     b"\xf1\x40": "UBX-40",  # Set NMEA message output rate
     b"\xf1\x41": "UBX-41",  # aka PUBX-CONFIG Set Protocols and Baudrate
     # ***************************************************************
+    # RTCM messages
+    # ***************************************************************
+    b"\xf5\x01": "RTCM-3X-TYPE1001", # L1-only GPS RTK observables (Input)
+    b"\xf5\x02": "RTCM-3X-TYPE1002", # Extended L1-only GPS RTK observables (Input)
+    b"\xf5\x03": "RTCM-3X-TYPE1003", # L1/L2 GPS RTK observables (Input)
+    b"\xf5\x04": "RTCM-3X-TYPE1004", # Extended L1/L2 GPS RTK observables (Input)
+    b"\xf5\x05": "RTCM-3X-TYPE1005", # Stationary RTK reference station ARP (Input/output)
+    b"\xf5\x06": "RTCM-3X-TYPE1006", # Stationary RTK reference station ARP with antenna height (Input)
+    b"\xf5\x07": "RTCM-3X-TYPE1007", # Antenna descriptor (Input)
+    b"\xf5\x09": "RTCM-3X-TYPE1009", # L1-only GLONASS RTK observables (Input)
+    b"\xf5\x0a": "RTCM-3X-TYPE1010", # Extended L1-Only GLONASS RTK observables (Input)
+    b"\xf5\xa1": "RTCM-3X-TYPE1011", # L1&L2 GLONASS RTK observables (Input)
+    b"\xf5\xa2": "RTCM-3X-TYPE1012", # Extended L1&L2 GLONASS RTK observables (Input)
+    b"\xf5\x21": "RTCM-3X-TYPE1033", # Receiver and antenna descriptors (Input)
+    b"\xf5\x4a": "RTCM-3X-TYPE1074", # GPS MSM4 (Input/output)
+    b"\xf5\x4b": "RTCM-3X-TYPE1075", # GPS MSM5 (Input)
+    b"\xf5\x4d": "RTCM-3X-TYPE1077", # GPS MSM7 (Input/output)
+    b"\xf5\x54": "RTCM-3X-TYPE1084", # GLONASS MSM4 (Input/output)
+    b"\xf5\x55": "RTCM-3X-TYPE1085", # GLONASS MSM5 (Input)
+    b"\xf5\x57": "RTCM-3X-TYPE1087", # GLONASS MSM7 (Input/output)
+    b"\xf5\x5e": "RTCM-3X-TYPE1094", # Galileo MSM4 (Input/output)
+    b"\xf5\x5f": "RTCM-3X-TYPE1095", # Galileo MSM5 (Input)
+    b"\xf5\x61": "RTCM-3X-TYPE1097", # Galileo MSM7 (Input/output)
+    b"\xf5\x7c": "RTCM-3X-TYPE1124", # BeiDou MSM4 (Input/output)
+    b"\xf5\x7d": "RTCM-3X-TYPE1125", # BeiDou MSM5 (Input)
+    b"\xf5\x7f": "RTCM-3X-TYPE1127", # BeiDou MSM7 (Input/output)
+    b"\xf5\xe6": "RTCM-3X-TYPE1230", # GLONASS L1 and L2 code-phase biases (Input/output)
+    b"\xf5\xfe": "RTCM-3X-TYPE4072_0", # Reference station PVT (u-blox proprietary) (Input/output)
+    b"\xf5\xfd": "RTCM-3X-TYPE4072_1", # Additional reference station information (u-blox proprietary) (Output)
+    # ***************************************************************
     # Dummy message for testing only
     # ***************************************************************
     b"\x66\x66": "FOO-BAR",
