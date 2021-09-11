@@ -3,6 +3,7 @@
 UBX Protocol Polling payload definitions
 
 THESE ARE THE PAYLOAD DEFINITIONS FOR _POLL_ MESSAGES _TO_ THE RECEIVER
+(e.g. query configuration; request monitoring, receiver management, logging or sensor fusion status)
 Response payloads are defined in UBX_PAYLOADS_GET
 
 NB: Attribute names must be unique within each message class/id

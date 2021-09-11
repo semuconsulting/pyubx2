@@ -76,7 +76,7 @@ The constructor accepts the following optional keyword arguments:
 
 * `ubxonly`: True = raise error if stream contains non-UBX data, False = ignore non-UBX data (default)
 * `validate`: VALCKSUM (0x01) = validate checksum (default), VALNONE (0x00) = ignore invalid checksum or length
-* `msgmode`: 0 = GET (default, i.e. output _from_ receiver), 1 = SET (i.e. input _to_ receiver), 2 = POLL (i.e. input _to_ receiver in anticipation of response back)
+* `msgmode`: 0 = GET (default, i.e. output _from_ receiver), 1 = SET (i.e. input _to_ receiver), 2 = POLL (i.e. query _to_ receiver in anticipation of response back)
 
 
 Examples:

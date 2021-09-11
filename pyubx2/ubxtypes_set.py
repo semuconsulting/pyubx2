@@ -3,6 +3,7 @@
 UBX Protocol Input payload definitions
 
 THESE ARE THE PAYLOAD DEFINITIONS FOR _SET_ MESSAGES _TO_ THE RECEIVER
+(e.g. configuration and calibration commands; AssistNow payloads)
 
 NB: Attribute names must be unique within each message class/id
 

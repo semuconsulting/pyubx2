@@ -2,7 +2,7 @@
 UBX Protocol Output payload definitions
 
 THESE ARE THE PAYLOAD DEFINITIONS FOR _GET_ MESSAGES _FROM_ THE RECEIVER
-(i.e. Periodic Navigation Data, Poll Responses, Info messages)
+(e.g. Periodic Navigation Data; Poll Responses; Info messages)
 
 NB: Attribute names must be unique within each message class/id
 
