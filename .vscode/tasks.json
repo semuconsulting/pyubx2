@@ -18,6 +18,18 @@
                 "docs/_build",
                 "${config:modulename}.egg-info",
             ],
+            "windows": {
+                "command": "Remove-Item",
+                "args": [
+                    "build,",
+                    "dist,",
+                    "htmlcov,",
+                    "docs/_build,",
+                    "${config:modulename}.egg-info",
+                    "-Recurse",
+                    "-Force",
+                ],
+            },
             "options": {
                 "cwd": "${workspaceFolder}"
             },
@@ -135,7 +147,14 @@
                 "--force-reinstall"
             ],
             "dependsOrder": "sequence",
-            "dependsOn": ["Clean", "Format", "Analyze", "Build", "Test", "Coverage Report", "Sphinx HTML"],
+            "dependsOn": [
+                "Clean", 
+                "Format", 
+                "Analyze", 
+                "Build", 
+                "Test", 
+                "Coverage Report", 
+                "Sphinx HTML"],
             "problemMatcher": []
         },
     ]
