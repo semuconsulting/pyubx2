@@ -253,6 +253,25 @@ class FillTest(unittest.TestCase):
         )
         self.assertEqual(str(res), EXPECTED_RESULT)
 
+    def testFill_NAVSBAS(self):  #  test NAV-SBAS GET constructor with bit flags
+        EXPECTED_RESULT = "<UBX(NAV-SBAS, iTOW=23:59:44, geo=0, mode=0, sys=0, Ranging=1, Corrections=0, Integrity=1, Testmode=0, Bad=1, numCh=0, integrityUsed=1, reserved0=0)>"
+        res = UBXMessage(
+            "NAV",
+            "NAV-SBAS",
+            GET,
+            geo=0,
+            mode=0,
+            sys=0,
+            Ranging=1,
+            Corrections=0,
+            Integrity=1,
+            Testmode=0,
+            Bad=1,
+            numCh=0,
+            integrityUsed=1,
+        )
+        self.assertEqual(str(res), EXPECTED_RESULT)
+
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']

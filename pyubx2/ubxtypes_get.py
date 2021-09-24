@@ -6,14 +6,15 @@ THESE ARE THE PAYLOAD DEFINITIONS FOR _GET_ MESSAGES _FROM_ THE RECEIVER
 
 NB: Attribute names must be unique within each message class/id
 
-NB: Repeating groups must be defined as a tuple thus
+NB: Repeating or bitfield groups must be defined as a tuple thus
     'group': ('numr', {dict})
     where
     - 'numr' is either:
        a) an integer representing a fixed number of repeats e.g 32
        b) a string representing the name of a preceding attribute
           containing the number of repeats e.g. 'numCh'
-       c) 'None' for a 'variable by size' repeating group
+       c) an 'X' attribute type ('X1', 'X2', 'X4', etc) representing a group of individual bit flags
+       d) 'None' for a 'variable by size' repeating group
           (only one such group is permitted per message type)
     - {dict} is the nested dictionary containing the repeating
       attributes
@@ -1230,7 +1231,12 @@ UBX_PAYLOADS_GET = {
     "NAV-HPPOSLLH": {
         "version": U1,
         "reserved": U2,
-        "flags": X1,
+        "flags": (
+            X1,
+            {
+                "invalidLlh": U1,
+            },
+        ),
         "iTOW": U4,
         "lon": I4,
         "lat": I4,
@@ -1247,13 +1253,66 @@ UBX_PAYLOADS_GET = {
         "iTOW": U4,
         "version": U1,
         "reserved1": U4,
-        "gpsNmiFlags": X1,
-        "gpsLsFlags": X1,
-        "galNmiFlags": X1,
-        "galLsFlags": X1,
-        "bdsNmiFlags": X1,
-        "bdsLsFlags": X1,
-        "gloNmiFlags": X1,
+        "gpsNmiFlags": (
+            X1,
+            {
+                "wnoCheckedGPS": U1,
+                "wnoInvalidGPS": U1,
+                "UTCORefCheckedGPS": U1,
+                "UTCORefInvalidGPS": U1,
+            },
+        ),
+        "gpsLsFlags": (
+            X1,
+            {
+                "lsValGPS": U1,
+                "dnRangeGPS": U1,
+                "totRangeGPS": U1,
+                "lsEventGPS": U1,
+                "recNowGPS": U1,
+            },
+        ),
+        "galNmiFlags": (
+            X1,
+            {
+                "wnoCheckedGAL": U1,
+                "wnoInvalidGAL": U1,
+            },
+        ),
+        "galLsFlags": (
+            X1,
+            {
+                "lsValGAL": U1,
+                "dnRangeGAL": U1,
+                "totRangeGAL": U1,
+                "lsEventGAL": U1,
+                "recNowGAL": U1,
+            },
+        ),
+        "bdsNmiFlags": (
+            X1,
+            {
+                "wnoCheckedBDS": U1,
+                "wnoInvalidBDS": U1,
+            },
+        ),
+        "bdsLsFlags": (
+            X1,
+            {
+                "lsValBDS": U1,
+                "dnRangeBDS": U1,
+                "totRangeBDS": U1,
+                "lsEventBDS": U1,
+                "recNowBDS": U1,
+            },
+        ),
+        "gloNmiFlags": (
+            X1,
+            {
+                "wnoCheckedGLO": U1,
+                "wnoInvalidGLO": U1,
+            },
+        ),
     },
     "NAV-ODO": {
         "version": U1,
@@ -1273,10 +1332,34 @@ UBX_PAYLOADS_GET = {
             {  # repeating group * numSv
                 "gnssId": U1,
                 "svId": U1,
-                "svFlag": X1,
-                "eph": X1,
-                "alm": X1,
-                "otherOrb": X1,
+                "svFlag": (
+                    X1,
+                    {
+                        "health": U2,
+                        "visibility": U2,
+                    },
+                ),
+                "eph": (
+                    X1,
+                    {
+                        "ephUsability": U5,
+                        "ephSource": U3,
+                    },
+                ),
+                "alm": (
+                    X1,
+                    {
+                        "almUsability": U5,
+                        "almSource": U3,
+                    },
+                ),
+                "otherOrb": (
+                    X1,
+                    {
+                        "anoAopUsability": U5,
+                        "type": U3,
+                    },
+                ),
             },
         ),
     },
@@ -1298,12 +1381,38 @@ UBX_PAYLOADS_GET = {
         "hour": U1,
         "min": U1,
         "second": U1,
-        "valid": X1,
+        "valid": (
+            X1,
+            {
+                "validDate": U1,
+                "validTime": U1,
+                "fullyResolved": U1,
+                "validMag": U1,
+                "reserved": U4,
+            },
+        ),
         "tAcc": U4,
         "nano": I4,
         "fixType": U1,
-        "flags": X1,
-        "flags2": X1,
+        "flags": (
+            X1,
+            {
+                "gnssFixOk": U1,
+                "difSoln": U1,
+                "psmState": U3,
+                "headVehValid": U1,
+                "carrSoln": U2,
+            },
+        ),
+        "flags2": (
+            X1,
+            {
+                "reserved": U5,
+                "confirmedAvai": U1,
+                "confirmedDate": U1,
+                "confirmedTime": U1,
+            },
+        ),
         "numSV": U1,
         "lon": I4,
         "lat": I4,
@@ -1345,7 +1454,20 @@ UBX_PAYLOADS_GET = {
         "accLength": U4,
         "accHeading": U4,
         "reserved2": U4,
-        "flags": X4,
+        "flags": (
+            X4,
+            {
+                "gnssFixOK": U1,
+                "diffSoln": U1,
+                "relPosValid": U1,
+                "carrSoln": U2,
+                "isMoving": U1,
+                "refPosMiss": U1,
+                "refObsMiss": U1,
+                "relPosHeadingValid": U1,
+                "relPosNormalized": U1,
+            },
+        ),
     },
     "NAV-SAT": {
         "iTOW": U4,
@@ -1362,7 +1484,28 @@ UBX_PAYLOADS_GET = {
                 "elev": I1,
                 "azim": I2,
                 "prRes": I2,
-                "flags": X4,
+                "flags": (
+                    X4,
+                    {
+                        "qualityInd": U3,
+                        "svUsed": U1,
+                        "health": U2,
+                        "diffCorr": U1,
+                        "smoothed": U1,
+                        "orbitSource": U3,
+                        "ephAvail": U1,
+                        "almAvail": U1,
+                        "anoAvail": U1,
+                        "aopAvail": U1,
+                        "sbasCorrUsed": U1,
+                        "rtcmCorrUsed": U1,
+                        "slasCorrUsed": U1,
+                        "spartnCorrUsed": U1,
+                        "prCorrUsed": U1,
+                        "crCorrUsed": U1,
+                        "doCorrUsed": U1,
+                    },
+                ),
             },
         ),
     },
@@ -1371,9 +1514,24 @@ UBX_PAYLOADS_GET = {
         "geo": U1,
         "mode": U1,
         "sys": I1,
-        "service": X1,
+        "service": (
+            X1,
+            {
+                "Ranging": U1,
+                "Corrections": U1,
+                "Integrity": U1,
+                "Testmode": U1,
+                "Bad": U1,
+            },
+        ),
         "numCh": U1,
-        "reserved0": U3,
+        "statusFlags": (
+            X1,
+            {
+                "integrityUsed": U2,
+            },
+        ),
+        "reserved0": U2,
         "channels": (
             "numCh",
             {  # repeating group * numCh
@@ -1406,7 +1564,19 @@ UBX_PAYLOADS_GET = {
                 "qualityInd": U1,
                 "corrSource": U1,
                 "ionoModel": U1,
-                "sigFlags": X2,
+                "sigFlags": (
+                    X2,
+                    {
+                        "health": U2,
+                        "prSmoothed": U1,
+                        "prUsed": U1,
+                        "crUsed": U1,
+                        "doUsed": U1,
+                        "prCorrUsed": U1,
+                        "crCorrUsed": U1,
+                        "doCorrUsed": U1,
+                    },
+                ),
                 "reserved1": U4,
             },
         ),
@@ -1419,7 +1589,14 @@ UBX_PAYLOADS_GET = {
         "gmsLat": I4,
         "gmsCode": U1,
         "qzssSvId": U1,
-        "serviceFlags": X1,
+        "serviceFlags": (
+            X1,
+            {
+                "gmsAvailable": U1,
+                "qzssSvAvailable": U1,
+                "testMode": U1,
+            },
+        ),
         "cnt": U1,
         "group": (
             "cnt",
@@ -1437,7 +1614,7 @@ UBX_PAYLOADS_GET = {
         "fTOW": I4,
         "week": I2,
         "gpsFix": U1,
-        "flags": X1,
+        "flags": X1,  # TODO
         "ecefX": I4,
         "ecefY": I4,
         "ecefZ": I4,
@@ -1454,24 +1631,71 @@ UBX_PAYLOADS_GET = {
     "NAV-STATUS": {
         "iTOW": U4,
         "gpsFix": U1,
-        "flags": X1,
-        "fixStat": X1,
-        "flags2": X1,
+        "flags": (
+            X1,
+            {
+                "gpsFixOk": U1,
+                "diffSoln": U1,
+                "wknSet": U1,
+                "towSet": U1,
+            },
+        ),
+        "fixStat": (
+            X1,
+            {
+                "diffCorr": U1,
+                "carrSolnValid": U1,
+                "reserved0": U4,
+                "mapMatching": U2,
+            },
+        ),
+        "flags2": (
+            X1,
+            {
+                "psmState": U2,
+                "reserved1": U1,
+                "spoofDetState": U2,
+                "reserved2": U1,
+                "carrSoln": U2,
+            },
+        ),
         "ttff": U4,
         "msss": U4,
     },
     "NAV-SVINFO": {  # deprecated - use NAV-SAT
         "iTOW": U4,
         "numCh": U1,
-        "globalFlags": X1,
+        "globalFlags": (
+            X1,
+            {
+                "chipGen": U3,
+            },
+        ),
         "reserved2": U2,
         "channels": (
             "numCh",
             {  # repeating group * numCh
                 "chn": U1,
                 "svid": U1,
-                "flags": X1,
-                "quality": X1,
+                "flags": (
+                    X1,
+                    {
+                        "svUsed": U1,
+                        "diffCorr": U1,
+                        "orbitAvail": U1,
+                        "orbitEph": U1,
+                        "unhealthy": U1,
+                        "orbitAlm": U1,
+                        "orbitAop": U1,
+                        "smoothed": U1,
+                    },
+                ),
+                "quality": (
+                    X1,
+                    {
+                        "qualityInd": U4,
+                    },
+                ),
                 "cno": U1,
                 "elev": I1,
                 "azim": I2,
@@ -1503,7 +1727,14 @@ UBX_PAYLOADS_GET = {
         "fSOW": I4,
         "week": I2,
         "leapS": I1,
-        "valid": X1,
+        "valid": (
+            X1,
+            {
+                "sowValid": U1,
+                "weekValid": U1,
+                "leapSValid": U1,
+            },
+        ),
         "tAcc": U4,
     },
     "NAV-TIMEGAL": {
@@ -1512,7 +1743,14 @@ UBX_PAYLOADS_GET = {
         "fGalTow": I4,
         "galWno": I2,
         "leapS": I1,
-        "valid": X1,
+        "valid": (
+            X1,
+            {
+                "galTowValid": U1,
+                "galWnoValid": U1,
+                "leapSValid": U1,
+            },
+        ),
         "tAcc": U4,
     },
     "NAV-TIMEGLO": {
@@ -1521,7 +1759,13 @@ UBX_PAYLOADS_GET = {
         "fTOD": I4,
         "Nt": U2,
         "N4": U1,
-        "valid": X1,
+        "valid": (
+            X1,
+            {
+                "todValid": U1,
+                "dateValid": U1,
+            },
+        ),
         "tAcc": U4,
     },
     "NAV-TIMEGPS": {
@@ -1529,7 +1773,14 @@ UBX_PAYLOADS_GET = {
         "fTOW": I4,
         "week": I2,
         "leapS": I1,
-        "valid": X1,
+        "valid": (
+            X1,
+            {
+                "towValid": U1,
+                "weekValid": U1,
+                "leapSValid": U1,
+            },
+        ),
         "tAcc": U4,
     },
     "NAV-TIMELS": {
@@ -1544,7 +1795,13 @@ UBX_PAYLOADS_GET = {
         "dateOfLsGpsWn": U2,
         "dateOfLsGpsDn": U2,
         "reserved2": U3,
-        "valid": X1,
+        "valid": (
+            X1,
+            {
+                "validCurrLs": U1,
+                "validTimeToLsEvent": U1,
+            },
+        ),
     },
     "NAV-TIMEQZSS": {
         "iTOW": U4,
@@ -1552,7 +1809,14 @@ UBX_PAYLOADS_GET = {
         "fQzssTow": I4,
         "qzssWno": I2,
         "leapS": I1,
-        "valid": X1,
+        "valid": (
+            X1,
+            {
+                "qzssTowValid": U1,
+                "qzssWnoValid": U1,
+                "leapSValid": U1,
+            },
+        ),
         "tAcc": U4,
     },
     "NAV-TIMEUTC": {
@@ -1565,7 +1829,16 @@ UBX_PAYLOADS_GET = {
         "hour": U1,
         "min": U1,
         "sec": U1,
-        "validflags": X1,
+        "validflags": (
+            X1,
+            {
+                "validTOW": U1,
+                "validWKN": U1,
+                "validUTC": U1,
+                "reserved0": U1,
+                "utcStandard": U4,
+            },
+        ),
     },
     "NAV-VELECEF": {"iTOW": U4, "ecefVX": I4, "ecefVY": I4, "ecefVZ": I4, "sAcc": U4},
     "NAV-VELNED": {

@@ -9,6 +9,7 @@ Created on 26 Sep 2020
 """
 # pylint: disable=invalid-name
 
+from posixpath import expanduser
 import struct
 import pyubx2.exceptions as ube
 import pyubx2.ubxtypes_core as ubt
@@ -120,7 +121,7 @@ class UBXMessage:
         """
         Recursive routine to set individual or grouped payload attributes.
 
-        :param int offset: payload offset
+        :param int offset: payload offset in bytes
         :param dict pdict: dict representing payload definition
         :param str key: attribute keyword
         :param list index: repeating group index array
@@ -131,8 +132,18 @@ class UBXMessage:
         """
 
         att = pdict[key]  # get attribute type
-        if isinstance(att, tuple):  # repeating group of attributes
-            (offset, index) = self._set_attribute_group(att, offset, index, **kwargs)
+        if isinstance(
+            att, tuple
+        ):  # repeating group of attributes or subdefined bitfield
+            numr, attd = att
+            if numr in (ubt.X1, ubt.X2, ubt.X4, ubt.X6, ubt.X8):  # bitfield
+                (offset, index) = self._set_attribute_bitfield(
+                    att, offset, index, **kwargs
+                )
+            else:  # repeating group of attributes
+                (offset, index) = self._set_attribute_group(
+                    att, offset, index, **kwargs
+                )
         else:  # single attribute
             offset = self._set_attribute_single(att, offset, key, index, **kwargs)
 
@@ -145,7 +156,7 @@ class UBXMessage:
         Process (nested) group of attributes.
 
         :param tuple att: attribute group - tuple of (num repeats, attribute dict)
-        :param int offset: payload offset
+        :param int offset: payload offset in bytes
         :param list index: repeating group index array
         :param kwargs: optional payload key/value pairs
         :return: (offset, index[])
@@ -193,7 +204,7 @@ class UBXMessage:
         Set individual attribute value.
 
         :param str att: attribute type e.g. 'U002'
-        :param int offset: payload offset
+        :param int offset: payload offset in bytes
         :param str key: attribute keyword
         :param list index: repeating group index array
         :param kwargs: optional payload key/value pairs
@@ -233,6 +244,94 @@ class UBXMessage:
         offset += atts
 
         return offset
+
+    def _set_attribute_bitfield(
+        self, att: str, offset: int, index: list, **kwargs
+    ) -> tuple:
+        """
+        Parse bitfield attribute (type 'X').
+
+        :param str att: attribute type e.g. 'X002'
+        :param int offset: payload offset in bytes
+        :param str key: attribute key name
+        :param list index: repeating group index array
+        :param kwargs: optional payload key/value pairs
+        :return: (offset, index[])
+        :rtype: tuple
+
+        """
+        # pylint: disable=no-member
+
+        bft, bfd = att  # type of bitfield, bitfield dictionary
+        bfs = attsiz(bft)  # size of bitfield in bytes
+        bfoffset = 0
+
+        # if payload keyword has been provided,
+        # use the appropriate offset of the payload
+        if "payload" in kwargs:
+            bitfield = int.from_bytes(self._payload[offset : offset + bfs], "little")
+        else:
+            bitfield = 0
+
+        # process each flag in bitfield
+        for key, keyt in bfd.items():
+            (bitfield, bfoffset) = self._set_attribute_bits(
+                bitfield, bfoffset, key, keyt, index, **kwargs
+            )
+
+        # update payload
+        offset += bfs
+        if "payload" not in kwargs:
+            self._payload += bitfield.to_bytes(bfs, "little")
+
+        return (offset, index)
+
+    def _set_attribute_bits(
+        self,
+        bitfield: int,
+        bfoffset: int,
+        key: str,
+        keyt: str,
+        index: list,
+        **kwargs,
+    ) -> tuple:
+        """
+        Set individual bit flag from bitfield.
+
+        :param int bitfield: bitfield
+        :param int bfoffset: bitfield offset in bits
+        :param str key: attribute key name
+        :param str keyt: key type e.g. 'U001'
+        :param list index: repeating group index array
+        :param kwargs: optional payload key/value pairs
+        :return: (bitfield, bfoffset)
+        :rtype: tuple
+
+        """
+        # pylint: disable=no-member
+
+        # if attribute is part of a (nested) repeating group, suffix name with index
+        keyr = key
+        for i in index:  # one index for each nested level
+            if i > 0:
+                keyr = keyr + "_{0:0=2d}".format(i)
+
+        atts = attsiz(keyt)  # determine flag size in bits
+
+        if "payload" in kwargs:
+            mask = pow(2, atts) - 1
+            val = (bitfield >> bfoffset) & mask
+            # print(
+            #     f"DEBUG key = {keyr}, bitfield = {bitfield>>bfoffset:08b}, mask = {mask}, val={val}"
+            # )
+        else:
+            val = kwargs.get(keyr, 0)
+            bitfield = bitfield | (val << bfoffset)
+
+        if key[0:8] != "reserved":  # don't bother to set reserved bits
+            setattr(self, keyr, val)
+        bfoffset += atts
+        return (bitfield, bfoffset)
 
     def _set_cfgval_attributes(self, offset: int, **kwargs):
         """

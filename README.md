@@ -1,7 +1,7 @@
 pyubx2
 =======
 
-`pyubx2` is an original Python library for the UBX &copy; protocol. UBX is a proprietary binary protocol implemented on u-blox &trade; GNSS/GPS receiver modules.
+`pyubx2` is an original Python 3 library for the UBX &copy; protocol. UBX is a proprietary binary protocol implemented on u-blox &trade; GNSS/GPS receiver modules.
 
 The `pyubx2` homepage is located at [https://github.com/semuconsulting/pyubx2](https://github.com/semuconsulting/pyubx2).
 
@@ -58,6 +58,15 @@ source env/bin/activate (or env\Scripts\activate on Windows)
 deactivate
 ```
 
+## UBX Message Categories - GET, SET, POLL
+
+`pyubx2` divides UBX messages into three categories, signified by the `mode` or `msgmode` parameter.
+
+| mode        | description                              | defined in         |
+|-------------|------------------------------------------|--------------------|
+| GET (0x00)  | output *from* the receiver (the default) | `ubxtypes_get.py`  |
+| SET (0x01)  | command input *to* the receiver          | `ubxtypes_set.py`  |
+| POLL (0x02) | query input *to* the receiver            | `ubxtypes_poll.py` |
 
 ## Reading (Streaming)
 
@@ -76,7 +85,7 @@ The constructor accepts the following optional keyword arguments:
 
 * `ubxonly`: True = raise error if stream contains non-UBX data, False = ignore non-UBX data (default)
 * `validate`: VALCKSUM (0x01) = validate checksum (default), VALNONE (0x00) = ignore invalid checksum or length
-* `msgmode`: 0 = GET (default, i.e. output _from_ receiver), 1 = SET (i.e. input _to_ receiver), 2 = POLL (i.e. query _to_ receiver in anticipation of response back)
+* `msgmode`: 0 = GET (default), 1 = SET, 2 = POLL
 
 
 Examples:
@@ -113,8 +122,7 @@ The `parse()` method accepts the following optional keyword arguments:
 
 Attributes within repeating groups are parsed with a two-digit suffix (svid_01, svid_02, etc.).
 
-Example:
-
+Example - output (GET) message:
 ```python
 >>> from pyubx2 import UBXReader
 >>> msg = UBXReader.parse(b'\xb5b\x05\x01\x02\x00\x06\x01\x0f\x38')
@@ -123,6 +131,14 @@ Example:
 >>> msg = UBXReader.parse(b'\xb5b\x01\x12$\x000D\n\x18\xfd\xff\xff\xff\xf1\xff\xff\xff\xfc\xff\xff\xff\x10\x00\x00\x00\x0f\x00\x00\x00\x83\xf5\x01\x00A\x00\x00\x00\xf0\xdfz\x00\xd0\xa6')
 >>> print(msg)
 <UBX(NAV-VELNED, iTOW=16:01:50, velN=-3, velE=-15, velD=-4, speed=16, gSpeed=15, heading=128387, sAcc=65, cAcc=8052720)>
+```
+
+Example - input (SET) message:
+```python
+>>> from pyubx2 import UBXReader, SET
+>>> msg = UBXReader.parse(b"\xb5b\x13\x40\x14\x00\x01\x00\x01\x02\x01\x02\x03\x04\x01\x02\x03\x04\x01\x02\x03\x04\x01\x02\x03\x04\x93\xc8", msgmode=SET)
+>>> print(msg)
+<UBX(MGA-INI-POS_LLH, type=1, version=0, reserved1=513, lat=67305985, lon=67305985, alt=67305985, posAcc=67305985)>
 ```
 
 The `UBXMessage` object exposes different public properties depending on its message type or 'identity',
@@ -154,11 +170,6 @@ You can create a `UBXMessage` object by calling the constructor with the followi
 4. (optional) a series of keyword parameters representing the message payload
 
 The 'message class' and 'message id' parameters may be passed as lookup strings, integers or bytes.
-
-The 'mode' parameter signifies whether the message payload refers to a: 
-* GET message (i.e. output *from* the receiver - **NB** these would normally be generated via the `UBXReader.read()` or `UBXReader.parse()` methods but can also be created manually)
-* SET message (i.e. command input *to* the receiver)
-* POLL message (i.e. query input *to* the receiver in anticipation of a response back)
 
 The message payload can be defined via keyword parameters in one of three ways:
 1. A single keyword parameter of `payload` containing the full payload as a sequence of bytes (any other keyword parameters will be ignored). **NB** the `payload` keyword *must* be used for message types which have a 'variable by size' repeating group.
@@ -334,15 +345,16 @@ The UBX protocol is principally defined in the modules `ubxtypes_*.py` as a seri
 ```
 1. attribute names must be unique within each message class
 2. attribute types must be one of the valid types (I1, U2, X4, etc.)
-3. repeating groups must be defined as a tuple ('numr', {dict}), where:
+3. repeating or bitfield groups must be defined as a tuple ('numr', {dict}), where:
    'numr' is either:
      a. an integer representing a fixed number of repeats e.g. 32
      b. a string representing the name of a preceding attribute containing the number of repeats e.g. 'numCh'
-     c. 'None' for a 'variable by size' repeating group. Only one such group is permitted per payload and it must be at the end.
+     c. an 'X' attribute type ('X1', 'X2', 'X4', etc) representing a group of individual bit flags
+     d. 'None' for a 'variable by size' repeating group. Only one such group is permitted per payload and it must be at the end.
    {dict} is the nested dictionary of repeating items
 ```
 
-Repeating attribute names are parsed with a two-digit suffix (svid_01, svid_02, etc.). Nested repeating groups are supported. See CFG-VALGET, MON-SPAN, NAV-SAT and RXM-RLM by way of examples.
+Repeating attribute names are parsed with a two-digit suffix (svid_01, svid_02, etc.). Nested repeating groups are supported. See CFG-VALGET, MON-SPAN, NAV-PVT, NAV-SAT and RXM-RLM by way of examples.
 
 In most cases, a UBX message's content (payload) is uniquely defined by its class, id and mode; accommodating the message simply requires the addition of an appropriate dictionary entry to the relevant `ubxtypes_*.py` module(s).
 
