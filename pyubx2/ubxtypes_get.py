@@ -835,7 +835,13 @@ UBX_PAYLOADS_GET = {
     "MON-COMMS": {
         "version": U1,
         "nPorts": U1,
-        "txErrors": X1,
+        "txErrors": (
+            X1,
+            {
+                "txErrorMem": U1,
+                "txErrorAlloc": U1,
+            },
+        ),
         "reserved0": U1,
         "protIds1": U1,
         "protIds2": U1,
@@ -865,9 +871,33 @@ UBX_PAYLOADS_GET = {
     },
     "MON-GNSS": {
         "version": U1,
-        "supported": X1,
-        "default": X1,
-        "enabled": X1,
+        "supported": (
+            X1,
+            {
+                "GPSSup": U1,
+                "GlonassSup": U1,
+                "BeidouSup": U1,
+                "GalileoSup": U1,
+            },
+        ),
+        "default": (
+            X1,
+            {
+                "GPSDef": U1,
+                "GlonassDef": U1,
+                "BeidouDef": U1,
+                "GalileoDef": U1,
+            },
+        ),
+        "enabled": (
+            X1,
+            {
+                "GPSEna": U1,
+                "GlonassEna": U1,
+                "BeidouEna": U1,
+                "GalileoEna": U1,
+            },
+        ),
         "simultaneous": U1,
         "reserved1": U3,
     },
@@ -880,7 +910,15 @@ UBX_PAYLOADS_GET = {
         "agcCnt": U2,
         "aStatus": U1,
         "aPower": U1,
-        "flags": X1,
+        "flags": (
+            X1,
+            {
+                "rtcCalib": U1,
+                "safeBoot": U1,
+                "jammingState": U2,
+                "xtalAbsent": U1,
+            },
+        ),
         "reserved1": U1,
         "usedMask": X4,
         "groupVP": (
@@ -902,20 +940,39 @@ UBX_PAYLOADS_GET = {
         "magQ": U1,
         "cfgSource": U1,
         "reserved0": U3,
-        "lowLevCfg": X4,
+        "lowLevCfg": U4,
         "reserved11": U4,
         "reserved12": U4,
-        "postStatus": X4,
+        "postStatus": U4,
         "reserved2": U4,
     },
     "MON-HW3": {
         "version": U1,
         "nPins": U1,
-        "flags": X1,
+        "flags": (
+            X1,
+            {
+                "rtcCalib": U1,
+                "safeBoot": U1,
+                "xtalAbsent": U1,
+            },
+        ),
         "hwVersion": C10,
         "reserved0": U9,
         "pinId": U2,
-        "pinMask": X2,
+        "pinMask": (
+            X2,
+            {
+                "periphPIO": U1,
+                "pinBank": U3,
+                "direction": U1,
+                "pinValue": U1,
+                "vpManager": U1,
+                "pioIrq": U1,
+                "pioPullHigh": U1,
+                "pioPullLow": U1,
+            },
+        ),
         "VP": U1,
         "reserved1": U1,
     },
@@ -980,7 +1037,13 @@ UBX_PAYLOADS_GET = {
         "group": (
             "nEntries",
             {  # repeating group * nEntries
-                "patchInfo": X4,
+                "patchInfo": (
+                    X4,
+                    {
+                        "patchActivated": U1,
+                        "patchLocation": U2,
+                    },
+                ),
                 "comparatorNumber": U4,
                 "patchAddress": U4,
                 "patchData": U4,
@@ -995,7 +1058,12 @@ UBX_PAYLOADS_GET = {
             "nBlocks",
             {  # repeating group * nBlocks
                 "blockId": U1,
-                "flags": X1,
+                "flags": (
+                    X1,
+                    {
+                        "jammingState": U1,
+                    },
+                ),
                 "antStatus": U1,
                 "antPower": U1,
                 "postStatus": U4,
@@ -1031,17 +1099,57 @@ UBX_PAYLOADS_GET = {
             },
         ),  # repeating group * 6
     },
-    "MON-RXR": {"flags": U1},
+    "MON-RXR": {
+        "flags": (
+            X1,
+            {
+                "awake": U1,
+            },
+        ),
+    },
     "MON-SMGR": {
         "version": U1,
         "reserved1": U3,
         "iTOW": U4,
-        "intOsc": X2,
-        "extOsc": X2,
+        "intOsc": (
+            X2,
+            {
+                "intOscState": U4,
+                "intOscCalib": U1,
+                "intOscDisc": U1,
+            },
+        ),
+        "extOsc": (
+            X2,
+            {
+                "extscState": U4,
+                "extOscCalib": U1,
+                "extOscDisc": U1,
+            },
+        ),
         "discSrc": U1,
-        "gnss": X1,
-        "extInt0": X1,
-        "extInt1": X1,
+        "gnss": (
+            X1,
+            {
+                "gnssAvail": U1,
+            },
+        ),
+        "extInt0": (
+            X1,
+            {
+                "extInt0Avail": U1,
+                "extInt0Type": U1,
+                "extInt0FeedBack": U1,
+            },
+        ),
+        "extInt1": (
+            X1,
+            {
+                "extInt1Avail": U1,
+                "extInt1Type": U1,
+                "extInt1FeedBack": U1,
+            },
+        ),
     },
     "MON-SPAN": {
         "version": U1,
@@ -1105,7 +1213,14 @@ UBX_PAYLOADS_GET = {
         ),  # repeating group * 6
         "tUsage": U1,
         "tPeakUsage": U1,
-        "errors": X1,
+        "errors": (
+            X1,
+            {
+                "txErrorLimit": U6,
+                "txErrorMem": U1,
+                "txErrorAlloc": U1,
+            },
+        ),
         "reserved1": U1,
     },
     "MON-VER": {
