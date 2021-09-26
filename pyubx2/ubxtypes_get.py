@@ -723,20 +723,20 @@ UBX_PAYLOADS_GET = {
         "inProtoMask": (
             X2,
             {
-                "inUbx": U1,
-                "inNmea": U1,
-                "inRtcm": U1,
+                "inUBX": U1,
+                "inNMEA": U1,
+                "inRTCM": U1,
                 "reserved8": U2,
-                "inRtcm3": U1,
+                "inRTCM3": U1,
             },
         ),
         "outProtoMask": (
             X2,
             {
-                "outUbx": U1,
-                "outNmea": U1,
+                "outUBX": U1,
+                "outNMEA": U1,
                 "reserved9": U3,
-                "outRtcm3": U1,
+                "outRTCM3": U1,
             },
         ),
         "reserved4": U2,
