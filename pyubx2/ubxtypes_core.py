@@ -54,6 +54,7 @@ U7 = "U007"  # Unsigned Int 7 bytes
 U8 = "U008"  # Unsigned Int 8 bytes
 U9 = "U009"  # Unsigned Int 9 bytes
 U12 = "U012"  # Unsigned Int 12 bytes
+U22 = "U022"  # Unsigned Int 22 bytes
 U40 = "U040"  # Unsigned Int 40 bytes
 U64 = "U064"  # Unsigned Int 64 bytes
 X1 = "X001"  # Bitfield 1 byte
@@ -92,6 +93,7 @@ VALID_TYPES = (
     U8,
     U9,
     U12,
+    U22,
     U40,
     U64,
     X1,

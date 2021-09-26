@@ -163,14 +163,14 @@ class ParseTest(unittest.TestCase):
         res = UBXReader.parse(self.cfg_nmeavx)
         self.assertEqual(
             str(res),
-            "<UBX(CFG-NMEA, filter=b'\\x00', nmeaVersion=0, numSV=0, flags=b'\\x00')>",
+            "<UBX(CFG-NMEA, posFilt=0, mskPosFilt=0, timeFilt=0, dateFilt=0, gpsOnlyFilter=0, trackFilt=0, nmeaVersion=0, numSV=0, compat=0, consider=0, limit82=0, highPrec=0)>",
         )
 
     def testCfgNmeaV0(self):  # test older NMEA message parse
         res = UBXReader.parse(self.cfg_nmeav0)
         self.assertEqual(
             str(res),
-            "<UBX(CFG-NMEA, filter=b'\\x00', nmeaVersion=0, numSV=0, flags=b'\\x00', gnssToFilter=b'\\x00\\x00\\x00\\x00', svNumbering=0, mainTalkerId=0, gsvTalkerId=0, version=0)>",
+            "<UBX(CFG-NMEA, posFilt=0, mskPosFilt=0, timeFilt=0, dateFilt=0, gpsOnlyFilter=0, trackFilt=0, nmeaVersion=0, numSV=0, compat=0, consider=0, limit82=0, highPrec=0, disableGps=0, disableSbas=0, disableGalileo=0, disableQzss=0, disableGlonass=0, disableBeidou=0, svNumbering=0, mainTalkerId=0, gsvTalkerId=0, version=0)>",
         )
 
     def testMgaDbd(self):

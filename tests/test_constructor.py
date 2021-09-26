@@ -73,7 +73,7 @@ class FillTest(unittest.TestCase):
     def testFill_CFGNMEAPARSE(
         self,
     ):  # check that raw payload is correctly populated and parses back to original message
-        EXPECTED_RESULT = "<UBX(CFG-NMEA, filter=b'\\x00', nmeaVersion=35, numSV=1, flags=b'\\x00', gnssToFilter=b'\\x00\\x00\\x00\\x00', svNumbering=0, mainTalkerId=0, gsvTalkerId=0, version=0, bdsTalkerId=b'\\x00\\x00', reserved1=0)>"
+        EXPECTED_RESULT = "<UBX(CFG-NMEA, posFilt=0, mskPosFilt=0, timeFilt=0, dateFilt=0, gpsOnlyFilter=0, trackFilt=0, nmeaVersion=35, numSV=1, compat=0, consider=0, limit82=0, highPrec=0, disableGps=0, disableSbas=0, disableGalileo=0, disableQzss=0, disableGlonass=0, disableBeidou=0, svNumbering=0, mainTalkerId=0, gsvTalkerId=0, version=0, bdsTalkerId=b'\\x00\\x00', reserved1=0)>"
         res = UBXMessage("CFG", "CFG-NMEA", SET, nmeaVersion=35, numSV=1)
         res2 = UBXReader.parse(res.serialize())
         self.assertEqual(str(res2), EXPECTED_RESULT)
@@ -141,7 +141,7 @@ class FillTest(unittest.TestCase):
     def testFill_CFGDOSCPARSE(
         self,
     ):  # test CFG-DOSC check that raw payload is correctly populated and parses back to original message
-        EXPECTED_RESULT = "<UBX(CFG-DOSC, version=37, numOsc=1, reserved1=0, oscId_01=8, reserved2_01=0, flags_01=b'\\x00\\x00', freq_01=53, phaseOffset_01=26, withTemp_01=0, withAge_01=0, timeToTemp_01=0, reserved3_01=0, gainVco_01=4, gainUncertainty_01=123, reserved4_01=0)>"
+        EXPECTED_RESULT = "<UBX(CFG-DOSC, version=37, numOsc=1, reserved1=0, oscId_01=8, reserved2_01=0, isCalibrated_01=0, controlIf_01=0, freq_01=53, phaseOffset_01=26, withTemp_01=0, withAge_01=0, timeToTemp_01=0, reserved3_01=0, gainVco_01=4, gainUncertainty_01=123, reserved4_01=0)>"
         res = UBXMessage(
             "CFG",
             "CFG-DOSC",

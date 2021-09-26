@@ -76,7 +76,10 @@ class UBXSetter:
                 SET,
                 clearMask=b"\x1f\x1f\x00\x00",  # clear everything
                 loadMask=b"\x1f\x1f\x00\x00",  # reload everything
-                devicerMask=b"\x07",
+                # deviceMask=b"\x07",
+                devBBR=1,
+                devFlash=1,
+                devEEPROM=1,
             )  # target battery-backed RAM, Flash and EEPROM
             self._send(msg.serialize())
         except (ube.UBXMessageError, ube.UBXTypeError, ube.UBXParseError) as err:
