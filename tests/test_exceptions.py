@@ -48,7 +48,8 @@ class ExceptionTest(unittest.TestCase):
 
     def testFill_CFGNMEA(self):  # incorrect type (integer not binary)
         EXPECTED_ERROR = (
-            "Incorrect type for attribute 'filter' in SET message class CFG-NMEA"
+            # "Incorrect type for attribute 'filter' in SET message class CFG-NMEA"
+            "Incorrect type for attribute 'nmeaVersion' in SET message class CFG-NMEA"
         )
         with self.assertRaisesRegex(UBXTypeError, EXPECTED_ERROR):
             UBXMessage(
