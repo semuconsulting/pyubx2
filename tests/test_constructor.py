@@ -90,7 +90,7 @@ class FillTest(unittest.TestCase):
         self.assertEqual(str(res2), EXPECTED_RESULT)
 
     def testFill_CFGGNSS(self):  #  test CFG-GNSS SET multiple repeats in group
-        EXPECTED_RESULT = "<UBX(CFG-GNSS, msgVer=0, numTrkChHw=2, numTrkChUse=4, numConfigBlocks=2, gnssId_01=GPS, resTrkCh_01=4, maxTrkCh_01=32, reserved0_01=0, enable_01=0, sigCfMask_01=0, gnssId_02=GLONASS, resTrkCh_02=3, maxTrkCh_02=24, reserved0_02=0, enable_02=0, sigCfMask_02=0)>"
+        EXPECTED_RESULT = "<UBX(CFG-GNSS, msgVer=0, numTrkChHw=2, numTrkChUse=4, numConfigBlocks=2, gnssId_01=GPS, resTrkCh_01=4, maxTrkCh_01=32, reserved0_01=0, enable_01=1, sigCfMask_01=4, gnssId_02=GLONASS, resTrkCh_02=3, maxTrkCh_02=24, reserved0_02=0, enable_02=0, sigCfMask_02=64)>"
         res = UBXMessage(
             "CFG",
             "CFG-GNSS",
@@ -101,11 +101,43 @@ class FillTest(unittest.TestCase):
             gnssId_01=0,
             resTrkCh_01=4,
             maxTrkCh_01=32,
+            enable_01=1,
+            sigCfMask_01=4,
             gnssId_02=6,
             resTrkCh_02=3,
             maxTrkCh_02=24,
+            enable_02=0,
+            sigCfMask_02=64,
         )
         self.assertEqual(str(res), EXPECTED_RESULT)
+
+    def testFill_CFGGNSS_NOBITFIELD(
+        self,
+    ):  #  test CFG-GNSS SET with parsebitfield = False
+        EXPECTED_RESULT = "<UBX(CFG-GNSS, msgVer=0, numTrkChHw=2, numTrkChUse=4, numConfigBlocks=2, gnssId_01=GPS, resTrkCh_01=4, maxTrkCh_01=32, reserved0_01=0, flags_01=b'\\x01\\x00\\x04\\x00', gnssId_02=GLONASS, resTrkCh_02=3, maxTrkCh_02=24, reserved0_02=0, flags_02=b'\\x00\\x00@\\x00')>"
+        EXPECTED_RESULT2 = "<UBX(CFG-GNSS, msgVer=0, numTrkChHw=2, numTrkChUse=4, numConfigBlocks=2, gnssId_01=GPS, resTrkCh_01=4, maxTrkCh_01=32, reserved0_01=0, enable_01=1, sigCfMask_01=4, gnssId_02=GLONASS, resTrkCh_02=3, maxTrkCh_02=24, reserved0_02=0, enable_02=0, sigCfMask_02=64)>"
+        res = UBXMessage(
+            "CFG",
+            "CFG-GNSS",
+            SET,
+            parsebitfield=False,
+            numTrkChHw=2,
+            numTrkChUse=4,
+            numConfigBlocks=2,
+            gnssId_01=0,
+            resTrkCh_01=4,
+            maxTrkCh_01=32,
+            flags_01=b"\x01\x00\x04\x00",
+            gnssId_02=6,
+            resTrkCh_02=3,
+            maxTrkCh_02=24,
+            flags_02=b"\x00\x00\x40\x00",
+        )
+        self.assertEqual(str(res), EXPECTED_RESULT)
+        res2 = UBXReader.parse(
+            res.serialize()
+        )  # resconstruct message and parse again with parsebitfield = True
+        self.assertEqual(str(res2), EXPECTED_RESULT2)
 
     def testFill_CFGDOSC(self):  # test CFG-DOSC multiple repeats in group
         EXPECTED_RESULT = "<UBX(CFG-DOSC, version=23, numOsc=2, reserved1=0, oscId_01=4, reserved2_01=0, isCalibrated_01=0, controlIf_01=0, freq_01=22, phaseOffset_01=0, withTemp_01=0, withAge_01=0, timeToTemp_01=0, reserved3_01=0, gainVco_01=0, gainUncertainty_01=0, reserved4_01=0, oscId_02=7, reserved2_02=0, isCalibrated_02=0, controlIf_02=0, freq_02=44, phaseOffset_02=0, withTemp_02=0, withAge_02=0, timeToTemp_02=0, reserved3_02=0, gainVco_02=0, gainUncertainty_02=0, reserved4_02=0)>"

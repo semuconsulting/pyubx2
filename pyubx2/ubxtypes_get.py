@@ -370,6 +370,7 @@ UBX_PAYLOADS_GET = {
                         "reserved1": U8,
                         "reserved2": U7,
                         "sigCfMask": U8,
+                        "reserved3": U8,
                     },
                 ),
             },
