@@ -4,10 +4,13 @@
 
 ENHANCEMENTS:
 
-1. new functionality added to parse individual bit flags in bitfield ('X' type) attributes, where defined. For example, the 
-NAV-PVT attribute `valid` (X1) is now parsed as four individual bit flags: `validDate` (U1), `validTime` (U1), `fullyResolved` (U1) and `validMag` (U1).
+1. New functionality added in `ubxmessage.py` to parse individual bit flags in bitfield ('X' type) attributes, where defined. For example, the NAV-PVT attribute `valid` (X1) is now parsed as four individual bit flags: `validDate` (U1), `validTime` (U1), `fullyResolved` (U1) and `validMag` (U1).
 
-2. `ubxtypes_get.py` NAV & MON payload definitions updated to model bitfield ('X' type) attributes as groups of individual bit flags. Payload definitions for other message categories will be updated in a subsequent release (contributions welcome).
+2. CFG, NAV & MON payload definitions updated in `ubxtypes_get.py` and `ubxtypes_set.py` to model bitfield ('X' type) attributes as groups of individual bit flags. Payload definitions for other message categories (MGA, RXM, etc.) will be updated in a subsequent release (contributions welcome).
+
+3. UBX messages can also be created using individual bit flag keywords.
+
+4. **NB:** If you're using the associated graphical client PyGPSClient, this will need to be upgraded to v1.1.0 to accommodate the pyubx2 changes.
 
 ### RELEASE 1.0.16
 
