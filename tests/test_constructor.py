@@ -136,7 +136,7 @@ class FillTest(unittest.TestCase):
         self.assertEqual(str(res), EXPECTED_RESULT)
         res2 = UBXReader.parse(
             res.serialize()
-        )  # resconstruct message and parse again with parsebitfield = True
+        )  # reconstruct message and parse again with parsebitfield = True
         self.assertEqual(str(res2), EXPECTED_RESULT2)
 
     def testFill_CFGDOSC(self):  # test CFG-DOSC multiple repeats in group
