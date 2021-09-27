@@ -85,8 +85,8 @@ The constructor accepts the following optional keyword arguments:
 
 * `ubxonly`: True = raise error if stream contains non-UBX data, False = ignore non-UBX data (default)
 * `validate`: VALCKSUM (0x01) = validate checksum (default), VALNONE (0x00) = ignore invalid checksum or length
+* `parsebitfield`: 1 = parse bitfields as individual bit flags (default), 0 = leave bitfields as byte sequences
 * `msgmode`: 0 = GET (default), 1 = SET, 2 = POLL
-
 
 Examples:
 
@@ -118,6 +118,7 @@ You can parse individual UBX messages using the static `UBXReader.parse(data)` f
 The `parse()` method accepts the following optional keyword arguments:
 
 * `validate`: VALCKSUM (0x01) = validate checksum (default), VALNONE (0x00) = ignore invalid checksum or length
+* `parsebitfield`: 1 = parse bitfields as individual bit flags (default), 0 = leave bitfields as byte sequences
 * `msgmode`: 0 = GET (default), 1 = SET, 2 = POLL
 
 Attributes within repeating groups are parsed with a two-digit suffix (svid_01, svid_02, etc.).

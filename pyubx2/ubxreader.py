@@ -39,13 +39,15 @@ class UBXReader:
         :param bool ubxonly (kwarg): check for non-UBX data (False (ignore - default), True (reject))
         :param int validate (kwarg): validate checksum (VALCKSUM (1)=True (default), VALNONE (0)=False)
         :param int msgmode (kwarg): message mode (0=GET (default), 1=SET, 2=POLL)
+        :param bool parsebitfield (kwarg): parse bitfields True/false
         :raises: UBXStreamError (if mode is invalid)
 
         """
 
         ubx_only = kwargs.get("ubxonly", False)
-        msgmode = kwargs.get("msgmode", 0)
         validate = kwargs.get("validate", VALCKSUM)
+        parsebf = kwargs.get("parsebitfield", True)
+        msgmode = kwargs.get("msgmode", 0)
 
         # accept args for backwards compatibility if no kwargs
         if len(kwargs) == 0:
@@ -63,6 +65,7 @@ class UBXReader:
         self._ubx_only = ubx_only
         self._validate = validate
         self._mode = msgmode
+        self._parsebf = parsebf
 
     def __iter__(self):
         """Iterator."""
@@ -84,7 +87,7 @@ class UBXReader:
             return (raw_data, parsed_data)
         raise StopIteration
 
-    def read(self) -> (bytes, UBXMessage):
+    def read(self) -> tuple:
         """
         Read the binary data from the stream buffer.
 
@@ -126,7 +129,10 @@ class UBXReader:
                 cksum = byten[leni : leni + 2]
                 raw_data = ubt.UBX_HDR + clsid + msgid + lenb + plb + cksum
                 parsed_data = self.parse(
-                    raw_data, validate=self._validate, msgmode=self._mode
+                    raw_data,
+                    validate=self._validate,
+                    msgmode=self._mode,
+                    parsebitfield=self._parsebf,
                 )
                 reading = False
             else:  # it's not a UBX message (NMEA or something else)
@@ -161,6 +167,7 @@ class UBXReader:
 
         msgmode = kwargs.get("msgmode", ubt.GET)
         validate = kwargs.get("validate", VALCKSUM)
+        parsebf = kwargs.get("parsebitfield", True)
 
         # accept args for backwards compatibility if no kwargs
         if len(kwargs) == 0:
@@ -209,7 +216,9 @@ class UBXReader:
         try:
             if payload is None:
                 return UBXMessage(clsid, msgid, msgmode)
-            return UBXMessage(clsid, msgid, msgmode, payload=payload)
+            return UBXMessage(
+                clsid, msgid, msgmode, payload=payload, parsebitfield=parsebf
+            )
         except KeyError as err:
             modestr = ["GET", "SET", "POLL"][msgmode]
             raise ube.UBXParseError(

@@ -1,5 +1,11 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.1.1
+
+ENHANCEMENTS:
+
+1. Added new optional boolean keyword argument `parsebitfield` to `UBXReader.read()` and `UBXReader.parse()` methods. If True (the default), `pyubx2` parses bitfields (type 'X' attributes) as individual bit flags. If False, bitfields are left as single byte sequences (i.e. same behaviour as `pyubx2` <=1.0.16>)
+
 ### RELEASE 1.1.0
 
 ENHANCEMENTS:

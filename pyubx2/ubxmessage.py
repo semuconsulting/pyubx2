@@ -9,7 +9,6 @@ Created on 26 Sep 2020
 """
 # pylint: disable=invalid-name
 
-from posixpath import expanduser
 import struct
 import pyubx2.exceptions as ube
 import pyubx2.ubxtypes_core as ubt
@@ -56,6 +55,8 @@ class UBXMessage:
         self._payload = b""
         self._length = b""
         self._checksum = b""
+
+        self._parsebf = kwargs.get("parsebitfield", True)  # parsing bitfields Y/N?
 
         if msgmode not in (0, 1, 2):
             raise ube.UBXMessageError(f"Invalid msgmode {msgmode} - must be 0, 1 or 2.")
@@ -137,9 +138,14 @@ class UBXMessage:
         ):  # repeating group of attributes or subdefined bitfield
             numr, attd = att
             if numr in (ubt.X1, ubt.X2, ubt.X4, ubt.X6, ubt.X8):  # bitfield
-                (offset, index) = self._set_attribute_bitfield(
-                    att, offset, index, **kwargs
-                )
+                if self._parsebf:  # if we're parsing bitfields
+                    (offset, index) = self._set_attribute_bitfield(
+                        att, offset, index, **kwargs
+                    )
+                else:  # treat bitfield as a single byte array
+                    offset = self._set_attribute_single(
+                        numr, offset, key, index, **kwargs
+                    )
             else:  # repeating group of attributes
                 (offset, index) = self._set_attribute_group(
                     att, offset, index, **kwargs
