@@ -68,6 +68,11 @@ deactivate
 | SET (0x01)  | command input *to* the receiver          | `ubxtypes_set.py`  |
 | POLL (0x02) | query input *to* the receiver            | `ubxtypes_poll.py` |
 
+If you're simply streaming and/or parsing the *output* of a UBX receiver, the mode is implicitly GET. If you want to create
+or parse an *input* (command or query) message, you must set the mode parameter to SET or POLL.
+
+**NB:** Once instantiated, a `UBXMessage` object is immutable.
+
 ## Reading (Streaming)
 
 ```
@@ -85,13 +90,10 @@ The constructor accepts the following optional keyword arguments:
 
 * `ubxonly`: True = raise error if stream contains non-UBX data, False = ignore non-UBX data (default)
 * `validate`: VALCKSUM (0x01) = validate checksum (default), VALNONE (0x00) = ignore invalid checksum or length
-* `parsebitfield`: 1 = parse bitfields as individual bit flags (default), 0 = leave bitfields as byte sequences
+* `parsebitfield`: 1 = parse bitfields ('X' type properties) as individual bit flags, where defined (default), 0 = leave bitfields as byte sequences
 * `msgmode`: 0 = GET (default), 1 = SET, 2 = POLL
 
-Examples:
-
-* Serial input - this example will ignore any non-UBX data.
-
+Example -  Serial input. This example will ignore any non-UBX data:
 ```python
 >>> from serial import Serial
 >>> from pyubx2 import UBXReader
@@ -101,8 +103,7 @@ Examples:
 >>> print(parsed_data)
 ```
 
-* File input (using iterator) - this example will produce a `UBXStreamError` if non-UBX data is encountered.
-
+Example - File input (using iterator). This example will produce a `UBXStreamError` if non-UBX data is encountered:
 ```python
 >>> from pyubx2 import UBXReader
 >>> stream = open('ubxdata.bin', 'rb')
@@ -118,10 +119,10 @@ You can parse individual UBX messages using the static `UBXReader.parse(data)` f
 The `parse()` method accepts the following optional keyword arguments:
 
 * `validate`: VALCKSUM (0x01) = validate checksum (default), VALNONE (0x00) = ignore invalid checksum or length
-* `parsebitfield`: 1 = parse bitfields as individual bit flags (default), 0 = leave bitfields as byte sequences
+* `parsebitfield`: 1 = parse bitfields as individual bit flags, where defined (default), 0 = leave bitfields as byte sequences
 * `msgmode`: 0 = GET (default), 1 = SET, 2 = POLL
 
-Attributes within repeating groups are parsed with a two-digit suffix (svid_01, svid_02, etc.).
+Properties within repeating groups are parsed with a two-digit suffix (svid_01, svid_02, etc.).
 
 Example - output (GET) message:
 ```python
@@ -156,6 +157,8 @@ e.g. the `NAV-POSLLH` message has the following properties:
 37.844
 ```
 
+The `payload` property always contains the raw payload as bytes.
+
 ## Generating
 
 (see [below](#configinterface) for special methods relating to the UBX configuration interface)
@@ -169,18 +172,17 @@ You can create a `UBXMessage` object by calling the constructor with the followi
 2. message id (must be a valid id from `pyubx2.UBX_MSGIDS`)
 3. mode (0=GET, 1=SET, 2=POLL)
 4. (optional) a series of keyword parameters representing the message payload
+5. (optional) `parsebitfield` keyword - 1 = define bitfields as individual bits (default), 0 = define bitfields as byte sequences
 
 The 'message class' and 'message id' parameters may be passed as lookup strings, integers or bytes.
 
 The message payload can be defined via keyword parameters in one of three ways:
 1. A single keyword parameter of `payload` containing the full payload as a sequence of bytes (any other keyword parameters will be ignored). **NB** the `payload` keyword *must* be used for message types which have a 'variable by size' repeating group.
-2. One or more keyword parameters corresponding to individual message attributes. Any attributes not explicitly provided as keyword
-parameters will be set to a nominal value according to their type.
+2. One or more keyword parameters corresponding to individual message attributes. Any attributes not explicitly provided as keyword parameters will be set to a nominal value according to their type.
 3. If no keyword parameters are passed, the payload is assumed to be null.
 
-e.g. to generate a CFG-MSG which polls the 'VTG' NMEA message rate on the current port, 
+Example - to generate a CFG-MSG which polls the 'VTG' NMEA message rate on the current port, 
 any of the following constructor formats will work:
-
 ```python
 >>> from pyubx2 import UBXMessage, POLL
 >>> msg1 = UBXMessage(b'\x06', b'\x01', POLL, payload=b'\xf0\x05')
@@ -202,13 +204,11 @@ any of the following constructor formats will work:
 <UBX(CFG-MSG, msgClass=NMEA-Standard, msgID=VTG)>
 ```
 
-**NB:** Once instantiated, a `UBXMessage` object is immutable.
-
 ### Serializing
 
 The `UBXMessage` class implements a `serialize()` method to convert a `UBXMessage` object to a bytes array suitable for writing to an output stream.
 
-e.g. to create and send a `CFG-MSG` message which sets the NMEA GLL message rate to '1' on the receiver's UART1 and USB ports (assuming an output serial stream has been created as `serialOut`):
+e.g. to create and send a `CFG-MSG` message which sets the NMEA GLL message rate to '1' on the receiver's UART1 and USB ports:
 
 ```python
 >>> from serial import Serial
@@ -301,7 +301,7 @@ wildcards - see example below and UBX device interface specification for details
 >>> serialOut.write(msg.serialize())
 ```
 
-Wild card query to retrieve all CFG_MSGOUT (keyID 0x2091*) parameters (set bits 0..15 of the keyID to 0xffff):
+Wild card queries can be performed by setting bits 0..15 of the keyID to `0xffff` e.g. to retrieve all CFG_MSGOUT parameters (keyID `0x2091*`) :
 
 ```python
 >>> from pyubx2 import UBXMessage
@@ -329,14 +329,10 @@ Wild card query to retrieve all CFG_MSGOUT (keyID 0x2091*) parameters (set bits 
 The following examples can be found in the `\examples` folder:
 
 1. `ubxstreamer.py` illustrates how to implement a threaded serial reader for UBX messages using pyubx2.UBXReader. 
-
 1. `ubxfile.py` illustrates how to implement a binary file reader for UBX messages using 
 the pyubx2.UBXReader iterator function. 
-
 1. `ubxcfgval.py` illustrates how to invoke the Generation 9 configuration interface via CFG-VALSET, CF-VALDEL and CFG-VALGET messages.
-
 1. `ubxconfig.py` illustrates how to invoke legacy (pre-Generation 9) configuration messages (CFG-MSG).
-
 1. `gpxtracker.py` illustrates a simple CLI tool to convert a binary UBX data dump to a `*.gpx` track file.
 
 ## <a name="extensibility">Extensibility</a>
@@ -352,7 +348,7 @@ The UBX protocol is principally defined in the modules `ubxtypes_*.py` as a seri
      b. a string representing the name of a preceding attribute containing the number of repeats e.g. 'numCh'
      c. an 'X' attribute type ('X1', 'X2', 'X4', etc) representing a group of individual bit flags
      d. 'None' for a 'variable by size' repeating group. Only one such group is permitted per payload and it must be at the end.
-   {dict} is the nested dictionary of repeating items
+   {dict} is the nested dictionary of repeating items or bitfield group
 ```
 
 Repeating attribute names are parsed with a two-digit suffix (svid_01, svid_02, etc.). Nested repeating groups are supported. See CFG-VALGET, MON-SPAN, NAV-PVT, NAV-SAT and RXM-RLM by way of examples.
@@ -367,15 +363,17 @@ If `pyubx2` is installed using pip, a simple command line utility `ubxdump` is a
 
 Assuming the Python 3 scripts (bin) directory is in your PATH, the utility may be invoked thus (all args are optional):
 
-`ubxdump port=/dev/ttyACM1 baud=9600 timeout=5 ubxonly=0 validate=1 output=0 filter=*`
+`ubxdump port=/dev/ttyACM1 baud=9600 timeout=5 ubxonly=0 validate=1 output=0 parsebitfield=1 filter=*`
 
-Args:
+Optional Args:
 
-`output`: 0 = parsed (default), 1 = binary, 2 = hexadecimal 
-
-`ubxonly`: 0 = ignore non-UBX data (default), 1 = terminate on any non-UBX data (e.g. NMEA).
-
-`filter`: optional comma-separated list of specific UBX message identities to display e.g. `filter=NAV-PVT,NAV-CLOCK` (defaults to "*" - all UBX messages).
+- `port`: serial port e.g. `COM3` or `/dev/ttyACM1` (default `/dev/ttyACM1`)
+- `baudrate`: e.g. 9600 (default 9600)
+- `ubxonly`: 0 = ignore non-UBX data (default), 1 = terminate on any non-UBX data (e.g. NMEA).
+- `validate`: 1 = validate checksum (default), 0 = do not validate checksum
+- `output`: 0 = parsed (default), 1 = binary, 2 = hexadecimal
+- `parsebitfield`: 1 = parse bitfields as individual bits (default), 0 = leave bitfields as byte sequences
+- `filter`: comma-separated list of specific UBX message identities to display e.g. `filter=NAV-PVT,NAV-CLOCK` (defaults to "*" - all UBX messages).
 
 For help, type:
 
