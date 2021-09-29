@@ -328,6 +328,7 @@ Wild card queries can be performed by setting bits 0..15 of the keyID to `0xffff
 
 The following examples can be found in the `\examples` folder:
 
+1. `ubxoptions.py` illustrates the various options available for parsing and constructing UBX messages.
 1. `ubxstreamer.py` illustrates how to implement a threaded serial reader for UBX messages using pyubx2.UBXReader. 
 1. `ubxfile.py` illustrates how to implement a binary file reader for UBX messages using 
 the pyubx2.UBXReader iterator function. 
