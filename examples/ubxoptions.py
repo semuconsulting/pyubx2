@@ -153,7 +153,7 @@ print(
 # If we now serialize and parse this message with parsebitfield=True (the default), the individual bit flags
 # are once again rendered.
 print("\nHere is the previous CFG-GNSS message parsed with parsebitfield=True:\n")
-msg6 = UBXReader.parse(msg5.serialize(), parsebitfield=True)
+msg6 = UBXReader.parse(msg5.serialize(), msgmode=SET, parsebitfield=True)
 print(msg6)
 print("\nHere are the individual bit flags from this message:\n")
 print(f"enable={msg6.enable_01}, sigCfMask={msg6.sigCfMask_01}")
