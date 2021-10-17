@@ -254,15 +254,6 @@ class ExceptionTest(unittest.TestCase):
         with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
             UBXMessage("CFG", "CFG-NMEA", GET, filter=0, nmeaVerson=64)
 
-    def testFill_ESFMEASGET(
-        self,
-    ):  #  test ESF-MEAS GET constructor without payload keyword
-        EXPECTED_ERROR = (
-            "ESF-MEAS message definitions must include flags or payload keyword"
-        )
-        with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
-            UBXMessage("ESF", "ESF-MEAS", GET, timeTag=0, id=23)
-
     def testFill_CFGVALGET1(
         self,
     ):  #  test CFG-VALGET GET constructor without payload keyword

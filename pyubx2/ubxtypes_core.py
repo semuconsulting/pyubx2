@@ -62,6 +62,7 @@ X2 = "X002"  # Bitfield 2 bytes
 X4 = "X004"  # Bitfield 4 bytes
 X6 = "X006"  # Bitfield 6 bytes
 X8 = "X008"  # Bitfield 8 bytes
+X24 = "X024"  # Bitfield 24 bytes
 R4 = "R004"  # Float (IEEE 754) Single Precision 4 bytes
 R8 = "R008"  # Float (IEEE 754) Double Precision 8 bytes
 
@@ -101,6 +102,7 @@ VALID_TYPES = (
     X4,
     X6,
     X8,
+    X24,
 )
 
 # ***********************************************

@@ -55,6 +55,7 @@ from pyubx2.ubxtypes_core import (
     X1,
     X2,
     X4,
+    X24,
 )
 
 UBX_PAYLOADS_GET = {
@@ -367,8 +368,8 @@ UBX_PAYLOADS_GET = {
                     X4,
                     {
                         "enable": U1,
-                        "reserved1": U8,
-                        "reserved2": U7,
+                        "reserved1": U7,
+                        "reserved2": U8,
                         "sigCfMask": U8,
                         "reserved3": U8,
                     },
@@ -1021,15 +1022,39 @@ UBX_PAYLOADS_GET = {
     "ESF-ALG": {
         "iTOW": U4,
         "version": U1,
-        "flags": U1,
-        "error": U1,
+        "flags": (
+            X1,
+            {
+                "autoMntAlgOn": U1,
+                "status": U3,
+            },
+        ),
+        "error": (
+            X1,
+            {
+                "tiltAlgError": U1,
+                "yawAlgError": U1,
+                "angleError": U1,
+            },
+        ),
         "reserved1": U1,
         "yaw": U4,
         "pitch": I2,
         "roll": I2,
     },
     "ESF-INS": {
-        "bitfield0": U4,
+        "bitfield0": (
+            X4,
+            {
+                "version": U8,
+                "xAngRateValid": U1,
+                "AngRateValid": U1,
+                "zAngRateValid": U1,
+                "xAccelValid": U1,
+                "yAccelValid": U1,
+                "zAccelValid": U1,
+            },
+        ),
         "reserved1": U4,
         "iTOW": U4,
         "xAngRate": I4,
@@ -1039,28 +1064,32 @@ UBX_PAYLOADS_GET = {
         "yAccel": I4,
         "zAccel": I4,
     },
-    "ESF-MEAS": {  # this version used when bit 3 of flags = 0
+    # if calibTtagValid = 1; last dataField = calibTtag, numMeas = num of dataFields excluding calibTtag
+    "ESF-MEAS": {
         "timeTag": U4,
-        "flags": X2,
+        "flags": (
+            X2,
+            {
+                "timeMarkSent": U2,
+                "timeMarkEdge": U1,
+                "calibTtagValid": U1,
+                "reserved0": U7,
+                "numMeas": U5,
+            },
+        ),
         "id": U2,
         "group": (
             "None",
-            {  # repeating group * numMeas, which is bits 11..15 in flags
-                "data": X4,
+            {  # repeating group * numMeas
+                "data": (
+                    X4,
+                    {
+                        "dataField": X24,
+                        "dataType": U6,
+                    },
+                ),
             },
         ),
-    },
-    "ESF-MEAS-CT": {  # this version used when bit 3 of flags = 1
-        "timeTag": U4,
-        "flags": X2,
-        "id": U2,
-        "group": (
-            "ESF-MEAS-CT",  # specially named to cater for optional calibTtag attribute after repeating group
-            {  # repeating group * numMeas, which is bits 11..15 of flags
-                "data": X4,
-            },
-        ),
-        "calibTtag": U4,
     },
     "ESF-RAW": {
         "reserved1": U4,
@@ -1085,10 +1114,31 @@ UBX_PAYLOADS_GET = {
         "group": (
             "numCh",
             {  # repeating group * numCh
-                "sensStatus1": X1,
-                "sensStatus2": X2,
+                "sensStatus1": (
+                    X1,
+                    {
+                        "type": U6,
+                        "used": U1,
+                        "ready": U1,
+                    },
+                ),
+                "sensStatus2": (
+                    X2,
+                    {
+                        "calibStatus": U2,
+                        "timeStatus": U2,
+                    },
+                ),
                 "freq": U1,
-                "faults": X1,
+                "faults": (
+                    X1,
+                    {
+                        "badMeas": U1,
+                        "badTTag": U1,
+                        "missingMeas": U1,
+                        "noisyMeas": U1,
+                    },
+                ),
             },
         ),
     },
@@ -1108,7 +1158,18 @@ UBX_PAYLOADS_GET = {
         "accHeading": U4,
     },
     "HNR-INS": {
-        "bitfield0": X4,
+        "bitfield0": (
+            X4,
+            {
+                "version": U8,
+                "xAngRateValid": U1,
+                "yAngRateValid": U1,
+                "zAngRateValid": U1,
+                "xAccelValid": U1,
+                "yAccelValid": U1,
+                "zAccelValid": U1,
+            },
+        ),
         "reserved1": U4,
         "iTOW": U4,
         "xAngRate": I4,
@@ -1126,10 +1187,26 @@ UBX_PAYLOADS_GET = {
         "hour": U1,
         "min": U1,
         "second": U1,
-        "valid": X1,
+        "valid": (
+            X1,
+            {
+                "validDate": U1,
+                "validTime": U1,
+                "fullyResolved": U1,
+            },
+        ),
         "nano": I4,
         "gpsFix": U1,
-        "flags": X1,
+        "flags": (
+            X1,
+            {
+                "GPSfixOK": U1,
+                "DiffSoln": U1,
+                "WKNSET": U1,
+                "TOWSET": U1,
+                "headVehValid": U1,
+            },
+        ),
         "reserved1": U2,
         "lon": I4,
         "lat": I4,
@@ -1159,7 +1236,13 @@ UBX_PAYLOADS_GET = {
     # Messages in the LOG class are used to configure and report status information of the logging feature.
     "LOG-BATCH": {
         "version": U1,
-        "contentValid": X1,
+        "contentValid": (
+            X1,
+            {
+                "extraPvt": U1,
+                "extraOdo": U1,
+            },
+        ),
         "msgCnt": U2,
         "iTOW": U4,
         "year": U2,
@@ -1168,12 +1251,25 @@ UBX_PAYLOADS_GET = {
         "hour": U1,
         "min": U1,
         "sec": U1,
-        "valid": X1,
+        "valid": (
+            X1,
+            {
+                "validDate": U1,
+                "validTime": U1,
+            },
+        ),
         "tAcc": U4,
         "fracSec": I4,
         "fixType": U1,
-        "flags": X1,
-        "flags2": X1,
+        "flags": (
+            X1,
+            {
+                "gnssFixOK": U1,
+                "diffSoln": U1,
+                "psmState": U3,
+            },
+        ),
+        "flags2": X1,  # no definition for these bitflags
         "numSV": U1,
         "lon": I4,
         "lat": I4,
@@ -1218,7 +1314,15 @@ UBX_PAYLOADS_GET = {
         "newestMinute": U1,
         "newestSecond": U1,
         "reserved4": U1,
-        "status": X1,
+        "status": (
+            X1,
+            {
+                "reserved6": U3,
+                "recording": U1,
+                "inactive": U1,
+                "circular": U1,
+            },
+        ),
         "reserved5": U3,
     },
     "LOG-RETRIEVEPOS": {
@@ -2078,6 +2182,7 @@ UBX_PAYLOADS_GET = {
                         "almAvail": U1,
                         "anoAvail": U1,
                         "aopAvail": U1,
+                        "reserved13": U1,
                         "sbasCorrUsed": U1,
                         "rtcmCorrUsed": U1,
                         "slasCorrUsed": U1,
@@ -2475,7 +2580,12 @@ UBX_PAYLOADS_GET = {
         "reserved2": U2,
         "qzssTOWacc": U2,
         "numSv": U1,
-        "flags": U1,
+        "flags": (
+            X1,
+            {
+                "towSet": U2,
+            },
+        ),
         "reserved3": U8,
         "group": (
             "numSv",

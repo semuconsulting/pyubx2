@@ -34,7 +34,7 @@ print("\nHere is the raw CFG-GNSS message, as output by a u-blox M9N receiver:\n
 print(CFG_GNSS)
 
 # To poll this message, we could create and send a CFG-GNSS POLL message to a connected receiver:
-# serialOut = Serial("/dev/tty.usbmodem14101", 9600, timeout=5)
+# serialOut = Serial("/dev/ttyACM1", 9600, timeout=5)
 # msg0 = UBXMessage("CFG", "CFG-GNSS", POLL)
 # serialOut.write(msg0.serialize())
 
@@ -55,7 +55,7 @@ print(msg2)
 
 # Note that the raw payloads are identical; only the parsed format differs:
 print(
-    "\nThe raw payloads of these messages are identical, only the parsed format differs:\n"
+    f"\nThe raw payloads of these messages are identical, only the parsed format differs: {msg1.payload == msg2.payload}\n"
 )
 print(msg1.payload)
 print(msg2.payload)
@@ -114,6 +114,7 @@ msg4 = UBXMessage(
     sigCfMask_06=1,
 )
 print(msg4)
+print(msg4.serialize())
 
 # Verify that the two UBXMessage objects are the same:
 print(
@@ -141,7 +142,7 @@ msg5 = UBXMessage(
     gnssId_01=GPS,
     resTrkCh_01=8,
     maxTrkCh_01=16,
-    flags_01=b"\x01\x00\x01\x00",
+    flags_01=b"\x01\x00\x10\x00",
     parsebitfield=False,
 )
 print(msg5)

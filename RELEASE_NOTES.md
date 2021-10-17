@@ -1,5 +1,15 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.1.2
+
+ENHANCEMENTS:
+
+1. Add bitfield definitions for ESF External Sensor Fusion, HNR High Rate Navigation and LOG messages.
+
+FIXES:
+
+1. Fix ESF-MEAS parsing with calibTtagValid flag setting (if calibTtagValid = 1, the final dataField contains the calibTtag)
+
 ### RELEASE 1.1.1
 
 ENHANCEMENTS:

@@ -132,19 +132,23 @@ class SpecialTest(unittest.TestCase):
 
     def testFill_ESFMEASSET(
         self,
-    ):  #  test ESF_MEAS GET constructor with calibTtagValid=False (flags=0) keyword
-        EXPECTED_RESULT = "<UBX(ESF-MEAS, timeTag=0, flags=b'\\x00\\x00', id=0)>"
-        res = UBXMessage("ESF", "ESF-MEAS", GET, timeTag=0, flags=b"\x00\x00")
-        self.assertEqual(str(res), EXPECTED_RESULT)
+    ):  #  test ESF_MEAS GET constructor with calibTtagValid = 0
+        EXPECTED_RESULT = "<UBX(ESF-MEAS, timeTag=0, timeMarkSent=0, timeMarkEdge=0, calibTtagValid=0, numMeas=0, id=0)>"
+        res = UBXMessage(
+            "ESF", "ESF-MEAS", GET, timeTag=0, flags=b"\x00\x00", parsebitfield=0
+        )
+        res2 = UBXReader.parse(res.serialize())
+        self.assertEqual(str(res2), EXPECTED_RESULT)
 
     def testFill_ESFMEASSETCT(
         self,
-    ):  #  test ESF_MEAS GET constructor with calibTtagValid=True (flags=8) keyword
-        EXPECTED_RESULT = (
-            "<UBX(ESF-MEAS, timeTag=0, flags=b'\\x08\\x08', id=0, calibTtag=0)>"
+    ):  #  test ESF_MEAS GET constructor with calibTtagValid = 1
+        EXPECTED_RESULT = "<UBX(ESF-MEAS, timeTag=0, timeMarkSent=0, timeMarkEdge=0, calibTtagValid=1, numMeas=0, id=0)>"
+        res = UBXMessage(
+            "ESF", "ESF-MEAS", GET, timeTag=0, flags=b"\x18\x00", parsebitfield=0
         )
-        res = UBXMessage("ESF", "ESF-MEAS", GET, timeTag=0, flags=b"\x08\x08")
-        self.assertEqual(str(res), EXPECTED_RESULT)
+        res2 = UBXReader.parse(res.serialize())
+        self.assertEqual(str(res2), EXPECTED_RESULT)
 
     def testFill_MGABDSSET(
         self,

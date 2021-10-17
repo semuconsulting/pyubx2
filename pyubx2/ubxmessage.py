@@ -186,8 +186,6 @@ class UBXMessage:
                 rng = numr
             elif numr == "None":  # number of repeats 'variable by size'
                 rng = self._calc_num_repeats(attd, self._payload, offset, 0)
-            elif numr == "ESF-MEAS-CT":  # special handling for ESF-MEAS
-                rng = self._calc_num_repeats(attd, self._payload, offset, 4)
             else:  # number of repeats is defined in named attribute
                 rng = getattr(self, numr)
             # recursively process each group attribute,
@@ -328,7 +326,7 @@ class UBXMessage:
             mask = pow(2, atts) - 1
             val = (bitfield >> bfoffset) & mask
             # print(
-            #     f"DEBUG key = {keyr}, bitfield = {bitfield>>bfoffset:08b}, mask = {mask}, val={val}"
+            #     f"DEBUG key = {keyr}, bitfield = {bitfield:08b}, offset bitfield = {bitfield>>bfoffset:08b}, mask = {mask}, val={val}"
             # )
         else:
             val = kwargs.get(keyr, 0)
@@ -419,8 +417,6 @@ class UBXMessage:
                 pdict = self._get_rxmrlm_version(**kwargs)
             elif self._ubxClass == b"\x06" and self._ubxID == b"\x17":  # CFG-NMEA
                 pdict = self._get_cfgnmea_version(**kwargs)
-            elif self._ubxClass == b"\x10" and self._ubxID == b"\x02":  # ESF-MEAS
-                pdict = self._get_esfmeas_version(**kwargs)
             else:
                 pdict = ubg.UBX_PAYLOADS_GET[self.identity]
         return pdict
@@ -562,35 +558,6 @@ class UBXMessage:
             pdict = ubg.UBX_PAYLOADS_GET["CFG-NMEA"]
         return pdict
 
-    def _get_esfmeas_version(self, **kwargs) -> dict:
-        """
-        Select appropriate payload definition version for
-        ESF-MEAS message by checking bit 3 (calibTtagValid)
-        in the'flags' attribute.
-
-        :param kwargs: optional payload key/value pairs
-        :return: dictionary representing payload definition
-        :rtype: dict
-        :raises: UBXMessageError
-
-        """
-        # pylint: disable=no-self-use
-
-        if "flags" in kwargs:
-            flags = kwargs["flags"]
-        elif "payload" in kwargs:
-            flags = kwargs["payload"][4:6]
-        else:
-            raise ube.UBXMessageError(
-                "ESF-MEAS message definitions must include flags or payload keyword"
-            )
-        calibTtagValid = get_bits(flags, 0b00001000)  # get bit 3 in flags
-        if calibTtagValid:
-            pdict = ubg.UBX_PAYLOADS_GET["ESF-MEAS-CT"]
-        else:
-            pdict = ubg.UBX_PAYLOADS_GET["ESF-MEAS"]
-        return pdict
-
     def _calc_num_repeats(
         self, attd: dict, payload: bytes, offset: int, offsetend: int = 0
     ) -> int:
@@ -614,6 +581,8 @@ class UBXMessage:
         lenpayload = len(payload) - offset - offsetend
         lengroup = 0
         for _, val in attd.items():
+            if isinstance(val, tuple):
+                val, _ = val
             lengroup += attsiz(val)
         return int(lenpayload / lengroup)
 
