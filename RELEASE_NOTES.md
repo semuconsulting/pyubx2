@@ -8,7 +8,8 @@ ENHANCEMENTS:
 
 FIXES:
 
-1. Fix ESF-MEAS parsing with calibTtagValid flag setting (if calibTtagValid = 1, the final dataField contains the calibTtag)
+1. Fix ESF-MEAS parsing with calibTtagValid flag setting (if calibTtagValid = 1, the final dataField contains the calibTtag).
+2. Fix NAV-SAT 'flags' bitfield parsing.
 
 ### RELEASE 1.1.1
 
