@@ -1057,7 +1057,6 @@ UBX_PAYLOADS_SET = {
     "LOG-FINDTIME": {
         "version": U1,
         "type": U1,
-        "reserved0": U2,
         "year": U2,
         "month": U1,
         "day": U1,
