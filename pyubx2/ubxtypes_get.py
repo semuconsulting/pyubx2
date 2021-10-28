@@ -2784,7 +2784,13 @@ UBX_PAYLOADS_GET = {
             "numMeas",
             {  # repeating group * numMeas
                 "sourceId": U1,
-                "flags": X1,
+                "flags": (
+                    X1,
+                    {
+                        "freqValid": U1,
+                        "phaseValid": U1,
+                    },
+                ),
                 "phaseOffsetFr": I1,
                 "phaseUncFrac": U1,
                 "phaseOffset": I4,
@@ -2808,7 +2814,18 @@ UBX_PAYLOADS_GET = {
     },
     "TIM-TM2": {
         "ch": U1,
-        "flags": X1,
+        "flags": (
+            X1,
+            {
+                "mode": U1,
+                "run": U1,
+                "newFallingEdge": U1,
+                "timeBase": U2,
+                "utc": U1,
+                "time": U1,
+                "newRisingEdge": U1,
+            },
+        ),
         "count": U2,
         "wnR": U2,
         "wnF": U2,
@@ -2822,7 +2839,23 @@ UBX_PAYLOADS_GET = {
         "version": U1,
         "gnssId": U1,
         "reserved11": U2,
-        "flags": X4,
+        "flags": (
+            X4,
+            {
+                "leapNow": U1,
+                "leapSoon": U1,
+                "leapPositive": U1,
+                "timeInLimit": U1,
+                "intOscInLimit": U1,
+                "extOscInLimit": U1,
+                "gnssTimeValid": U1,
+                "UTCTimeValid": U1,
+                "DiscSrc": U3,
+                "raim": U1,
+                "cohPulse": U1,
+                "lockedPulse": U1,
+            },
+        ),
         "year": U2,
         "month": U1,
         "day": U1,
@@ -2846,8 +2879,22 @@ UBX_PAYLOADS_GET = {
         "towSubMS": U4,
         "qErr": I4,
         "week": U2,
-        "flags": X1,
-        "reserved1": U1,
+        "flags": (
+            X1,
+            {
+                "timeBase": U1,
+                "utc": U1,
+                "raim": U2,
+                "qErrInvalid": U1,
+            },
+        ),
+        "refinfo": (
+            X1,
+            {
+                "timeRefGnss": U4,
+                "utcStandard": U4,
+            },
+        ),
     },
     "TIM-VCOCAL": {
         "type": U1,
@@ -2863,7 +2910,12 @@ UBX_PAYLOADS_GET = {
         "deltaMs": I4,
         "deltaNs": I4,
         "wno": U2,
-        "flags": X1,
+        "flags": (
+            X1,
+            {
+                "src": U3,
+            },
+        ),
         "reserved1": U1,
     },
     # ********************************************************************
