@@ -36,10 +36,10 @@ class UBXReader:
         """Constructor.
 
         :param stream stream: input data stream
-        :param bool ubxonly (kwarg): check for non-UBX data (False (ignore - default), True (reject))
-        :param int validate (kwarg): validate checksum (VALCKSUM (1)=True (default), VALNONE (0)=False)
-        :param int msgmode (kwarg): message mode (0=GET (default), 1=SET, 2=POLL)
-        :param bool parsebitfield (kwarg): parse bitfields True/false
+        :param bool ubxonly: (kwarg) check for non-UBX data (False (ignore - default), True (reject))
+        :param int validate: (kwarg) validate checksum (VALCKSUM (1)=True (default), VALNONE (0)=False)
+        :param int msgmode: (kwarg) message mode (0=GET (default), 1=SET, 2=POLL)
+        :param bool parsebitfield: (kwarg) parse bitfields True/false
         :raises: UBXStreamError (if mode is invalid)
 
         """
@@ -72,7 +72,7 @@ class UBXReader:
 
         return self
 
-    def __next__(self) -> (bytes, UBXMessage):
+    def __next__(self) -> tuple:
         """
         Return next item in iteration.
 
@@ -157,8 +157,8 @@ class UBXReader:
         (the UBXMessage constructor can calculate and assign its own values anyway).
 
         :param bytes message: binary message to parse
-        :param int validate (kwarg): validate checksum (VALCKSUM (1)=True (default), VALNONE (0)=False)
-        :param int msgmode (kwarg): message mode (0=GET (default), 1=SET, 2=POLL)
+        :param int validate: (kwarg) validate checksum (VALCKSUM (1)=True (default), VALNONE (0)=False)
+        :param int msgmode: (kwarg) message mode (0=GET (default), 1=SET, 2=POLL)
         :return: UBXMessage object
         :rtype: UBXMessage
         :raises: UBXParseError (if data stream contains invalid data or unknown message type)
