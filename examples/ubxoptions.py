@@ -114,7 +114,6 @@ msg4 = UBXMessage(
     sigCfMask_06=1,
 )
 print(msg4)
-print(msg4.serialize())
 
 # Verify that the two UBXMessage objects are the same:
 print(

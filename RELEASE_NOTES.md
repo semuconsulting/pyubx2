@@ -1,5 +1,16 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.1.3
+
+ENHANCEMENTS:
+
+1. Extend POLL message types to include NAV - thanks for Nerolf05 for contribution.
+2. Add bitfield definitions for TIM (timing) GET messages.
+
+FIXES:
+
+1. Fix payload for LOG-FINDTIME SET message (incorrect u-blox documentation) - thanks to qcabrol for contribution.
+
 ### RELEASE 1.1.2
 
 ENHANCEMENTS:
