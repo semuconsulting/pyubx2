@@ -9,7 +9,7 @@ Information sourced from u-blox Interface Specifications © 2013-2021, u-blox AG
 :author: semuadmin
 """
 
-UBX_HDR = b"\xB5\x62"
+UBX_HDR = b"\xb5\x62"
 INPUT = 1
 OUTPUT = 0
 GET = 0

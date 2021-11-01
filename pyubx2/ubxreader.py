@@ -108,11 +108,11 @@ class UBXReader:
             is_nmea = False
             if len(byte1) < 1:  # EOF
                 break
-            if byte1 == b"\xb5":
+            if byte1 == ubt.UBX_HDR[0:1]:
                 byte2 = self._stream.read(1)
                 if len(byte2) < 1:  # EOF
                     break
-                if byte2 == b"\x62":
+                if byte2 == ubt.UBX_HDR[1:2]:
                     is_ubx = True
             if is_ubx:  # it's a UBX message
                 byten = self._stream.read(4)
