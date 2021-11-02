@@ -171,6 +171,7 @@ UBX_PAYLOADS_SET = {
                 "devBBR": U1,
                 "devFlash": U1,
                 "devEEPROM": U1,
+                "reserved1": U1,
                 "devSpiFlash": U1,
             },
         ),
