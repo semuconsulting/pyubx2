@@ -727,7 +727,13 @@ UBX_PAYLOADS_GET = {
                 "outRTCM3": U1,
             },
         ),
-        "reserved4": U2,
+        "flags": (
+            X2,
+            {
+                "reserved10": U1,
+                "extendedTxTimeout": U1,
+            },
+        ),
         "reserved5": U2,
     },
     "CFG-PWR": {"version": U1, "reserved1": U3, "state": U4},
