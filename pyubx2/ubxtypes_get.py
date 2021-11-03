@@ -2296,12 +2296,12 @@ UBX_PAYLOADS_GET = {
         "flags": (
             X1,
             {
-                "GPSfixOK": U1,
-                "DiffSoln": U1,
-                "WKNSET": U1,
-                "TOWSET": U1,  
+                "gpsfixOK": U1,
+                "diffSoln": U1,
+                "wknSet": U1,
+                "towSet": U1,
             },
-        )
+        ),
         "ecefX": I4,
         "ecefY": I4,
         "ecefZ": I4,
