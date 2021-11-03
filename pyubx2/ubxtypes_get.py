@@ -2293,7 +2293,15 @@ UBX_PAYLOADS_GET = {
         "fTOW": I4,
         "week": I2,
         "gpsFix": U1,
-        "flags": X1,  # TODO
+        "flags": (
+            X1,
+            {
+                "GPSfixOK": U1,
+                "DiffSoln": U1,
+                "WKNSET": U1,
+                "TOWSET": U1,  
+            },
+        )
         "ecefX": I4,
         "ecefY": I4,
         "ecefZ": I4,
