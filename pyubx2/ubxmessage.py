@@ -23,7 +23,6 @@ from pyubx2.ubxhelpers import (
     itow2utc,
     gnss2str,
     key_from_val,
-    get_bits,
 )
 
 
@@ -136,7 +135,7 @@ class UBXMessage:
         if isinstance(
             att, tuple
         ):  # repeating group of attributes or subdefined bitfield
-            numr, attd = att
+            numr, _ = att
             if numr in (ubt.X1, ubt.X2, ubt.X4, ubt.X6, ubt.X8):  # bitfield
                 if self._parsebf:  # if we're parsing bitfields
                     (offset, index) = self._set_attribute_bitfield(
@@ -222,7 +221,7 @@ class UBXMessage:
         keyr = key
         for i in index:  # one index for each nested level
             if i > 0:
-                keyr = keyr + "_{0:0=2d}".format(i)
+                keyr = keyr + f"_{i:02d}"
 
         # determine attribute size (bytes)
         if att == ubt.CH:  # variable length string
@@ -318,16 +317,13 @@ class UBXMessage:
         keyr = key
         for i in index:  # one index for each nested level
             if i > 0:
-                keyr = keyr + "_{0:0=2d}".format(i)
+                keyr = keyr + f"_{i:02d}"
 
         atts = attsiz(keyt)  # determine flag size in bits
 
         if "payload" in kwargs:
             mask = pow(2, atts) - 1
             val = (bitfield >> bfoffset) & mask
-            # print(
-            #     f"DEBUG key = {keyr}, bitfield = {bitfield:08b}, offset bitfield = {bitfield>>bfoffset:08b}, mask = {mask}, val={val}"
-            # )
         else:
             val = kwargs.get(keyr, 0)
             bitfield = bitfield | (val << bfoffset)

@@ -14,7 +14,7 @@ Information sourced from u-blox Interface Specifications © 2013-2021, u-blox AG
 
 :author: semuadmin
 """
-# pylint: disable=too-many-lines, line-too-long
+# pylint: disable=too-many-lines, line-too-long, duplicate-code
 
 from pyubx2.ubxtypes_core import U1, U2, U4
 
