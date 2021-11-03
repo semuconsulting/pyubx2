@@ -26,6 +26,8 @@ GNSSLIST = {
     6: "GLONASS",
 }
 
+GNSSLISTSTRING = dict((v, k) for k, v in GNSSLIST.items())
+
 # **************************************************
 # THESE ARE THE UBX PROTOCOL PAYLOAD ATTRIBUTE TYPES
 # **************************************************
@@ -128,6 +130,8 @@ UBX_CLASSES = {
     b"\xf5": "RTCM",  # RTCM Messages: Used for message rate configuration via CFG-MSG
     b"\x66": "FOO",  # Dummy message class for testing
 }
+
+UBX_CLASSES_STRING = dict((v, k) for k, v in UBX_CLASSES.items())
 
 # ***************************************************************************
 # THESE ARE THE UBX PROTOCOL CORE MESSAGE IDENTITIES
@@ -402,3 +406,5 @@ UBX_MSGIDS = {
     # ***************************************************************
     b"\x66\x66": "FOO-BAR",
 }
+
+UBX_MSGIDS_STRING = dict((v, k) for k, v in UBX_MSGIDS.items())

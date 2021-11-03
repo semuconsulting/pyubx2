@@ -794,8 +794,8 @@ class UBXMessage:
         """
 
         try:
-            clsid = key_from_val(ubt.UBX_CLASSES, msgClass)
-            msgid = key_from_val(ubt.UBX_MSGIDS, msgID)[1:2]
+            clsid = ubt.UBX_CLASSES_STRING[msgClass]
+            msgid = ubt.UBX_MSGIDS_STRING[msgID][1:2]
             return (clsid, msgid)
         except KeyError as err:
             raise ube.UBXMessageError(

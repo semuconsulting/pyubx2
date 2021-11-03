@@ -28,7 +28,7 @@ from sys import platform
 from time import sleep
 from serial import Serial, SerialException, SerialTimeoutException
 
-from pyubx2 import UBXMessage, SET, UBX_MSGIDS
+from pyubx2 import UBXMessage, SET, UBX_MSGIDS_STRING
 import pyubx2.exceptions as ube
 
 
@@ -91,9 +91,9 @@ class UBXSetter:
             msgs = []
 
             # compile all the UBX-NAV config message types
-            for key, val in UBX_MSGIDS.items():
-                if val[0:3] == "NAV":
-                    msgs.append(key)
+            for key, val in UBX_MSGIDS_STRING.items():
+                if key[0:3] == "NAV":
+                    msgs.append(val)
 
             # send each UBX-NAV config message in turn
             for msgtype in msgs:
