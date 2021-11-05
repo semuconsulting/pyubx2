@@ -80,16 +80,15 @@ def benchmark():
         f"\nTest cycles: {CYCLES:,}",
         f"\nTxn per cycle: {txnc:,}",
     )
-    print("\nExecuting benchmark test...")
 
     start = datetime.now()
+    print(f"\nBenchmark test started at {start} ...")
     for n in range(CYCLES):
         for i, msg in enumerate(UBXMESSAGES):
             res = UBXReader.parse(msg)
     end = datetime.now()
+    print(f"Benchmark test ended at {end}.")
     duration = (end - start).total_seconds()
-
-    print("\nBenchmark test completed.")
 
     print(
         f"\n{txnt:,} messages processed in {duration:,.3f} seconds = {txnt/duration:,.2f} txns/second.\n"
