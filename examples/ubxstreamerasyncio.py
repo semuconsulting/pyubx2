@@ -67,13 +67,14 @@ CFGMESSAGES = [
     "CFG-USB",
 ]
 
+
 class GNSSDataReader(asyncio.Protocol):
-    '''
+    """
     This class is implementing asyncio.Protocol functionality to read data from
     GNSS device once ready.
-    '''
+    """
 
-    reading = b''
+    reading = b""
     HEADERLEN = 6
     TRAILINGMSGLEN = 2
     cb = None
@@ -83,34 +84,34 @@ class GNSSDataReader(asyncio.Protocol):
         self.readerReady = threading.Event()
 
     def setCb(self, cb):
-        '''
+        """
         Assign cb function for parsed data.
-        '''
+        """
 
         self.cb = cb
 
     def connection_made(self, transport):
-        '''
+        """
         When connection is made set flag to inform app that we are ready to read data.
-        '''
+        """
 
         self.transport = transport
-        print('port opened', transport)
+        print("port opened", transport)
         transport.serial.rts = False  # You can manipulate Serial object via transport
         self.readerReady.set()
 
     def data_received(self, data):
-        '''
+        """
         On data received from transport serialize and parse them.
-        '''
+        """
 
         global DEBUG_LOG
 
         try:
             while True:
-                #print(f'Data received from {self.transport.serial.port}: {data.hex()}')
+                # print(f'Data received from {self.transport.serial.port}: {data.hex()}')
 
-                #concatenate msg
+                # concatenate msg
                 if len(self.reading) == 0:
                     for byteIdx in range(len(data)):
                         if data[byteIdx] == pyubx2.UBX_HDR[0]:
@@ -119,10 +120,14 @@ class GNSSDataReader(asyncio.Protocol):
                 else:
                     self.reading += data
 
-                redingLen = len(self.reading) # get new size of self.reading
+                redingLen = len(self.reading)  # get new size of self.reading
                 if redingLen >= self.HEADERLEN:
                     if self.reading[1] == pyubx2.UBX_HDR[1]:
-                        rawMsgSize = int.from_bytes(self.reading[4:6], "little", signed=False)+self.TRAILINGMSGLEN+self.HEADERLEN
+                        rawMsgSize = (
+                            int.from_bytes(self.reading[4:6], "little", signed=False)
+                            + self.TRAILINGMSGLEN
+                            + self.HEADERLEN
+                        )
                         if redingLen >= rawMsgSize:
                             rawMsg = self.reading[:rawMsgSize]
                             parsedMsg = pyubx2.ubxreader.UBXReader.parse(rawMsg)
@@ -131,7 +136,7 @@ class GNSSDataReader(asyncio.Protocol):
                             else:
                                 print(parsedMsg)
                             data = self.reading[rawMsgSize:]
-                            self.reading = b''
+                            self.reading = b""
                         else:
                             break
                     else:
@@ -140,19 +145,20 @@ class GNSSDataReader(asyncio.Protocol):
                     break
         except Exception as e:
             print(f"Something went wrong: {e} \nMSG: {self.reading}")
-            self.reading = b''
+            self.reading = b""
 
     def connection_lost(self, exc):
-        '''
+        """
         When connection is lost, set flag to inform rest of app.
-        '''
+        """
 
         self.readerReady.clear()
-        print('port closed')
+        print("port closed")
         self.transport.loop.stop()
 
     def waitForRead(self, time):
         self.readerReady.wait(time)
+
 
 class UBXStreamer:
     """
@@ -160,6 +166,7 @@ class UBXStreamer:
     """
 
     received_data_loop = None
+
     def __init__(self, port, baudrate):
         """
         Constructor.
@@ -207,12 +214,14 @@ class UBXStreamer:
         self._serial_object.write(data)
 
     def _receiveDataCb(self, rawData, parsedData):
-        '''
+        """
         receive data cb
-        '''
+        """
 
         with self.received_data_lock:
-            print(f"Parsed data{parsedData}") # can be replaced with pushing to list and reading in other thread.
+            print(
+                f"Parsed data{parsedData}"
+            )  # can be replaced with pushing to list and reading in other thread.
 
     def _read_thread(self):
         """
@@ -222,7 +231,9 @@ class UBXStreamer:
 
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        coro = serial_asyncio.create_serial_connection(loop, GNSSDataReader, self._port, baudrate=self._baudrate)
+        coro = serial_asyncio.create_serial_connection(
+            loop, GNSSDataReader, self._port, baudrate=self._baudrate
+        )
         transport, protocol = loop.run_until_complete(coro)
         self._serial_data_protocol = protocol
         self._serial_object = transport
@@ -245,12 +256,6 @@ if __name__ == "__main__":
     print("Enter baud rate (9600): ", end="")
     val = input().strip('"') or "9600"
     baud = int(val)
-    print("Enter timeout (0.1): ", end="")
-    val = input().strip('"') or "0.1"
-    timout = float(val)
-    print("Do you want to ignore any non-UBX data (y/n)? (y) ", end="")
-    val = input() or "y"
-    ubxonly = val in NO
 
     print("Instantiating UBXStreamer class...")
     ubp = UBXStreamer(prt, baud)
