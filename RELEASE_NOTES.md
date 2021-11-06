@@ -1,5 +1,15 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.1.4
+
+ENHANCEMENTS:
+1. Performance benchmarking utility `benchmark.py` added to examples.
+2. Python 3.10 support added to `setup.py` and GitHub Actions workflow.
+3. Minor code clarifications & pylint advisories.
+
+FIXES:
+1. Minor fixes to bitfield definitions in CFG-CFG, CFG-PVT and NAV-SOL - thanks to all contributors.
+
 ### RELEASE 1.1.3
 
 ENHANCEMENTS:

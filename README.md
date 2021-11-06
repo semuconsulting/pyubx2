@@ -335,6 +335,7 @@ the pyubx2.UBXReader iterator function.
 1. `ubxcfgval.py` illustrates how to invoke the Generation 9 configuration interface via CFG-VALSET, CF-VALDEL and CFG-VALGET messages.
 1. `ubxconfig.py` illustrates how to invoke legacy (pre-Generation 9) configuration messages (CFG-MSG).
 1. `gpxtracker.py` illustrates a simple CLI tool to convert a binary UBX data dump to a `*.gpx` track file.
+1. `benchmark.py` illustrates a simple performance benchmarking tool for the `pyubx2` parser.
 
 ## <a name="extensibility">Extensibility</a>
 
