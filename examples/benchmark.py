@@ -1,17 +1,22 @@
 """
-pyubx2 performance benchmarking utility
+pyubx2 Performance benchmarking utility
+
+Usage (kwargs optional): python3 benchmark.py cycles=10000
 
 Created on 5 Nov 2021
 
-@author: semuadmin
+:author: semuadmin
+:copyright: SEMU Consulting © 2021
+:license: BSD 3-Clause
 """
+# pylint: disable=line-too-long
 
+from sys import argv
 from datetime import datetime
-from platform import version, python_version
+from platform import version as osver, python_version
 from pyubx2.ubxreader import UBXReader
-from pyubx2._version import __version__ as pyubx2ver
+from pyubx2._version import __version__ as ubxver
 
-CYCLES = 10000
 UBXMESSAGES = [
     b"\xb5b\x10\x02\x18\x00\x72\xd8\x07\x00\x18\x18\x00\x00\x4b\xfd\xff\x10\x40\x02\x00\x11\x23\x28\x00\x12\x72\xd8\x07\x00\x03\x9c",
     b"\xb5b\x10\x02\x1c\x00\x6d\xd8\x07\x00\x18\x20\x00\x00\xcd\x06\x00\x0e\xe4\xfe\xff\x0d\x03\xfa\xff\x05\x09\x0b\x00\x0c\x6d\xd8\x07\x00\xee\x51",
@@ -66,35 +71,71 @@ UBXMESSAGES = [
 ]
 
 
-def benchmark():
+def progbar(i: int, lim: int, inc: int = 20):
+    """
+    Display progress bar on console.
 
-    os = version()
-    ver = python_version()
+    :param int i: iteration
+    :param int lim: max iterations
+    :param int inc: bar increments (20)
+    """
+
+    i = min(i, lim)
+    pct = int(i * inc / lim)
+    if not i % int(lim / inc):
+        print("\u2593" * pct + "\u2591" * (inc - pct), end="\r")
+
+
+def benchmark(**kwargs) -> float:
+    """
+    pyubx2 Performance benchmark test.
+
+    :param int cycles: (kwarg) number of test cycles (10,000)
+    :returns: benchmark as transactions/second
+    :rtype: float
+    :raises: UBXStreamError
+    """
+
+    cyc = int(kwargs.get("cycles", 10000))
     txnc = len(UBXMESSAGES)
-    txnt = txnc * CYCLES
+    txnt = txnc * cyc
 
     print(
-        f"\nOperating system: {os}",
-        f"\nPython version: {ver}",
-        f"\npyubx2 version: {pyubx2ver}",
-        f"\nTest cycles: {CYCLES:,}",
+        f"\nOperating system: {osver()}",
+        f"\nPython version: {python_version()}",
+        f"\npyubx2 version: {ubxver}",
+        f"\nTest cycles: {cyc:,}",
         f"\nTxn per cycle: {txnc:,}",
     )
 
     start = datetime.now()
-    print(f"\nBenchmark test started at {start} ...")
-    for n in range(CYCLES):
-        for i, msg in enumerate(UBXMESSAGES):
-            res = UBXReader.parse(msg)
+    print(f"\nBenchmark test started at {start}")
+    for i in range(cyc):
+        progbar(i, cyc)
+        for msg in UBXMESSAGES:
+            _ = UBXReader.parse(msg)
     end = datetime.now()
     print(f"Benchmark test ended at {end}.")
     duration = (end - start).total_seconds()
+    rate = round(txnt / duration, 2)
 
     print(
-        f"\n{txnt:,} messages processed in {duration:,.3f} seconds = {txnt/duration:,.2f} txns/second.\n"
+        f"\n{txnt:,} messages processed in {duration:,.3f} seconds = {rate:,.2f} txns/second.\n"
     )
+
+    return rate
+
+
+def main():
+    """
+    CLI Entry point.
+
+    args as benchmark() method
+    """
+
+    benchmark(**dict(arg.split("=") for arg in argv[1:]))
 
 
 if __name__ == "__main__":
 
-    benchmark()
+    main()
