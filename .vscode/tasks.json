@@ -157,5 +157,14 @@
                 "Sphinx HTML"],
             "problemMatcher": []
         },
+        {
+            "label": "Benchmark",
+            "type": "process",
+            "command": "${config:python.pythonPath}",
+            "args": [
+                "${workspaceFolder}/examples/benchmark.py",
+            ],
+            "problemMatcher": []
+        },
     ]
 }
