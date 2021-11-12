@@ -209,13 +209,13 @@ if __name__ == "__main__":
     baud = int(val)
     print("Enter timeout (0.1): ", end="")
     val = input().strip('"') or "0.1"
-    timout = float(val)
+    timeout = float(val)
     print("Do you want to ignore any non-UBX data (y/n)? (y) ", end="")
     val = input() or "y"
     ubxonly = val in NO
 
     print("Instantiating UBXStreamer class...")
-    ubp = UBXStreamer(prt, baud, timout, ubxonly)
+    ubp = UBXStreamer(prt, baud, timeout, ubxonly)
     print(f"Connecting to serial port {prt} at {baud} baud...")
     if ubp.connect():
         print("Starting reader thread...")
@@ -237,7 +237,7 @@ if __name__ == "__main__":
 
         # poll a selection of current navigation message rates using CFG-MSG
         print("\nPolling navigation message rates CFG-MSG...\n")
-        for msgid in UBX_MSGIDS.keys():
+        for msgid in UBX_MSGIDS:
             if msgid[0] in (1, 240, 241):  # NAV, NMEA-Standard, NMEA-Proprietary
                 msg = UBXMessage("CFG", "CFG-MSG", POLL, payload=msgid)
                 ubp.send(msg.serialize())
