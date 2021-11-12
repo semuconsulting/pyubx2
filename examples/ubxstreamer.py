@@ -209,13 +209,13 @@ if __name__ == "__main__":
     baud = int(val)
     print("Enter timeout (0.1): ", end="")
     val = input().strip('"') or "0.1"
-    timeout = float(val)
+    timout = float(val)
     print("Do you want to ignore any non-UBX data (y/n)? (y) ", end="")
     val = input() or "y"
     ubxonly = val in NO
 
     print("Instantiating UBXStreamer class...")
-    ubp = UBXStreamer(prt, baud, timeout, ubxonly)
+    ubp = UBXStreamer(prt, baud, timout, ubxonly)
     print(f"Connecting to serial port {prt} at {baud} baud...")
     if ubp.connect():
         print("Starting reader thread...")
