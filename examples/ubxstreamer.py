@@ -237,7 +237,7 @@ if __name__ == "__main__":
 
         # poll a selection of current navigation message rates using CFG-MSG
         print("\nPolling navigation message rates CFG-MSG...\n")
-        for msgid in UBX_MSGIDS.keys():
+        for msgid in UBX_MSGIDS:
             if msgid[0] in (1, 240, 241):  # NAV, NMEA-Standard, NMEA-Proprietary
                 msg = UBXMessage("CFG", "CFG-MSG", POLL, payload=msgid)
                 ubp.send(msg.serialize())

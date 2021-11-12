@@ -94,7 +94,7 @@ class UBXMessage:
             else:
                 self._payload = kwargs.get("payload", b"")
                 pdict = self._get_dict(**kwargs)  # get appropriate payload dict
-                for key in pdict.keys():  # process each attribute in dict
+                for key in pdict:  # process each attribute in dict
                     (offset, index) = self._set_attribute(
                         offset, pdict, key, index, **kwargs
                     )
@@ -191,7 +191,7 @@ class UBXMessage:
             # incrementing the payload offset and index as we go
             for i in range(rng):
                 index[-1] = i + 1
-                for key1 in attd.keys():
+                for key1 in attd:
                     (offset, index) = self._set_attribute(
                         offset, attd, key1, index, **kwargs
                     )

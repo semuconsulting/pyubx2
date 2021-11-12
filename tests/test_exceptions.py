@@ -197,17 +197,13 @@ class ExceptionTest(unittest.TestCase):
 
     def testMaxConfigDel(self):  # test for >64 configuration keys
         EXPECTED_ERROR = "Number of configuration keys 68 exceeds maximum of 64"
-        keys = []
-        for _ in range(68):
-            keys.append("CFG_TEST")
+        keys = ["CFG_TEST"] * 68
         with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
             UBXMessage.config_del(0, 0, keys)
 
     def testMaxConfigPoll(self):  # test for >64 configuration keys
         EXPECTED_ERROR = "Number of configuration keys 67 exceeds maximum of 64"
-        keys = []
-        for _ in range(67):
-            keys.append("CFG_TEST")
+        keys = ["CFG_TEST"] * 67
         with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
             UBXMessage.config_poll(0, 0, keys)
 
