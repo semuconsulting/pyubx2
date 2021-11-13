@@ -1,4 +1,3 @@
-# pylint: disable=line-too-long
 """
 UBX Protocol core globals and constants
 
@@ -110,6 +109,7 @@ VALID_TYPES = (
 # ***********************************************
 # THESE ARE THE UBX PROTOCOL CORE MESSAGE CLASSES
 # ***********************************************
+# pylint: disable=line-too-long
 UBX_CLASSES = {
     b"\x01": "NAV",  # Navigation Results: Position, Speed, Time, Acc, Heading, DOP, SVs used
     b"\x02": "RXM",  # Receiver Manager Messages: Satellite Status, RTC Status

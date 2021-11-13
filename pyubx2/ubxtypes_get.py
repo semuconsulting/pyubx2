@@ -10,8 +10,7 @@ Information sourced from u-blox Interface Specifications © 2013-2021, u-blox AG
 
 :author: semuadmin
 """
-
-# pylint: disable=too-many-lines, line-too-long, duplicate-code
+# pylint: disable=too-many-lines, line-too-long
 
 from pyubx2.ubxtypes_core import (
     A256,
@@ -2739,7 +2738,7 @@ UBX_PAYLOADS_GET = {
         "chn": U1,
         "version": U1,
         "reserved1": U1,
-        "group": ("numWords", {"dwrd": U4}),  # repeating group * numWords
+        "navdata": ("numWords", {"dwrd": U4}),  # repeating group * numWords
     },
     "RXM-SVSI": {
         "iTOW": U4,

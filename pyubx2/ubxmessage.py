@@ -72,6 +72,7 @@ class UBXMessage:
             self._ubxID = ubxID
 
         self._do_attributes(**kwargs)
+
         self._immutable = True  # once initialised, object is immutable
 
     def _do_attributes(self, **kwargs):
@@ -147,7 +148,7 @@ class UBXMessage:
                     )
             else:  # repeating group of attributes
                 (offset, index) = self._set_attribute_group(
-                    att, offset, index, **kwargs
+                    att, offset, key, index, **kwargs
                 )
         else:  # single attribute
             offset = self._set_attribute_single(att, offset, key, index, **kwargs)
@@ -155,13 +156,14 @@ class UBXMessage:
         return (offset, index)
 
     def _set_attribute_group(
-        self, att: tuple, offset: int, index: list, **kwargs
+        self, att: tuple, offset: int, key: str, index: list, **kwargs
     ) -> tuple:
         """
         Process (nested) group of attributes.
 
         :param tuple att: attribute group - tuple of (num repeats, attribute dict)
         :param int offset: payload offset in bytes
+        :param str key: group keyword
         :param list index: repeating group index array
         :param kwargs: optional payload key/value pairs
         :return: (offset, index[])
@@ -178,7 +180,7 @@ class UBXMessage:
             and self._ubxID == b"\x8b"
             and self._mode == ubt.GET
         ):
-            self._set_cfgval_attributes(offset, **kwargs)
+            self._set_attribute_cfgval(offset, **kwargs)
         else:
             # derive or retrieve number of items in group
             if isinstance(numr, int):  # fixed number of repeats
@@ -221,7 +223,7 @@ class UBXMessage:
         keyr = key
         for i in index:  # one index for each nested level
             if i > 0:
-                keyr = keyr + f"_{i:02d}"
+                keyr += f"_{i:02d}"
 
         # determine attribute size (bytes)
         if att == ubt.CH:  # variable length string
@@ -317,7 +319,7 @@ class UBXMessage:
         keyr = key
         for i in index:  # one index for each nested level
             if i > 0:
-                keyr = keyr + f"_{i:02d}"
+                keyr += f"_{i:02d}"
 
         atts = attsiz(keyt)  # determine flag size in bits
 
@@ -333,7 +335,7 @@ class UBXMessage:
         bfoffset += atts
         return (bitfield, bfoffset)
 
-    def _set_cfgval_attributes(self, offset: int, **kwargs):
+    def _set_attribute_cfgval(self, offset: int, **kwargs):
         """
         Parse CFG-VALGET payload to set of configuration
         key value pairs.

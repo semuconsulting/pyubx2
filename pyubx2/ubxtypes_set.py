@@ -1,4 +1,3 @@
-# pylint: disable=unused-import
 """
 UBX Protocol Input payload definitions
 
@@ -11,8 +10,7 @@ Information sourced from u-blox Interface Specifications © 2013-2021, u-blox AG
 
 :author: semuadmin
 """
-
-# pylint: disable=too-many-lines, line-too-long, duplicate-code
+# pylint: disable=too-many-lines, line-too-long
 
 from pyubx2.ubxtypes_core import (
     C2,

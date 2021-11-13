@@ -32,40 +32,28 @@ class UBXReader:
     UBXReader class.
     """
 
-    def __init__(self, stream, *args, **kwargs):
+    def __init__(self, stream, **kwargs):
         """Constructor.
 
         :param stream stream: input data stream
         :param bool ubxonly: (kwarg) check non-UBX data (False (ignore - default), True (reject))
         :param int validate: (kwarg) validate cksum (VALCKSUM (1)=True (default), VALNONE (0)=False)
         :param int msgmode: (kwarg) message mode (0=GET (default), 1=SET, 2=POLL)
-        :param bool parsebitfield: (kwarg) parse bitfields True/false
+        :param bool parsebitfield: (kwarg) parse bitfields True (default)/False
         :raises: UBXStreamError (if mode is invalid)
 
         """
 
-        ubx_only = kwargs.get("ubxonly", False)
-        validate = kwargs.get("validate", VALCKSUM)
-        parsebf = kwargs.get("parsebitfield", True)
-        msgmode = kwargs.get("msgmode", 0)
-
-        # accept args for backwards compatibility if no kwargs
-        if len(kwargs) == 0:
-            if len(args) > 0:
-                ubx_only = args[0]
-            if len(args) > 1:
-                msgmode = args[1]
-
-        if msgmode not in (0, 1, 2):
-            raise ube.UBXStreamError(
-                f"Invalid stream mode {msgmode} - must be 0, 1 or 2"
-            )
-
         self._stream = stream
-        self._ubx_only = ubx_only
-        self._validate = validate
-        self._mode = msgmode
-        self._parsebf = parsebf
+        self._ubx_only = kwargs.get("ubxonly", False)
+        self._validate = kwargs.get("validate", VALCKSUM)
+        self._parsebf = kwargs.get("parsebitfield", True)
+        self._msgmode = kwargs.get("msgmode", 0)
+
+        if self._msgmode not in (0, 1, 2):
+            raise ube.UBXStreamError(
+                f"Invalid stream mode {self._msgmode} - must be 0, 1 or 2"
+            )
 
     def __iter__(self):
         """Iterator."""
@@ -131,7 +119,7 @@ class UBXReader:
                 parsed_data = self.parse(
                     raw_data,
                     validate=self._validate,
-                    msgmode=self._mode,
+                    msgmode=self._msgmode,
                     parsebitfield=self._parsebf,
                 )
                 reading = False
@@ -149,7 +137,7 @@ class UBXReader:
         return (raw_data, parsed_data)
 
     @staticmethod
-    def parse(message: bytes, *args, **kwargs) -> object:
+    def parse(message: bytes, **kwargs) -> object:
         """
         Parse UBX byte stream to UBXMessage object.
 
@@ -159,6 +147,7 @@ class UBXReader:
         :param bytes message: binary message to parse
         :param int validate: (kwarg) validate cksum (VALCKSUM (1)=True (default), VALNONE (0)=False)
         :param int msgmode: (kwarg) message mode (0=GET (default), 1=SET, 2=POLL)
+        :param bool parsebitfield: (kwarg) parse bitfields True (default)/False
         :return: UBXMessage object
         :rtype: UBXMessage
         :raises: UBXParseError (if data stream contains invalid data or unknown message type)
@@ -168,13 +157,6 @@ class UBXReader:
         msgmode = kwargs.get("msgmode", ubt.GET)
         validate = kwargs.get("validate", VALCKSUM)
         parsebf = kwargs.get("parsebitfield", True)
-
-        # accept args for backwards compatibility if no kwargs
-        if len(kwargs) == 0:
-            if len(args) > 0:
-                validate = args[0]
-            if len(args) > 1:
-                msgmode = args[1]
 
         if msgmode not in (0, 1, 2):
             raise ube.UBXParseError(
@@ -217,7 +199,11 @@ class UBXReader:
             if payload is None:
                 return UBXMessage(clsid, msgid, msgmode)
             return UBXMessage(
-                clsid, msgid, msgmode, payload=payload, parsebitfield=parsebf
+                clsid,
+                msgid,
+                msgmode,
+                payload=payload,
+                parsebitfield=parsebf,
             )
         except KeyError as err:
             modestr = ["GET", "SET", "POLL"][msgmode]
