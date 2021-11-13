@@ -11,6 +11,7 @@ Created on 19 Apr 2021
 
 import unittest
 
+from pyubx2 import UBXMessage, SET, POLL
 from pyubx2.ubxtypes_configdb import UBX_CONFIG_DATABASE
 from tests.configdb_baseline import UBX_CONFIG_DATABASE_BASELINE
 
@@ -31,6 +32,36 @@ class ConfigTest(unittest.TestCase):
                 self.assertEqual(keyid, keyid2)
             except KeyError:
                 pass  # ignore any keys added since baseline
+
+    def testFill_CFGVALGET(self):  #  test CFG-VALGET POLL constructor
+        EXPECTED_RESULT = "<UBX(CFG-VALGET, version=0, layer=1, position=0, keys_01=1079115777, keys_02=1079181313)>"
+        res = UBXMessage(
+            "CFG",
+            "CFG-VALGET",
+            POLL,
+            payload=b"\x00\x01\x00\x00\x01\x00\x52\x40\x01\x00\x53\x40",
+        )
+        self.assertEqual(str(res), EXPECTED_RESULT)
+
+    def testFill_CFGVALDEL(self):  #  test CFG-VALDEL SET constructor
+        EXPECTED_RESULT = "<UBX(CFG-VALDEL, version=0, layers=b'\\x03', transaction=b'\\x00', reserved0=0, keys_01=1079115777, keys_02=16798528)>"
+        res = UBXMessage(
+            "CFG",
+            "CFG-VALDEL",
+            SET,
+            payload=b"\x00\x03\x00\x00\x01\x00\x52\x40\x40\x53\x00\x01",
+        )
+        self.assertEqual(str(res), EXPECTED_RESULT)
+
+    def testFill_CFGVALSET(self):  #  test CFG-VALSET SET constructor
+        EXPECTED_RESULT = "<UBX(CFG-VALSET, version=0, layers=b'\\x03', transaction=0, reserved0=0, cfgData_01=1, cfgData_02=0, cfgData_03=82, cfgData_04=64, cfgData_05=128, cfgData_06=37, cfgData_07=0, cfgData_08=0)>"
+        res = UBXMessage(
+            "CFG",
+            "CFG-VALSET",
+            SET,
+            payload=b"\x00\x03\x00\x00\x01\x00\x52\x40\x80\x25\x00\x00",
+        )
+        self.assertEqual(str(res), EXPECTED_RESULT)
 
 
 if __name__ == "__main__":

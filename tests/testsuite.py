@@ -1,11 +1,10 @@
-'''
+"""
 Test suite for pyubx2
 
 Created on 3 Oct 2020
 
 @author: semuadmin
-'''
-# pylint: disable=line-too-long, invalid-name, missing-docstring, no-member
+"""
 
 import os
 import sys
@@ -15,40 +14,33 @@ from importlib import import_module
 # inject local copy to avoid testing the installed version instead of the one in the repo
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 currdir = os.path.dirname(__file__)
-import pyubx2
-print(f"Testing Local Version: {pyubx2.version}")
+import pyubx2  # pylint: disable=wrong-import-position
 
-if sys.platform == "win32":
-    PORT = 'COM6'
-else:
-    PORT = '/dev/tty.usbmodem14101'
-if len(sys.argv) > 1:
-    PORT = sys.argv[1]
+print(f"Testing Local Version: {pyubx2.version}")
 
 # find files and the tests in them
 mainsuite = unittest.TestSuite()
 for modulename in [
-        os.path.splitext(x)[0]
-        for x in os.listdir(currdir or '.')
-        if x != __file__ and x.startswith("test_") and x.endswith(".py")
+    os.path.splitext(x)[0]
+    for x in os.listdir(currdir or ".")
+    if x != __file__ and x.startswith("test_") and x.endswith(".py")
 ]:
     try:
         module = import_module(modulename)
     except ImportError as err:
         print(f"skipping {modulename}, {err}")
     else:
-        module.PORT = PORT
         testsuite = unittest.findTestCases(module)
         print(f"found {testsuite.countTestCases()} tests in {modulename}")
         mainsuite.addTest(testsuite)
 
-verbosity = 1
-if '-v' in sys.argv[1:]:
-    verbosity = 2
-print('-' * 70)
+VERBOSITY = 1
+if "-v" in sys.argv[1:]:
+    VERBOSITY = 2
+print("-" * 70)
 
 # run the collected tests
-testRunner = unittest.TextTestRunner(verbosity=verbosity)
+testRunner = unittest.TextTestRunner(verbosity=VERBOSITY)
 # ~ testRunner = unittest.ConsoleTestRunner(verbosity=verbosity)
 result = testRunner.run(mainsuite)
 

@@ -194,24 +194,6 @@ class ParseTest(unittest.TestCase):
         res = UBXReader.parse(self.cfg_valget4)
         self.assertAlmostEqual(res.CFG_NAVSPG_USRDAT_ROTY, 1.23, 2)
 
-    def testESFMEAS(
-        self,
-    ):  # test parser of ESF-MEAS without calibTtag data
-        res = UBXReader.parse(self.esf_meas)
-        self.assertEqual(
-            str(res),
-            "<UBX(ESF-MEAS, timeTag=514157, timeMarkSent=0, timeMarkEdge=0, calibTtagValid=1, numMeas=4, id=0, dataField_01=1741, dataType_01=14, dataField_02=16776932, dataType_02=13, dataField_03=16775683, dataType_03=5, dataField_04=2825, dataType_04=12, dataField_05=514157, dataType_05=0)>",
-        )
-
-    def testESFMEAS2(
-        self,
-    ):  # test parser of ESF-MEAS with calibTtag data
-        res = UBXReader.parse(self.esf_meas2)
-        self.assertEqual(
-            str(res),
-            "<UBX(ESF-MEAS, timeTag=514162, timeMarkSent=0, timeMarkEdge=0, calibTtagValid=1, numMeas=3, id=0, dataField_01=16776523, dataType_01=16, dataField_02=576, dataType_02=17, dataField_03=10275, dataType_03=18, dataField_04=514162, dataType_04=0)>",
-        )
-
     def testRXMPMPV0(self):  # test parser of RXM-PMP v0 message
         rxm_pmpv0 = b"\xb5b\x02\x72\x0e\x02\x00\x00\x01\x02\x03\x04\x01\x02\x03\x04\x01\x02\x03\x04\x01\x02\x01\x01"
         for i in range(504):
@@ -229,7 +211,7 @@ class ParseTest(unittest.TestCase):
         for i in range(11):
             rxm_pmpv1 += i.to_bytes(1, "little", signed=False)
         rxm_pmpv1 += b"\x00\x20"
-        res = UBXReader.parse(rxm_pmpv1, True)
+        res = UBXReader.parse(rxm_pmpv1)
         self.assertEqual(
             str(res),
             "<UBX(RXM-PMP, version=1, reserved0=0, numBytesUserData=11, timeTag=67305985, uniqueWord1=67305985, uniqueWord2=67305985, serviceIdentifier=513, spare=0, uniqueWordBitErrors=1, fecBits=513, ebno=1, reserved1=0, userData_01=0, userData_02=1, userData_03=2, userData_04=3, userData_05=4, userData_06=5, userData_07=6, userData_08=7, userData_09=8, userData_10=9, userData_11=10)>",
@@ -260,13 +242,6 @@ class ParseTest(unittest.TestCase):
             "<UBX(RXM-RLM, version=0, type=2, svId=0, reserved0=0, beacon_01=0, beacon_02=1, beacon_03=2, beacon_04=3, beacon_05=4, beacon_06=5, beacon_07=6, beacon_08=7, message=0, params_01=0, params_02=1, params_03=2, params_04=3, params_05=4, params_06=5, params_07=6, params_08=7, params_09=8, params_10=9, params_11=10, params_12=11, reserved1=131328)>",
         )
 
-    def testMONSPAN(self):  # test parser of MON-SPAN message
-        res = UBXReader.parse(self.mon_span)
-        self.assertEqual(
-            str(res),
-            "<UBX(MON-SPAN, version=0, numRfBlocks=1, reserved0=0, spectrum_01=[45, 43, 45, 44, 43, 45, 46, 44, 45, 46, 43, 44, 43, 46, 45, 46, 46, 45, 44, 46, 46, 47, 47, 46, 47, 48, 48, 50, 48, 51, 48, 49, 55, 63, 57, 51, 57, 56, 58, 76, 93, 60, 64, 67, 59, 72, 60, 62, 61, 65, 64, 66, 68, 67, 71, 74, 78, 81, 82, 86, 89, 91, 95, 99, 103, 112, 113, 121, 122, 127, 132, 140, 144, 153, 160, 167, 174, 176, 174, 170, 167, 162, 155, 151, 150, 148, 145, 144, 142, 140, 140, 140, 139, 139, 137, 136, 137, 137, 137, 139, 136, 137, 138, 137, 138, 138, 137, 138, 139, 138, 138, 139, 139, 140, 138, 138, 138, 139, 136, 136, 135, 135, 134, 133, 133, 133, 132, 137, 132, 133, 131, 132, 132, 132, 133, 136, 135, 135, 136, 138, 138, 138, 138, 139, 142, 140, 141, 141, 143, 142, 141, 143, 142, 143, 143, 142, 143, 143, 144, 145, 146, 147, 147, 147, 149, 148, 148, 148, 148, 149, 148, 149, 147, 147, 145, 146, 147, 146, 148, 149, 148, 149, 151, 151, 152, 151, 148, 144, 141, 134, 130, 127, 121, 117, 112, 109, 103, 96, 93, 86, 82, 76, 69, 66, 63, 61, 59, 57, 57, 54, 54, 53, 52, 50, 50, 50, 48, 50, 49, 48, 49, 47, 47, 47, 45, 47, 47, 46, 45, 48, 45, 46, 45, 47, 46, 46, 45, 45, 44, 46, 45, 43, 45, 44, 45, 45, 43, 46, 44, 44, 45, 45, 44, 44, 45, 42], span_01=128000000, res_01=500000, center_01=1583400000, pga_01=12, reserved1_01=0)>",
-        )
-
     def testMONSPAN2(self):  # test parser of MON-SPAN message (repeating groups empty)
         mon_span = b"\xb5b\x0a\x31\x04\x00\x00\x00\x01\x02"
         mon_span += b"\x42\xc3"
@@ -283,17 +258,10 @@ class ParseTest(unittest.TestCase):
         )
 
     def testMGAINI2(self):  # test parser of MGA-INI input message with args
-        res = UBXReader.parse(self.mga_ini1, True, SET)
+        res = UBXReader.parse(self.mga_ini1, validate=VALCKSUM, msgmode=SET)
         self.assertEqual(
             str(res),
             "<UBX(MGA-INI-POS_LLH, type=1, version=0, reserved1=513, lat=67305985, lon=67305985, alt=67305985, posAcc=67305985)>",
-        )
-
-    def testTIMTP(self):  # test parser of TIM-TP message
-        res = UBXReader.parse(self.tim_tp)
-        self.assertEqual(
-            str(res),
-            "<UBX(TIM-TP, towMS=375941000, towSubMS=0, qErr=0, week=2181, timeBase=1, utc=1, raim=2, qErrInvalid=1, timeRefGnss=15, utcStandard=0)>",
         )
 
 

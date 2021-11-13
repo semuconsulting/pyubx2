@@ -21,6 +21,7 @@ from pyubx2 import (
     GET,
     SET,
     POLL,
+    VALCKSUM,
 )
 
 
@@ -44,7 +45,7 @@ class ExceptionTest(unittest.TestCase):
         EXPECTED_ERROR = "Message checksum (.*) invalid - should be (.*)"
         ack_ack_badck = b"\xb5b\x05\x01\x02\x00\x06\x01\x0f\x37"
         with self.assertRaisesRegex(UBXParseError, EXPECTED_ERROR):
-            UBXReader.parse(ack_ack_badck, True)
+            UBXReader.parse(ack_ack_badck, validate=VALCKSUM)
 
     def testFill_CFGNMEA(self):  # incorrect type (integer not binary)
         EXPECTED_ERROR = (
@@ -132,12 +133,12 @@ class ExceptionTest(unittest.TestCase):
     def testParseBadHdr(self):  # test for invalid message header in bytes
         EXPECTED_ERROR = "Invalid message header (.*) - should be (.*)"
         with self.assertRaisesRegex(UBXParseError, EXPECTED_ERROR):
-            UBXReader.parse(self.bad_hdr, True)
+            UBXReader.parse(self.bad_hdr)
 
     def testParseBadLen(self):  # test for invalid message length in bytes
         EXPECTED_ERROR = "Invalid payload length (.*) - should be (.*)"
         with self.assertRaisesRegex(UBXParseError, EXPECTED_ERROR):
-            UBXReader.parse(self.bad_len, True)
+            UBXReader.parse(self.bad_len)
 
     def testFill_NONEXISTCLS(self):  # non existent message class
         EXPECTED_ERROR = "Undefined message, class XXX, id XXX-YYY"
@@ -168,7 +169,7 @@ class ExceptionTest(unittest.TestCase):
     def testParse_INVALIDATTR(self):  # test for invalid message header in bytes
         EXPECTED_ERROR = "Unknown attribute type Z2"
         with self.assertRaisesRegex(UBXTypeError, EXPECTED_ERROR):
-            UBXReader.parse(self.bad_msg, True)
+            UBXReader.parse(self.bad_msg)
 
     def testImmutability(self):  # verify object is immutable after instantiation
         EXPECTED_ERROR = "Object is immutable. Updates to msgClass not permitted after initialisation."
@@ -260,18 +261,19 @@ class ExceptionTest(unittest.TestCase):
     def testParseMode(self):  # test invalid parse message mode
         EXPECTED_ERROR = "Invalid message mode 3 - must be 0, 1 or 2"
         with self.assertRaisesRegex(UBXParseError, EXPECTED_ERROR):
-            UBXReader.parse(b"\xb5b\x05\x01\x02\x00\x06\x01\x0f\x38", True, 3)
+            UBXReader.parse(
+                b"\xb5b\x05\x01\x02\x00\x06\x01\x0f\x38", validate=VALCKSUM, msgmode=3
+            )
 
     def testParseMode2(self):  # test parser with incorrect mode for input message
         EXPECTED_ERROR = "Unknown message type clsid (.*), msgid (.*), mode GET"
         with self.assertRaisesRegex(UBXParseError, EXPECTED_ERROR):
-            UBXReader.parse(self.mga_ini, True)
+            UBXReader.parse(self.mga_ini, validate=VALCKSUM)
 
     def testStreamMode(self):  # test invalid stream message mode
         EXPECTED_ERROR = "Invalid stream mode 3 - must be 0, 1 or 2"
         with self.assertRaisesRegex(UBXStreamError, EXPECTED_ERROR):
-            UBXReader(None, True, 3)
-
+            UBXReader(None, validate=VALCKSUM, msgmode=3)
 
 #     # can only be tested by temporarily removing a valid message definition
 #     def testIdentity(self):  # test for invalid message identity

@@ -30,44 +30,44 @@ class SpecialTest(unittest.TestCase):
         pass
 
     def testCfg_Rinv2(self):
-        res = UBXReader.parse(self.cfg_rinv2, True)
+        res = UBXReader.parse(self.cfg_rinv2)
         self.assertIsInstance(res, UBXMessage)
 
     def testCfg_Rinv2ID(self):
-        res = UBXReader.parse(self.cfg_rinv2, True)
+        res = UBXReader.parse(self.cfg_rinv2)
         self.assertEqual(res.identity, "CFG-RINV")
 
     def testCfg_Rinv2Str(self):
-        res = UBXReader.parse(self.cfg_rinv2, True)
+        res = UBXReader.parse(self.cfg_rinv2)
         self.assertEqual(
             str(res), "<UBX(CFG-RINV, dump=1, binary=1, data_01=7, data_02=4)>"
         )
 
     def testCfg_Rinv7(self):
-        res = UBXReader.parse(self.cfg_rinv7, True)
+        res = UBXReader.parse(self.cfg_rinv7)
         self.assertIsInstance(res, UBXMessage)
 
     def testCfg_Rinv7ID(self):
-        res = UBXReader.parse(self.cfg_rinv7, True)
+        res = UBXReader.parse(self.cfg_rinv7)
         self.assertEqual(res.identity, "CFG-RINV")
 
     def testCfg_Rinv7Str(self):
-        res = UBXReader.parse(self.cfg_rinv7, True)
+        res = UBXReader.parse(self.cfg_rinv7)
         self.assertEqual(
             str(res),
             "<UBX(CFG-RINV, dump=1, binary=1, data_01=1, data_02=2, data_03=3, data_04=4, data_05=5, data_06=6, data_07=7)>",
         )
 
     def testCfg_Rinv0(self):
-        res = UBXReader.parse(self.cfg_rinv0, True)
+        res = UBXReader.parse(self.cfg_rinv0)
         self.assertIsInstance(res, UBXMessage)
 
     def testCfg_Rinv0ID(self):
-        res = UBXReader.parse(self.cfg_rinv0, True)
+        res = UBXReader.parse(self.cfg_rinv0)
         self.assertEqual(res.identity, "CFG-RINV")
 
     def testCfg_Rinv0Str(self):
-        res = UBXReader.parse(self.cfg_rinv0, True)
+        res = UBXReader.parse(self.cfg_rinv0)
         self.assertEqual(str(res), "<UBX(CFG-RINV, dump=1, binary=1)>")
 
     def testFill_RXMPMREQSET(
