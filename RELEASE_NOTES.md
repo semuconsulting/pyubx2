@@ -1,5 +1,16 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.1.5
+
+ENHANCEMENTS:
+
+1. Legacy (pre-v1) args removed from UBXReader.parse() - only accepts kwargs now.
+2. Minor code and test case rationalisation.
+
+FIXES:
+
+1. Fix bitfield definitions in CFG-PM2 - thanks to contributors.
+
 ### RELEASE 1.1.4
 
 ENHANCEMENTS:

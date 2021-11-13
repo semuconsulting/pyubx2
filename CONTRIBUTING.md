@@ -12,12 +12,14 @@ Please help us keep our issue list small by adding fixes: #{$ISSUE_NO} to the co
 
 ## Coding conventions
 
-* This is open source software. We endeavour to make the code as transparent as possible.
-* We endeavour to keep the core code as generic and reusable as possible, and limit the amount of exceptional processing dedicated to specific UBX message types (though this is sometimes unavoidable).
-* We use Visual Studio Code for development and testing, but you are at liberty to use your preferred IDE.
-* We document the code in accordance with [Sphinx](https://www.sphinx-doc.org/en/master/) docstring conventions.
-* We use [pylint](https://pypi.org/project/pylint/) (>=2.6.0) for code analysis.
-* We use [black](https://pypi.org/project/black/) (>= 20.8) for code formatting and ask that you do the same.
+* This is open source software. Code should be as simple and transparent as possible. Favour clarity over brevity.
+* The code should be compatible with Python 3.6+.
+* The core code should be as generic and reusable as possible. We endeavour to limit the amount of processing dedicated to specific UBX message types, though this is sometimes unavoidable.
+* Avoid external library dependencies unless there's a compelling reason not to.
+* Code should be documented in accordance with [Sphinx](https://www.sphinx-doc.org/en/master/) docstring conventions.
+* Code should formatted using [black](https://pypi.org/project/black/) (>= 20.8).
+* We use and recommend Visual Studio Code with the Python extension for development and testing.
+* We use and recommend [pylint](https://pypi.org/project/pylint/) (>=2.6.0) for code analysis.
 
 ## Testing
 
@@ -35,7 +37,7 @@ We test on the following platforms using u-blox [NEO-6](https://www.u-blox.com/e
 
 ## Submitting changes
 
-Please send a [GitHub Pull Request to pyubx2](https://github.com/semuconsulting/pyubx2/pulls) with a clear list of what you've done (read more about [pull requests](https://docs.github.com/en/free-pro-team@latest/github/collaborating-with-issues-and-pull-requests/about-pull-requests)). Please follow our coding conventions (below) and make sure all of your commits are atomic (one feature per commit).
+Please send a [GitHub Pull Request to pyubx2](https://github.com/semuconsulting/pyubx2/pulls) with a clear list of what you've done (read more about [pull requests](https://docs.github.com/en/free-pro-team@latest/github/collaborating-with-issues-and-pull-requests/about-pull-requests)). Please follow our coding conventions (above) and make sure all of your commits are atomic (one feature per commit).
 
 Always write a clear log message for your commits. One-line messages are fine for small changes, but bigger changes should look like this:
 
