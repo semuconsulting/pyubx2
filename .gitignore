@@ -22,3 +22,4 @@ Pipfile*.*
 /examples/temp*.py
 /.pytest_cache/
 pylint_report.txt
+venv
