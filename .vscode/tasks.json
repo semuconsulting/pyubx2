@@ -135,6 +135,20 @@
             "problemMatcher": []
         },
         {
+            "label": "Sphinx Deploy to S3",
+            "type": "process",
+            "command": "aws",
+            "args": [
+                "s3",
+                "cp",
+                "${workspaceFolder}/docs/_build/html",
+                "s3://www.semuconsulting.com/${config:modulename}/"
+            ],
+            "dependsOrder": "sequence",
+            "dependsOn": ["Sphinx HTML"],
+            "problemMatcher": []
+        },
+        {
             "label": "Install Locally",
             "type": "process",
             "command": "${config:python.pythonPath}",
