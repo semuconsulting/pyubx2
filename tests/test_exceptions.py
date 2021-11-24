@@ -275,6 +275,7 @@ class ExceptionTest(unittest.TestCase):
         with self.assertRaisesRegex(UBXStreamError, EXPECTED_ERROR):
             UBXReader(None, validate=VALCKSUM, msgmode=3)
 
+
 #     # can only be tested by temporarily removing a valid message definition
 #     def testIdentity(self):  # test for invalid message identity
 #         EXPECTED_ERROR = "Unknown UBX message type class {'b\x77'} id {'b\x88'}"
