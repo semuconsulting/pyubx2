@@ -1,5 +1,13 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.1.6
+
+ENHANCEMENTS:
+
+FIXES:
+
+1. Add omitted configuration database items to ubxtypes_configdb.py for ZED-F9* and M10-S devices.
+
 ### RELEASE 1.1.5
 
 ENHANCEMENTS:
