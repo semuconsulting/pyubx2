@@ -415,6 +415,8 @@ class UBXMessage:
                 pdict = self._get_rxmrlm_version(**kwargs)
             elif self._ubxClass == b"\x06" and self._ubxID == b"\x17":  # CFG-NMEA
                 pdict = self._get_cfgnmea_version(**kwargs)
+            elif self._ubxClass == b"\x01" and self._ubxID == b"\x3C":  # NAV-RELPOSNED
+                pdict = self._get_relposned_version(**kwargs)
             else:
                 pdict = ubg.UBX_PAYLOADS_GET[self.identity]
         return pdict
@@ -554,6 +556,33 @@ class UBXMessage:
             pdict = ubg.UBX_PAYLOADS_GET["CFG-NMEAv0"]
         else:
             pdict = ubg.UBX_PAYLOADS_GET["CFG-NMEA"]
+        return pdict
+
+    def _get_relposned_version(self, **kwargs) -> dict:
+        """
+        Select appropriate NAV-RELPOSNED payload definition by checking
+        value of 'version' attribute (1st byte of payload).
+
+        :param kwargs: optional payload key/value pairs
+        :return: dictionary representing payload definition
+        :rtype: dict
+        :raises: UBXMessageError
+
+        """
+        # pylint: disable=no-self-use
+
+        if "version" in kwargs:
+            ver = self.val2bytes(kwargs["version"], ubt.U1)
+        elif "payload" in kwargs:
+            ver = kwargs["payload"][0:1]
+        else:
+            raise ube.UBXMessageError(
+                "NAV-RELPOSNED message definitions must include version or payload keyword"
+            )
+        if ver == b"\x00":
+            pdict = ubg.UBX_PAYLOADS_GET["NAV-RELPOSNED-V0"]
+        else:
+            pdict = ubg.UBX_PAYLOADS_GET["NAV-RELPOSNED"]
         return pdict
 
     def _calc_num_repeats(

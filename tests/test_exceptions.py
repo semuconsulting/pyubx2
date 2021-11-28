@@ -244,6 +244,15 @@ class ExceptionTest(unittest.TestCase):
         with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
             UBXMessage("RXM", "RXM-RLM", GET, version=0, svId=23)
 
+    def testFill_RELPOSNED(
+        self,
+    ):  #  test NAV_RELPOSNED GET constructor without version or payload keyword
+        EXPECTED_ERROR = (
+            "NAV-RELPOSNED message definitions must include version or payload keyword"
+        )
+        with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
+            UBXMessage("NAV", "NAV-RELPOSNED", GET, relPosN=1, relPosE=2, relPosD=3)
+
     def testFill_CFGNMEAGET(
         self,
     ):  #  test CFG-NMEA GET constructor without payload keyword
