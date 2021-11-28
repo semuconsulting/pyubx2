@@ -37,6 +37,7 @@ from pyubx2.ubxtypes_core import (
     U12,
     U20,
     U22,
+    U32,
     U64,
     X1,
     X2,
@@ -3187,6 +3188,14 @@ UBX_PAYLOADS_GET = {
     # ********************************************************************
     # Security Feature Messages
     # Messages in the SEC class are used for security features of the receiver.
+    "SEC-SIGN": {
+        "version": U1,
+        "reserved1": U3,
+        "classID": U1,
+        "messageID": U1,
+        "checksum": U2,
+        "hash": U32,
+    },
     "SEC-UNIQID": {"version": U1, "reserved1": U3, "uniqueId": U5},
     # ********************************************************************
     # Timing Messages: i.e. Time Pulse Output, Time Mark Results.
