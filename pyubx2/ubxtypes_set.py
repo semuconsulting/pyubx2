@@ -743,14 +743,26 @@ UBX_PAYLOADS_SET = {
     # Timing Messages: i.e. Time Pulse Output, Time Mark Results.
     # Messages in the TIM class are used to output timing information from the receiver, like Time Pulse and Time
     # Mark measurements.
-    "TIM-HOC": {"version": U1, "oscId": U1, "flags": U1, "reserved1": U1, "value": I4},
-    "TIM-VCOCAL": {
-        "type": U1,
+    "TIM-HOC": {
         "version": U1,
         "oscId": U1,
-        "reserved1": U3,
-        "gainUncertainty": U2,
-        "gainVco": I4,
+        "flags": U1,
+        "reserved1": U1,
+        "value": I4,
+    },
+    "TIM-SMEAS": UBX_GET["TIM-SMEAS"],
+    "TIM-VCOCAL-V0": {  # TODO alternate version
+        "type": U1,  # 0x00
+    },
+    "TIM-VCOCAL": {
+        "type": U1,  # 0x02
+        "version": U1,  # 0x00
+        "oscId": U1,
+        "srcId": U1,
+        "reserved1": U2,
+        "raw0": U2,
+        "raw1": U2,
+        "maxStepSize": U2,
     },
     # ********************************************************************
     # Firmware Update Messages: i.e. Memory/Flash erase/write, Reboot, Flash identification, etc..
