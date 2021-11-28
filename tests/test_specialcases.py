@@ -73,7 +73,7 @@ class SpecialTest(unittest.TestCase):
     def testFill_RXMPMREQSET(
         self,
     ):  #  test RXM-PMREQ SET constructor long version with payload keyword
-        EXPECTED_RESULT = "<UBX(RXM-PMREQ, version=0, reserved0=0, duration=67305985, flags=b'\\x01\\x02\\x03\\x04', wakeupSources=b'\\x01\\x02\\x03\\x04')>"
+        EXPECTED_RESULT = "<UBX(RXM-PMREQ, version=0, reserved0=0, duration=67305985, backup=0, force=0, uartrx=0, extint0=0, extint1=0, spics=0)>"
         res = UBXMessage(
             "RXM",
             "RXM-PMREQ",
@@ -85,7 +85,7 @@ class SpecialTest(unittest.TestCase):
     def testFill_RXMPMREQSET2(
         self,
     ):  #  test RXM-PMREQ SET constructor long version with version keyword
-        EXPECTED_RESULT = "<UBX(RXM-PMREQ, version=0, reserved0=0, duration=67305985, flags=b'\\x01\\x02\\x03\\x04', wakeupSources=b'\\x01\\x02\\x03\\x04')>"
+        EXPECTED_RESULT = "<UBX(RXM-PMREQ, version=0, reserved0=0, duration=67305985, backup=0, force=0, uartrx=0, extint0=0, extint1=0, spics=0)>"
         res = UBXMessage(
             "RXM",
             "RXM-PMREQ",

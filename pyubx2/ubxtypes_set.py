@@ -736,8 +736,25 @@ UBX_PAYLOADS_SET = {
         "version": U1,  # 0x00
         "reserved0": U3,
         "duration": U4,
-        "flags": X4,
-        "wakeupSources": X4,
+        "flags": (
+            X4,
+            {
+                "reserved1": U1,
+                "backup": U1,
+                "force": U1,
+            },
+        ),
+        "wakeupSources": (
+            X4,
+            {
+                "reserved2": U3,
+                "uartrx": U1,
+                "reserved3": U1,
+                "extint0": U1,
+                "extint1": U1,
+                "spics": U1,
+            },
+        ),
     },
     # ********************************************************************
     # Timing Messages: i.e. Time Pulse Output, Time Mark Results.
