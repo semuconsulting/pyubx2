@@ -9,8 +9,6 @@ Information sourced from u-blox Interface Specifications © 2013-2021, u-blox AG
 """
 
 UBX_HDR = b"\xb5\x62"
-INPUT = 1
-OUTPUT = 0
 GET = 0
 SET = 1
 POLL = 2
@@ -65,46 +63,6 @@ X8 = "X008"  # Bitfield 8 bytes
 X24 = "X024"  # Bitfield 24 bytes
 R4 = "R004"  # Float (IEEE 754) Single Precision 4 bytes
 R8 = "R008"  # Float (IEEE 754) Double Precision 8 bytes
-
-VALID_TYPES = (
-    A256,
-    C2,
-    C6,
-    C10,
-    C30,
-    C32,
-    CH,
-    E1,
-    E2,
-    E4,
-    I1,
-    I2,
-    I4,
-    I8,
-    L,
-    R4,
-    R8,
-    U1,
-    U2,
-    U3,
-    U4,
-    U5,
-    U6,
-    U7,
-    U8,
-    U9,
-    U12,
-    U20,
-    U22,
-    U40,
-    U64,
-    X1,
-    X2,
-    X4,
-    X6,
-    X8,
-    X24,
-)
 
 # ***********************************************
 # THESE ARE THE UBX PROTOCOL CORE MESSAGE CLASSES
