@@ -1798,6 +1798,16 @@ UBX_PAYLOADS_GET = {
     # Messages in the NAV class are used to output navigation data such as position, altitude and velocity in a
     # number of formats. Additionally, status flags and accuracy figures are output. The messages are generated with
     # the configured navigation/measurement rate.
+    "NAV-AOPSTATUS": {
+        "iTOW": U4,
+        "config": U1,
+        "status": U1,
+        "reserved0": U1,
+        "reserved1": U1,
+        "avail": U4,
+        "reserved2": U4,
+        "reserved3": U4,
+    },
     "NAV-ATT": {
         "iTOW": U4,
         "version": U1,
@@ -1808,16 +1818,6 @@ UBX_PAYLOADS_GET = {
         "accRoll": U4,
         "accPitch": U4,
         "accHeading": U4,
-    },
-    "NAV-AOPSTATUS": {
-        "iTOW": U4,
-        "config": U1,
-        "status": U1,
-        "reserved0": U1,
-        "reserved1": U1,
-        "avail": U4,
-        "reserved2": U4,
-        "reserved3": U4,
     },
     "NAV-CLOCK": {"iTOW": U4, "clkB": I4, "clkD": I4, "tAcc": U4, "fAcc": U4},
     "NAV-COV": {
