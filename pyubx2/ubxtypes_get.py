@@ -3158,11 +3158,31 @@ UBX_PAYLOADS_GET = {
         "week": I2,
         "numVis": U1,
         "numSV": U1,
-        "svid": U1,
-        "svFlag": X1,
-        "azim": I2,
-        "elev": I1,
-        "age": X1,
+        "group": (  # repeating group * numSV
+            "numSV",
+            {
+                "svid": U1,
+                "svFlag": (
+                    X1,
+                    {
+                        "ura": U4,
+                        "healthy": U1,
+                        "ephVal": U1,
+                        "almVal": U1,
+                        "notAvail": U1,
+                    },
+                ),
+                "azim": I2,
+                "elev": I1,
+                "age": (
+                    X1,
+                    {
+                        "almAge": U4,
+                        "ephAge": U4,
+                    },
+                ),
+            },
+        ),
     },
     # ********************************************************************
     # Security Feature Messages
