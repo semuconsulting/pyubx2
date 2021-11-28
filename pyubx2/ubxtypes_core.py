@@ -125,6 +125,7 @@ UBX_CLASSES = {
     b"\x21": "LOG",  # Logging Messages: Log creation, deletion, info and retrieval
     b"\x27": "SEC",  # Security Feature Messages
     b"\x28": "HNR",  # High Rate Navigation Messages
+    b"\x29": "NAV2",  # Navigation 2 Results: Position, Speed, Time, Acc, Heading, DOP, SVs used
     b"\xf0": "NMEA-Standard",  # Standard NMEA Messages: Used for message rate configuration via CFG-MSG
     b"\xf1": "NMEA-Proprietary",  # Proprietary NMEA Messages: Used for message rate configuration via CFG-MSG
     b"\xf5": "RTCM",  # RTCM Messages: Used for message rate configuration via CFG-MSG
@@ -329,6 +330,29 @@ UBX_MSGIDS = {
     b"\x01\x21": "NAV-TIMEUTC",
     b"\x01\x11": "NAV-VELECEF",
     b"\x01\x12": "NAV-VELNED",
+    # ***************************************************************
+    # Navigation 2 messages
+    # ***************************************************************
+    b"\x29\x22": "NAV2-CLOCK",
+    b"\x29\x36": "NAV2-COV",
+    b"\x29\x04": "NAV2-DOP",
+    b"\x29\x61": "NAV2-EOE",
+    b"\x29\x09": "NAV2-ODO",
+    b"\x29\x01": "NAV2-POSECEF",
+    b"\x29\x02": "NAV2-POSLLH",
+    b"\x29\x07": "NAV2-PVT",
+    b"\x29\x35": "NAV2-SAT",
+    b"\x29\x32": "NAV2-SBAS",
+    b"\x29\x43": "NAV2-SIG",
+    b"\x29\x03": "NAV2-STATUS",
+    b"\x29\x24": "NAV2-TIMEBDS",
+    b"\x29\x25": "NAV2-TIMEGAL",
+    b"\x29\x23": "NAV2-TIMEGLO",
+    b"\x29\x20": "NAV2-TIMEGPS",
+    b"\x29\x26": "NAV2-TIMELS",
+    b"\x29\x21": "NAV2-TIMEUTC",
+    b"\x29\x11": "NAV2-VELECEF",
+    b"\x29\x12": "NAV2-VELNED",
     # ***************************************************************
     # Receiver Management messages
     # ***************************************************************
