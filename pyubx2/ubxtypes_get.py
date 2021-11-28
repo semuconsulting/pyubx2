@@ -230,7 +230,13 @@ UBX_PAYLOADS_GET = {
     },
     "CFG-DYNSEED": {"version": U1, "reserved1": U3, "seedHi": U4, "seedLo": U4},
     "CFG-ESFALG": {
-        "bitfield": U4,
+        "bitfield": (
+            X4,
+            {
+                "version": U7,
+                "doAutoMntAlg": U1,
+            },
+        ),
         "yaw": U4,
         "pitch": I2,
         "roll": I2,
