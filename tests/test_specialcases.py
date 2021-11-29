@@ -168,7 +168,9 @@ class SpecialTest(unittest.TestCase):
             relPosE=2,
             relPosD=3,
         )
+        res2 = UBXMessage("NAV", "NAV-RELPOSNED", GET, payload=res.payload)
         self.assertEqual(str(res), EXPECTED_RESULT)
+        self.assertEqual(str(res2), EXPECTED_RESULT)
 
     def testFill_RELPOSNED_v1(self):  # test NAV-RELPOSNED V1 constructor
         EXPECTED_RESULT = "<UBX(NAV-RELPOSNED, version=1, reserved0=0, refStationID=0, iTOW=23:59:44, relPosN=1, relPosE=2, relPosD=3, relPosLength=0, relPosHeading=0, reserved1=0, relPosHPN=0, relPosHPE=0, relPosHPD=0, relPosHPLength=0, accN=0, accE=0, accD=0, accLength=0, accHeading=0, reserved2=0, gnssFixOK=0, diffSoln=0, relPosValid=0, carrSoln=0, isMoving=0, refPosMiss=0, refObsMiss=0, relPosHeadingValid=0, relPosNormalized=0)>"
@@ -181,7 +183,9 @@ class SpecialTest(unittest.TestCase):
             relPosE=2,
             relPosD=3,
         )
+        res2 = UBXMessage("NAV", "NAV-RELPOSNED", GET, payload=res.payload)
         self.assertEqual(str(res), EXPECTED_RESULT)
+        self.assertEqual(str(res2), EXPECTED_RESULT)
 
     def testConfigSet(self):  # test creation of CFG-VALSET message with single key
         cfgData = [("CFG_UART1_BAUDRATE", 9600)]
