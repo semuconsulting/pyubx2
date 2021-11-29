@@ -1,5 +1,16 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.1.7
+
+ENHANCEMENTS:
+
+1. Add NAV2 payload definitions.
+2. De-duplicate GET and SET CFG message payload definitions, and other minor streamlining.
+
+FIXES:
+
+1. Correct various payload definitions: CFG-ESFALG, NAV-RELPOSNED v0, RXM-PMREQ, RXM-SVSI, SEC-SIGN, TIM-SET.
+
 ### RELEASE 1.1.6
 
 ENHANCEMENTS:

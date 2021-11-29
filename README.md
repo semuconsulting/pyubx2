@@ -357,7 +357,7 @@ Repeating attribute names are parsed with a two-digit suffix (svid_01, svid_02, 
 
 In most cases, a UBX message's content (payload) is uniquely defined by its class, id and mode; accommodating the message simply requires the addition of an appropriate dictionary entry to the relevant `ubxtypes_*.py` module(s).
 
-However, there are a handful of message types which have multiple possible payload definitions for the same class, id and mode, with no consistency as to how to differentiate between them. Under these circumstances, it may be necessary to modify the code in `ubxmessage.py` to examine elements of the payload itself in order to determine the appropriate dictionary definition. This currently applies to CFG-NMEA, RXM-PMP, RXM-PMREQ, RXM-RLM and most MGA message types.
+However, there are a handful of message types which have multiple possible payload definitions for the same class, id and mode, with no consistency as to how to differentiate between them. Under these circumstances, it may be necessary to modify the code in `ubxmessage.py` to examine elements of the payload itself in order to determine the appropriate dictionary definition. This currently applies to CFG-NMEA, NAV-RELPOSNED, RXM-PMP, RXM-PMREQ and RXM-RLM message types.
 
 ## <a name="cli">Command Line Utility</a>
 
