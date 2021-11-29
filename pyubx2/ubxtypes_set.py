@@ -13,9 +13,6 @@ Information sourced from u-blox Interface Specifications © 2013-2021, u-blox AG
 # pylint: disable=too-many-lines, line-too-long
 
 from pyubx2.ubxtypes_core import (
-    C2,
-    C6,
-    C32,
     I1,
     I2,
     I4,
@@ -25,20 +22,13 @@ from pyubx2.ubxtypes_core import (
     U2,
     U3,
     U4,
-    U5,
-    U6,
-    U7,
-    U8,
-    U9,
-    U12,
-    U20,
-    U22,
     U40,
     U64,
     X1,
     X2,
     X4,
 )
+
 from pyubx2.ubxtypes_get import UBX_PAYLOADS_GET as UBX_GET
 
 UBX_PAYLOADS_SET = {
@@ -765,10 +755,10 @@ UBX_PAYLOADS_SET = {
         "oscId": U1,
         "flags": U1,
         "reserved1": U1,
-        "value": I4,
+        "value": [I4, 2 ** -8],
     },
     "TIM-SMEAS": UBX_GET["TIM-SMEAS"],
-    "TIM-VCOCAL-V0": {  # TODO alternate version
+    "TIM-VCOCAL-V0": {  # alternate version
         "type": U1,  # 0x00
     },
     "TIM-VCOCAL": {

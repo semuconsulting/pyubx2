@@ -203,12 +203,12 @@ class UBXMessage:
         return (offset, index)
 
     def _set_attribute_single(
-        self, att: str, offset: int, key: str, index: list, **kwargs
+        self, att: object, offset: int, key: str, index: list, **kwargs
     ) -> int:
         """
-        Set individual attribute value.
+        Set individual attribute value, applying scaling where appropriate.
 
-        :param str att: attribute type e.g. 'U002'
+        :param str/list att: EITHER attribute type string e.g. 'U002' OR, if scaled, list of [attribute type string, scaling factor float]
         :param int offset: payload offset in bytes
         :param str key: attribute keyword
         :param list index: repeating group index array
@@ -218,6 +218,12 @@ class UBXMessage:
 
         """
         # pylint: disable=no-member
+
+        # if attribute is scaled
+        scale = 1
+        if isinstance(att, list):
+            scale = att[1]
+            att = att[0]
 
         # if attribute is part of a (nested) repeating group, suffix name with index
         keyr = key
@@ -235,14 +241,19 @@ class UBXMessage:
         # use the appropriate offset of the payload
         if "payload" in kwargs:
             valb = self._payload[offset : offset + atts]
-            val = self.bytes2val(valb, att)
+            if scale == 1:
+                val = self.bytes2val(valb, att)
+            else:
+                val = round(self.bytes2val(valb, att) * scale, ubt.SCALROUND)
         else:
             # if individual keyword has been provided,
             # set to provided value, else set to
             # nominal value
             val = kwargs.get(keyr, self.nomval(att))
-
-            valb = self.val2bytes(val, att)
+            if scale == 1:
+                valb = self.val2bytes(val, att)
+            else:
+                valb = self.val2bytes(int(val / scale), att)
             self._payload += valb
 
         setattr(self, keyr, val)

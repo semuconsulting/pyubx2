@@ -23,6 +23,17 @@ GNSSLIST = {
     6: "GLONASS",
 }
 
+# scaling factor constants
+SCAL9 = 0.000000001
+SCAL7 = 0.0000001
+SCAL6 = 0.000001
+SCAL5 = 0.00001
+SCAL4 = 0.0001
+SCAL3 = 0.001
+SCAL2 = 0.01
+SCAL1 = 0.1
+SCALROUND = 8  # number of dp to round scaled attributes to
+
 # **************************************************
 # THESE ARE THE UBX PROTOCOL PAYLOAD ATTRIBUTE TYPES
 # **************************************************
@@ -50,9 +61,12 @@ U6 = "U006"  # Unsigned Int 6 bytes
 U7 = "U007"  # Unsigned Int 7 bytes
 U8 = "U008"  # Unsigned Int 8 bytes
 U9 = "U009"  # Unsigned Int 9 bytes
+U11 = "U011"  # Unsigned Int 11 bytes
 U12 = "U012"  # Unsigned Int 12 bytes
 U20 = "U020"  # Unsigned Int 20 bytes
 U22 = "U022"  # Unsigned Int 22 bytes
+U23 = "U023"  # Unsigned Int 23 bytes
+U24 = "U024"  # Unsigned Int 24 bytes
 U32 = "U032"  # Unsigned Int 32 bytes
 U40 = "U040"  # Unsigned Int 40 bytes
 U64 = "U064"  # Unsigned Int 64 bytes
@@ -270,7 +284,7 @@ UBX_MSGIDS = {
     b"\x01\x01": "NAV-POSECEF",
     b"\x01\x02": "NAV-POSLLH",
     b"\x01\x07": "NAV-PVT",
-    b"\x01\x3c": "NAV-RELPOSNED",
+    b"\x01\x3c": "NAV-RELPOSNED",  # two versions
     b"\x01\x10": "NAV-RESETODO",
     b"\x01\x35": "NAV-SAT",
     b"\x01\x32": "NAV-SBAS",

@@ -1,5 +1,40 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.2.0
+
+ENHANCEMENTS:
+
+1. SIGNIFICANT CHANGE - Scaling factors have now been added to payload definitions, obviating the need to apply manual scaling factors to pyubx2 inputs or outputs. To define a scaled attribute, define the attribute type as a list of [attribute type as string (I1, U2, etc.), scaling factor as float e.g. 1e-7].
+
+**NB:** If you're using the [PyGPSClient](https://github.com/semuconsulting/PyGPSClient) application, this will need to be updated to v1.1.2 or later to accommodate the new scaling factors in pyubx2 v1.2.0
+
+e.g.
+
+BEFORE (no scaling):
+
+```
+    "NAV-PVT": {
+        ... ,
+        "lon": I4,
+        "lat": I4,
+        ... ,
+```
+
+<UBX(NAV-PVT, ... , lon=-21602964, lat=532566912, ...)>
+
+AFTER (scale factor of 1e-7):
+
+```
+    "NAV-PVT": {
+        ... ,
+        "lon": [I4, 0.0000001],
+        "lat": [I4, 0.0000001],
+        ... ,
+```
+
+<UBX(NAV-PVT, ... , lon=-2.1602964, lat=53.2566912, ...)>
+
+
 ### RELEASE 1.1.7
 
 ENHANCEMENTS:

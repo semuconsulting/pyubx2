@@ -155,7 +155,7 @@ class FillTest(unittest.TestCase):
         self.assertEqual(str(res), EXPECTED_RESULT)
 
     def testFill_CFGDOSC1(self):  # test CFG-DOSC single repeat in group
-        EXPECTED_RESULT = "<UBX(CFG-DOSC, version=37, numOsc=1, reserved1=0, oscId_01=8, reserved2_01=0, isCalibrated_01=0, controlIf_01=0, freq_01=53, phaseOffset_01=26, withTemp_01=0, withAge_01=0, timeToTemp_01=0, reserved3_01=0, gainVco_01=4, gainUncertainty_01=123, reserved4_01=0)>"
+        EXPECTED_RESULT = "<UBX(CFG-DOSC, version=37, numOsc=1, reserved1=0, oscId_01=8, reserved2_01=0, isCalibrated_01=0, controlIf_01=0, freq_01=53, phaseOffset_01=26, withTemp_01=0, withAge_01=0, timeToTemp_01=0, reserved3_01=0, gainVco_01=4, gainUncertainty_01=0.3, reserved4_01=0)>"
         res = UBXMessage(
             "CFG",
             "CFG-DOSC",
@@ -166,14 +166,14 @@ class FillTest(unittest.TestCase):
             freq_01=53,
             phaseOffset_01=26,
             gainVco_01=4,
-            gainUncertainty_01=123,
+            gainUncertainty_01=0.3,
         )
         self.assertEqual(str(res), EXPECTED_RESULT)
 
     def testFill_CFGDOSCPARSE(
         self,
     ):  # test CFG-DOSC check that raw payload is correctly populated and parses back to original message
-        EXPECTED_RESULT = "<UBX(CFG-DOSC, version=37, numOsc=1, reserved1=0, oscId_01=8, reserved2_01=0, isCalibrated_01=0, controlIf_01=0, freq_01=53, phaseOffset_01=26, withTemp_01=0, withAge_01=0, timeToTemp_01=0, reserved3_01=0, gainVco_01=4, gainUncertainty_01=123, reserved4_01=0)>"
+        EXPECTED_RESULT = "<UBX(CFG-DOSC, version=37, numOsc=1, reserved1=0, oscId_01=8, reserved2_01=0, isCalibrated_01=0, controlIf_01=0, freq_01=53.0, phaseOffset_01=26, withTemp_01=0.0, withAge_01=0.0, timeToTemp_01=0, reserved3_01=0, gainVco_01=4.0, gainUncertainty_01=0.296875, reserved4_01=0)>"
         res = UBXMessage(
             "CFG",
             "CFG-DOSC",
@@ -184,7 +184,7 @@ class FillTest(unittest.TestCase):
             freq_01=53,
             phaseOffset_01=26,
             gainVco_01=4,
-            gainUncertainty_01=123,
+            gainUncertainty_01=0.3,
         )
         res2 = UBXReader.parse(res.serialize())
         self.assertEqual(str(res2), EXPECTED_RESULT)

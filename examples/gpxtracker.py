@@ -96,9 +96,9 @@ class UBXTracker:
                     else:
                         fix = "none"
                     self.write_gpx_trkpnt(
-                        msg.lat / 10 ** 7,
-                        msg.lon / 10 ** 7,
-                        ele=msg.hMSL / 1000,
+                        msg.lat,
+                        msg.lon,
+                        ele=msg.hMSL / 1000,  # height in meters
                         time=time,
                         fix=fix,
                     )
