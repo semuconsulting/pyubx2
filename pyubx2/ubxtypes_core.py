@@ -24,14 +24,15 @@ GNSSLIST = {
 }
 
 # scaling factor constants
-SCAL9 = 0.000000001
-SCAL7 = 0.0000001
-SCAL6 = 0.000001
-SCAL5 = 0.00001
-SCAL4 = 0.0001
-SCAL3 = 0.001
-SCAL2 = 0.01
-SCAL1 = 0.1
+SCAL9 = 1e-9  # 0.000000001
+SCAL8 = 1e-8  # 0.00000001
+SCAL7 = 1e-7  # 0.0000001
+SCAL6 = 1e-6  # 0.000001
+SCAL5 = 1e-5  # 0.00001
+SCAL4 = 1e-4  # 0.0001
+SCAL3 = 1e-3  # 0.001
+SCAL2 = 1e-2  # 0.01
+SCAL1 = 1e-1  # 0.1
 SCALROUND = 8  # number of dp to round scaled attributes to
 
 # **************************************************

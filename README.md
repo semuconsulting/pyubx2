@@ -344,7 +344,7 @@ The UBX protocol is principally defined in the modules `ubxtypes_*.py` as a seri
 ```
 1. attribute names must be unique within each message class
 2. attribute types must be one of the valid types (I1, U2, X4, etc.)
-3. if the attribute is scaled, attribute type is list of [attribute type as string (I1, U2, etc.), scaling factor as float (e.g. 10 ** -7)]
+3. if the attribute is scaled, attribute type is list of [attribute type as string (I1, U2, etc.), scaling factor as float] e.g. {"lat": [I4, 1e-7]}
 4. repeating or bitfield groups must be defined as a tuple ('numr', {dict}), where:
    'numr' is either:
      a. an integer representing a fixed number of repeats e.g. 32
@@ -358,7 +358,7 @@ Repeating attribute names are parsed with a two-digit suffix (svid_01, svid_02, 
 
 In most cases, a UBX message's content (payload) is uniquely defined by its class, id and mode; accommodating the message simply requires the addition of an appropriate dictionary entry to the relevant `ubxtypes_*.py` module(s).
 
-However, there are a handful of message types which have multiple possible payload definitions for the same class, id and mode, with no consistency as to how to differentiate between them. Under these circumstances, it may be necessary to modify the code in `ubxmessage.py` to examine elements of the payload itself in order to determine the appropriate dictionary definition. This currently applies to CFG-NMEA, NAV-RELPOSNED, RXM-PMP, RXM-PMREQ and RXM-RLM message types.
+However, there are a handful of message types which have multiple possible payload definitions for the same class, id and mode. These exceptional message types require dedicated routines in `ubxmessage.py` which examine elements of the payload itself in order to determine the appropriate dictionary definition. This currently applies to the following message types: CFG-NMEA, NAV-RELPOSNED, RXM-PMP, RXM-PMREQ, RXM-RLM, TIM-VCOCAL.
 
 ## <a name="cli">Command Line Utility</a>
 
