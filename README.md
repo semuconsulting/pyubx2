@@ -148,10 +148,10 @@ e.g. the `NAV-POSLLH` message has the following properties:
 
 ```python
 >>> print(msg)
-<UBX(NAV-POSLLH, iTOW=16:01:54, lon=-21601284, lat=526206345, height=86327, hMSL=37844, hAcc=38885, vAcc=16557)>
+<UBX(NAV-POSLLH, iTOW=16:01:54, lon=-2.1601284, lat=52.6206345, height=86327, hMSL=37844, hAcc=38885, vAcc=16557)>
 >>> msg.identity
 'NAV-POSLLH'
->>> msg.lat/10**7, msg.lon/10**7
+>>> msg.lat, msg.lon
 (52.6206345, -2.1601284)
 >>> msg.hMSL/10**3
 37.844
