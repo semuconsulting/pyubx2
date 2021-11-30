@@ -253,6 +253,15 @@ class ExceptionTest(unittest.TestCase):
         with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
             UBXMessage("NAV", "NAV-RELPOSNED", GET, relPosN=1, relPosE=2, relPosD=3)
 
+    def testFill_TIMVCOCAL(
+        self,
+    ):  #  test TIM-VCOCAL SET constructor without type or payload keyword
+        EXPECTED_ERROR = (
+            "TIM-VCOCAL SET message definitions must include type or payload keyword"
+        )
+        with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
+            UBXMessage("TIM", "TIM-VCOCAL", SET, maxStepSize=2)
+
     def testFill_CFGNMEAGET(
         self,
     ):  #  test CFG-NMEA GET constructor without payload keyword
