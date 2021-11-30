@@ -356,7 +356,7 @@ UBX_MSGIDS = {
     b"\x0d\x03": "TIM-TM2",
     b"\x0d\x12": "TIM-TOS",
     b"\x0d\x01": "TIM-TP",
-    b"\x0d\x15": "TIM-VCOCAL",
+    b"\x0d\x15": "TIM-VCOCAL",  # 2 versions of SET
     b"\x0d\x06": "TIM-VRFY",
     # ***************************************************************
     # Firmware update messages

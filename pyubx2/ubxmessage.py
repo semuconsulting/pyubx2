@@ -422,6 +422,8 @@ class UBXMessage:
                 pdict = self._get_mga_version(ubt.SET, **kwargs)
             elif self._ubxClass == b"\x02" and self._ubxID == b"\x41":  # RXM-PMREQ SET
                 pdict = self._get_rxmpmreq_version(**kwargs)
+            elif self._ubxClass == b"\x0d" and self._ubxID == b"\x15":  # TIM-VCOCAL SET
+                pdict = self._get_timvcocal_version(**kwargs)
             else:
                 pdict = ubs.UBX_PAYLOADS_SET[self.identity]
         else:  # GET message
@@ -601,6 +603,35 @@ class UBXMessage:
             pdict = ubg.UBX_PAYLOADS_GET["NAV-RELPOSNED-V0"]
         else:
             pdict = ubg.UBX_PAYLOADS_GET["NAV-RELPOSNED"]
+        return pdict
+
+    def _get_timvcocal_version(self, **kwargs) -> dict:
+        """
+        Select appropriate TIM-VCOCAL SET payload definition by checking
+        the payload length.
+
+        :param kwargs: optional payload key/value pairs
+        :return: dictionary representing payload definition
+        :rtype: dict
+        :raises: UBXMessageError
+
+        """
+        # pylint: disable=no-self-use
+
+        lpd = 1
+        typ = 0
+        if "type" in kwargs:
+            typ = kwargs["type"]
+        elif "payload" in kwargs:
+            lpd = len(kwargs["payload"])
+        else:
+            raise ube.UBXMessageError(
+                "TIM-VCOCAL SET message definitions must include type or payload keyword"
+            )
+        if lpd == 1 and typ == 0:
+            pdict = ubs.UBX_PAYLOADS_SET["TIM-VCOCAL-V0"]  # stop cal
+        else:
+            pdict = ubs.UBX_PAYLOADS_SET["TIM-VCOCAL"]  # cal
         return pdict
 
     def _calc_num_repeats(

@@ -758,7 +758,7 @@ UBX_PAYLOADS_SET = {
         "value": [I4, 2 ** -8],
     },
     "TIM-SMEAS": UBX_GET["TIM-SMEAS"],
-    "TIM-VCOCAL-V0": {  # alternate version
+    "TIM-VCOCAL-V0": {  # stop calibration
         "type": U1,  # 0x00
     },
     "TIM-VCOCAL": {
