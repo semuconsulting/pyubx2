@@ -148,7 +148,7 @@ class UBXMessage:
                     )
             else:  # repeating group of attributes
                 (offset, index) = self._set_attribute_group(
-                    att, offset, key, index, **kwargs
+                    att, offset, index, **kwargs
                 )
         else:  # single attribute
             offset = self._set_attribute_single(att, offset, key, index, **kwargs)
@@ -156,7 +156,7 @@ class UBXMessage:
         return (offset, index)
 
     def _set_attribute_group(
-        self, att: tuple, offset: int, key: str, index: list, **kwargs
+        self, att: tuple, offset: int, index: list, **kwargs
     ) -> tuple:
         """
         Process (nested) group of attributes.
@@ -208,7 +208,10 @@ class UBXMessage:
         """
         Set individual attribute value, applying scaling where appropriate.
 
-        :param str/list att: EITHER attribute type string e.g. 'U002' OR, if scaled, list of [attribute type string, scaling factor float]
+        EITHER
+        :param str att: attribute type string e.g. 'U002'
+        OR
+        :param list att: if scaled, list of [attribute type string, scaling factor float]
         :param int offset: payload offset in bytes
         :param str key: attribute keyword
         :param list index: repeating group index array
