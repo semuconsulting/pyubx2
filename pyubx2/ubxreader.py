@@ -17,7 +17,7 @@ Created on 2 Oct 2020
 """
 
 from pyubx2.ubxmessage import UBXMessage
-from pyubx2.ubxhelpers import calc_checksum
+from pyubx2.ubxhelpers import calc_checksum, val2bytes, bytes2val
 import pyubx2.ubxtypes_core as ubt
 import pyubx2.exceptions as ube
 
@@ -184,11 +184,11 @@ class UBXReader:
                 raise ube.UBXParseError(
                     (f"Invalid message header {hdr}" f" - should be {ubt.UBX_HDR}")
                 )
-            if leni != UBXMessage.bytes2val(lenb, ubt.U2):
+            if leni != bytes2val(lenb, ubt.U2):
                 raise ube.UBXParseError(
                     (
                         f"Invalid payload length {lenb}"
-                        f" - should be {UBXMessage.val2bytes(leni, ubt.U2)}"
+                        f" - should be {val2bytes(leni, ubt.U2)}"
                     )
                 )
             if ckm != ckv:

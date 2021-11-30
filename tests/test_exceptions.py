@@ -23,6 +23,10 @@ from pyubx2 import (
     POLL,
     VALCKSUM,
 )
+from pyubx2.ubxhelpers import (
+    cfgkey2name,
+    cfgname2key,
+)
 
 
 class ExceptionTest(unittest.TestCase):
@@ -186,7 +190,7 @@ class ExceptionTest(unittest.TestCase):
     def testBadCfgKey(self):  # test for invalid key
         EXPECTED_ERROR = "Undefined configuration database key 0x11223344"
         with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
-            UBXMessage.cfgkey2name(0x11223344)
+            cfgkey2name(0x11223344)
 
     def testMaxConfigSet(self):  # test for >64 configuration tuples
         EXPECTED_ERROR = "Number of configuration tuples 65 exceeds maximum of 64"

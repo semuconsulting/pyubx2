@@ -16,12 +16,17 @@ import pyubx2.ubxtypes_core as ubt
 from pyubx2.ubxhelpers import (
     calc_checksum,
     isvalid_checksum,
-    itow2utc,
-    gpsfix2str,
-    dop2str,
-    gnss2str,
     key_from_val,
     get_bits,
+    itow2utc,
+    gnss2str,
+    dop2str,
+    gpsfix2str,
+    msgstr2bytes,
+    val2bytes,
+    bytes2val,
+    cfgkey2name,
+    cfgname2key,
 )
 
 
@@ -69,7 +74,7 @@ class StaticTest(unittest.TestCase):
         ]
         for i, inp in enumerate(INPUTS):
             (val, att) = inp
-            res = UBXMessage.val2bytes(val, att)
+            res = val2bytes(val, att)
             self.assertEqual(res, EXPECTED_RESULTS[i])
 
     def testBytes2Val(self):  # test conversion of bytes to value
@@ -93,7 +98,7 @@ class StaticTest(unittest.TestCase):
         ]
         for i, inp in enumerate(INPUTS):
             (valb, att) = inp
-            res = UBXMessage.bytes2val(valb, att)
+            res = bytes2val(valb, att)
             if att == ubt.R4:
                 self.assertAlmostEqual(res, EXPECTED_RESULTS[i], 6)
             elif att == ubt.R8:
@@ -102,7 +107,7 @@ class StaticTest(unittest.TestCase):
                 self.assertEqual(res, EXPECTED_RESULTS[i])
 
     def testUBX2Bytes(self):
-        res = UBXMessage.msgstr2bytes("CFG", "CFG-MSG")
+        res = msgstr2bytes("CFG", "CFG-MSG")
         self.assertEqual(res, (b"\x06", b"\x01"))
 
     def testKeyfromVal(self):
@@ -155,15 +160,15 @@ class StaticTest(unittest.TestCase):
             i += 1
 
     def testcfgname2key(self):
-        (key, typ) = UBXMessage.cfgname2key("CFG_NMEA_PROTVER")
+        (key, typ) = cfgname2key("CFG_NMEA_PROTVER")
         self.assertEqual(key, 0x20930001)
         self.assertEqual(typ, ubt.E1)
-        (key, typ) = UBXMessage.cfgname2key("CFG_UART1_BAUDRATE")
+        (key, typ) = cfgname2key("CFG_UART1_BAUDRATE")
         self.assertEqual(key, 0x40520001)
         self.assertEqual(typ, ubt.U4)
 
     def testcfgkey2type(self):
-        (key, typ) = UBXMessage.cfgkey2name(0x20510001)
+        (key, typ) = cfgkey2name(0x20510001)
         self.assertEqual(key, "CFG_I2C_ADDRESS")
         self.assertEqual(typ, ubt.U1)
 

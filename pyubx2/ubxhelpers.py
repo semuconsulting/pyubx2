@@ -8,9 +8,14 @@ Created on 15 Dec 2020
 :copyright: SEMU Consulting © 2020
 :license: BSD 3-Clause
 """
+# pylint: disable=invalid-name
 
+import struct
 from datetime import datetime, timedelta
 from pyubx2.ubxtypes_core import GNSSLIST
+import pyubx2.ubxtypes_core as ubt
+import pyubx2.ubxtypes_configdb as ubcdb
+import pyubx2.exceptions as ube
 
 
 def calc_checksum(content: bytes) -> bytes:
@@ -196,3 +201,168 @@ def get_bits(bitfield: bytes, bitmask: int) -> int:
         bitmask = bitmask >> 1
         i += 1
     return val >> i & bitmask
+
+
+def val2bytes(val, att: str) -> bytes:
+    """
+    Convert value to bytes for given UBX attribute type.
+
+    :param object val: attribute value e.g. 25
+    :param str att: attribute type e.g. 'U004'
+    :return: attribute value as bytes
+    :rtype: bytes
+    :raises: UBXTypeError
+
+    """
+
+    if att == ubt.CH:  # single variable-length string (e.g. INF-NOTICE)
+        return val.encode("utf-8", "backslashreplace")
+    atts = attsiz(att)
+    if atttyp(att) in ("C", "X", "A"):  # byte or char
+        valb = val
+    elif atttyp(att) in ("E", "L", "U"):  # unsigned integer
+        valb = val.to_bytes(atts, byteorder="little", signed=False)
+    elif atttyp(att) == "I":  # signed integer
+        valb = val.to_bytes(atts, byteorder="little", signed=True)
+    elif att == ubt.R4:  # single precision floating point
+        valb = struct.pack("<f", val)
+    elif att == ubt.R8:  # double precision floating point
+        valb = struct.pack("<d", val)
+    else:
+        raise ube.UBXTypeError(f"Unknown attribute type {att}")
+    return valb
+
+
+def bytes2val(valb: bytes, att: str) -> object:
+    """
+    Convert bytes to value for given UBX attribute type.
+
+    :param bytes valb: attribute value in byte format e.g. b'\\\\x19\\\\x00\\\\x00\\\\x00'
+    :param str att: attribute type e.g. 'U004'
+    :return: attribute value as int, float, str or bytes
+    :rtype: object
+    :raises: UBXTypeError
+
+    """
+
+    if att == ubt.CH:  # single variable-length string (e.g. INF-NOTICE)
+        val = valb.decode("utf-8", "backslashreplace")
+    elif atttyp(att) in ("X", "C"):
+        val = valb
+    elif atttyp(att) in ("E", "L", "U"):  # unsigned integer
+        val = int.from_bytes(valb, "little", signed=False)
+    elif atttyp(att) == "I":  # signed integer
+        val = int.from_bytes(valb, "little", signed=True)
+    elif att == ubt.R4:  # single precision floating point
+        val = struct.unpack("<f", valb)[0]
+    elif att == ubt.R8:  # double precision floating point
+        val = struct.unpack("<d", valb)[0]
+    elif atttyp(att) == "A":  # array of bytes
+        atts = attsiz(att)
+        val = []
+        for i in range(atts):
+            val.append(valb[i])
+    else:
+        raise ube.UBXTypeError(f"Unknown attribute type {att}")
+    return val
+
+
+def nomval(att: str) -> object:
+    """
+    Get nominal value for given UBX attribute type.
+
+    :param str att: attribute type e.g. 'U004'
+    :return: attribute value as int, float, str or bytes
+    :rtype: object
+    :raises: UBXTypeError
+
+    """
+
+    if att == "CH":
+        val = ""
+    elif atttyp(att) in ("X", "C", "A"):
+        val = b"\x00" * attsiz(att)
+    elif atttyp(att) == "R":
+        val = 0.0
+    elif atttyp(att) in ("E", "I", "L", "U"):
+        val = 0
+    else:
+        raise ube.UBXTypeError(f"Unknown attribute type {att}")
+    return val
+
+
+def msgclass2bytes(msgClass: int, msgID: int) -> bytes:
+    """
+    Convert message class/id integers to bytes.
+
+    :param int msgClass: message class as integer e.g. 6
+    :param int msgID: message ID as integer e.g. 1
+    :return: message class as bytes e.g. b'/x06/x01'
+    :rtype: bytes
+
+    """
+
+    msgClass = val2bytes(msgClass, ubt.U1)
+    msgID = val2bytes(msgID, ubt.U1)
+    return (msgClass, msgID)
+
+
+def msgstr2bytes(msgClass: str, msgID: str) -> bytes:
+    """
+    Convert plain text UBX message class to bytes.
+
+    :param str msgClass: message class as str e.g. 'CFG'
+    :param str msgID: message ID as str e.g. 'CFG-MSG'
+    :return: message class as bytes e.g. b'/x06/x01'
+    :rtype: bytes
+    :raises: UBXMessageError
+
+    """
+
+    try:
+        clsid = key_from_val(ubt.UBX_CLASSES, msgClass)
+        msgid = key_from_val(ubt.UBX_MSGIDS, msgID)[1:2]
+        return (clsid, msgid)
+    except KeyError as err:
+        raise ube.UBXMessageError(
+            f"Undefined message, class {msgClass}, id {msgID}"
+        ) from err
+
+
+def cfgname2key(name: str) -> tuple:
+    """
+    Return hexadecimal key and data type for given
+    configuration database key name.
+
+    :param str name: config key as string e.g. "CFG_NMEA_PROTVER"
+    :return: tuple of (key, type)
+    :rtype: tuple: (int, str)
+    :raises: UBXMessageError
+
+    """
+    try:
+        return ubcdb.UBX_CONFIG_DATABASE[name]
+    except KeyError as err:
+        raise ube.UBXMessageError(
+            f"Undefined configuration database key {name}"
+        ) from err
+
+
+def cfgkey2name(keyID: int) -> tuple:
+    """
+    Return key name and data type for given
+    configuration database hexadecimal key.
+
+    :param int keyID: config key as integer e.g. 0x20930001
+    :return: tuple of (keyname, type)
+    :rtype: tuple: (str, str)
+    :raises: UBXMessageError
+
+    """
+
+    val = None
+    for key, val in ubcdb.UBX_CONFIG_DATABASE.items():
+        (kid, typ) = val
+        if keyID == kid:
+            return (key, typ)
+    raise ube.UBXMessageError(f"Undefined configuration database key {hex(keyID)}")

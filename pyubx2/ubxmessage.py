@@ -15,14 +15,18 @@ import pyubx2.ubxtypes_core as ubt
 import pyubx2.ubxtypes_get as ubg
 import pyubx2.ubxtypes_set as ubs
 import pyubx2.ubxtypes_poll as ubp
-import pyubx2.ubxtypes_configdb as ubcdb
 from pyubx2.ubxhelpers import (
     calc_checksum,
-    atttyp,
     attsiz,
     itow2utc,
     gnss2str,
-    key_from_val,
+    msgclass2bytes,
+    msgstr2bytes,
+    val2bytes,
+    bytes2val,
+    nomval,
+    cfgkey2name,
+    cfgname2key,
 )
 
 
@@ -64,9 +68,9 @@ class UBXMessage:
         if isinstance(ubxClass, str) and isinstance(
             ubxID, str
         ):  # string e.g. 'CFG', 'CFG-PRT'
-            (self._ubxClass, self._ubxID) = UBXMessage.msgstr2bytes(ubxClass, ubxID)
+            (self._ubxClass, self._ubxID) = msgstr2bytes(ubxClass, ubxID)
         elif isinstance(ubxClass, int) and isinstance(ubxID, int):  # int e.g. 6, 1
-            (self._ubxClass, self._ubxID) = UBXMessage.msgclass2bytes(ubxClass, ubxID)
+            (self._ubxClass, self._ubxID) = msgclass2bytes(ubxClass, ubxID)
         else:  # bytes e.g. b'\x06', b'\x01'
             self._ubxClass = ubxClass
             self._ubxID = ubxID
@@ -245,18 +249,18 @@ class UBXMessage:
         if "payload" in kwargs:
             valb = self._payload[offset : offset + atts]
             if scale == 1:
-                val = self.bytes2val(valb, att)
+                val = bytes2val(valb, att)
             else:
-                val = round(self.bytes2val(valb, att) * scale, ubt.SCALROUND)
+                val = round(bytes2val(valb, att) * scale, ubt.SCALROUND)
         else:
             # if individual keyword has been provided,
             # set to provided value, else set to
             # nominal value
-            val = kwargs.get(keyr, self.nomval(att))
+            val = kwargs.get(keyr, nomval(att))
             if scale == 1:
-                valb = self.val2bytes(val, att)
+                valb = val2bytes(val, att)
             else:
-                valb = self.val2bytes(int(val / scale), att)
+                valb = val2bytes(int(val / scale), att)
             self._payload += valb
 
         setattr(self, keyr, val)
@@ -375,10 +379,10 @@ class UBXMessage:
                 key = int.from_bytes(
                     self._payload[offset : offset + KEYLEN], "little", signed=False
                 )
-                (keyname, att) = self.cfgkey2name(key)
+                (keyname, att) = cfgkey2name(key)
                 atts = attsiz(att)
                 valb = self._payload[offset + KEYLEN : offset + KEYLEN + atts]
-                val = self.bytes2val(valb, att)
+                val = bytes2val(valb, att)
                 setattr(self, keyname, val)
                 i = 0
                 offset += KEYLEN + atts
@@ -391,10 +395,10 @@ class UBXMessage:
         Calculate and format payload length and checksum as bytes."""
 
         if self._payload is None:
-            self._length = self.val2bytes(0, ubt.U2)
+            self._length = val2bytes(0, ubt.U2)
             self._checksum = calc_checksum(self._ubxClass + self._ubxID + self._length)
         else:
-            self._length = self.val2bytes(len(self._payload), ubt.U2)
+            self._length = val2bytes(len(self._payload), ubt.U2)
             self._checksum = calc_checksum(
                 self._ubxClass + self._ubxID + self._length + self._payload
             )
@@ -449,7 +453,7 @@ class UBXMessage:
         """
 
         if "type" in kwargs:
-            typ = self.val2bytes(kwargs["type"], ubt.U1)
+            typ = val2bytes(kwargs["type"], ubt.U1)
         elif "payload" in kwargs:
             typ = kwargs["payload"][0:1]
         else:
@@ -505,7 +509,7 @@ class UBXMessage:
         # pylint: disable=no-self-use
 
         if "version" in kwargs:
-            ver = self.val2bytes(kwargs["version"], ubt.U1)
+            ver = val2bytes(kwargs["version"], ubt.U1)
         elif "payload" in kwargs:
             ver = kwargs["payload"][0:1]
         else:
@@ -532,7 +536,7 @@ class UBXMessage:
         # pylint: disable=no-self-use
 
         if "type" in kwargs:
-            typ = self.val2bytes(kwargs["type"], ubt.U1)
+            typ = val2bytes(kwargs["type"], ubt.U1)
         elif "payload" in kwargs:
             typ = kwargs["payload"][1:2]
         else:
@@ -586,7 +590,7 @@ class UBXMessage:
         # pylint: disable=no-self-use
 
         if "version" in kwargs:
-            ver = self.val2bytes(kwargs["version"], ubt.U1)
+            ver = val2bytes(kwargs["version"], ubt.U1)
         elif "payload" in kwargs:
             ver = kwargs["payload"][0:1]
         else:
@@ -653,18 +657,18 @@ class UBXMessage:
                 # if it's an ACK-ACK or ACK-NAK, we show what it's acknowledging in plain text
                 if self._ubxClass == b"\x05":  # ACK
                     if att == "clsID":
-                        clsid = self.val2bytes(val, ubt.U1)
+                        clsid = val2bytes(val, ubt.U1)
                         val = ubt.UBX_CLASSES[clsid]
                     if att == "msgID" and clsid:
-                        msgid = self.val2bytes(val, ubt.U1)
+                        msgid = val2bytes(val, ubt.U1)
                         val = ubt.UBX_MSGIDS[clsid + msgid]
                 # if it's a CFG-MSG, we show what message class/id it refers to in plain text
                 if self._ubxClass == b"\x06" and self._ubxID == b"\x01":  # CFG-MSG
                     if att == "msgClass":
-                        clsid = self.val2bytes(val, ubt.U1)
+                        clsid = val2bytes(val, ubt.U1)
                         val = ubt.UBX_CLASSES[clsid]
                     if att == "msgID" and clsid:
-                        msgid = self.val2bytes(val, ubt.U1)
+                        msgid = val2bytes(val, ubt.U1)
                         val = ubt.UBX_MSGIDS[clsid + msgid]
                 stg += att + "=" + str(val)
                 if i < len(self.__dict__) - 1:
@@ -779,7 +783,7 @@ class UBXMessage:
 
         """
 
-        return UBXMessage.bytes2val(self._length, ubt.U2)
+        return bytes2val(self._length, ubt.U2)
 
     @property
     def payload(self) -> bytes:
@@ -806,171 +810,6 @@ class UBXMessage:
         return self._mode
 
     @staticmethod
-    def msgclass2bytes(msgClass: int, msgID: int) -> bytes:
-        """
-        Convert message class/id integers to bytes.
-
-        :param int msgClass: message class as integer e.g. 6
-        :param int msgID: message ID as integer e.g. 1
-        :return: message class as bytes e.g. b'/x06/x01'
-        :rtype: bytes
-
-        """
-
-        msgClass = UBXMessage.val2bytes(msgClass, ubt.U1)
-        msgID = UBXMessage.val2bytes(msgID, ubt.U1)
-        return (msgClass, msgID)
-
-    @staticmethod
-    def msgstr2bytes(msgClass: str, msgID: str) -> bytes:
-        """
-        Convert plain text UBX message class to bytes.
-
-        :param str msgClass: message class as str e.g. 'CFG'
-        :param str msgID: message ID as str e.g. 'CFG-MSG'
-        :return: message class as bytes e.g. b'/x06/x01'
-        :rtype: bytes
-        :raises: UBXMessageError
-
-        """
-
-        try:
-            clsid = key_from_val(ubt.UBX_CLASSES, msgClass)
-            msgid = key_from_val(ubt.UBX_MSGIDS, msgID)[1:2]
-            return (clsid, msgid)
-        except KeyError as err:
-            raise ube.UBXMessageError(
-                f"Undefined message, class {msgClass}, id {msgID}"
-            ) from err
-
-    @staticmethod
-    def val2bytes(val, att: str) -> bytes:
-        """
-        Convert value to bytes for given UBX attribute type.
-
-        :param object val: attribute value e.g. 25
-        :param str att: attribute type e.g. 'U004'
-        :return: attribute value as bytes
-        :rtype: bytes
-        :raises: UBXTypeError
-
-        """
-
-        if att == ubt.CH:  # single variable-length string (e.g. INF-NOTICE)
-            return val.encode("utf-8", "backslashreplace")
-        atts = attsiz(att)
-        if atttyp(att) in ("C", "X", "A"):  # byte or char
-            valb = val
-        elif atttyp(att) in ("E", "L", "U"):  # unsigned integer
-            valb = val.to_bytes(atts, byteorder="little", signed=False)
-        elif atttyp(att) == "I":  # signed integer
-            valb = val.to_bytes(atts, byteorder="little", signed=True)
-        elif att == ubt.R4:  # single precision floating point
-            valb = struct.pack("<f", val)
-        elif att == ubt.R8:  # double precision floating point
-            valb = struct.pack("<d", val)
-        else:
-            raise ube.UBXTypeError(f"Unknown attribute type {att}")
-        return valb
-
-    @staticmethod
-    def bytes2val(valb: bytes, att: str) -> object:
-        """
-        Convert bytes to value for given UBX attribute type.
-
-        :param bytes valb: attribute value in byte format e.g. b'\\\\x19\\\\x00\\\\x00\\\\x00'
-        :param str att: attribute type e.g. 'U004'
-        :return: attribute value as int, float, str or bytes
-        :rtype: object
-        :raises: UBXTypeError
-
-        """
-
-        if att == ubt.CH:  # single variable-length string (e.g. INF-NOTICE)
-            val = valb.decode("utf-8", "backslashreplace")
-        elif atttyp(att) in ("X", "C"):
-            val = valb
-        elif atttyp(att) in ("E", "L", "U"):  # unsigned integer
-            val = int.from_bytes(valb, "little", signed=False)
-        elif atttyp(att) == "I":  # signed integer
-            val = int.from_bytes(valb, "little", signed=True)
-        elif att == ubt.R4:  # single precision floating point
-            val = struct.unpack("<f", valb)[0]
-        elif att == ubt.R8:  # double precision floating point
-            val = struct.unpack("<d", valb)[0]
-        elif atttyp(att) == "A":  # array of bytes
-            atts = attsiz(att)
-            val = []
-            for i in range(atts):
-                val.append(valb[i])
-        else:
-            raise ube.UBXTypeError(f"Unknown attribute type {att}")
-        return val
-
-    @staticmethod
-    def nomval(att: str) -> object:
-        """
-        Get nominal value for given UBX attribute type.
-
-        :param str att: attribute type e.g. 'U004'
-        :return: attribute value as int, float, str or bytes
-        :rtype: object
-        :raises: UBXTypeError
-
-        """
-
-        if att == "CH":
-            val = ""
-        elif atttyp(att) in ("X", "C", "A"):
-            val = b"\x00" * attsiz(att)
-        elif atttyp(att) == "R":
-            val = 0.0
-        elif atttyp(att) in ("E", "I", "L", "U"):
-            val = 0
-        else:
-            raise ube.UBXTypeError(f"Unknown attribute type {att}")
-        return val
-
-    @staticmethod
-    def cfgname2key(name: str) -> tuple:
-        """
-        Return hexadecimal key and data type for given
-        configuration database key name.
-
-        :param str name: config key as string e.g. "CFG_NMEA_PROTVER"
-        :return: tuple of (key, type)
-        :rtype: tuple: (int, str)
-        :raises: UBXMessageError
-
-        """
-        try:
-            return ubcdb.UBX_CONFIG_DATABASE[name]
-        except KeyError as err:
-            raise ube.UBXMessageError(
-                f"Undefined configuration database key {name}"
-            ) from err
-
-    @staticmethod
-    def cfgkey2name(keyID: int) -> tuple:
-        """
-        Return key name and data type for given
-        configuration database hexadecimal key.
-
-        :param int keyID: config key as integer e.g. 0x20930001
-        :return: tuple of (keyname, type)
-        :rtype: tuple: (str, str)
-        :raises: UBXMessageError
-
-        """
-
-        val = None
-        for key, val in ubcdb.UBX_CONFIG_DATABASE.items():
-            (kid, typ) = val
-            if keyID == kid:
-                return (key, typ)
-        raise ube.UBXMessageError(f"Undefined configuration database key {hex(keyID)}")
-
-    @staticmethod
     def config_set(layers: int, transaction: int, cfgData: list) -> object:
         """
         Construct CFG-VALSET message from an array of
@@ -992,9 +831,9 @@ class UBXMessage:
                 f"Number of configuration tuples {num} exceeds maximum of 64"
             )
 
-        version = UBXMessage.val2bytes(0 if transaction == 0 else 1, ubt.U1)
-        layers = UBXMessage.val2bytes(layers, ubt.U1)
-        transaction = UBXMessage.val2bytes(transaction, ubt.U1)
+        version = val2bytes(0 if transaction == 0 else 1, ubt.U1)
+        layers = val2bytes(layers, ubt.U1)
+        transaction = val2bytes(transaction, ubt.U1)
         payload = version + layers + transaction + b"\x00"
         lis = b""
 
@@ -1002,13 +841,11 @@ class UBXMessage:
             att = ""
             (key, val) = cfgItem
             if isinstance(key, str):  # if key is a string (keyname)
-                (key, att) = UBXMessage.cfgname2key(
-                    key
-                )  # lookup keyID & attribute type
+                (key, att) = cfgname2key(key)  # lookup keyID & attribute type
             else:
-                (_, att) = UBXMessage.cfgkey2name(key)  # lookup attribute type
-            keyb = UBXMessage.val2bytes(key, ubt.U4)
-            valb = UBXMessage.val2bytes(val, att)
+                (_, att) = cfgkey2name(key)  # lookup attribute type
+            keyb = val2bytes(key, ubt.U4)
+            valb = val2bytes(val, att)
             lis = lis + keyb + valb
 
         return UBXMessage("CFG", "CFG-VALSET", ubt.SET, payload=payload + lis)
@@ -1035,16 +872,16 @@ class UBXMessage:
                 f"Number of configuration keys {num} exceeds maximum of 64"
             )
 
-        version = UBXMessage.val2bytes(0 if transaction == 0 else 1, ubt.U1)
-        layers = UBXMessage.val2bytes(layers, ubt.U1)
-        transaction = UBXMessage.val2bytes(transaction, ubt.U1)
+        version = val2bytes(0 if transaction == 0 else 1, ubt.U1)
+        layers = val2bytes(layers, ubt.U1)
+        transaction = val2bytes(transaction, ubt.U1)
         payload = version + layers + transaction + b"\x00"
         lis = b""
 
         for key in keys:
             if isinstance(key, str):  # if keyname as a string
-                (key, _) = UBXMessage.cfgname2key(key)  # lookup keyID
-            keyb = UBXMessage.val2bytes(key, ubt.U4)
+                (key, _) = cfgname2key(key)  # lookup keyID
+            keyb = val2bytes(key, ubt.U4)
             lis = lis + keyb
 
         return UBXMessage("CFG", "CFG-VALDEL", ubt.SET, payload=payload + lis)
@@ -1071,16 +908,16 @@ class UBXMessage:
                 f"Number of configuration keys {num} exceeds maximum of 64"
             )
 
-        version = UBXMessage.val2bytes(0, ubt.U1)
-        layer = UBXMessage.val2bytes(layer, ubt.U1)
-        position = UBXMessage.val2bytes(position, ubt.U2)
+        version = val2bytes(0, ubt.U1)
+        layer = val2bytes(layer, ubt.U1)
+        position = val2bytes(position, ubt.U2)
         payload = version + layer + position
         lis = b""
 
         for key in keys:
             if isinstance(key, str):  # if keyname as a string
-                (key, _) = UBXMessage.cfgname2key(key)  # lookup keyID
-            keyb = UBXMessage.val2bytes(key, ubt.U4)
+                (key, _) = cfgname2key(key)  # lookup keyID
+            keyb = val2bytes(key, ubt.U4)
             lis = lis + keyb
 
         return UBXMessage("CFG", "CFG-VALGET", ubt.POLL, payload=payload + lis)
