@@ -112,7 +112,6 @@ UBX_PAYLOADS_POLL = {
     "NAV-POSLLH": {},
     "NAV-PVT": {},
     "NAV-RELPOSNED": {},
-    "NAV-RESETODO": {},
     "NAV-SAT": {},
     "NAV-SBAS": {},
     "NAV-SIG": {},
