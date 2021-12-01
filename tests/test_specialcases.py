@@ -152,9 +152,18 @@ class SpecialTest(unittest.TestCase):
 
     def testFill_MGABDSSET(
         self,
-    ):  #  test MGA-BDS-UTC SET constructor using attribute keywords
-        EXPECTED_RESULT = "<UBX(MGA-BDS-UTC, type=5, version=0, reserved1=0, a0UTC=15, a1UTC=0, dtLS=0, reserved2=0, wnRec=23, wnLSF=41, dN=0, dtLSF=0, reserved3=0)>"
-        res = UBXMessage(b"\x13", b"\x03", SET, type=5, a0UTC=15, wnRec=23, wnLSF=41)
+    ):  #  test MGA-BDS-UTC SET constructor using attribute keywords, very large scaling factors
+        EXPECTED_RESULT = "<UBX(MGA-BDS-UTC, type=5, version=0, reserved0=0, a0UTC=1.2218952178955079e-09, a1UTC=1.2949641359227826e-15, dtLS=0, reserved1=0, wnRec=23, wnLSF=41, dN=0, dtLSF=0, reserved2=0)>"
+        res = UBXMessage(
+            b"\x13",
+            b"\x03",
+            SET,
+            type=5,
+            a0UTC=1.312 * 2 ** -30,
+            a1UTC=1.458 * 2 ** -50,
+            wnRec=23,
+            wnLSF=41,
+        )
         self.assertEqual(str(res), EXPECTED_RESULT)
 
     def testFill_RELPOSNED_v0(self):  # test NAV-RELPOSNED V0 constructor

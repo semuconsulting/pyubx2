@@ -107,7 +107,6 @@ class UBXMessage:
 
         except (
             AttributeError,
-            OverflowError,
             struct.error,
             TypeError,
             ValueError,
@@ -115,6 +114,14 @@ class UBXMessage:
             raise ube.UBXTypeError(
                 (
                     f"Incorrect type for attribute '{key}' "
+                    f"in {['GET', 'SET', 'POLL'][self._mode]} message "
+                    f"class {self.identity}"
+                )
+            ) from err
+        except (OverflowError,) as err:
+            raise ube.UBXTypeError(
+                (
+                    f"Overflow error for attribute '{key}' "
                     f"in {['GET', 'SET', 'POLL'][self._mode]} message "
                     f"class {self.identity}"
                 )
@@ -167,7 +174,6 @@ class UBXMessage:
 
         :param tuple att: attribute group - tuple of (num repeats, attribute dict)
         :param int offset: payload offset in bytes
-        :param str key: group keyword
         :param list index: repeating group index array
         :param kwargs: optional payload key/value pairs
         :return: (offset, index[])

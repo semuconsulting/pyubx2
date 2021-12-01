@@ -254,14 +254,14 @@ class ParseTest(unittest.TestCase):
         res = UBXReader.parse(self.mga_ini1, msgmode=SET)
         self.assertEqual(
             str(res),
-            "<UBX(MGA-INI-POS_LLH, type=1, version=0, reserved1=513, lat=67305985, lon=67305985, alt=67305985, posAcc=67305985)>",
+            "<UBX(MGA-INI-POS_LLH, type=1, version=0, reserved1=513, lat=6.7305985, lon=6.7305985, alt=67305985, posAcc=67305985)>",
         )
 
     def testMGAINI2(self):  # test parser of MGA-INI input message with args
         res = UBXReader.parse(self.mga_ini1, validate=VALCKSUM, msgmode=SET)
         self.assertEqual(
             str(res),
-            "<UBX(MGA-INI-POS_LLH, type=1, version=0, reserved1=513, lat=67305985, lon=67305985, alt=67305985, posAcc=67305985)>",
+            "<UBX(MGA-INI-POS_LLH, type=1, version=0, reserved1=513, lat=6.7305985, lon=6.7305985, alt=67305985, posAcc=67305985)>",
         )
 
 

@@ -266,6 +266,24 @@ class ExceptionTest(unittest.TestCase):
         with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
             UBXMessage("TIM", "TIM-VCOCAL", SET, maxStepSize=2)
 
+    def testFill_MGABDSSET(
+        self,
+    ):  #  test MGA-BDS-UTC SET constructor with scaled attribute which is too large
+        EXPECTED_ERROR = (
+            "Overflow error for attribute 'a1UTC' in SET message class MGA-BDS-UTC"
+        )
+        with self.assertRaisesRegex(UBXTypeError, EXPECTED_ERROR):
+            UBXMessage(
+                b"\x13",
+                b"\x03",
+                SET,
+                type=5,
+                a0UTC=1,
+                a1UTC=1,
+                wnRec=23,
+                wnLSF=41,
+            )
+
     def testFill_CFGNMEAGET(
         self,
     ):  #  test CFG-NMEA GET constructor without payload keyword
