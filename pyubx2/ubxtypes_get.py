@@ -1075,7 +1075,7 @@ UBX_PAYLOADS_GET = {
         "yAccel": [I4, SCAL2],
         "zAccel": [I4, SCAL2],
     },
-    # if calibTtagValid = 1; last dataField = alibTtag, numMeas = num of dataFields excluding calibTtag
+    # if calibTtagValid = 1; last dataField = calibTtag, numMeas = num of dataFields excluding calibTtag
     "ESF-MEAS": {
         "timeTag": U4,
         "flags": (

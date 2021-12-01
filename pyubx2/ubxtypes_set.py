@@ -22,11 +22,15 @@ from pyubx2.ubxtypes_core import (
     U2,
     U3,
     U4,
+    U5,
+    U6,
+    U7,
     U40,
     U64,
     X1,
     X2,
     X4,
+    X24,
 )
 
 from pyubx2.ubxtypes_get import UBX_PAYLOADS_GET as UBX_GET
@@ -173,28 +177,32 @@ UBX_PAYLOADS_SET = {
     # ********************************************************************
     # External Sensor Fusion Messages: i.e. External Sensor Measurements and Status Information.
     # Messages in the ESF class are used to output external sensor fusion information from the receiver.
-    "ESF-MEAS": {  # this version used when bit 3 of flags = 0
+    # if calibTtagValid = 1; last dataField = calibTtag, numMeas = num of dataFields excluding calibTtag
+    "ESF-MEAS": {
         "timeTag": U4,
-        "flags": X2,
+        "flags": (
+            X2,
+            {
+                "timeMarkSent": U2,
+                "timeMarkEdge": U1,
+                "calibTtagValid": U1,
+                "reserved0": U7,
+                "numMeas": U5,
+            },
+        ),
         "id": U2,
         "group": (
             "None",
-            {  # repeating group * numMeas, which is bits 11..15 in flags
-                "data": X4,
+            {  # repeating group * numMeas
+                "data": (
+                    X4,
+                    {
+                        "dataField": X24,
+                        "dataType": U6,
+                    },
+                ),
             },
         ),
-    },
-    "ESF-MEAS-CT": {  # this version used when bit 3 of flags = 1
-        "timeTag": U4,
-        "flags": X2,
-        "id": U2,
-        "group": (
-            "ESF-MEAS-CT",
-            {  # repeating group * numMeas, which is bits 11..15 of flags
-                "data": X4,
-            },
-        ),
-        "calibTtag": U4,
     },
     # ********************************************************************
     # Logging Messages: i.e. Log creation, deletion, info and retrieval.
