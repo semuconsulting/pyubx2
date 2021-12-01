@@ -581,7 +581,7 @@ UBX_PAYLOADS_SET = {
         "ionoBeta3": [I1, 2 ** 16],
         "reserved1": U4,
     },
-    "MGA-INI-POS_XYZ": {
+    "MGA-INI-POS-XYZ": {
         "type": U1,
         "version": U1,
         "reserved0": U2,
@@ -590,7 +590,7 @@ UBX_PAYLOADS_SET = {
         "ecefZ": I4,
         "posAcc": U4,
     },
-    "MGA-INI-POS_LLH": {
+    "MGA-INI-POS-LLH": {
         "type": U1,
         "version": U1,
         "reserved1": U2,
@@ -599,7 +599,7 @@ UBX_PAYLOADS_SET = {
         "alt": I4,
         "posAcc": U4,
     },
-    "MGA-INI-TIME_UTC": {
+    "MGA-INI-TIME-UTC": {
         "type": U1,
         "version": U1,
         "ref": X1,
@@ -616,7 +616,7 @@ UBX_PAYLOADS_SET = {
         "reserved1": U2,
         "tAccNs": U4,
     },
-    "MGA-INI-TIME_GNSS": {
+    "MGA-INI-TIME-GNSS": {
         "type": U1,
         "version": U1,
         "ref": X1,
