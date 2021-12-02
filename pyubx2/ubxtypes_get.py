@@ -578,7 +578,7 @@ UBX_PAYLOADS_GET = {
             X4,
             {
                 "reserved13": U6,
-                "useAdr": U1,
+                "adr": U1,
                 "sigAttenComp": U1,
             },
         ),
