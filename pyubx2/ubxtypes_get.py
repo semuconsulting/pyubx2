@@ -836,26 +836,6 @@ UBX_PAYLOADS_GET = {
         ),
         "group": ("None", {"data": U1}),
     },  # repeating group
-    "CFG-RST": {
-        "navBbrMask": (
-            X2,
-            {
-                "eph": U1,
-                "alm": U1,
-                "health": U1,
-                "klob": U1,
-                "pos": U1,
-                "clkd": U1,
-                "osc": U1,
-                "utc": U1,
-                "rtc": U1,
-                "reserved2": U6,
-                "aop": U1,
-            },
-        ),
-        "resetMode": U1,
-        "reserved1": U1,
-    },
     "CFG-RXM": {"reserved0": U1, "lpMode": U1},
     "CFG-SBAS": {
         "mode": (
