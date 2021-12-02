@@ -57,7 +57,7 @@ class StreamTest(unittest.TestCase):
             "<UBX(CFG-ODO, version=0, reserved0=0, useODO=0, useCOG=0, outLPVel=0, outLPCog=0, profile=0, reserved1=112258400714752, cogMaxSpeed=1.0, cogMaxPosAcc=50, reserved2=0, velLpGain=153, cogLpGain=76, reserved3=0)>",
             "<UBX(CFG-PM2, version=2, reserved0=6, maxStartupStateDur=0, reserved1=0, optTarget=0, extintSel=0, extintWake=0, extintBackup=0, extintInactive=0, limitPeakCurr=0, waitTimeFix=0, updateRTC=0, updateEPH=1, doNotEnterOff=0, operationMode=1, updatePeriod=10000, searchPeriod=10000, gridOffset=0, onTime=0, minAcqTime=0, reserved2=27909959734875496726556525041030975214059820, extintInactivityMs=0)>",
             "<UBX(CFG-PMS, version=0, powerSetupValue=1, period=0, onTime=0, reserved0=0)>",
-            "<UBX(CFG-PRT, portID=3, reserved0=0, enable=0, pol=0, pin=0, thres=0, charLen=0, parity=0, nStopBits=0, baudRate=0, inUBX=1, inNMEA=1, inRTCM=0, inRTCM3=1, outUBX=1, outNMEA=1, outRTCM3=0, extendedTxTimeout=0, reserved5=0)>",
+            "<UBX(CFG-PRT, portID=3, reserved0=0, enable=0, pol=0, pin=0, thres=0, charLen=0, parity=0, nStopBits=0, baudRate=0, inUBX=1, inNMEA=1, inRTCM=0, inRTCM3=1, outUBX=1, outNMEA=1, outRTCM3=0, extendedTxTimeout=0, reserved1=0)>",
             "<UBX(CFG-PWR, version=247, reserved1=16548860, state=38273024)>",
             "<UBX(CFG-RATE, measRate=1000, navRate=1, timeRef=1)>",
             "<UBX(CFG-RINV, dump=0, binary=0, data_01=78, data_02=111, data_03=116, data_04=105, data_05=99, data_06=101, data_07=58, data_08=32, data_09=110, data_10=111, data_11=32, data_12=100, data_13=97, data_14=116, data_15=97, data_16=32, data_17=115, data_18=97, data_19=118, data_20=101, data_21=100, data_22=33)>",

@@ -788,9 +788,9 @@ UBX_PAYLOADS_GET = {
         "UARTmode": (
             X4,
             {
-                "reserved6": U6,
+                "reserved2": U6,
                 "charLen": U2,
-                "reserved7": U1,
+                "reserved3": U1,
                 "parity": U3,
                 "nStopBits": U2,
             },
@@ -802,7 +802,7 @@ UBX_PAYLOADS_GET = {
                 "inUBX": U1,
                 "inNMEA": U1,
                 "inRTCM": U1,
-                "reserved8": U2,
+                "reserved4": U2,
                 "inRTCM3": U1,
             },
         ),
@@ -811,18 +811,18 @@ UBX_PAYLOADS_GET = {
             {
                 "outUBX": U1,
                 "outNMEA": U1,
-                "reserved9": U3,
+                "reserved5": U3,
                 "outRTCM3": U1,
             },
         ),
         "flags": (
             X2,
             {
-                "reserved10": U1,
+                "reserved6": U1,
                 "extendedTxTimeout": U1,
             },
         ),
-        "reserved5": U2,
+        "reserved1": U2,
     },
     "CFG-PWR": {"version": U1, "reserved1": U3, "state": U4},
     "CFG-RATE": {"measRate": U2, "navRate": U2, "timeRef": U2},
