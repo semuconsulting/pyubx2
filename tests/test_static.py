@@ -13,6 +13,9 @@ import unittest
 
 from pyubx2 import UBXMessage, UBX_CLASSES, POLL
 import pyubx2.ubxtypes_core as ubt
+import pyubx2.ubxtypes_get as ubg
+import pyubx2.ubxtypes_set as ubs
+import pyubx2.ubxtypes_poll as ubp
 from pyubx2.ubxhelpers import (
     calc_checksum,
     isvalid_checksum,
@@ -36,6 +39,24 @@ class StaticTest(unittest.TestCase):
 
     def tearDown(self):
         pass
+
+    def testDefinitions(self):  # DEBUG test for possible missing payload definitions
+        for msg in ubt.UBX_MSGIDS.values():
+            if (
+                msg not in (ubp.UBX_PAYLOADS_POLL)
+                and msg not in (ubg.UBX_PAYLOADS_GET)
+                and msg not in (ubs.UBX_PAYLOADS_SET)
+            ):
+                print(f"Possible missing payload definition {msg}")
+        for msg in ubg.UBX_PAYLOADS_GET:
+            if msg not in ubt.UBX_MSGIDS.values():
+                print(f"Possible missing core definition {msg} GET")
+        for msg in ubs.UBX_PAYLOADS_SET:
+            if msg not in ubt.UBX_MSGIDS.values():
+                print(f"Possible missing core definition {msg} SET")
+        for msg in ubp.UBX_PAYLOADS_POLL:
+            if msg not in ubt.UBX_MSGIDS.values():
+                print(f"Possible missing core definition {msg} POLL")
 
     def testFill_CFGMSG2(self):  # test msg_cls in bytes property
         EXPECTED_RESULT = "b'\\x06'"

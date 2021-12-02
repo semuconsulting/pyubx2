@@ -28,6 +28,7 @@ UBX_PAYLOADS_POLL = {
     "AID-INI": {},
     # *************************************************
     "CFG-ANT": {},
+    "CFG-BATCH": {},
     "CFG-DAT": {},
     "CFG-DOSC": {},
     "CFG-DYNSEED": {},
