@@ -1056,9 +1056,9 @@ UBX_PAYLOADS_GET = {
     "CFG-USB": {
         "vendorID": U2,
         "productID": U2,
+        "reserved0": U2,
         "reserved1": U2,
-        "reserved2": U2,
-        "powerConsumpt": U2,
+        "powerConsumption": U2,
         "flags": (
             X2,
             {
