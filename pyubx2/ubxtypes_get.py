@@ -1011,8 +1011,8 @@ UBX_PAYLOADS_GET = {
     },
     "CFG-TP5": {
         "tpIdx": U1,
-        "reserved0": U1,
-        "reserved1": U2,
+        "version": U1,
+        "reserved0": U2,
         "antCableDelay": I2,
         "rfGroupDelay": I2,
         "freqPeriod": U4,
