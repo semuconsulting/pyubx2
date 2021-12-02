@@ -771,7 +771,7 @@ UBX_PAYLOADS_GET = {
         "powerSetupValue": U1,
         "period": U2,
         "onTime": U2,
-        "reserved1": U2,
+        "reserved0": U2,
     },
     "CFG-PRT": {
         "portID": U1,

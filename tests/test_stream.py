@@ -56,7 +56,7 @@ class StreamTest(unittest.TestCase):
             "<UBX(CFG-NMEA, posFilt=0, mskPosFilt=0, timeFilt=0, dateFilt=0, gpsOnlyFilter=0, trackFilt=0, nmeaVersion=65, numSV=0, compat=0, consider=1, limit82=0, highPrec=0, gps=0, sbas=0, galileo=0, qzss=0, glonass=0, beidou=0, svNumbering=0, mainTalkerId=0, gsvTalkerId=0, version=1, bdsTalkerId=b'\\x00\\x00', reserved1=0)>",
             "<UBX(CFG-ODO, version=0, reserved0=0, useODO=0, useCOG=0, outLPVel=0, outLPCog=0, profile=0, reserved1=112258400714752, cogMaxSpeed=1.0, cogMaxPosAcc=50, reserved2=0, velLpGain=153, cogLpGain=76, reserved3=0)>",
             "<UBX(CFG-PM2, version=2, reserved0=6, maxStartupStateDur=0, reserved1=0, optTarget=0, extintSel=0, extintWake=0, extintBackup=0, extintInactive=0, limitPeakCurr=0, waitTimeFix=0, updateRTC=0, updateEPH=1, doNotEnterOff=0, operationMode=1, updatePeriod=10000, searchPeriod=10000, gridOffset=0, onTime=0, minAcqTime=0, reserved2=27909959734875496726556525041030975214059820, extintInactivityMs=0)>",
-            "<UBX(CFG-PMS, version=0, powerSetupValue=1, period=0, onTime=0, reserved1=0)>",
+            "<UBX(CFG-PMS, version=0, powerSetupValue=1, period=0, onTime=0, reserved0=0)>",
             "<UBX(CFG-PRT, portID=3, reserved0=0, enable=0, pol=0, pin=0, thres=0, charLen=0, parity=0, nStopBits=0, baudRate=0, inUBX=1, inNMEA=1, inRTCM=0, inRTCM3=1, outUBX=1, outNMEA=1, outRTCM3=0, extendedTxTimeout=0, reserved5=0)>",
             "<UBX(CFG-PWR, version=247, reserved1=16548860, state=38273024)>",
             "<UBX(CFG-RATE, measRate=1000, navRate=1, timeRef=1)>",
