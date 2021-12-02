@@ -173,6 +173,8 @@ UBX_PAYLOADS_SET = {
     "CFG-NAV5": UBX_GET["CFG-NAV5"],
     "CFG-NAVX5": UBX_GET["CFG-NAVX5"],
     "CFG-NMEA": UBX_GET["CFG-NMEA"],
+    "CFG-NMEAv0": UBX_GET["CFG-NMEAv0"],
+    "CFG-NMEAvX": UBX_GET["CFG-NMEAvX"],
     "CFG-NVS": {
         "clearMask": (
             X4,

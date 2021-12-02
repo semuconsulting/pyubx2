@@ -51,7 +51,7 @@ class FillTest(unittest.TestCase):
         self.assertEqual(str(res), EXPECTED_RESULT)
 
     def testFill_CFGNMEA(self):  # test SET constructor fill, set all values
-        EXPECTED_RESULT = "<UBX(CFG-NMEA, posFilt=0, mskPosFilt=0, timeFilt=0, dateFilt=0, gpsOnlyFilter=0, trackFilt=0, nmeaVersion=64, numSV=4, compat=0, consider=0, limit82=0, highPrec=0, disableGps=0, disableSbas=0, disableGalileo=0, disableQzss=0, disableGlonass=0, disableBeidou=0, svNumbering=0, mainTalkerId=0, gsvTalkerId=0, version=0, bdsTalkerId=b'\\x00\\x00', reserved1=0)>"
+        EXPECTED_RESULT = "<UBX(CFG-NMEA, posFilt=0, mskPosFilt=0, timeFilt=0, dateFilt=0, gpsOnlyFilter=0, trackFilt=0, nmeaVersion=64, numSV=4, compat=0, consider=0, limit82=0, highPrec=0, gps=0, sbas=0, galileo=0, qzss=0, glonass=0, beidou=0, svNumbering=0, mainTalkerId=0, gsvTalkerId=0, version=0, bdsTalkerId=b'\\x00\\x00', reserved1=0)>"
         res = UBXMessage(
             "CFG",
             "CFG-NMEA",
@@ -66,14 +66,14 @@ class FillTest(unittest.TestCase):
     def testFill_CFGNMEA2(
         self,
     ):  # test SET constructor fill, set some values, default others
-        EXPECTED_RESULT = "<UBX(CFG-NMEA, posFilt=0, mskPosFilt=0, timeFilt=0, dateFilt=0, gpsOnlyFilter=0, trackFilt=0, nmeaVersion=35, numSV=1, compat=0, consider=0, limit82=0, highPrec=0, disableGps=0, disableSbas=0, disableGalileo=0, disableQzss=0, disableGlonass=0, disableBeidou=0, svNumbering=0, mainTalkerId=0, gsvTalkerId=0, version=0, bdsTalkerId=b'\\x00\\x00', reserved1=0)>"
+        EXPECTED_RESULT = "<UBX(CFG-NMEA, posFilt=0, mskPosFilt=0, timeFilt=0, dateFilt=0, gpsOnlyFilter=0, trackFilt=0, nmeaVersion=35, numSV=1, compat=0, consider=0, limit82=0, highPrec=0, gps=0, sbas=0, galileo=0, qzss=0, glonass=0, beidou=0, svNumbering=0, mainTalkerId=0, gsvTalkerId=0, version=0, bdsTalkerId=b'\\x00\\x00', reserved1=0)>"
         res = UBXMessage("CFG", "CFG-NMEA", SET, nmeaVersion=35, numSV=1)
         self.assertEqual(str(res), EXPECTED_RESULT)
 
     def testFill_CFGNMEAPARSE(
         self,
     ):  # check that raw payload is correctly populated and parses back to original message
-        EXPECTED_RESULT = "<UBX(CFG-NMEA, posFilt=0, mskPosFilt=0, timeFilt=0, dateFilt=0, gpsOnlyFilter=0, trackFilt=0, nmeaVersion=35, numSV=1, compat=0, consider=0, limit82=0, highPrec=0, disableGps=0, disableSbas=0, disableGalileo=0, disableQzss=0, disableGlonass=0, disableBeidou=0, svNumbering=0, mainTalkerId=0, gsvTalkerId=0, version=0, bdsTalkerId=b'\\x00\\x00', reserved1=0)>"
+        EXPECTED_RESULT = "<UBX(CFG-NMEA, posFilt=0, mskPosFilt=0, timeFilt=0, dateFilt=0, gpsOnlyFilter=0, trackFilt=0, nmeaVersion=35, numSV=1, compat=0, consider=0, limit82=0, highPrec=0, gps=0, sbas=0, galileo=0, qzss=0, glonass=0, beidou=0, svNumbering=0, mainTalkerId=0, gsvTalkerId=0, version=0, bdsTalkerId=b'\\x00\\x00', reserved1=0)>"
         res = UBXMessage("CFG", "CFG-NMEA", SET, nmeaVersion=35, numSV=1)
         res2 = UBXReader.parse(res.serialize())
         self.assertEqual(str(res2), EXPECTED_RESULT)
