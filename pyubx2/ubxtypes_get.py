@@ -241,6 +241,42 @@ UBX_PAYLOADS_GET = {
         ),
     },
     "CFG-DYNSEED": {"version": U1, "reserved1": U3, "seedHi": U4, "seedLo": U4},
+    "CFG-EKF": {
+        "disableEkf": U1,
+        "actionFLags": (
+            X1,
+            {
+                "reserved0": U1,
+                "clTab": U1,
+                "clCalib": U1,
+                "reserved1": U1,
+                "nomTacho": U1,
+                "nomGyro": U1,
+                "setTemp": U1,
+                "dir": U1,
+            },
+        ),
+        "configFlags": (
+            X1,
+            {
+                "pulsesPerM": U1,
+                "userSerWt": U1,
+            },
+        ),
+        "inverseFlags": (
+            X1,
+            {
+                "invDir": U1,
+                "invGyro": U1,
+            },
+        ),
+        "reserved2": U4,
+        "nomPPDist": U2,
+        "nomZero": U2,
+        "nomSens": U1,
+        "rmsTemp": [U1, SCAL1],
+        "tempUpdate": U2,
+    },
     "CFG-ESFALG": {
         "bitfield": (
             X4,
@@ -271,6 +307,31 @@ UBX_PAYLOADS_GET = {
         "latency": U2,
         "accuracy": [U2, SCAL3],
         "reserved2": U4,
+    },
+    "CFG-ESFGWT": {
+        "flags": (
+            X2,
+            {
+                "reserved0": U12,
+                "setVehicle": U1,
+                "setTime": U1,
+                "setWt": U1,
+            },
+        ),
+        "id": U2,
+        "wtFactor": [U4, SCAL6],
+        "reserved1": U4,
+        "wtQuantError": [U4, SCAL6],
+        "timeTagFactor": [U4, SCAL6],
+        "wtCountMax": U4,
+        "timeTagMax": U4,
+        "wtLatency": U2,
+        "reserved2": U2,
+        "wtFrequency": U1,
+        "reserved3": U1,
+        "speedDeadBand": U2,
+        "reserved4": U4,
+        "reserved5": U4,
     },
     "CFG-ESFWT": {
         "version": U1,
@@ -343,6 +404,26 @@ UBX_PAYLOADS_GET = {
         "seedHi": U4,
         "seedLo": U4,
         "group": ("length", {"classId": U1, "msgId": U1}),  # repeating group * length
+    },
+    "CFG-FXN": {
+        "flags": (
+            X4,
+            {
+                "reserved0": U1,
+                "sleep": U1,
+                "reserved2": U1,
+                "absAlign": U1,
+                "onOff": U1,
+            },
+        ),
+        "tReacq": U4,
+        "tAcq": U4,
+        "tReacqOff": U4,
+        "tAcqOff": U4,
+        "tOn": U4,
+        "tOff": U4,
+        "reserved1": U4,
+        "baseTow": U4,
     },
     "CFG-GEOFENCE": {
         "version": U1,

@@ -133,12 +133,15 @@ UBX_MSGIDS = {
     b"\x06\x70": "CFG-DGNSS",
     b"\x06\x61": "CFG-DOSC",
     b"\x06\x85": "CFG-DYNSEED",
+    b"\x06\x12": "CFG-EKF",
     b"\x06\x56": "CFG-ESFALG",
     b"\x06\x4c": "CFG-ESFA",
     b"\x06\x4d": "CFG-ESFG",
     b"\x06\x82": "CFG-ESFWT",
+    b"\x06\x29": "CFG-ESFGWT",
     b"\x06\x60": "CFG-ESRC",
     b"\x06\x84": "CFG-FIXSEED",
+    b"\x06\x0e": "CFG-FXN",  # deprecated, use CFG-PM2
     b"\x06\x69": "CFG-GEOFENCE",
     b"\x06\x3e": "CFG-GNSS",
     b"\x06\x5c": "CFG-HNR",
@@ -149,6 +152,7 @@ UBX_MSGIDS = {
     b"\x06\x24": "CFG-NAV5",
     b"\x06\x23": "CFG-NAVX5",
     b"\x06\x17": "CFG-NMEA",  # NB: 3 versions of this
+    b"\x06\x22": "CFG-NVS",
     b"\x06\x1e": "CFG-ODO",
     b"\x06\x3b": "CFG-PM2",
     b"\x06\x86": "CFG-PMS",
@@ -275,6 +279,7 @@ UBX_MSGIDS = {
     b"\x01\x31": "NAV-DGPS",
     b"\x01\x04": "NAV-DOP",
     b"\x01\x3d": "NAV-EELL",
+    b"\x01\x40": "NAV-EKFSTATUS",  # deprecated, use ESF-STATUS and ESF-MEAS
     b"\x01\x61": "NAV-EOE",
     b"\x01\x39": "NAV-GEOFENCE",
     b"\x01\x13": "NAV-HPPOSECEF",
