@@ -133,7 +133,7 @@ UBX_MSGIDS = {
     b"\x06\x70": "CFG-DGNSS",
     b"\x06\x61": "CFG-DOSC",
     b"\x06\x85": "CFG-DYNSEED",
-    b"\06\x12": "CFG-EKF",
+    b"\x06\x12": "CFG-EKF",
     b"\x06\x56": "CFG-ESFALG",
     b"\x06\x4c": "CFG-ESFA",
     b"\x06\x4d": "CFG-ESFG",
