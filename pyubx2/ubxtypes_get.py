@@ -1468,16 +1468,18 @@ UBX_PAYLOADS_GET = {
         "txErrors": (
             X1,
             {
-                "txErrorMem": U1,
-                "txErrorAlloc": U1,
+                "mem": U1,
+                "alloc": U1,
             },
         ),
         "reserved0": U1,
-        "protIds1": U1,
-        "protIds2": U1,
-        "protIds3": U1,
-        "protIds4": U1,
-        "group": (
+        "protgroup": (
+            4,
+            {  # repeating group * 4
+                "protIds": U1,
+            },
+        ),
+        "portsgroup": (
             "nPorts",
             {  # repeating group * nPorts
                 "portId": U2,
@@ -1490,10 +1492,12 @@ UBX_PAYLOADS_GET = {
                 "rxUsage": U1,
                 "rxPeakUsage": U1,
                 "overrunErrs": U2,
-                "msgs1": U2,
-                "msgs2": U2,
-                "msgs3": U2,
-                "msgs4": U2,
+                "msggroup": (
+                    4,
+                    {
+                        "msgs": U2,
+                    },
+                ),
                 "reserved1": U8,
                 "skipped": U4,
             },
@@ -1510,7 +1514,7 @@ UBX_PAYLOADS_GET = {
                 "GalileoSup": U1,
             },
         ),
-        "default": (
+        "defaultGnss": (
             X1,
             {
                 "GPSDef": U1,
@@ -1529,7 +1533,7 @@ UBX_PAYLOADS_GET = {
             },
         ),
         "simultaneous": U1,
-        "reserved1": U3,
+        "reserved0": U3,
     },
     "MON-HW": {
         "pinSel": X4,
@@ -1549,16 +1553,16 @@ UBX_PAYLOADS_GET = {
                 "xtalAbsent": U1,
             },
         ),
-        "reserved1": U1,
+        "reserved0": U1,
         "usedMask": X4,
         "groupVP": (
-            25,
+            17,
             {
                 "VP": X1,
             },
-        ),  # repeating group * 25
+        ),  # repeating group * 17
         "jamInd": U1,
-        "reserved3": U2,
+        "reserved1": U2,
         "pinIrq": X4,
         "pullH": X4,
         "pullL": X4,
@@ -1571,8 +1575,7 @@ UBX_PAYLOADS_GET = {
         "cfgSource": U1,
         "reserved0": U3,
         "lowLevCfg": U4,
-        "reserved11": U4,
-        "reserved12": U4,
+        "reserved1": U8,
         "postStatus": U4,
         "reserved2": U4,
     },
@@ -1589,22 +1592,27 @@ UBX_PAYLOADS_GET = {
         ),
         "hwVersion": C10,
         "reserved0": U9,
-        "pinId": U2,
-        "pinMask": (
-            X2,
+        "pingroup": (  # repeating group * nPins
+            "nPins",
             {
-                "periphPIO": U1,
-                "pinBank": U3,
-                "direction": U1,
-                "pinValue": U1,
-                "vpManager": U1,
-                "pioIrq": U1,
-                "pioPullHigh": U1,
-                "pioPullLow": U1,
+                "pinId": U2,
+                "pinMask": (
+                    X2,
+                    {
+                        "periphPIO": U1,
+                        "pinBank": U3,
+                        "direction": U1,
+                        "pinValue": U1,
+                        "vpManager": U1,
+                        "pioIrq": U1,
+                        "pioPullHigh": U1,
+                        "pioPullLow": U1,
+                    },
+                ),
+                "VP": U1,
+                "reserved1": U1,
             },
         ),
-        "VP": U1,
-        "reserved1": U1,
     },
     "MON-IO": {
         "rxBytes": U4,
@@ -1664,14 +1672,14 @@ UBX_PAYLOADS_GET = {
     "MON-PATCH": {
         "version": U2,
         "nEntries": U2,
-        "group": (
+        "group": (  # repeating group * nEntries
             "nEntries",
-            {  # repeating group * nEntries
+            {
                 "patchInfo": (
                     X4,
                     {
-                        "patchActivated": U1,
-                        "patchLocation": U2,
+                        "activated": U1,
+                        "location": U2,
                     },
                 ),
                 "comparatorNumber": U4,
@@ -1684,9 +1692,9 @@ UBX_PAYLOADS_GET = {
         "version": U1,
         "nBlocks": U1,
         "reserved0": U2,
-        "group": (
+        "group": (  # repeating group * nBlocks
             "nBlocks",
-            {  # repeating group * nBlocks
+            {
                 "blockId": U1,
                 "flags": (
                     X1,
@@ -1752,7 +1760,7 @@ UBX_PAYLOADS_GET = {
         "extOsc": (
             X2,
             {
-                "extscState": U4,
+                "extOscState": U4,
                 "extOscCalib": U1,
                 "extOscDisc": U1,
             },
@@ -1785,9 +1793,9 @@ UBX_PAYLOADS_GET = {
         "version": U1,
         "numRfBlocks": U1,
         "reserved0": U2,
-        "group": (
+        "group": (  # repeating group * numRfBlocks
             "numRfBlocks",
-            {  # repeating group * numRfBlocks
+            {
                 "spectrum": A256,  # parsed as array of 256 integers
                 "span": U4,
                 "res": U4,
@@ -1802,18 +1810,18 @@ UBX_PAYLOADS_GET = {
         "numSensor": U1,
         "numRes": U1,
         "reserved0": U1,
-        "groupSensor": (
+        "groupSensor": (  # repeating group * numSensor
             "numSensor",
-            {  # repeating group * numSensor
+            {
                 "sensorId": U1,
                 "drvVer": X1,
                 "testState": U1,
                 "drvFileName": U1,
             },
         ),
-        "groupRes": (
+        "groupRes": (  # repeating group * numRes
             "numRes",
-            {  # repeating group * numRes
+            {
                 "sensorIdRes": U2,
                 "sensorType": U2,
                 "resType": U2,
@@ -1823,35 +1831,35 @@ UBX_PAYLOADS_GET = {
         ),
     },
     "MON-TXBUF": {
-        "groupPending": (
+        "groupPending": (  # repeating group * 6
             6,
             {
                 "pending": U2,
             },
-        ),  # repeating group * 6
-        "groupUsage": (
+        ),
+        "groupUsage": (  # repeating group * 6
             6,
             {
                 "usage": U1,
             },
-        ),  # repeating group * 6
-        "groupPeakUsage": (
+        ),
+        "groupPeakUsage": (  # repeating group * 6
             6,
             {
                 "peakUsage": U1,
             },
-        ),  # repeating group * 6
+        ),
         "tUsage": U1,
         "tPeakUsage": U1,
         "errors": (
             X1,
             {
-                "txErrorLimit": U6,
-                "txErrorMem": U1,
-                "txErrorAlloc": U1,
+                "limit": U6,
+                "lem": U1,
+                "alloc": U1,
             },
         ),
-        "reserved1": U1,
+        "reserved0": U1,
     },
     "MON-VER": {
         "swVersion": C30,
