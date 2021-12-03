@@ -257,15 +257,39 @@ UBX_PAYLOADS_SET = {
     "CFG-USB": UBX_GET["CFG-USB"],
     "CFG-VALDEL": {
         "version": U1,  # = 0 no transaction, 1 with transaction
-        "layers": X1,
-        "transaction": X1,  # if version = 1, else reserved
+        "layers": (
+            X1,
+            {
+                "reserved1": U1,
+                "bbr": U1,
+                "flash": U1,
+            },
+        ),
+        "transaction": (  # if version = 1, else reserved
+            X1,
+            {
+                "action": U2,
+            },
+        ),
         "reserved0": U1,
         "group": ("None", {"keys": U4}),  # repeating group
     },
     "CFG-VALSET": {
         "version": U1,  # = 0 no transaction, 1 with transaction
-        "layers": X1,
-        "transaction": U1,  # if version = 1, else reserved
+        "layers": (
+            X1,
+            {
+                "ram": U1,
+                "bbr": U1,
+                "flash": U1,
+            },
+        ),
+        "transaction": (  # if version = 1, else reserved
+            X1,
+            {
+                "action": U2,
+            },
+        ),
         "reserved0": U1,
         "group": ("None", {"cfgData": U1}),  # repeating group
     },

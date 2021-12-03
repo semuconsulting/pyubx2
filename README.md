@@ -253,7 +253,7 @@ keyID (int) or keyname (str) format
 >>> cfgData = [("CFG_UART1_BAUDRATE", 9600), (0x40530001, 115200)]
 >>> msg = UBXMessage.config_set(layers, transaction, cfgData)
 >>> print(msg)
-<UBX(CFG-VALSET, version=0, layers=b'\x01', transaction=0, reserved0=0, cfgData_01=1, cfgData_02=0 ...)>
+<UBX(CFG-VALSET, version=0, ram=1, bbr=0, flash=0, action=0, reserved0=0, cfgData_01=1, cfgData_02=0 ...)>
 >>> serialOut.write(msg.serialize())
 ```
 
@@ -274,7 +274,7 @@ Parameters:
 >>> keys = ["CFG_UART1_BAUDRATE", 0x40530001]
 >>> msg = UBXMessage.config_del(layers, transaction, keys)
 >>> print(msg)
-<UBX(CFG-VALDEL, version=0, layers=b'\x04', transaction=b'\x00', reserved0=0, keys_01=1079115777, keys_02=1079181313)>
+<UBX(CFG-VALDEL, version=0, bbr=0, flash=1, action=0, reserved0=0, keys_01=1079115777, keys_02=1079181313)>
 >>> serialOut.write(msg.serialize())
 ```
 

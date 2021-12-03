@@ -44,7 +44,7 @@ class ConfigTest(unittest.TestCase):
         self.assertEqual(str(res), EXPECTED_RESULT)
 
     def testFill_CFGVALDEL(self):  #  test CFG-VALDEL SET constructor
-        EXPECTED_RESULT = "<UBX(CFG-VALDEL, version=0, layers=b'\\x03', transaction=b'\\x00', reserved0=0, keys_01=1079115777, keys_02=16798528)>"
+        EXPECTED_RESULT = "<UBX(CFG-VALDEL, version=0, bbr=1, flash=0, action=0, reserved0=0, keys_01=1079115777, keys_02=16798528)>"
         res = UBXMessage(
             "CFG",
             "CFG-VALDEL",
@@ -54,7 +54,7 @@ class ConfigTest(unittest.TestCase):
         self.assertEqual(str(res), EXPECTED_RESULT)
 
     def testFill_CFGVALSET(self):  #  test CFG-VALSET SET constructor
-        EXPECTED_RESULT = "<UBX(CFG-VALSET, version=0, layers=b'\\x03', transaction=0, reserved0=0, cfgData_01=1, cfgData_02=0, cfgData_03=82, cfgData_04=64, cfgData_05=128, cfgData_06=37, cfgData_07=0, cfgData_08=0)>"
+        EXPECTED_RESULT = "<UBX(CFG-VALSET, version=0, ram=1, bbr=1, flash=0, action=0, reserved0=0, cfgData_01=1, cfgData_02=0, cfgData_03=82, cfgData_04=64, cfgData_05=128, cfgData_06=37, cfgData_07=0, cfgData_08=0)>"
         res = UBXMessage(
             "CFG",
             "CFG-VALSET",
