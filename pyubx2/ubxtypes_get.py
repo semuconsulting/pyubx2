@@ -34,6 +34,7 @@ from pyubx2.ubxtypes_core import (
     U7,
     U8,
     U9,
+    U10,
     U11,
     U12,
     U20,
@@ -1871,7 +1872,7 @@ UBX_PAYLOADS_GET = {
     # Messages in the NAV class are used to output navigation data such as position, altitude and velocity in a
     # number of formats. Additionally, status flags and accuracy figures are output. The messages are generated with
     # the configured navigation/measurement rate.
-    "NAV-AOPSTATUS": {
+    "NAV-AOPSTATUS-L": {  # long 20 version for M6
         "iTOW": U4,
         "config": U1,
         "status": U1,
@@ -1880,6 +1881,12 @@ UBX_PAYLOADS_GET = {
         "avail": U4,
         "reserved2": U4,
         "reserved3": U4,
+    },
+    "NAV-AOPSTATUS": {  # short 16 version for M8
+        "iTOW": U4,
+        "aopCfg": U1,
+        "status": U1,
+        "reserved1": U10,
     },
     "NAV-ATT": {
         "iTOW": U4,

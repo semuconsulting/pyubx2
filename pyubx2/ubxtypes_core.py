@@ -62,6 +62,7 @@ U6 = "U006"  # Unsigned Int 6 bytes
 U7 = "U007"  # Unsigned Int 7 bytes
 U8 = "U008"  # Unsigned Int 8 bytes
 U9 = "U009"  # Unsigned Int 9 bytes
+U10 = "U010"  # Unsigned Int 10 bytes
 U11 = "U011"  # Unsigned Int 11 bytes
 U12 = "U012"  # Unsigned Int 12 bytes
 U20 = "U020"  # Unsigned Int 20 bytes

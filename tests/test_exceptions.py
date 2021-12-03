@@ -239,6 +239,15 @@ class ExceptionTest(unittest.TestCase):
         with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
             UBXMessage("RXM", "RXM-PMP", GET, timeTag=0)
 
+    def testFill_AOPSTATUS(
+        self,
+    ):  #  test NAV_RELPOSNED GET constructor without version or payload keyword
+        EXPECTED_ERROR = (
+            "NAV-AOPSTATUS message definitions must include payload keyword"
+        )
+        with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
+            UBXMessage("NAV", "NAV-AOPSTATUS", GET, config=1, status=2)
+
     def testFill_RELPOSNED(
         self,
     ):  #  test NAV_RELPOSNED GET constructor without version or payload keyword

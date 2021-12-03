@@ -441,6 +441,8 @@ class UBXMessage:
                 pdict = self._get_rxmrlm_version(**kwargs)
             elif self._ubxClass == b"\x06" and self._ubxID == b"\x17":  # CFG-NMEA
                 pdict = self._get_cfgnmea_version(**kwargs)
+            elif self._ubxClass == b"\x01" and self._ubxID == b"\x60":  # NAV-AOPSTATUS
+                pdict = self._get_aopstatus_version(**kwargs)
             elif self._ubxClass == b"\x01" and self._ubxID == b"\x3C":  # NAV-RELPOSNED
                 pdict = self._get_relposned_version(**kwargs)
             else:
@@ -582,6 +584,31 @@ class UBXMessage:
             pdict = ubg.UBX_PAYLOADS_GET["CFG-NMEAv0"]
         else:
             pdict = ubg.UBX_PAYLOADS_GET["CFG-NMEA"]
+        return pdict
+
+    def _get_aopstatus_version(self, **kwargs) -> dict:
+        """
+        Select appropriate payload definition version for older
+        generations of NAV-AOPSTATUS message by checking payload length.
+
+        :param kwargs: optional payload key/value pairs
+        :return: dictionary representing payload definition
+        :rtype: dict
+        :raises: UBXMessageError
+
+        """
+        # pylint: disable=no-self-use
+
+        if "payload" in kwargs:
+            lpd = len(kwargs["payload"])
+        else:
+            raise ube.UBXMessageError(
+                "NAV-AOPSTATUS message definitions must include payload keyword"
+            )
+        if lpd == 20:
+            pdict = ubg.UBX_PAYLOADS_GET["NAV-AOPSTATUS-L"]
+        else:
+            pdict = ubg.UBX_PAYLOADS_GET["NAV-AOPSTATUS"]
         return pdict
 
     def _get_relposned_version(self, **kwargs) -> dict:

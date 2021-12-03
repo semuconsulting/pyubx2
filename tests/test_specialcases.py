@@ -198,6 +198,26 @@ class SpecialTest(unittest.TestCase):
         self.assertEqual(str(res), EXPECTED_RESULT)
         # self.assertEqual(str(res2), EXPECTED_RESULT)
 
+    def testFill_AOPSTATUSL(self):  # testNAV-AOPSTATUS M6 constructor
+        EXPECTED_RESULT = "<UBX(NAV-AOPSTATUS, iTOW=18:41:29.985000, config=1, status=2, reserved0=0, reserved1=0, avail=67305985, reserved2=67305985, reserved3=67305985)>"
+        res = UBXMessage(
+            "NAV",
+            "NAV-AOPSTATUS",
+            GET,
+            payload=b"\x01\x02\x03\x04\x01\x02\x00\x00\x01\x02\x03\x04\x01\x02\x03\x04\x01\x02\x03\x04",
+        )
+        self.assertEqual(str(res), EXPECTED_RESULT)
+
+    def testFill_AOPSTATUS(self):  # testNAV-AOPSTATUS M8 constructor
+        EXPECTED_RESULT = "<UBX(NAV-AOPSTATUS, iTOW=18:41:29.985000, aopCfg=1, status=2, reserved1=42649378395939397566720)>"
+        res = UBXMessage(
+            "NAV",
+            "NAV-AOPSTATUS",
+            GET,
+            payload=b"\x01\x02\x03\x04\x01\x02\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09",
+        )
+        self.assertEqual(str(res), EXPECTED_RESULT)
+
     def testFill_TIMVCOCAL_v0(self):  # test TIM-VCOCAL-V0 constructor
         EXPECTED_RESULT = "<UBX(TIM-VCOCAL, type=0)>"
         res = UBXMessage(
