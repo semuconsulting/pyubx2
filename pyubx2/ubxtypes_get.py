@@ -3149,7 +3149,7 @@ UBX_PAYLOADS_GET = {
             },
         ),  # repeating group * 504
         "fecBits": U2,
-        "ebno": U1,
+        "ebno": [U1, 0.125],
         "reserved1": U1,
     },
     "RXM-PMP-V1": {
@@ -3163,7 +3163,7 @@ UBX_PAYLOADS_GET = {
         "spare": U1,
         "uniqueWordBitErrors": U1,
         "fecBits": U2,
-        "ebno": U1,
+        "ebno": [U1, 0.125],
         "reserved1": U1,
         "groupUserData": (
             "numBytesUserData",
