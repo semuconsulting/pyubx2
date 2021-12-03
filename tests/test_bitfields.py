@@ -30,7 +30,7 @@ class ParseTest(unittest.TestCase):
         res = UBXReader.parse(self.nav_sat2)
         self.assertEqual(
             str(res),
-            "<UBX(NAV-SAT, iTOW=23:59:44, version=1, numCh=1, reserved11=0, reserved12=0, gnssId_01=GPS, svId_01=0, cno_01=43, elev_01=42, azim_01=240, prRes_01=-0.3, qualityInd_01=7, svUsed_01=0, health_01=0, diffCorr_01=0, smoothed_01=0, orbitSource_01=7, ephAvail_01=0, almAvail_01=0, anoAvail_01=0, aopAvail_01=0, sbasCorrUsed_01=0, rtcmCorrUsed_01=0, slasCorrUsed_01=0, spartnCorrUsed_01=0, prCorrUsed_01=0, crCorrUsed_01=0, doCorrUsed_01=0)>",
+            "<UBX(NAV-SAT, iTOW=23:59:44, version=1, numSvs=1, reserved0=0, gnssId_01=GPS, svId_01=0, cno_01=43, elev_01=42, azim_01=240, prRes_01=-0.3, qualityInd_01=7, svUsed_01=0, health_01=0, diffCorr_01=0, smoothed_01=0, orbitSource_01=7, ephAvail_01=0, almAvail_01=0, anoAvail_01=0, aopAvail_01=0, sbasCorrUsed_01=0, rtcmCorrUsed_01=0, slasCorrUsed_01=0, spartnCorrUsed_01=0, prCorrUsed_01=0, crCorrUsed_01=0, doCorrUsed_01=0)>",
         )
 
     def testNavSat3(
@@ -39,7 +39,7 @@ class ParseTest(unittest.TestCase):
         res = UBXReader.parse(self.nav_sat3)
         self.assertEqual(
             str(res),
-            "<UBX(NAV-SAT, iTOW=23:59:44, version=1, numCh=1, reserved11=0, reserved12=0, gnssId_01=GPS, svId_01=0, cno_01=43, elev_01=42, azim_01=240, prRes_01=-0.3, qualityInd_01=3, svUsed_01=0, health_01=0, diffCorr_01=0, smoothed_01=0, orbitSource_01=4, ephAvail_01=0, almAvail_01=0, anoAvail_01=0, aopAvail_01=0, sbasCorrUsed_01=0, rtcmCorrUsed_01=1, slasCorrUsed_01=0, spartnCorrUsed_01=0, prCorrUsed_01=0, crCorrUsed_01=0, doCorrUsed_01=0)>",
+            "<UBX(NAV-SAT, iTOW=23:59:44, version=1, numSvs=1, reserved0=0, gnssId_01=GPS, svId_01=0, cno_01=43, elev_01=42, azim_01=240, prRes_01=-0.3, qualityInd_01=3, svUsed_01=0, health_01=0, diffCorr_01=0, smoothed_01=0, orbitSource_01=4, ephAvail_01=0, almAvail_01=0, anoAvail_01=0, aopAvail_01=0, sbasCorrUsed_01=0, rtcmCorrUsed_01=1, slasCorrUsed_01=0, spartnCorrUsed_01=0, prCorrUsed_01=0, crCorrUsed_01=0, doCorrUsed_01=0)>",
         )
 
     def testNavSat4(
@@ -48,7 +48,7 @@ class ParseTest(unittest.TestCase):
         res = UBXReader.parse(self.nav_sat4)
         self.assertEqual(
             str(res),
-            "<UBX(NAV-SAT, iTOW=23:59:44, version=1, numCh=1, reserved11=0, reserved12=0, gnssId_01=GPS, svId_01=0, cno_01=43, elev_01=42, azim_01=240, prRes_01=-0.3, qualityInd_01=2, svUsed_01=1, health_01=0, diffCorr_01=0, smoothed_01=0, orbitSource_01=5, ephAvail_01=0, almAvail_01=1, anoAvail_01=0, aopAvail_01=0, sbasCorrUsed_01=1, rtcmCorrUsed_01=1, slasCorrUsed_01=1, spartnCorrUsed_01=1, prCorrUsed_01=1, crCorrUsed_01=0, doCorrUsed_01=1)>",
+            "<UBX(NAV-SAT, iTOW=23:59:44, version=1, numSvs=1, reserved0=0, gnssId_01=GPS, svId_01=0, cno_01=43, elev_01=42, azim_01=240, prRes_01=-0.3, qualityInd_01=2, svUsed_01=1, health_01=0, diffCorr_01=0, smoothed_01=0, orbitSource_01=5, ephAvail_01=0, almAvail_01=1, anoAvail_01=0, aopAvail_01=0, sbasCorrUsed_01=1, rtcmCorrUsed_01=1, slasCorrUsed_01=1, spartnCorrUsed_01=1, prCorrUsed_01=1, crCorrUsed_01=0, doCorrUsed_01=1)>",
         )
 
     def testNavSat5(self):  # check message bytes match original byte stream
@@ -63,9 +63,7 @@ class ParseTest(unittest.TestCase):
             "NAV-SAT",
             GET,
             version=1,
-            numCh=1,
-            reserved11=0,
-            reserved12=0,
+            numSvs=1,
             gnssId_01=0,
             svId_01=0,
             cno_01=43,
@@ -92,7 +90,7 @@ class ParseTest(unittest.TestCase):
         )
         self.assertEqual(
             str(res),
-            "<UBX(NAV-SAT, iTOW=23:59:44, version=1, numCh=1, reserved11=0, reserved12=0, gnssId_01=GPS, svId_01=0, cno_01=43, elev_01=42, azim_01=240, prRes_01=-0.30000000000000004, qualityInd_01=2, svUsed_01=1, health_01=0, diffCorr_01=0, smoothed_01=0, orbitSource_01=5, ephAvail_01=0, almAvail_01=1, anoAvail_01=0, aopAvail_01=0, sbasCorrUsed_01=1, rtcmCorrUsed_01=1, slasCorrUsed_01=1, spartnCorrUsed_01=1, prCorrUsed_01=1, crCorrUsed_01=0, doCorrUsed_01=1)>",
+            "<UBX(NAV-SAT, iTOW=23:59:44, version=1, numSvs=1, reserved0=0, gnssId_01=GPS, svId_01=0, cno_01=43, elev_01=42, azim_01=240, prRes_01=-0.30000000000000004, qualityInd_01=2, svUsed_01=1, health_01=0, diffCorr_01=0, smoothed_01=0, orbitSource_01=5, ephAvail_01=0, almAvail_01=1, anoAvail_01=0, aopAvail_01=0, sbasCorrUsed_01=1, rtcmCorrUsed_01=1, slasCorrUsed_01=1, spartnCorrUsed_01=1, prCorrUsed_01=1, crCorrUsed_01=0, doCorrUsed_01=1)>",
         )
         self.assertEqual(res.serialize(), self.nav_sat4)
 

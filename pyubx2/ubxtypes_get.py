@@ -1927,11 +1927,17 @@ UBX_PAYLOADS_GET = {
         "numCh": U1,
         "status": U1,
         "reserved1": U2,
-        "channels": (
+        "channels": (  # repeating group * numCh
             "numCh",
-            {  # repeating group * numCh
+            {
                 "svid": U1,
-                "flags": U1,
+                "flags": (
+                    X1,
+                    {
+                        "channel": U4,
+                        "dgpsUsed": U1,
+                    },
+                ),
                 "ageC": U2,
                 "prc": R4,
                 "prrc": R4,
@@ -1951,7 +1957,7 @@ UBX_PAYLOADS_GET = {
     "NAV-EELL": {
         "iTOW": U4,
         "version": U1,
-        "reserved1": U1,
+        "reserved0": U1,
         "errEllipseOrient": [U2, SCAL2],
         "errEllipseMajor": U4,
         "errEllipseMinor": U4,
@@ -1962,6 +1968,34 @@ UBX_PAYLOADS_GET = {
         "gyroMean": [U4, SCAL2],
         "temperature": [I2, 2 ** -8],
         "direction": I1,
+        "calibStatus": (
+            X1,
+            {
+                "calibTacho": U2,
+                "calibGyro": U2,
+                "calibGyroB": U2,
+            },
+        ),
+        "pulseScale": [I4, SCAL5],
+        "gyroBias": [I4, SCAL5],
+        "gyroScale": [I4, SCAL5],
+        "accPulseScale": [I4, SCAL4],
+        "accGyroBias": [I4, SCAL4],
+        "accGyroScale": [I4, SCAL4],
+        "measUsed": (
+            X1,
+            {
+                "pulse": U1,
+                "dir": U1,
+                "gyro": U1,
+                "temp": U1,
+                "pos": U1,
+                "vel": U1,
+                "errGyro": U1,
+                "errPulse": U1,
+            },
+        ),
+        "reserved2": U1,
     },
     "NAV-EOE": {"iTOW": U4},
     "NAV-GEOFENCE": {
@@ -1970,14 +2004,14 @@ UBX_PAYLOADS_GET = {
         "status": U1,
         "numFences": U1,
         "combState": U1,
-        "group": (
+        "group": (  # repeating group * numFences
             "numFences",
-            {"state": U1, "reserved1": U1},  # repeating group * numFences
+            {"state": U1, "reserved1": U1},
         ),
     },
     "NAV-HPPOSECEF": {
         "version": U1,
-        "reserved1": U3,
+        "reserved0": U3,
         "iTOW": U4,
         "ecefX": I4,
         "ecefY": I4,
@@ -1995,7 +2029,7 @@ UBX_PAYLOADS_GET = {
     },
     "NAV-HPPOSLLH": {
         "version": U1,
-        "reserved": U2,
+        "reserved0": U2,
         "flags": (
             X1,
             {
@@ -2091,10 +2125,10 @@ UBX_PAYLOADS_GET = {
         "iTOW": U4,
         "version": U1,
         "numSv": U1,
-        "reserved1": U2,
-        "group": (
+        "reserved0": U2,
+        "group": (  # repeating group * numSv
             "numSv",
-            {  # repeating group * numSv
+            {
                 "gnssId": U1,
                 "svId": U1,
                 "svFlag": (
@@ -2153,7 +2187,6 @@ UBX_PAYLOADS_GET = {
                 "validTime": U1,
                 "fullyResolved": U1,
                 "validMag": U1,
-                "reserved": U4,
             },
         ),
         "tAcc": U4,
@@ -2200,7 +2233,7 @@ UBX_PAYLOADS_GET = {
                 "lastCorrectionAge": U4,
             },
         ),
-        "reserved1": U4,
+        "reserved0": U5,
         "headVeh": [I4, SCAL5],
         "magDec": [I2, SCAL2],
         "magAcc": [U2, SCAL2],
@@ -2274,12 +2307,11 @@ UBX_PAYLOADS_GET = {
     "NAV-SAT": {
         "iTOW": U4,
         "version": U1,
-        "numCh": U1,
-        "reserved11": I1,
-        "reserved12": I1,
-        "group": (
-            "numCh",
-            {  # repeating group * numCh
+        "numSvs": U1,
+        "reserved0": U2,
+        "group": (  # repeating group * numSvs
+            "numSvs",
+            {
                 "gnssId": U1,
                 "svId": U1,
                 "cno": U1,
@@ -2327,25 +2359,25 @@ UBX_PAYLOADS_GET = {
                 "Bad": U1,
             },
         ),
-        "numCh": U1,
+        "cnt": U1,
         "statusFlags": (
             X1,
             {
                 "integrityUsed": U2,
             },
         ),
-        "reserved0": U2,
-        "channels": (
-            "numCh",
-            {  # repeating group * numCh
+        "reserved1": U2,
+        "channels": (  # repeating group * cnt
+            "cnt",
+            {
                 "svid": U1,
                 "flags": U1,
                 "udre": U1,
                 "svSys": U1,
                 "svService": U1,
-                "reserved1": U1,
+                "reserved2": U1,
                 "prc": I2,
-                "reserved2": U2,
+                "reserved3": U2,
                 "ic": I2,
             },
         ),
@@ -2387,7 +2419,7 @@ UBX_PAYLOADS_GET = {
     "NAV-SLAS": {
         "iTOW": U4,
         "version": U1,
-        "reserved1": U3,
+        "reserved0": U3,
         "gmsLon": [I4, SCAL3],
         "gmsLat": [I4, SCAL3],
         "gmsCode": U1,
@@ -2401,13 +2433,13 @@ UBX_PAYLOADS_GET = {
             },
         ),
         "cnt": U1,
-        "group": (
+        "group": (  # repeating group * cnt
             "cnt",
-            {  # repeating group * cnt
+            {
                 "gnssID": U1,
                 "svId": U1,
-                "reserved2": U1,
-                "reserved3": U3,
+                "reserved1": U1,
+                "reserved2": U3,
                 "prc": I2,
             },
         ),
@@ -2473,6 +2505,24 @@ UBX_PAYLOADS_GET = {
         "ttff": U4,
         "msss": U4,
     },
+    "NAV-SVIN": {
+        "version": U1,
+        "reserved1": U3,
+        "iTOW": U4,
+        "dur": U4,
+        "meanX": I4,
+        "meanY": I4,
+        "meanZ": I4,
+        "meanXHP": I1,
+        "meanYHP": I1,
+        "meanZHP": I1,
+        "reserved2": U1,
+        "meanAcc": U4,
+        "obs": U4,
+        "valid": U1,
+        "active": U1,
+        "reserved3": U2,
+    },
     "NAV-SVINFO": {  # deprecated - use NAV-SAT
         "iTOW": U4,
         "numCh": U1,
@@ -2482,7 +2532,7 @@ UBX_PAYLOADS_GET = {
                 "chipGen": U3,
             },
         ),
-        "reserved2": U2,
+        "reserved1": U2,
         "channels": (
             "numCh",
             {  # repeating group * numCh
@@ -2513,24 +2563,6 @@ UBX_PAYLOADS_GET = {
                 "prRes": I4,
             },
         ),
-    },
-    "NAV-SVIN": {
-        "version": U1,
-        "reserved1": U3,
-        "iTOW": U4,
-        "dur": U4,
-        "meanX": I4,
-        "meanY": I4,
-        "meanZ": I4,
-        "meanXHP": I1,
-        "meanYHP": I1,
-        "meanZHP": I1,
-        "reserved2": U1,
-        "meanAcc": U4,
-        "obs": U4,
-        "valid": U1,
-        "active": U1,
-        "reserved3": U2,
     },
     "NAV-TIMEBDS": {
         "iTOW": U4,
@@ -2597,7 +2629,7 @@ UBX_PAYLOADS_GET = {
     "NAV-TIMELS": {
         "iTOW": U4,
         "version": U1,
-        "reserved1": U3,
+        "reserved0": U3,
         "srcOfCurrLs": U1,
         "currLs": I1,
         "srcOfLsChange": U1,
@@ -2605,7 +2637,7 @@ UBX_PAYLOADS_GET = {
         "timeToLsEvent": I4,
         "dateOfLsGpsWn": U2,
         "dateOfLsGpsDn": U2,
-        "reserved2": U3,
+        "reserved1": U3,
         "valid": (
             X1,
             {
