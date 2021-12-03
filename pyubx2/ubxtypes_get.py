@@ -3122,7 +3122,7 @@ UBX_PAYLOADS_GET = {
                 "shortIdFrame": (
                     X4,
                     {
-                        "shortId": U11,
+                        "shortId": U12,
                         "shortValid": U1,
                         "shortBoundary": U1,
                     },
@@ -3179,8 +3179,8 @@ UBX_PAYLOADS_GET = {
         ),
     },
     "RXM-PMP-V0": {
-        "version": U1,
-        "reserved0": U1,
+        "version": U1,  # 0x00
+        "reserved0": U3,
         "timeTag": U4,
         "uniqueWord1": U4,
         "uniqueWord2": U4,
@@ -3198,7 +3198,7 @@ UBX_PAYLOADS_GET = {
         "reserved1": U1,
     },
     "RXM-PMP-V1": {
-        "version": U1,
+        "version": U1,  # 0x01
         "reserved0": U1,
         "numBytesUserData": U2,
         "timeTag": U4,
@@ -3240,7 +3240,13 @@ UBX_PAYLOADS_GET = {
         "week": U2,
         "leapS": I1,
         "numMeas": U1,
-        "recStat": X1,
+        "recStat": (
+            X1,
+            {
+                "leapSec": U1,
+                "clkReset": U1,
+            },
+        ),
         "reserved1": U3,
         "group": (
             "numMeas",
@@ -3254,9 +3260,24 @@ UBX_PAYLOADS_GET = {
                 "freqId": U1,
                 "locktime": U2,
                 "cno": U1,
-                "prStdev": X1,  # scaling = 0.01*2^-n
-                "cpStdev": X1,  # scaling = 0.004
-                "doStdev": X1,  # scaling = 0.002*2^n
+                "prStdev": (
+                    X1,  # scaling = 0.01*2^-n
+                    {
+                        "prStd": U4,
+                    },
+                ),
+                "cpStdev": (
+                    X1,  # scaling = 0.004
+                    {
+                        "cpStd": U4,
+                    },
+                ),
+                "doStdev": (
+                    X1,  # scaling = 0.002*2^n
+                    {
+                        "doStd": U4,
+                    },
+                ),
                 "trkStat": (
                     X1,
                     {
@@ -3275,15 +3296,9 @@ UBX_PAYLOADS_GET = {
         "type": U1,  # 0x01
         "svId": U1,
         "reserved0": U1,
-        "groupBeacon": (
-            8,
-            {
-                "beacon": U1,
-            },
-        ),
+        "beacon": U8,
         "message": U1,
-        "params1": U1,
-        "params2": U1,
+        "params": U2,
         "reserved1": U1,
     },
     "RXM-RLM-L": {
@@ -3291,24 +3306,20 @@ UBX_PAYLOADS_GET = {
         "type": U1,  # 0x02
         "svId": U1,
         "reserved0": U1,
-        "groupBeacon": (
-            8,
-            {
-                "beacon": U1,
-            },
-        ),
+        "beacon": U8,
         "message": U1,
-        "groupParams": (
-            12,
-            {
-                "params": U1,
-            },
-        ),
+        "params": U12,
         "reserved1": U3,
     },
     "RXM-RTCM": {
-        "version": U1,
-        "flags": X1,
+        "version": U1,  # 0x02
+        "flags": (
+            X1,
+            {
+                "crcFailed": U1,
+                "msgUsed": U2,
+            },
+        ),
         "subType": U2,
         "refStation": U2,
         "msgType": U2,
@@ -3358,6 +3369,40 @@ UBX_PAYLOADS_GET = {
     # ********************************************************************
     # Security Feature Messages
     # Messages in the SEC class are used for security features of the receiver.
+    "SEC-SIG": {
+        "version": U1,  # 0x01
+        "reserved0": U3,
+        "jamFlags": (
+            X1,
+            {
+                "jamDetEnabled": U1,
+                "jammingState": U2,
+            },
+        ),
+        "reserved1": U3,
+        "spfFlags": (
+            X1,
+            {
+                "spfDetEnabled": U1,
+                "spoofingState": U3,
+            },
+        ),
+        "reserved2": U3,
+    },
+    "SEC-SIGLOG": {
+        "version": U1,  # 0x00
+        "numEvents": U1,
+        "reserved0": U6,
+        "group": (
+            "numEvents",
+            {
+                "timeElapsed": U4,
+                "detectionType": U1,
+                "eventType": U1,
+            },
+        ),
+        "reserved1": U2,
+    },
     "SEC-SIGN": {
         "version": U1,
         "reserved1": U3,
@@ -3366,7 +3411,8 @@ UBX_PAYLOADS_GET = {
         "checksum": U2,
         "hash": U32,
     },
-    "SEC-UNIQID": {"version": U1, "reserved1": U3, "uniqueId": U5},
+    "SEC-UNIQID": {"version": U1, "reserved0": U3, "uniqueId": U5},  # 0x01
+    "SEC-UNIQID-V2": {"version": U1, "reserved0": U3, "uniqueId": U6},  # 0x02 for M10
     # ********************************************************************
     # Timing Messages: i.e. Time Pulse Output, Time Mark Results.
     # Messages in the TIM class are used to output timing information from the receiver, like Time Pulse and Time
@@ -3384,14 +3430,14 @@ UBX_PAYLOADS_GET = {
         "extRaw": U4,
     },
     "TIM-SMEAS": {
-        "version": U1,
+        "version": U1,  # 0x00
         "numMeas": U1,
         "reserved1": U2,
         "iTOW": U4,
         "reserved2": U4,
-        "group": (
+        "group": (  # repeating group * numMeas
             "numMeas",
-            {  # repeating group * numMeas
+            {
                 "sourceId": U1,
                 "flags": (
                     X1,
@@ -3400,7 +3446,7 @@ UBX_PAYLOADS_GET = {
                         "phaseValid": U1,
                     },
                 ),
-                "phaseOffsetFr": [I1, 2 ** -8],
+                "phaseOffsetFrac": [I1, 2 ** -8],
                 "phaseUncFrac": [U1, 2 ** -8],
                 "phaseOffset": I4,
                 "phaseUnc": U4,
@@ -3445,7 +3491,7 @@ UBX_PAYLOADS_GET = {
         "accEst": U4,
     },
     "TIM-TOS": {
-        "version": U1,
+        "version": U1,  # 0x00
         "gnssId": U1,
         "reserved11": U2,
         "flags": (
@@ -3473,7 +3519,7 @@ UBX_PAYLOADS_GET = {
         "second": U1,
         "utcStandard": U1,
         "utcOffset": I4,
-        "utcUncertaint": U4,
+        "utcUncertainty": U4,
         "week": U4,
         "TOW": U4,
         "gnssOffset": I4,
@@ -3532,9 +3578,9 @@ UBX_PAYLOADS_GET = {
     # Messages in the UPD class are used to update the firmware and identify any attached flash device.
     "UPD-SOS": {  # System restored from backup
         "cmd": U1,
-        "reserved1": U3,
+        "reserved0": U3,
         "response": U1,
-        "reserved2": U3,
+        "reserved1": U3,
     },
     # ********************************************************************
     # Dummy message for error testing

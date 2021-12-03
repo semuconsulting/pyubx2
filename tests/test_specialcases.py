@@ -98,11 +98,9 @@ class SpecialTest(unittest.TestCase):
         self.assertEqual(str(res), EXPECTED_RESULT)
 
     def testFill_RXMPMREQSET3(self):  #  test RXM-PMREQ SET constructor short version
-        EXPECTED_RESULT = (
-            "<UBX(RXM-PMREQ, duration=67305985, flags=b'\\x01\\x02\\x03\\x04')>"
-        )
+        EXPECTED_RESULT = "<UBX(RXM-PMREQ, duration=67305985, backup=1)>"
         res = UBXMessage(
-            "RXM", "RXM-PMREQ", SET, payload=b"\x01\x02\x03\x04\x01\x02\x03\x04"
+            "RXM", "RXM-PMREQ", SET, payload=b"\x01\x02\x03\x04\x02\x01\x03\x04"
         )
         self.assertEqual(str(res), EXPECTED_RESULT)
 
@@ -121,12 +119,12 @@ class SpecialTest(unittest.TestCase):
         self.assertEqual(str(res), EXPECTED_RESULT)
 
     def testFill_RXMRLMSETS(self):  #  test RXM-RLM GET constructor with type=1 keyword
-        EXPECTED_RESULT = "<UBX(RXM-RLM, version=0, type=1, svId=0, reserved0=0, beacon_01=0, beacon_02=0, beacon_03=0, beacon_04=0, beacon_05=0, beacon_06=0, beacon_07=0, beacon_08=0, message=0, params1=0, params2=0, reserved1=0)>"
+        EXPECTED_RESULT = "<UBX(RXM-RLM, version=0, type=1, svId=0, reserved0=0, beacon=0, message=0, params=0, reserved1=0)>"
         res = UBXMessage("RXM", "RXM-RLM", GET, version=0, type=1)
         self.assertEqual(str(res), EXPECTED_RESULT)
 
     def testFill_RXMPMPSETL(self):  #  test RXM-PMP GET constructor with type=2 keyword
-        EXPECTED_RESULT = "<UBX(RXM-RLM, version=0, type=2, svId=0, reserved0=0, beacon_01=0, beacon_02=0, beacon_03=0, beacon_04=0, beacon_05=0, beacon_06=0, beacon_07=0, beacon_08=0, message=0, params_01=0, params_02=0, params_03=0, params_04=0, params_05=0, params_06=0, params_07=0, params_08=0, params_09=0, params_10=0, params_11=0, params_12=0, reserved1=0)>"
+        EXPECTED_RESULT = "<UBX(RXM-RLM, version=0, type=2, svId=0, reserved0=0, beacon=0, message=0, params=0, reserved1=0)>"
         res = UBXMessage("RXM", "RXM-RLM", GET, version=0, type=2)
         self.assertEqual(str(res), EXPECTED_RESULT)
 

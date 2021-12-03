@@ -878,7 +878,13 @@ UBX_PAYLOADS_SET = {
     # rate is not bound to the navigation/measurement rate and messages can also be generated on events.
     "RXM-PMREQ-S": {
         "duration": U4,
-        "flags": X4,
+        "flags": (
+            X4,
+            {
+                "reserved1": U1,
+                "backup": U1,
+            },
+        ),
     },  # this appears to be a deprecated version
     "RXM-PMREQ": {
         "version": U1,  # 0x00
@@ -909,7 +915,7 @@ UBX_PAYLOADS_SET = {
     # Messages in the TIM class are used to output timing information from the receiver, like Time Pulse and Time
     # Mark measurements.
     "TIM-HOC": {
-        "version": U1,
+        "version": U1,  # 0x00
         "oscId": U1,
         "flags": U1,
         "reserved1": U1,
@@ -932,5 +938,8 @@ UBX_PAYLOADS_SET = {
     # ********************************************************************
     # Firmware Update Messages: i.e. Memory/Flash erase/write, Reboot, Flash identification, etc..
     # Messages in the UPD class are used to update the firmware and identify any attached flash device.
-    "UPD-SOS": {"cmd": U1, "reserved1": U3},  # Create or clear backup in flash
+    "UPD-SOS": {
+        "cmd": U1,  # 0x00 to create backup in flash, 0x01 to clear backup
+        "reserved0": U3,
+    },
 }
