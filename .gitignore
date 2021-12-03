@@ -17,6 +17,7 @@ Pipfile*.*
 /__pycache__
 /.dbeaver
 /pyubx2/__pycache__
+/tests/__pycache__
 *.pyc
 /examples/ubxsandpit.py
 /examples/temp*.py
