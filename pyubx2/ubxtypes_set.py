@@ -328,8 +328,13 @@ UBX_PAYLOADS_SET = {
     # Messages in the LOG class are used to configure and report status information of the logging feature.
     "LOG-CREATE": {
         "version": U1,
-        "logCfg": X1,
-        "reserved1": U1,
+        "logCfg": (
+            X1,
+            {
+                "circular": U1,
+            },
+        ),
+        "reserved0": U1,
         "logSize": U1,
         "userDefinedSize": U4,
     },
@@ -337,6 +342,7 @@ UBX_PAYLOADS_SET = {
     "LOG-FINDTIME": {
         "version": U1,
         "type": U1,
+        "reserved0": U2,
         "year": U2,
         "month": U1,
         "day": U1,
@@ -349,11 +355,16 @@ UBX_PAYLOADS_SET = {
         "startNumber": U4,
         "entryCount": U4,
         "version": U1,
-        "reserved": U3,
+        "reserved0": U3,
     },
     "LOG-RETRIEVEBATCH": {
         "version": U1,
-        "flags": X1,
+        "flags": (
+            X1,
+            {
+                "sendMonFirst": U1,
+            },
+        ),
         "reserved0": U2,
     },
     "LOG-STRING": {"group": ("None", {"bytes": U1})},  # repeating group
