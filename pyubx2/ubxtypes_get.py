@@ -2233,7 +2233,7 @@ UBX_PAYLOADS_GET = {
                 "lastCorrectionAge": U4,
             },
         ),
-        "reserved0": U5,
+        "reserved0": U4,  # NB this is incorrectly stated as U5 in older documentation
         "headVeh": [I4, SCAL5],
         "magDec": [I2, SCAL2],
         "magAcc": [U2, SCAL2],
@@ -2765,7 +2765,6 @@ UBX_PAYLOADS_GET = {
                 "validTime": U1,
                 "fullyResolved": U1,
                 "validMag": U1,
-                "reserved": U4,
             },
         ),
         "tAcc": U4,
@@ -2812,7 +2811,7 @@ UBX_PAYLOADS_GET = {
                 "lastCorrectionAge": U4,
             },
         ),
-        "reserved1": U4,
+        "reserved0": U4,
         "headVeh": [I4, SCAL5],
         "magDec": [I2, SCAL2],
         "magAcc": [U2, SCAL2],
@@ -2821,8 +2820,7 @@ UBX_PAYLOADS_GET = {
         "iTOW": U4,
         "version": U1,
         "numSvs": U1,
-        "reserved11": I1,
-        "reserved12": I1,
+        "reserved0": I1,
         "group": (
             "numSvs",
             {  # repeating group * numSvs
@@ -2873,7 +2871,7 @@ UBX_PAYLOADS_GET = {
                 "Bad": U1,
             },
         ),
-        "numCh": U1,
+        "cnt": U1,
         "statusFlags": (
             X1,
             {
@@ -2881,9 +2879,9 @@ UBX_PAYLOADS_GET = {
             },
         ),
         "reserved0": U2,
-        "channels": (
-            "numCh",
-            {  # repeating group * numCh
+        "channels": (  # repeating group * cnt
+            "cnt",
+            {
                 "svid": U1,
                 "flags": U1,
                 "udre": U1,
@@ -3029,7 +3027,7 @@ UBX_PAYLOADS_GET = {
     "NAV2-TIMELS": {
         "iTOW": U4,
         "version": U1,
-        "reserved1": U3,
+        "reserved0": U3,
         "srcOfCurrLs": U1,
         "currLs": I1,
         "srcOfLsChange": U1,
@@ -3037,7 +3035,7 @@ UBX_PAYLOADS_GET = {
         "timeToLsEvent": I4,
         "dateOfLsGpsWn": U2,
         "dateOfLsGpsDn": U2,
-        "reserved2": U3,
+        "reserved1": U3,
         "valid": (
             X1,
             {
