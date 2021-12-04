@@ -26,6 +26,8 @@ from pyubx2 import (
 from pyubx2.ubxhelpers import (
     cfgkey2name,
     cfgname2key,
+    val2bytes,
+    bytes2val,
 )
 
 
@@ -323,6 +325,16 @@ class ExceptionTest(unittest.TestCase):
         EXPECTED_ERROR = "Invalid stream mode 3 - must be 0, 1 or 2"
         with self.assertRaisesRegex(UBXStreamError, EXPECTED_ERROR):
             UBXReader(None, validate=VALCKSUM, msgmode=3)
+
+    def testVal2Bytes(self):  # test invalid attribute type
+        EXPECTED_ERROR = "Unknown attribute type Z001"
+        with self.assertRaisesRegex(UBXTypeError, EXPECTED_ERROR):
+            val2bytes(1, "Z001")
+
+    def testBytes2Val(self):  # test invalid attribute type
+        EXPECTED_ERROR = "Unknown attribute type Z001"
+        with self.assertRaisesRegex(UBXTypeError, EXPECTED_ERROR):
+            bytes2val(b"\x01", "Z001")
 
 
 #     # can only be tested by temporarily removing a valid message definition

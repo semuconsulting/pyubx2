@@ -107,6 +107,7 @@ class StaticTest(unittest.TestCase):
             (b"\x44\x55", ubt.X2),
             (b"\xd7\xfc\xb8\x41", ubt.R4),
             (b"\x1f\xc1\x37\xdd\x9a\x1f\x37\xc0", ubt.R8),
+            (b"\x01\x02\x03\x04\x05", "A005"),
         ]
         EXPECTED_RESULTS = [
             2345,
@@ -116,6 +117,7 @@ class StaticTest(unittest.TestCase):
             b"\x44\x55",
             23.12345678,
             -23.12345678912345,
+            [1, 2, 3, 4, 5],
         ]
         for i, inp in enumerate(INPUTS):
             (valb, att) = inp
