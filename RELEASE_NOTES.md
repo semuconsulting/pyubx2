@@ -34,6 +34,10 @@ AFTER (scale factor of 1e-7):
 
 <UBX(NAV-PVT, ... , lon=-2.1602964, lat=53.2566912, ...)>
 
+FIXES:
+
+1. Various payload fixes and updates (mainly typos): MON-MSGPP, CFG-DAT, CFG-EKF, CFG-NAVX5, CFG-NMEA, CFG-PMS, CFG-PRT, CFG-RST, CFG-TP5, CFG-USB
+2. Add support for older message versions: NAV-AOPSTATUS  
 
 ### RELEASE 1.1.7
 
