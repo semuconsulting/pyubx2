@@ -267,7 +267,7 @@ UBX_PAYLOADS_GET = {
         "bitfield": (
             X4,
             {
-                "version": U7,
+                "version": U8,
                 "doAutoMntAlg": U1,
             },
         ),
@@ -354,7 +354,7 @@ UBX_PAYLOADS_GET = {
             },
         ),
         "speedDeadBand": U2,
-        "reserved2": U1,
+        "reserved2": U10,
     },
     "CFG-ESRC": {
         "version": U1,
@@ -364,6 +364,7 @@ UBX_PAYLOADS_GET = {
             "numSources",
             {  # repeating group * numSources
                 "extInt": U1,
+                "sourceType": U1,
                 "flags": (
                     X2,
                     {
@@ -928,6 +929,7 @@ UBX_PAYLOADS_GET = {
         "reserved1": U3,
     },
     "CFG-SMGR": {
+        "version": U1,
         "minGNSSFix": U1,
         "maxFreqChange": U2,
         "maxPhaseCorrRate": U2,
@@ -1050,9 +1052,12 @@ UBX_PAYLOADS_GET = {
         ),
         "refTp": U1,
         "reserved1": U1,
-        "end1": U4,
-        "end2": U4,
-        "end3": U4,
+        "group": (  # repeating group * 3
+            3,
+            {
+                "end": U4,
+            },
+        ),
     },
     "CFG-USB": {
         "vendorID": U2,
