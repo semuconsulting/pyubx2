@@ -151,7 +151,7 @@ class StaticTest(unittest.TestCase):
 
     def testitow2utc(self):
         res = str(itow2utc(387092000))
-        self.assertEqual(res, "11:31:16")
+        self.assertEqual(res, "11:31:14")
 
     def testgnss2str(self):
         GNSS = {

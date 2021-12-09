@@ -105,7 +105,7 @@ class ParseTest(unittest.TestCase):
         res = UBXReader.parse(self.nav_velned)
         self.assertEqual(
             str(res),
-            "<UBX(NAV-VELNED, iTOW=16:01:50, velN=-3, velE=-15, velD=-4, speed=16, gSpeed=15, heading=1.28387, sAcc=65, cAcc=80.5272)>",
+            "<UBX(NAV-VELNED, iTOW=16:01:48, velN=-3, velE=-15, velD=-4, speed=16, gSpeed=15, heading=1.28387, sAcc=65, cAcc=80.5272)>",
         )
 
     def testNavVelNedRepr(self):

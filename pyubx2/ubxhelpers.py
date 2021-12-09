@@ -83,7 +83,8 @@ def attsiz(att: str) -> int:
 
 def itow2utc(itow: int) -> datetime.time:
     """
-    Convert GPS Time Of Week to UTC time.
+    Convert GPS Time Of Week to UTC time
+    (UTC = GPS - 18 seconds; correct as from 1/1/2017).
 
     :param int itow: GPS Time Of Week
     :return: UTC time hh.mm.ss
@@ -91,7 +92,7 @@ def itow2utc(itow: int) -> datetime.time:
 
     """
 
-    utc = datetime(1980, 1, 6) + timedelta(seconds=(itow / 1000) - (35 - 19))
+    utc = datetime(1980, 1, 6) + timedelta(seconds=(itow / 1000) - 18)
     return utc.time()
 
 
