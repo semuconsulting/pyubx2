@@ -1,5 +1,11 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.2.1
+
+FIXES:
+
+1. UTC offset corrected in `iTOW2UTC` helper method.
+
 ### RELEASE 1.2.0
 
 ENHANCEMENTS:

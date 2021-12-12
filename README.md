@@ -71,8 +71,6 @@ deactivate
 If you're simply streaming and/or parsing the *output* of a UBX receiver, the mode is implicitly GET. If you want to create
 or parse an *input* (command or query) message, you must set the mode parameter to SET or POLL.
 
-**NB:** Once instantiated, a `UBXMessage` object is immutable.
-
 ## Reading (Streaming)
 
 ```
@@ -116,13 +114,13 @@ Example - File input (using iterator). This example will produce a `UBXStreamErr
 
 You can parse individual UBX messages using the static `UBXReader.parse(data)` function, which takes a bytes array containing a binary UBX message and returns a `UBXMessage` object.
 
+**NB:** Once instantiated, a `UBXMessage` object is immutable.
+
 The `parse()` method accepts the following optional keyword arguments:
 
 * `validate`: VALCKSUM (0x01) = validate checksum (default), VALNONE (0x00) = ignore invalid checksum or length
 * `parsebitfield`: 1 = parse bitfields as individual bit flags, where defined (default), 0 = leave bitfields as byte sequences
 * `msgmode`: 0 = GET (default), 1 = SET, 2 = POLL
-
-Properties within repeating groups are parsed with a two-digit suffix (svid_01, svid_02, etc.).
 
 Example - output (GET) message:
 ```python
@@ -143,8 +141,8 @@ Example - input (SET) message:
 <UBX(MGA-INI-POS_LLH, type=1, version=0, reserved1=513, lat=67305985, lon=67305985, alt=67305985, posAcc=67305985)>
 ```
 
-The `UBXMessage` object exposes different public properties depending on its message type or 'identity',
-e.g. the `NAV-POSLLH` message has the following properties:
+The `UBXMessage` object exposes different public attributes depending on its message type or 'identity',
+e.g. the `NAV-POSLLH` message has the following attributes:
 
 ```python
 >>> print(msg)
@@ -157,7 +155,7 @@ e.g. the `NAV-POSLLH` message has the following properties:
 37.844
 ```
 
-The `payload` property always contains the raw payload as bytes.
+Attributes within repeating groups are parsed with a two-digit suffix (svid_01, svid_02, etc.). The `payload` attribute always contains the raw payload as bytes.
 
 ## Generating
 
