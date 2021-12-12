@@ -130,7 +130,7 @@ Example - output (GET) message:
 <UBX(ACK-ACK, clsID=CFG, msgID=CFG-MSG)>
 >>> msg = UBXReader.parse(b'\xb5b\x01\x12$\x000D\n\x18\xfd\xff\xff\xff\xf1\xff\xff\xff\xfc\xff\xff\xff\x10\x00\x00\x00\x0f\x00\x00\x00\x83\xf5\x01\x00A\x00\x00\x00\xf0\xdfz\x00\xd0\xa6')
 >>> print(msg)
-<UBX(NAV-VELNED, iTOW=16:01:50, velN=-3, velE=-15, velD=-4, speed=16, gSpeed=15, heading=128387, sAcc=65, cAcc=8052720)>
+<UBX(NAV-VELNED, iTOW=16:01:48, velN=-3, velE=-15, velD=-4, speed=16, gSpeed=15, heading=1.28387, sAcc=65, cAcc=80.5272)>
 ```
 
 Example - input (SET) message:
@@ -138,7 +138,7 @@ Example - input (SET) message:
 >>> from pyubx2 import UBXReader, SET
 >>> msg = UBXReader.parse(b"\xb5b\x13\x40\x14\x00\x01\x00\x01\x02\x01\x02\x03\x04\x01\x02\x03\x04\x01\x02\x03\x04\x01\x02\x03\x04\x93\xc8", msgmode=SET)
 >>> print(msg)
-<UBX(MGA-INI-POS_LLH, type=1, version=0, reserved1=513, lat=67305985, lon=67305985, alt=67305985, posAcc=67305985)>
+<UBX(MGA-INI-POS-LLH, type=1, version=0, reserved0=513, lat=6.7305985, lon=6.7305985, alt=67305985, posAcc=67305985)>
 ```
 
 The `UBXMessage` object exposes different public attributes depending on its message type or 'identity',

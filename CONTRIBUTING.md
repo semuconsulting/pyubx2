@@ -31,8 +31,8 @@ Please write unittest examples for new code you create and add them to the `/tes
 
 We test on the following platforms using u-blox [NEO-6](https://www.u-blox.com/en/product/neo-6-series), [NEO-7](https://www.u-blox.com/en/product/neo-7-series), [NEO-8](https://www.u-blox.com/en/product/neo-m8-series) and [NEO-9](https://www.u-blox.com/en/product/neo-m9n-module) devices:
 * Windows 10
-* MacOS (Big Sur)
-* Linux (Ubuntu Bionic)
+* MacOS (Monterey)
+* Linux (Ubuntu Focal Fossa)
 * Raspberry Pi OS (32-bit)
 
 ## Submitting changes
