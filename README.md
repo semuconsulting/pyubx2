@@ -174,45 +174,46 @@ You can create a `UBXMessage` object by calling the constructor with the followi
 
 The 'message class' and 'message id' parameters may be passed as lookup strings, integers or bytes.
 
-The message payload can be defined via keyword parameters in one of three ways:
-1. A single keyword parameter of `payload` containing the full payload as a sequence of bytes (any other keyword parameters will be ignored). **NB** the `payload` keyword *must* be used for message types which have a 'variable by size' repeating group.
-2. One or more keyword parameters corresponding to individual message attributes. Any attributes not explicitly provided as keyword parameters will be set to a nominal value according to their type.
-3. If no keyword parameters are passed, the payload is assumed to be null.
+The message payload can be defined via keyword arguments in one of three ways:
+1. A single keyword argument of `payload` containing the full payload as a sequence of bytes (any other keyword arguments will be ignored). **NB** the `payload` keyword argument *must* be used for message types which have a 'variable by size' repeating group.
+2. One or more keyword arguments corresponding to individual message attributes. Any attributes not explicitly provided as keyword arguments will be set to a nominal value according to their type.
+3. If no keyword arguments are passed, the payload is assumed to be null.
 
-Example - to generate a CFG-MSG which polls the 'VTG' NMEA message rate on the current port, 
-any of the following constructor formats will work:
+Example - to generate a CFG-MSG command (*msgClass 0x06, msgID 0x01*) which sets the NAV-STATUS (*msgClass 0x01, msgID 0x03*) outbound message rate to 1 on the UART1 port, any of the following constructor formats will work:
+
+A. Pass entire payload as bytes:
 ```python
->>> from pyubx2 import UBXMessage, POLL
->>> msg1 = UBXMessage(b'\x06', b'\x01', POLL, payload=b'\xf0\x05')
+>>> from pyubx2 import UBXMessage, SET
+>>> msg1 = UBXMessage(b'\x06', b'\x01', SET, payload=b'\x01\x03\x00\x01\x00\x00\x00\x00')
 >>> print(msg1)
-<UBX(CFG-MSG, msgClass=NMEA-Standard, msgID=VTG)>
+<UBX(CFG-MSG, msgClass=NAV, msgID=NAV-STATUS, rateDDC=0, rateUART1=1, rateUART2=0, rateUSB=0, rateSPI=0, reserved=0)>
 ```
-
+B. Pass individual attributes as keyword arguments:
 ```python
->>> from pyubx2 import UBXMessage, POLL
->>> msg2 = UBXMessage(6, 1, POLL, msgClass=240, msgID=5)
+>>> from pyubx2 import UBXMessage, SET
+>>> msg2 = UBXMessage(0x06, 0x01, SET, msgClass=0x01, msgID=0x03, rateDDC=0, rateUART1=1, rateUART2=0, rateUSB=0, rateSPI=0)
 >>> print(msg2)
-<UBX(CFG-MSG, msgClass=NMEA-Standard, msgID=VTG)>
+<UBX(CFG-MSG, msgClass=NAV, msgID=NAV-STATUS, rateDDC=0, rateUART1=1, rateUART2=0, rateUSB=0, rateSPI=0, reserved=0)>
 ```
-
+C. Pass selected attribute as keyword argument; the rest will be set to nominal values (in this case 0):
 ```python
->>> from pyubx2 import UBXMessage, POLL
->>> msg3 = UBXMessage('CFG','CFG-MSG', POLL, msgClass=240, msgID=5)
+>>> from pyubx2 import UBXMessage, SET
+>>> msg3 = UBXMessage('CFG','CFG-MSG', SET, msgClass=0x01, msgID=0x03, rateUART1=1)
 >>> print(msg3)
-<UBX(CFG-MSG, msgClass=NMEA-Standard, msgID=VTG)>
+<UBX(CFG-MSG, msgClass=NAV, msgID=NAV-STATUS, rateDDC=0, rateUART1=1, rateUART2=0, rateUSB=0, rateSPI=0, reserved=0)>
 ```
 
 ### Serializing
 
 The `UBXMessage` class implements a `serialize()` method to convert a `UBXMessage` object to a bytes array suitable for writing to an output stream.
 
-e.g. to create and send a `CFG-MSG` message which sets the NMEA GLL message rate to '1' on the receiver's UART1 and USB ports:
+e.g. to create and send a `CFG-MSG` command which sets the NMEA GLL (*msgClass 0xf0, msgID 0x01*) message rate to 1 on the receiver's UART1 and USB ports:
 
 ```python
 >>> from serial import Serial
 >>> serialOut = Serial('COM7', 38400, timeout=5)
 >>> from pyubx2 import UBXMessage, SET
->>> msg = UBXMessage('CFG','CFG-MSG', SET, msgClass=240, msgID=1, rateUART1=1, rateUSB=1)
+>>> msg = UBXMessage('CFG','CFG-MSG', SET, msgClass=0xf0, msgID=0x01, rateUART1=1, rateUSB=1)
 >>> print(msg)
 <UBX(CFG-MSG, msgClass=NMEA-Standard, msgID=GLL, rateDDC=0, rateUART1=1, rateUART2=0, rateUSB=1, rateSPI=0, reserved=0)>
 >>> output = msg.serialize()
@@ -225,7 +226,7 @@ b'\xb5b\x06\x01\x08\x00\xf0\x01\x00\x01\x00\x01\x00\x00\x022'
 
 **CFG-VALSET, CFG-VALDEL and CFG-VALGET message types**
 
-Generation 9 of the UBX protocol introduced the concept of a device configuration interface with configurable parameters being set or unset (del) in the designated memory layer(s) via the CFG-VALSET and CFG-VALDEL message types, or queried via the CFG-VALGET message type. *Legacy CFG message types continue to be supported but are now deprecated*.
+Generation 9 of the UBX protocol (*23.01 or greater, e.g. NEO-M9N, ZED-F9P*) introduced the concept of a device configuration interface with configurable parameters being set or unset (del) in the designated memory layer(s) via the CFG-VALSET and CFG-VALDEL message types, or queried via the CFG-VALGET message type. *Legacy CFG configuration message types continue to be supported but are now deprecated on Generation 9+ devices*.
 
 Optionally, batches of CFG-VALSET and CFG-VALDEL messages can be applied transactionally, with the combined configuration only being committed at the end of the transaction.
 
