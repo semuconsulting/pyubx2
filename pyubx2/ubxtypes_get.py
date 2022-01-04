@@ -1170,16 +1170,13 @@ UBX_PAYLOADS_GET = {
     "ESF-STATUS": {
         "iTOW": U4,
         "version": U1,
-        "reserved1": U1,
-        "reserved2": U2,
-        "reserved3": U4,
-        "status": U1,
-        "reserved4": U1,
-        "reserved5": U1,
-        "numCh": U1,
+        "reserved0": U7,
+        "fusionMode": U1,
+        "reserved1": U2,
+        "numSens": U1,
         "group": (
-            "numCh",
-            {  # repeating group * numCh
+            "numSens",
+            {  # repeating group * numSens
                 "sensStatus1": (
                     X1,
                     {
@@ -1189,7 +1186,7 @@ UBX_PAYLOADS_GET = {
                     },
                 ),
                 "sensStatus2": (
-                    X2,
+                    X1,
                     {
                         "calibStatus": U2,
                         "timeStatus": U2,
