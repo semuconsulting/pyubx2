@@ -38,6 +38,7 @@ class ParseTest(unittest.TestCase):
         self.mga_ini1 = b"\xb5b\x13\x40\x14\x00\x01\x00\x01\x02\x01\x02\x03\x04\x01\x02\x03\x04\x01\x02\x03\x04\x01\x02\x03\x04\x93\xc8"
         self.mon_span = b"\xb5b\n1\x14\x01\x00\x01\x00\x00-+-,+-.,-.+,+.-..-,..//./00203017?9398:L]<@C;H<>=A@BDCGJNQRVY[_cgpqyz\x7f\x84\x8c\x90\x99\xa0\xa7\xae\xb0\xae\xaa\xa7\xa2\x9b\x97\x96\x94\x91\x90\x8e\x8c\x8c\x8c\x8b\x8b\x89\x88\x89\x89\x89\x8b\x88\x89\x8a\x89\x8a\x8a\x89\x8a\x8b\x8a\x8a\x8b\x8b\x8c\x8a\x8a\x8a\x8b\x88\x88\x87\x87\x86\x85\x85\x85\x84\x89\x84\x85\x83\x84\x84\x84\x85\x88\x87\x87\x88\x8a\x8a\x8a\x8a\x8b\x8e\x8c\x8d\x8d\x8f\x8e\x8d\x8f\x8e\x8f\x8f\x8e\x8f\x8f\x90\x91\x92\x93\x93\x93\x95\x94\x94\x94\x94\x95\x94\x95\x93\x93\x91\x92\x93\x92\x94\x95\x94\x95\x97\x97\x98\x97\x94\x90\x8d\x86\x82\x7fyupmg`]VRLEB?=;99665422202101///-//.-0-.-/..--,.-+-,--+.,,--,,-*\x00 \xa1\x07 \xa1\x07\x00@\xc4`^\x0c\x00\x00\x00\x15j"
         self.tim_tp = b"\xb5b\r\x01\x10\x00\x88gh\x16\x00\x00\x00\x00\x00\x00\x00\x00\x85\x08\x1b\x0fB\xff"
+        self.esf_status = b"\xb5b\x10\x10.\x00\x00\x00\x00\x00\x02$\x02\x00\x00\x00\x00\x00\x00\x00\x00\x06\x85\x04\x00\x00\r\x04\n\x00\x8e\x04\n\x00\x00\x04\n\x00\x01\x00\n\x00\x92\x04\x00\x00\x00\x00\x00\x00\x00\x00k4"
 
     def tearDown(self):
         pass
@@ -262,6 +263,13 @@ class ParseTest(unittest.TestCase):
         self.assertEqual(
             str(res),
             "<UBX(MGA-INI-POS-LLH, type=1, version=0, reserved0=513, lat=6.7305985, lon=6.7305985, alt=67305985, posAcc=67305985)>",
+        )
+
+    def testESFSTATUS(self):  # test parser of ESF-STATUS message
+        res = UBXReader.parse(self.esf_status)
+        self.assertEqual(
+            str(res),
+            "<UBX(ESF-STATUS, iTOW=23:59:42, version=2, reserved0=548, fusionMode=0, reserved1=0, numSens=6, type_01=5, used_01=0, ready_01=1, calibStatus_01=0, timeStatus_01=1, freq_01=0, badMeas_01=0, badTTag_01=0, missingMeas_01=0, noisyMeas_01=0, type_02=13, used_02=0, ready_02=0, calibStatus_02=0, timeStatus_02=1, freq_02=10, badMeas_02=0, badTTag_02=0, missingMeas_02=0, noisyMeas_02=0, type_03=14, used_03=0, ready_03=1, calibStatus_03=0, timeStatus_03=1, freq_03=10, badMeas_03=0, badTTag_03=0, missingMeas_03=0, noisyMeas_03=0, type_04=0, used_04=0, ready_04=0, calibStatus_04=0, timeStatus_04=1, freq_04=10, badMeas_04=0, badTTag_04=0, missingMeas_04=0, noisyMeas_04=0, type_05=1, used_05=0, ready_05=0, calibStatus_05=0, timeStatus_05=0, freq_05=10, badMeas_05=0, badTTag_05=0, missingMeas_05=0, noisyMeas_05=0, type_06=18, used_06=0, ready_06=1, calibStatus_06=0, timeStatus_06=1, freq_06=0, badMeas_06=0, badTTag_06=0, missingMeas_06=0, noisyMeas_06=0)>",
         )
 
 
