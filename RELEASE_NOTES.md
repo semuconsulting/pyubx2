@@ -1,5 +1,11 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.2.2
+
+FIXES:
+
+1. ESF-STATUS payload definition corrected.
+
 ### RELEASE 1.2.1
 
 FIXES:
