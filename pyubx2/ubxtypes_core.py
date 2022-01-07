@@ -38,7 +38,8 @@ SCALROUND = 8  # number of dp to round scaled attributes to
 # **************************************************
 # THESE ARE THE UBX PROTOCOL PAYLOAD ATTRIBUTE TYPES
 # **************************************************
-A256 = "A256"  # Array of bytes (only currently used for MON-SPAN spectrum)
+A250 = "A250"  # Array of 250 bytes, parsed as U1[250]
+A256 = "A256"  # Array of 256 bytes, parsed as U1[256]
 C2 = "C002"  # ASCII / ISO 8859.1 Encoding 2 bytes
 C6 = "C006"  # ASCII / ISO 8859.1 Encoding 6 bytes
 C10 = "C010"  # ASCII / ISO 8859.1 Encoding 10 bytes

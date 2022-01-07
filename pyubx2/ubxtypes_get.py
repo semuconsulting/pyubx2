@@ -13,6 +13,7 @@ Information sourced from u-blox Interface Specifications © 2013-2021, u-blox AG
 # pylint: disable=too-many-lines, line-too-long
 
 from pyubx2.ubxtypes_core import (
+    A250,
     A256,
     C2,
     C6,
@@ -3425,12 +3426,7 @@ UBX_PAYLOADS_GET = {
             },
         ),
         "reserved0": U2,
-        "group": (
-            250,
-            {
-                "msgBytes": U1,
-            },
-        ),
+        "msgBytes": A250,  # parsed as U1[250]
     },
     "RXM-RAW": {
         "iTOW": I4,
