@@ -219,10 +219,15 @@ def val2bytes(val, att: str) -> bytes:
     if att == ubt.CH:  # single variable-length string (e.g. INF-NOTICE)
         return val.encode("utf-8", "backslashreplace")
     atts = attsiz(att)
-    if atttyp(att) in ("C", "X", "A"):  # byte or char
+    if atttyp(att) in ("C", "X"):  # byte or char
         valb = val
     elif atttyp(att) in ("E", "L", "U"):  # unsigned integer
         valb = val.to_bytes(atts, byteorder="little", signed=False)
+    elif atttyp(att) == "A":  # array of unsigned integers
+        atts = attsiz(att)
+        valb = b""
+        for i in range(atts):
+            valb += val[i].to_bytes(1, byteorder="little", signed=False)
     elif atttyp(att) == "I":  # signed integer
         valb = val.to_bytes(atts, byteorder="little", signed=True)
     elif att == ubt.R4:  # single precision floating point
@@ -252,17 +257,17 @@ def bytes2val(valb: bytes, att: str) -> object:
         val = valb
     elif atttyp(att) in ("E", "L", "U"):  # unsigned integer
         val = int.from_bytes(valb, "little", signed=False)
+    elif atttyp(att) == "A":  # array of unsigned integers
+        atts = attsiz(att)
+        val = []
+        for i in range(atts):
+            val.append(valb[i])
     elif atttyp(att) == "I":  # signed integer
         val = int.from_bytes(valb, "little", signed=True)
     elif att == ubt.R4:  # single precision floating point
         val = struct.unpack("<f", valb)[0]
     elif att == ubt.R8:  # double precision floating point
         val = struct.unpack("<d", valb)[0]
-    elif atttyp(att) == "A":  # array of bytes
-        atts = attsiz(att)
-        val = []
-        for i in range(atts):
-            val.append(valb[i])
     else:
         raise ube.UBXTypeError(f"Unknown attribute type {att}")
     return val
@@ -281,12 +286,17 @@ def nomval(att: str) -> object:
 
     if att == "CH":
         val = ""
-    elif atttyp(att) in ("X", "C", "A"):
+    elif atttyp(att) in ("X", "C"):
         val = b"\x00" * attsiz(att)
     elif atttyp(att) == "R":
         val = 0.0
     elif atttyp(att) in ("E", "I", "L", "U"):
         val = 0
+    elif atttyp(att) == "A":  # array of unsigned integers
+        atts = attsiz(att)
+        val = []
+        for i in range(atts):
+            val.append(0)
     else:
         raise ube.UBXTypeError(f"Unknown attribute type {att}")
     return val
