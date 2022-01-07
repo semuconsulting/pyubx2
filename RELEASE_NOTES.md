@@ -1,5 +1,12 @@
 # pyubx2 Release Notes
 
+### RELEASE CANDIDATE 1.2.3
+
+ENHANCEMENTS:
+
+1. Following UBX message payload definitions added: MON-SYS, NAV-PVAT, NAV2-EELL, NAV2-PVAT, RXM-COR, RXM-SPARTN, RXM-SPARTN-KEY, RXM-TM.
+2. Several missing configdb keys added - many thanks to cturvey (clive1) for contributions.
+
 ### RELEASE 1.2.2
 
 FIXES:

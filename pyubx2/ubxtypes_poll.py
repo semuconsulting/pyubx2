@@ -167,6 +167,7 @@ UBX_PAYLOADS_POLL = {
     "NAV2-VELECEF": {},
     "NAV2-VELNED": {},
     # *************************************************
+    "RXM-COR": {},
     "RXM-IMES": {},
     "RXM-MEASX": {},
     "RXM-RAW": {},
@@ -174,7 +175,10 @@ UBX_PAYLOADS_POLL = {
     "RXM-RLM": {},
     "RXM-RTCM": {},
     "RXM-SFRBX": {},
+    "RXM-SPARTN": {},
+    "RXM-SPARTN-KEY": {},
     "RXM-SVSI": {},
+    "RXM-TM": {},
     # *************************************************
     "SEC-SIG": {},
     "SEC-SIGLOG": {},

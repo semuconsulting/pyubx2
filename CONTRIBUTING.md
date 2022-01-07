@@ -10,6 +10,8 @@ Being one of our contributors, you agree and confirm that:
 
 Please help us keep our issue list small by adding fixes: #{$ISSUE_NO} to the commit message of pull requests that resolve open issues. GitHub will use this tag to auto close the issue when the PR is merged.
 
+If you're adding or amending UBX payload definitions or configuration database keys, it would be helpful to quote/hyperlink the documentation source (e.g. specific u-blox Interface Specification).
+
 ## Coding conventions
 
 * This is open source software. Code should be as simple and transparent as possible. Favour clarity over brevity.

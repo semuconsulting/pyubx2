@@ -65,6 +65,7 @@ U9 = "U009"  # Unsigned Int 9 bytes
 U10 = "U010"  # Unsigned Int 10 bytes
 U11 = "U011"  # Unsigned Int 11 bytes
 U12 = "U012"  # Unsigned Int 12 bytes
+U16 = "U016"  # Unsigned Int 16 bytes
 U20 = "U020"  # Unsigned Int 20 bytes
 U22 = "U022"  # Unsigned Int 22 bytes
 U23 = "U023"  # Unsigned Int 23 bytes
@@ -268,6 +269,7 @@ UBX_MSGIDS = {
     b"\x0a\x2e": "MON-SMGR",
     b"\x0a\x31": "MON-SPAN",
     b"\x0a\x2f": "MON-SPT",
+    b"\x0a\x39": "MON-SYS",
     b"\x0a\x08": "MON-TXBUF",
     b"\x0a\x04": "MON-VER",
     # ***************************************************************
@@ -290,6 +292,7 @@ UBX_MSGIDS = {
     b"\x01\x34": "NAV-ORB",
     b"\x01\x01": "NAV-POSECEF",
     b"\x01\x02": "NAV-POSLLH",
+    b"\x01\x17": "NAV-PVAT",
     b"\x01\x07": "NAV-PVT",
     b"\x01\x3c": "NAV-RELPOSNED",  # two versions
     b"\x01\x10": "NAV-RESETODO",
@@ -316,10 +319,12 @@ UBX_MSGIDS = {
     b"\x29\x22": "NAV2-CLOCK",
     b"\x29\x36": "NAV2-COV",
     b"\x29\x04": "NAV2-DOP",
+    b"\x29\x3d": "NAV2-EELL",
     b"\x29\x61": "NAV2-EOE",
     b"\x29\x09": "NAV2-ODO",
     b"\x29\x01": "NAV2-POSECEF",
     b"\x29\x02": "NAV2-POSLLH",
+    b"\x29\x17": "NAV2-PVAT",
     b"\x29\x07": "NAV2-PVT",
     b"\x29\x35": "NAV2-SAT",
     b"\x29\x32": "NAV2-SBAS",
@@ -336,16 +341,23 @@ UBX_MSGIDS = {
     # ***************************************************************
     # Receiver Management messages
     # ***************************************************************
+    # b"\x02\x??": "RXM-ALM", # obsolete
+    b"\x02\x34": "RXM-COR",
+    # b"\x02\x??": "RXM-EPH", # obsolete
     b"\x02\x61": "RXM-IMES",
     b"\x02\x14": "RXM-MEASX",
     b"\x02\x72": "RXM-PMP",  # 2 versions
     b"\x02\x41": "RXM-PMREQ",  # 2 versions
+    b"\x02\x73": "RXM-QZSSL6",
     b"\x02\x10": "RXM-RAW",
     b"\x02\x15": "RXM-RAWX",
     b"\x02\x59": "RXM-RLM",  # 2 versions
     b"\x02\x32": "RXM-RTCM",
     b"\x02\x13": "RXM-SFRBX",
+    b"\x02\x33": "RXM-SPARTN",
+    b"\x02\x36": "RXM-SPARTN-KEY",
     b"\x02\x20": "RXM-SVSI",
+    b"\x02\x74": "RXM-TM",
     # ***************************************************************
     # Security messages
     # ***************************************************************
