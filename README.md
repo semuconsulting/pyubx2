@@ -394,6 +394,6 @@ semuadmin@semuconsulting.com
 
 ![License](https://img.shields.io/github/license/semuconsulting/pyubx2.svg)
 
-`pyubx2` is maintained entirely by volunteers. If you find it useful, please consider buying us a coffee!
+`pyubx2` is maintained entirely by volunteers. If you find it useful, a small donation would be greatly appreciated!
 
 [![Donations](https://www.paypalobjects.com/en_GB/i/btn/btn_donate_LG.gif)](https://www.paypal.com/donate/?hosted_button_id=4TG5HGBNAM7YJ)
