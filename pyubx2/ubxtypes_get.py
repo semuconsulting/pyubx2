@@ -138,6 +138,32 @@ UBX_PAYLOADS_GET = {
         "clkDAccOrFreqAcc": U4,
         "flags": X4,
     },
+    "AID-ALP-ACK": {
+        "acknak": U1,
+    },
+    "AID-ALP": {
+        "predTow": U4,
+        "predDur": U4,
+        "age": I4,
+        "predWno": U2,
+        "almWno": U2,
+        "reserved1": U4,
+        "svs": U1,
+        "reserved2": U1,
+        "reserved3": U1,
+        "reserved4": U1,
+    },
+    "ALP-ALPSRV": {
+        "idSize": U1,
+        "type": U1,
+        "ofs": U2,
+        "size": U2,
+        "fileId": U2,
+        "dataSize": U2,
+        "id1": U1,
+        "id2": U1,
+        "id3": U1,
+    },
     # ********************************************************************
     # Configuration Input Messages: i.e. Set Dynamic Model, Set DOP Mask, Set Baud Rate, etc..
     # Messages in the CFG class are used to configure the receiver and read out current configuration values. Any
@@ -3250,6 +3276,16 @@ UBX_PAYLOADS_GET = {
     # Receiver Manager Messages: i.e. Satellite Status, RTC Status.
     # Messages in the RXM class are used to output status and result data from the Receiver Manager. The output
     # rate is not bound to the navigation/measurement rate and messages can also be generated on events.
+    "RXM-ALM": {
+        "svid": U4,
+        "week": U4,
+        "group": (
+            8,
+            {
+                "dwrd": U4,
+            },
+        ),
+    },
     "RXM-COR": {
         "version": U1,
         "ebno": [U1, 0.125],
@@ -3270,6 +3306,18 @@ UBX_PAYLOADS_GET = {
         ),
         "msgType": U2,
         "msgSubType": U2,
+    },
+    "RXM-EPH": {
+        "svid": U4,
+        "how": U4,
+        "group": (
+            8,
+            {
+                "sf1d": U4,
+                "sf2d": U4,
+                "sf3d": U4,
+            },
+        ),
     },
     "RXM-IMES": {
         "numTx": U1,
@@ -3534,6 +3582,16 @@ UBX_PAYLOADS_GET = {
         "subType": U2,
         "refStation": U2,
         "msgType": U2,
+    },
+    "RXM-SFRB": {
+        "chn": U1,
+        "svid": U1,
+        "group": (
+            10,
+            {
+                "dwrd": X4,
+            },
+        ),
     },
     "RXM-SFRBX": {
         "gnssId": U1,

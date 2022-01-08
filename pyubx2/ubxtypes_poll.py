@@ -18,14 +18,34 @@ from pyubx2.ubxtypes_core import U1, U2, U4
 
 UBX_PAYLOADS_POLL = {
     # AID messages are deprecated in favour of MGA messages in >=Gen8
-    "AID-ALM": {},
-    "AID-ALM-SV": {"svid": U1},
-    "AID-AOP": {},
-    "AID-AOP-SV": {"svid": U1},
-    "AID-EPH": {},
-    "AID-EPH-SV": {"svid": U1},
+    "AID-ALM": {
+        "group": (
+            "None",
+            {
+                "svid": U1,
+            },
+        ),
+    },
+    "AID-AOP": {
+        "group": (
+            "None",
+            {
+                "svid": U1,
+            },
+        ),
+    },
+    "AID-EPH": {
+        "group": (
+            "None",
+            {
+                "svid": U1,
+            },
+        ),
+    },
+    "AID-DATA": {},
     "AID-HUI": {},
     "AID-INI": {},
+    "AID-REQ": {},
     # *************************************************
     "CFG-ANT": {},
     "CFG-BATCH": {},
@@ -167,13 +187,17 @@ UBX_PAYLOADS_POLL = {
     "NAV2-VELECEF": {},
     "NAV2-VELNED": {},
     # *************************************************
+    "RXM-ALM": {},
     "RXM-COR": {},
+    "RXM-EPH": {},
     "RXM-IMES": {},
     "RXM-MEASX": {},
+    "RXM-POSREQ": {},
     "RXM-RAW": {},
     "RXM-RAWX": {},
     "RXM-RLM": {},
     "RXM-RTCM": {},
+    "RXM-SFRB": {},
     "RXM-SFRBX": {},
     "RXM-SPARTN": {},
     "RXM-SPARTN-KEY": {},

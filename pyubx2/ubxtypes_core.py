@@ -121,10 +121,14 @@ UBX_MSGIDS = {
     # Since Gen 8, these are deprecated in favour of MGA
     # *********************************************************************
     b"\x0b\x30": "AID-ALM",
+    b"\x0b\x50": "AID-ALP",
+    b"\x0b\x32": "AID-ALPSRV",
     b"\x0b\x33": "AID-AOP",
+    b"\x0b\x10": "AID-DATA",
     b"\x0b\x31": "AID-EPH",
     b"\x0b\x02": "AID-HUI",
     b"\x0b\x01": "AID-INI",
+    b"\x0b\x00": "AID-REQ",
     # *********************************************************************
     # Configuration messages
     # Since Gen 9, many of these are deprecated in favour of CFG-VALSET/DEL
@@ -342,18 +346,20 @@ UBX_MSGIDS = {
     # ***************************************************************
     # Receiver Management messages
     # ***************************************************************
-    # b"\x02\x??": "RXM-ALM", # obsolete
+    b"\x02\x30": "RXM-ALM",  # obsolete, use AID-ALM or MGA-*-ALM
     b"\x02\x34": "RXM-COR",
-    # b"\x02\x??": "RXM-EPH", # obsolete
+    b"\x02\x31": "RXM-EPH",  # obsolete, use AID-EPH or MGA-*-EPH
     b"\x02\x61": "RXM-IMES",
     b"\x02\x14": "RXM-MEASX",
     b"\x02\x72": "RXM-PMP",  # 2 versions
     b"\x02\x41": "RXM-PMREQ",  # 2 versions
+    b"\x02\x40": "RXM-POSREQ",
     b"\x02\x73": "RXM-QZSSL6",
     b"\x02\x10": "RXM-RAW",
     b"\x02\x15": "RXM-RAWX",
     b"\x02\x59": "RXM-RLM",  # 2 versions
     b"\x02\x32": "RXM-RTCM",
+    b"\x02\x11": "RXM-SFRB",
     b"\x02\x13": "RXM-SFRBX",
     b"\x02\x33": "RXM-SPARTN",
     b"\x02\x36": "RXM-SPARTN-KEY",

@@ -45,6 +45,31 @@ UBX_PAYLOADS_SET = {
     # Messages in the AID class are used to send GPS aiding data to the receiver
     # AID messages are deprecated in favour of MGA messages in >=Gen8
     "AID-ALM": {"svid": U4, "week": U4, "optBlock": ("None", {"dwrd": U4})},
+    "AID-ALP": {
+        "group": (
+            "None",
+            {
+                "alpData": U2,
+            },
+        ),
+    },
+    "ALP-ALPSRV": {
+        "idSize": U1,
+        "type": U1,
+        "ofs": U2,
+        "size": U2,
+        "fileId": U2,
+        "dataSize": U2,
+        "id1": U1,
+        "id2": U1,
+        "id3": U1,
+        "group": (
+            "dataSize",
+            {
+                "data": U1,
+            },
+        ),
+    },
     "AID-AOP": {"gnssId": U1, "svId": U1, "reserved1": U2, "data": U64},
     "AID-EPH": {
         "svid": U4,
