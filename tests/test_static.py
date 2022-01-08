@@ -40,23 +40,23 @@ class StaticTest(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def testDefinitions(self):  # DEBUG test for possible missing payload definitions
-        for msg in ubt.UBX_MSGIDS.values():
-            if (
-                msg not in (ubp.UBX_PAYLOADS_POLL)
-                and msg not in (ubg.UBX_PAYLOADS_GET)
-                and msg not in (ubs.UBX_PAYLOADS_SET)
-            ):
-                print(f"Possible missing payload definition {msg}")
-        for msg in ubg.UBX_PAYLOADS_GET:
-            if msg not in ubt.UBX_MSGIDS.values():
-                print(f"Possible missing core definition {msg} GET")
-        for msg in ubs.UBX_PAYLOADS_SET:
-            if msg not in ubt.UBX_MSGIDS.values():
-                print(f"Possible missing core definition {msg} SET")
-        for msg in ubp.UBX_PAYLOADS_POLL:
-            if msg not in ubt.UBX_MSGIDS.values():
-                print(f"Possible missing core definition {msg} POLL")
+    # def testDefinitions(self):  # DEBUG test for possible missing payload definitions
+    #     for msg in ubt.UBX_MSGIDS.values():
+    #         if (
+    #             msg not in (ubp.UBX_PAYLOADS_POLL)
+    #             and msg not in (ubg.UBX_PAYLOADS_GET)
+    #             and msg not in (ubs.UBX_PAYLOADS_SET)
+    #         ):
+    #             print(f"Possible missing payload definition {msg}")
+    #     for msg in ubg.UBX_PAYLOADS_GET:
+    #         if msg not in ubt.UBX_MSGIDS.values():
+    #             print(f"Possible missing core definition {msg} GET")
+    #     for msg in ubs.UBX_PAYLOADS_SET:
+    #         if msg not in ubt.UBX_MSGIDS.values():
+    #             print(f"Possible missing core definition {msg} SET")
+    #     for msg in ubp.UBX_PAYLOADS_POLL:
+    #         if msg not in ubt.UBX_MSGIDS.values():
+    #             print(f"Possible missing core definition {msg} POLL")
 
     def testFill_CFGMSG2(self):  # test msg_cls in bytes property
         EXPECTED_RESULT = "b'\\x06'"
@@ -83,6 +83,7 @@ class StaticTest(unittest.TestCase):
             (b"\x44\x55", ubt.X2),
             (23.12345678, ubt.R4),
             (-23.12345678912345, ubt.R8),
+            ([1, 2, 3, 4,5], "A005"),
         ]
         EXPECTED_RESULTS = [
             b"\x29\x09",
@@ -92,6 +93,7 @@ class StaticTest(unittest.TestCase):
             b"\x44\x55",
             b"\xd7\xfc\xb8\x41",
             b"\x1f\xc1\x37\xdd\x9a\x1f\x37\xc0",
+            b"\x01\x02\x03\x04\x05",
         ]
         for i, inp in enumerate(INPUTS):
             (val, att) = inp

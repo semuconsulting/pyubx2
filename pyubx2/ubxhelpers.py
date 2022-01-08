@@ -293,10 +293,7 @@ def nomval(att: str) -> object:
     elif atttyp(att) in ("E", "I", "L", "U"):
         val = 0
     elif atttyp(att) == "A":  # array of unsigned integers
-        atts = attsiz(att)
-        val = []
-        for i in range(atts):
-            val.append(0)
+        val = [0] * attsiz(att)
     else:
         raise ube.UBXTypeError(f"Unknown attribute type {att}")
     return val
