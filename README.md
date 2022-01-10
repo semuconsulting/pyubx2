@@ -1,6 +1,20 @@
 pyubx2
 =======
 
+[Current Status](#currentstatus) |
+[Installation](#installation) |
+[Message Categories](#msgcat) |
+[Reading](#reading) |
+[Parsing](#parsing) |
+[Generating](#generating) |
+[Serializing](#serializing) |
+[Configuration Interface](#configinterface) |
+[Examples](#examples) |
+[Extensibility](#extensibility) |
+[Command Line Utility](#cli) |
+[Graphical Client](#gui) |
+[Author & License](#author)
+
 `pyubx2` is an original Python 3 library for the UBX &copy; protocol. UBX is a proprietary binary protocol implemented on u-blox &trade; GNSS/GPS receiver modules.
 
 The `pyubx2` homepage is located at [https://github.com/semuconsulting/pyubx2](https://github.com/semuconsulting/pyubx2).
@@ -9,7 +23,7 @@ This is an independent project and we have no affiliation whatsoever with u-blox
 
 **FYI** There is a companion library [pynmeagps](http://github.com/semuconsulting/pynmeagps), which handles standard NMEA 0183 &copy; GNSS/GPS messages.
 
-### Current Status
+## <a name="currentstatus">Current Status</a>
 
 ![Status](https://img.shields.io/pypi/status/pyubx2)
 ![Release](https://img.shields.io/github/v/release/semuconsulting/pyubx2)
@@ -58,7 +72,7 @@ source env/bin/activate (or env\Scripts\activate on Windows)
 deactivate
 ```
 
-## UBX Message Categories - GET, SET, POLL
+## <a name="msgcat">UBX Message Categories - GET, SET, POLL</a>
 
 `pyubx2` divides UBX messages into three categories, signified by the `mode` or `msgmode` parameter.
 
@@ -71,7 +85,7 @@ deactivate
 If you're simply streaming and/or parsing the *output* of a UBX receiver, the mode is implicitly GET. If you want to create
 or parse an *input* (command or query) message, you must set the mode parameter to SET or POLL.
 
-## Reading (Streaming)
+## <a name="reading">Reading (Streaming)</a>
 
 ```
 class pyubx2.ubxreader.UBXReader(stream, *args, **kwargs)
@@ -110,7 +124,7 @@ Example - File input (using iterator). This example will produce a `UBXStreamErr
 ...
 ```
 
-## Parsing
+## <a name="parsing">Parsing</a>
 
 You can parse individual UBX messages using the static `UBXReader.parse(data)` function, which takes a bytes array containing a binary UBX message and returns a `UBXMessage` object.
 
@@ -157,7 +171,7 @@ e.g. the `NAV-POSLLH` message has the following attributes:
 
 Attributes within repeating groups are parsed with a two-digit suffix (svid_01, svid_02, etc.). The `payload` attribute always contains the raw payload as bytes.
 
-## Generating
+## <a name="generating">Generating</a>
 
 (see [below](#configinterface) for special methods relating to the UBX configuration interface)
 
@@ -203,7 +217,7 @@ C. Pass selected attribute as keyword argument; the rest will be set to nominal 
 <UBX(CFG-MSG, msgClass=NAV, msgID=NAV-STATUS, rateDDC=0, rateUART1=1, rateUART2=0, rateUSB=0, rateSPI=0, reserved=0)>
 ```
 
-### Serializing
+## <a name="serializing">Serializing</a>
 
 The `UBXMessage` class implements a `serialize()` method to convert a `UBXMessage` object to a bytes array suitable for writing to an output stream.
 
@@ -323,7 +337,7 @@ Wild card queries can be performed by setting bits 0..15 of the keyID to `0xffff
 >>> serialOut.write(msg3of3.serialize())
 ```
 
-## Examples
+## <a name="examples">Examples</a>
 
 The following examples can be found in the `\examples` folder:
 
@@ -381,14 +395,14 @@ For help, type:
 
 `ubxdump -h`
 
-## Graphical Client
+## <a name="gui">Graphical Client</a>
 
 A python/tkinter graphical GPS client which supports both NMEA and UBX protocols (via pynmeagps and pyubx2 
 respectively) is available at: 
 
 [https://github.com/semuconsulting/PyGPSClient](https://github.com/semuconsulting/PyGPSClient)
 
-## Author Information
+## <a name="author">Author & License Information</a>
 
 semuadmin@semuconsulting.com
 
