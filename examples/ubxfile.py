@@ -28,7 +28,6 @@ class UBXStreamer:
         self._connected = False
         self._reading = False
         self._count = 0
-        self._errors = 0
 
     def __del__(self):
         """
@@ -65,39 +64,24 @@ class UBXStreamer:
 
         return self._connected
 
-    def iterate(self, ubr):
-        """
-        Invoke read iterator.
-        """
-
-        while True:
-            try:
-                yield next(ubr)
-                self._count += 1
-            except StopIteration:
-                break
-            except (
-                ube.UBXMessageError,
-                ube.UBXTypeError,
-                ube.UBXParseError,
-                ube.UBXStreamError,
-            ) as err:
-                print(f"\n\nSomething went wrong {err}\n\n")
-                self._errors += 1
-                continue
-
     def reader(self, ubx_only=False, validate=VALCKSUM, msgmode=GET):
         """
         Reads and parses NMEA message data from stream.
         """
 
-        for (raw_data, parsed_data) in self.iterate(
-            UBXReader(self._stream, ubxonly=ubx_only, validate=vald, msgmode=msgmode)
-        ):
+        ubr = UBXReader(
+            self._stream,
+            ubxonly=ubx_only,
+            validate=vald,
+            msgmode=msgmode,
+            parsebitfield=True,
+        )
+        for (raw_data, parsed_data) in ubr.iterate(quityonerror=False):
             print(parsed_data)
+            self._count += 1
 
         print(
-            f"\n\n{self._count} message{'' if self._count == 1 else 's'} read from {self._filename} with {self._errors} errors."
+            f"\n\n{self._count} message{'' if self._count == 1 else 's'} read from {self._filename}."
         )
 
 

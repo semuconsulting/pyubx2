@@ -136,6 +136,41 @@ class UBXReader:
 
         return (raw_data, parsed_data)
 
+    def iterate(self, **kwargs) -> tuple:
+        """
+        Invoke the iterator within an exception handling framework.
+
+        :param bool quitonerror (kwarg): Quit on UBX error True/False (True)
+        :param object errorhandler (kwarg): Optional error handler (None)
+        :return: tuple of (raw_data as bytes, parsed_data as UBXMessage)
+        :rtype: tuple
+
+        """
+
+        quitonerror = kwargs.get("quitonerror", True)
+        errorhandler = kwargs.get("errorhandler", None)
+
+        while True:
+            try:
+                yield next(self)
+            except StopIteration:
+                break
+            except (
+                ube.UBXMessageError,
+                ube.UBXTypeError,
+                ube.UBXParseError,
+                ube.UBXStreamError,
+            ) as err:
+                if quitonerror:
+                    raise (err)
+                    break
+                else:
+                    if errorhandler is None:
+                        print(err)
+                    else:
+                        errorhandler(err)
+                    continue
+
     @staticmethod
     def parse(message: bytes, **kwargs) -> object:
         """
