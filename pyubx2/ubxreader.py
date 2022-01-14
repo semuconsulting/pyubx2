@@ -140,10 +140,11 @@ class UBXReader:
         """
         Invoke the iterator within an exception handling framework.
 
-        :param bool quitonerror (kwarg): Quit on UBX error True/False (True)
-        :param object errorhandler (kwarg): Optional error handler (None)
+        :param bool quitonerror: (kwarg) Quit on UBX error True/False (True)
+        :param object errorhandler: (kwarg) Optional error handler (None)
         :return: tuple of (raw_data as bytes, parsed_data as UBXMessage)
         :rtype: tuple
+        :raises: UBX...Error (if quitonerror is True and stream is invalid)
 
         """
 
