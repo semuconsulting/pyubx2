@@ -254,7 +254,7 @@ Sets up to 64 parameters in the designated memory layer(s).
 
 Parameters:
 
-1. layers - 1 = Volatile RAM, 2 = Battery-Backed RAM (BBR), 4 = External Flash
+1. layers - 1 = Volatile RAM, 2 = Battery-Backed RAM (BBR), 4 = External Flash (may be OR'd)
 1. transaction - 0 = None, 1 = Start, 2 = Ongoing, 3 = Commit
 1. cfgData - an array of up to 64 (key, value) tuples. Keys can be in either 
 keyID (int) or keyname (str) format

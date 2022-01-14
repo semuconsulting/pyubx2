@@ -19,8 +19,8 @@ from io import BufferedReader
 from threading import Thread
 from time import sleep
 
-from pyubx2 import UBXMessage, POLL, UBX_MSGIDS
-from pyubx2.ubxreader import UBXReader
+from pyubx2 import UBXMessage, GET, POLL, UBX_MSGIDS
+from pyubx2.ubxreader import UBXReader, VALCKSUM
 from serial import Serial, SerialException, SerialTimeoutException
 
 import pyubx2.exceptions as ube
@@ -191,7 +191,7 @@ class UBXStreamer:
                     ube.UBXTypeError,
                     ube.UBXParseError,
                 ) as err:
-                    print(f"Something went wrong {err}")
+                    print(f"\n\nSomething went wrong {err}\n\n")
                     continue
 
 
@@ -200,6 +200,7 @@ if __name__ == "__main__":
     YES = ("Y", "y", "YES,", "yes", "True")
     NO = ("N", "n", "NO,", "no", "False")
     PAUSE = 1
+    vald = 0
 
     print("Enter port: ", end="")
     val = input().strip('"')
