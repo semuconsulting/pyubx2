@@ -28,6 +28,7 @@ class UBXStreamer:
         self._connected = False
         self._reading = False
         self._count = 0
+        self._error = 0
 
     def __del__(self):
         """
@@ -64,6 +65,14 @@ class UBXStreamer:
 
         return self._connected
 
+    def errhandler(self, err):
+        """
+        Handles errors output by iterator.
+        """
+
+        self._error += 1
+        print(f"\nERROR {self._error}: {err}\n")
+
     def reader(self, ubx_only=False, validate=VALCKSUM, msgmode=GET):
         """
         Reads and parses NMEA message data from stream.
@@ -76,12 +85,14 @@ class UBXStreamer:
             msgmode=msgmode,
             parsebitfield=True,
         )
-        for (raw_data, parsed_data) in ubr.iterate(quityonerror=False):
+        for (raw_data, parsed_data) in ubr.iterate(
+            quitonerror=False, errorhandler=self.errhandler
+        ):
             print(parsed_data)
             self._count += 1
 
         print(
-            f"\n\n{self._count} message{'' if self._count == 1 else 's'} read from {self._filename}."
+            f"\n\n{self._count} message{'' if self._count == 1 else 's'} read from {self._filename} with {self._error} errors."
         )
 
 
