@@ -13,7 +13,7 @@ import os
 import unittest
 
 from pyubx2 import UBXReader, VALCKSUM
-from pyubx2.exceptions import UBXStreamError
+from pyubx2.exceptions import UBXStreamError, UBXParseError
 
 
 class StreamTest(unittest.TestCase):
@@ -35,6 +35,7 @@ class StreamTest(unittest.TestCase):
         self.streamBADEOF1 = open(os.path.join(dirname, "pygpsdata-BADEOF1.log"), "rb")
         self.streamBADEOF2 = open(os.path.join(dirname, "pygpsdata-BADEOF2.log"), "rb")
         self.streamBADEOF3 = open(os.path.join(dirname, "pygpsdata-BADEOF3.log"), "rb")
+        self.streamBADCK = open(os.path.join(dirname, "pygpsdata-BADCK.log"), "rb")
 
     def tearDown(self):
         # self.testdump.close()
@@ -52,6 +53,7 @@ class StreamTest(unittest.TestCase):
         self.streamBADEOF1.close()
         self.streamBADEOF2.close()
         self.streamBADEOF3.close()
+        self.streamBADCK.close()
 
     def testNAVLOG(
         self,
@@ -317,6 +319,77 @@ class StreamTest(unittest.TestCase):
             if raw is not None:
                 self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
                 i += 1
+
+    def testNMEAITERATE(self):  # UBXReader iterate() helper method
+        EXPECTED_RESULTS = (
+            "<UBX(MON-MSGPP, msg1_01=0, msg1_02=0, msg1_03=0, msg1_04=0, msg1_05=0, msg1_06=0, msg1_07=0, msg1_08=0, msg2_01=0, msg2_02=0, msg2_03=0, msg2_04=0, msg2_05=0, msg2_06=0, msg2_07=0, msg2_08=0, msg3_01=0, msg3_02=0, msg3_03=0, msg3_04=0, msg3_05=0, msg3_06=0, msg3_07=0, msg3_08=0, msg4_01=69, msg4_02=0, msg4_03=0, msg4_04=0, msg4_05=0, msg4_06=0, msg4_07=0, msg4_08=0, msg5_01=0, msg5_02=0, msg5_03=0, msg5_04=0, msg5_05=0, msg5_06=0, msg5_07=0, msg5_08=0, msg6_01=0, msg6_02=0, msg6_03=0, msg6_04=0, msg6_05=0, msg6_06=0, msg6_07=0, msg6_08=0, skipped_01=0, skipped_02=0, skipped_03=0, skipped_04=0, skipped_05=0, skipped_06=0)>",
+            "<UBX(MON-TXBUF, pending_01=0, pending_02=0, pending_03=0, pending_04=0, pending_05=0, pending_06=0, usage_01=0, usage_02=2, usage_03=0, usage_04=0, usage_05=0, usage_06=0, peakUsage_01=0, peakUsage_02=12, peakUsage_03=0, peakUsage_04=25, peakUsage_05=0, peakUsage_06=0, tUsage=2, tPeakUsage=25, errors=b'\\x00', reserved0=0)>",
+            "<UBX(MON-RXBUF, pending_01=0, pending_02=0, pending_03=0, pending_04=0, pending_05=0, pending_06=0, usage_01=0, usage_02=0, usage_03=0, usage_04=0, usage_05=0, usage_06=0, peakUsage_01=0, peakUsage_02=0, peakUsage_03=0, peakUsage_04=2, peakUsage_05=0, peakUsage_06=0)>",
+            "<UBX(MON-IO, rxBytes=0, txBytes=0, parityErrs=0, framingErrs=0, overrunErrs=0, breakCond=0, rxBusy=0, txBusy=0, reserved1=0)>",
+            "<UBX(MON-HW, pinSel=b'\\x00\\xf4\\x01\\x00', pinBank=b'\\x00\\x00\\x00\\x00', pinDir=b'\\x00\\x00\\x01\\x00', pinVal=b'\\xef\\xf7\\x00\\x00', noisePerMS=87, agcCnt=3042, aStatus=2, aPower=1, flags=b'\\x01', reserved0=132, usedMask=b'\\xff\\xeb\\x01\\x00', VP_01=b'\\n', VP_02=b'\\x0b', VP_03=b'\\x0c', VP_04=b'\\r', VP_05=b'\\x0e', VP_06=b'\\x0f', VP_07=b'\\x01', VP_08=b'\\x00', VP_09=b'\\x02', VP_10=b'\\x03', VP_11=b'\\xff', VP_12=b'\\x10', VP_13=b'\\xff', VP_14=b'\\x12', VP_15=b'\\x13', VP_16=b'6', VP_17=b'5', jamInd=5, reserved1=24303, pinIrq=b'\\x00\\x00\\x00\\x00', pullH=b'\\x80\\xf7\\x00\\x00', pullL=b'\\x00\\x00\\x00\\x00')>",
+            "<UBX(MON-HW2, ofsI=4, magI=110, ofsQ=5, magQ=112, cfgSource=111, reserved0=1800, lowLevCfg=4294967295, reserved1=18446744073709551615, postStatus=0, reserved2=0)>",
+        )
+        i = 0
+        ubr = UBXReader(self.streamITER, ubxonly=False, parsebitfield=False)
+        for (_, parsed) in ubr.iterate():
+            self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
+            i += 1
+
+    def testUBXITERATE_ERR1(
+        self,
+    ):  # UBXReader iterate() helper method with bad checksum
+        EXPECTED_ERROR = "Message checksum b'&\\x88' invalid - should be b'&e'"
+        with self.assertRaises(UBXParseError) as context:
+            ubr = UBXReader(
+                self.streamBADCK,  # TODO add stream log with back checksum
+                ubxonly=False,
+                validate=VALCKSUM,
+                msgmode=0,
+                parsebitfield=True,
+            )
+            for (raw, parsed) in ubr.iterate(
+                quitonerror=True,
+            ):
+                pass
+        self.assertTrue(EXPECTED_ERROR in str(context.exception))
+
+    def testUBXITERATE_ERR2(
+        self,
+    ):  # UBXReader iterate() helper method ignoring bad checksum and passing error handler
+        EXPECTED_RESULT = "<UBX(NAV-PVT, iTOW=11:34:59, year=2021, month=12, day=4, hour=11, min=34, second=59, validDate=1, validTime=1, fullyResolved=1, validMag=0, tAcc=26, nano=-361668, fixType=3, gnssFixOk=1, difSoln=1, psmState=0, headVehValid=0, carrSoln=0, confirmedAvai=1, confirmedDate=1, confirmedTime=1, numSV=26, lon=-2.2402855, lat=53.4507228, height=91184, hMSL=42701, hAcc=1491, vAcc=2065, velN=-7, velE=4, velD=9, gSpeed=8, headMot=0.0, sAcc=259, headAcc=180.0, pDOP=1.01, invalidLlh=0, lastCorrectionAge=0, reserved0=793711598, headVeh=0.0, magDec=0.0, magAcc=0.0)>"
+        ubr = UBXReader(
+            self.streamBADCK,  # TODO add stream log with back checksum
+            ubxonly=False,
+            validate=VALCKSUM,
+            msgmode=0,
+            parsebitfield=True,
+        )
+        res = ""
+        for (raw, parsed) in ubr.iterate(
+            quitonerror=False,
+            errorhandler=lambda e: print(f"I ignored the following error: {e}"),
+        ):
+            res = str(parsed)
+        self.assertEqual(EXPECTED_RESULT, res)
+
+    def testUBXITERATE_ERR3(
+        self,
+    ):  # UBXReader iterate() helper method ignoring bad checksum and continuing
+        EXPECTED_RESULT = "<UBX(NAV-PVT, iTOW=11:34:59, year=2021, month=12, day=4, hour=11, min=34, second=59, validDate=1, validTime=1, fullyResolved=1, validMag=0, tAcc=26, nano=-361668, fixType=3, gnssFixOk=1, difSoln=1, psmState=0, headVehValid=0, carrSoln=0, confirmedAvai=1, confirmedDate=1, confirmedTime=1, numSV=26, lon=-2.2402855, lat=53.4507228, height=91184, hMSL=42701, hAcc=1491, vAcc=2065, velN=-7, velE=4, velD=9, gSpeed=8, headMot=0.0, sAcc=259, headAcc=180.0, pDOP=1.01, invalidLlh=0, lastCorrectionAge=0, reserved0=793711598, headVeh=0.0, magDec=0.0, magAcc=0.0)>"
+        ubr = UBXReader(
+            self.streamBADCK,  # TODO add stream log with back checksum
+            ubxonly=False,
+            validate=VALCKSUM,
+            msgmode=0,
+            parsebitfield=True,
+        )
+        res = ""
+        for (raw, parsed) in ubr.iterate(
+            quitonerror=False,
+        ):
+            res = str(parsed)
+            print(parsed)
+        self.assertEqual(EXPECTED_RESULT, res)
 
     def testBADHDR(self):  # invalid header in data with ubxonly set True
         EXPECTED_ERROR = "Unknown data header b'\\xb5\\x01'"
