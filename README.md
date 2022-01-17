@@ -26,7 +26,7 @@ This is an independent project and we have no affiliation whatsoever with u-blox
 ---
 **NEW in v1.2.4:**
 1. `UBXReader` now optionally streams both UBX *and* NMEA GNSS data.
-1. New `gnssdump` command line utility capable of streaming and parsing both NMEA and UBX data from any GNSS data stream (including Serial and File) either to the terminal or to designated UBX and/or NMEA protocol handlers. See [cli utility](#cli) below for details.**
+1. New `gnssdump` command line utility capable of streaming and parsing both NMEA and UBX data from any GNSS data stream (including Serial and File) either to the terminal or to designated UBX and/or NMEA protocol handlers. See [cli utility](#cli) below for details.
 ---
 
 ## <a name="currentstatus">Current Status</a>

@@ -1,13 +1,11 @@
 """
 UBXReader class.
 
-Reads and parses individual UBX messages from any stream which supports a read(n) -> bytes method.
+Reads and parses individual UBX or NMEA messages from any stream
+which supports a read(n) -> bytes method.
 
-Returns both the raw binary data (as bytes) and the parsed data (as a UBXMessage object).
-
-If the 'ubxonly' parameter is set to 'True', the reader will raise a UBXStreamerError if
-it encounters any non-UBX data. Otherwise, it will ignore the non-UBX data and attempt
-to carry on.
+Returns both the raw binary data (as bytes) and the parsed data
+(as a UBXMessage or NMEAMessage object).
 
 Created on 2 Oct 2020
 
@@ -16,13 +14,12 @@ Created on 2 Oct 2020
 :license: BSD 3-Clause
 """
 
-from pyubx2 import UBXMessage
 from pynmeagps import NMEAReader
+import pynmeagps.exceptions as nme
+from pyubx2 import UBXMessage
 from pyubx2.ubxhelpers import calc_checksum, val2bytes, bytes2val
 import pyubx2.ubxtypes_core as ubt
 import pyubx2.exceptions as ube
-
-NMEAMSG = "Looks like NMEA data. Set ubxonly flag to 'False' to ignore."
 
 
 class UBXReader:
@@ -43,7 +40,6 @@ class UBXReader:
 
         """
 
-        print(f"DEBUG UBXReader __init__ kwargs = {kwargs}")
         self._stream = datastream
         self._protfilter = int(
             kwargs.get("protfilter", ubt.NMEA_PROTOCOL | ubt.UBX_PROTOCOL)
@@ -87,7 +83,7 @@ class UBXReader:
         'protfilter' determines which protocols are parsed.
         'quitonerror' determines whether to raise or ignore parsing errors.
 
-        :return: tuple of (raw_data as bytes, parsed_data as UBXMessage)
+        :return: tuple of (raw_data as bytes, parsed_data as UBXMessage or NMEAMessage)
         :rtype: tuple
         :raises: UBXStreamError (if unrecognised protocol and quitonerror is True)
         """
@@ -117,7 +113,7 @@ class UBXReader:
                     else:
                         continue  # discard and read next byte
                 # if it's an NMEA message ('$G' or '$P')
-                elif byte1 == b"\x24" and byte2 in (b"\x47", b"\x50"):
+                elif (byte1 + byte2) in ubt.NMEA_HDR:
                     (raw_data, parsed_data) = self._parse_nmea(byte1 + byte2)
                     # if protfilter allows NMEA, return message,
                     # otherwise discard and continue
@@ -131,7 +127,7 @@ class UBXReader:
                         raise ube.UBXStreamError(f"Unknown protocol {byte1 + byte2}.")
                     return (None, None)
 
-        except EOFError as error:
+        except EOFError:
             return (None, None)
 
         return (raw_data, parsed_data)
@@ -194,11 +190,11 @@ class UBXReader:
         """
         Invoke the iterator within an exception handling framework.
 
-        :param bool quitonerror: (kwarg) Quit on UBX error True/False (True)
+        :param int quitonerror: (kwarg) 0 = (re)raise errors, 1 = log errors, 2 = ignore errors (1)
         :param object errorhandler: (kwarg) Optional error handler (None)
-        :return: tuple of (raw_data as bytes, parsed_data as UBXMessage)
+        :return: tuple of (raw_data as bytes, parsed_data as UBXMessage or NMEAMessage)
         :rtype: tuple
-        :raises: UBX...Error (if quitonerror is True and stream is invalid)
+        :raises: UBX/NMEA...Error (if quitonerror is set and stream is invalid)
 
         """
 
@@ -215,16 +211,18 @@ class UBXReader:
                 ube.UBXTypeError,
                 ube.UBXParseError,
                 ube.UBXStreamError,
+                nme.NMEAMessageError,
+                nme.NMEATypeError,
+                nme.NMEAParseError,
+                nme.NMEAStreamError,
             ) as err:
                 if quitonerror:
-                    raise (err)
-                    break
+                    raise err
+                if errorhandler is None:
+                    print(err)
                 else:
-                    if errorhandler is None:
-                        print(err)
-                    else:
-                        errorhandler(err)
-                    continue
+                    errorhandler(err)
+                continue
 
     @property
     def datastream(self) -> object:

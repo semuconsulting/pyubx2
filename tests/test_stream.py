@@ -12,7 +12,7 @@ Created on 3 Oct 2020
 import os
 import unittest
 
-from pyubx2 import UBXReader, VALCKSUM
+from pyubx2 import UBXReader, VALCKSUM, UBX_PROTOCOL, NMEA_PROTOCOL
 from pyubx2.exceptions import UBXStreamError, UBXParseError
 
 
@@ -29,7 +29,7 @@ class StreamTest(unittest.TestCase):
         self.streamCFG = open(os.path.join(dirname, "pygpsdata-CFG.log"), "rb")
         self.streamMON = open(os.path.join(dirname, "pygpsdata-MON.log"), "rb")
         self.streamITER = open(os.path.join(dirname, "pygpsdata-ITER.log"), "rb")
-        self.streamMIX = open(os.path.join(dirname, "pygpsdata-MIXED.log"), "rb")
+        # self.streamMIX = open(os.path.join(dirname, "pygpsdata-MIXED.log"), "rb")
         self.streamMIX2 = open(os.path.join(dirname, "pygpsdata-MIXED2.log"), "rb")
         self.streamBADHDR = open(os.path.join(dirname, "pygpsdata-BADHDR.log"), "rb")
         self.streamBADEOF1 = open(os.path.join(dirname, "pygpsdata-BADEOF1.log"), "rb")
@@ -47,7 +47,7 @@ class StreamTest(unittest.TestCase):
         self.streamCFG.close()
         self.streamMON.close()
         self.streamITER.close()
-        self.streamMIX.close()
+        # self.streamMIX.close()
         self.streamMIX2.close()
         self.streamBADHDR.close()
         self.streamBADEOF1.close()
@@ -271,12 +271,52 @@ class StreamTest(unittest.TestCase):
                 self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
                 i += 1
 
-    # def testMIX2VAL(self):  # test mixed UBX/NMEA stream with ubxonly set to True
-    #     EXPECTED_ERROR = "Unknown data header b'$G'. Looks like NMEA data. Set ubxonly flag to 'False' to ignore."
-    #     ubxreader = UBXReader(self.streamMIX2, ubxonly=True)
-    #     with self.assertRaises(UBXStreamError) as context:
-    #         (_, _) = ubxreader.read()
-    #     self.assertTrue(EXPECTED_ERROR in str(context.exception))
+    def testMIXED(self):  # TODO test mixed UBX/NMEA stream with no protfilter
+        dirname = os.path.dirname(__file__)
+        self.streamMIX = open(os.path.join(dirname, "pygpsdata-MIXED.log"), "rb")
+        EXPECTED_RESULTS = (
+            "<NMEA(GNRMC, time=09:08:02, status=A, lat=53.45066267, NS=N, lon=-2.24016767, EW=W, spd=0.144, cog=, date=2021-02-22, mv=, mvEW=, posMode=A, navStatus=V)>",
+            "<UBX(NAV-PVT...>",
+        )
+        ubxreader = UBXReader(
+            self.streamMIX2, protfilter=(UBX_PROTOCOL | NMEA_PROTOCOL)
+        )
+        i = 0
+        for (_, parsed) in ubxreader:
+            if i == 0:
+                self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
+            i += 1
+        self.streamMIX.close()
+
+    def testMIXEDUBXPROTFILT(self):  # TODO test mixed stream filtering out NMEA
+        dirname = os.path.dirname(__file__)
+        self.streamMIX = open(os.path.join(dirname, "pygpsdata-MIXED.log"), "rb")
+        EXPECTED_RESULTS = (
+            "<UBX(NAV-EOE, iTOW=09:08:02)>",
+            "<UBX(NAV-EOE, iTOW=09:08:02)>",
+        )
+        ubxreader = UBXReader(self.streamMIX2, protfilter=UBX_PROTOCOL)
+        i = 0
+        for (_, parsed) in ubxreader:
+            if i == 0:
+                self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
+            i += 1
+        self.streamMIX.close()
+
+    def testMIXEDNMEAPROTFILT(self):  # TODO test mixed stream filtering out UBX
+        dirname = os.path.dirname(__file__)
+        self.streamMIX = open(os.path.join(dirname, "pygpsdata-MIXED.log"), "rb")
+        EXPECTED_RESULTS = (
+            "<NMEA(GNRMC, time=09:08:02, status=A, lat=53.45066267, NS=N, lon=-2.24016767, EW=W, spd=0.144, cog=, date=2021-02-22, mv=, mvEW=, posMode=A, navStatus=V)>",
+            "<UBX(NAV-EOE, iTOW=09:08:02)>",
+        )
+        ubxreader = UBXReader(self.streamMIX2, protfilter=NMEA_PROTOCOL)
+        i = 0
+        for (_, parsed) in ubxreader:
+            if i == 0:
+                self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
+            i += 1
+        self.streamMIX.close()
 
     def testIterator(
         self,
