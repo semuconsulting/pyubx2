@@ -1,5 +1,6 @@
 """
-Simple command line utility to stream the parsed UBX output of a u-blox GNSS device.
+Simple command line utility, installed with PyPi library pyubx2,
+to stream the parsed UBX output of a u-blox GNSS device.
 
 Usage (all args are optional):
 ubxdump port="/dev/ttyACM1" baud=9600 timeout=5 ubxonly=0 validate=1 output=0
@@ -21,6 +22,7 @@ Created on 20 Aug 2021
 
 import sys
 from serial import Serial
+from pyubx2cli.helpstrings import UBXDUMP_HELP
 from pyubx2 import UBXReader, GET, VALCKSUM
 
 # Output formats
@@ -57,7 +59,7 @@ def stream_ubx(**kwargs):
         ubxonly = int(kwargs.get("ubxonly", 0))
         validate = int(kwargs.get("validate", VALCKSUM))
         output = int(kwargs.get("output", PARSED))
-        parsebf = int(kwargs.get("parsebitfield", True))
+        parsebitfield = int(kwargs.get("parsebitfield", True))
         filt = kwargs.get("filter", "*")
         filtertxt = "" if filt == "*" else f", filtered by {filt}"
         print(
@@ -70,7 +72,7 @@ def stream_ubx(**kwargs):
             ubxonly=ubxonly,
             validate=validate,
             msgmode=GET,
-            parsebitfield=parsebf,
+            parsebitfield=parsebitfield,
         )
         for (raw, parsed) in ubr:
             if filt == "*" or parsed.identity in filt:
@@ -93,14 +95,7 @@ def main():
 
     if len(sys.argv) > 1:
         if sys.argv[1] in {"-h", "--h", "help", "-help", "--help", "-H"}:
-            print(
-                " ubxdump is a simple command line utility to stream",
-                "the parsed UBX output of a u-blox GNSS device.\n\n",
-                "Usage (all args are optional): ubxdump",
-                f"port={PORT} baud={BAUD} timeout={TIMEOUT}",
-                "ubxonly=0 validate=1 output=0 parsebitfield=1 ",
-                "filter=*\n\n Type Ctrl-C to terminate.",
-            )
+            print(UBXDUMP_HELP)
             sys.exit()
 
     stream_ubx(**dict(arg.split("=") for arg in sys.argv[1:]))

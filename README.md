@@ -23,6 +23,12 @@ This is an independent project and we have no affiliation whatsoever with u-blox
 
 **FYI** There is a companion library [pynmeagps](http://github.com/semuconsulting/pynmeagps), which handles standard NMEA 0183 &copy; GNSS/GPS messages.
 
+---
+**NEW in v1.2.4:**
+1. `UBXReader` now optionally streams both UBX *and* NMEA GNSS data.
+1. New `gnssdump` command line utility capable of streaming and parsing both NMEA and UBX data from any GNSS data stream (including Serial and File) either to the terminal or to designated UBX and/or NMEA protocol handlers. See [cli utility](#cli) below for details.**
+---
+
 ## <a name="currentstatus">Current Status</a>
 
 ![Status](https://img.shields.io/pypi/status/pyubx2)
@@ -43,6 +49,7 @@ Contributions welcome - please refer to [CONTRIBUTING.MD](https://github.com/sem
 
 [Bug reports](https://github.com/semuconsulting/pyubx2/blob/master/.github/ISSUE_TEMPLATE/bug_report.md) and [Feature requests](https://github.com/semuconsulting/pyubx2/blob/master/.github/ISSUE_TEMPLATE/feature_request.md) - please use the templates provided.
 
+---
 ## <a name="installation">Installation</a>
 
 `pyubx2` is compatible with Python 3.6+ and has no third-party library dependencies.
@@ -72,6 +79,7 @@ source env/bin/activate (or env\Scripts\activate on Windows)
 deactivate
 ```
 
+---
 ## <a name="msgcat">UBX Message Categories - GET, SET, POLL</a>
 
 `pyubx2` divides UBX messages into three categories, signified by the `mode` or `msgmode` parameter.
@@ -85,6 +93,7 @@ deactivate
 If you're simply streaming and/or parsing the *output* of a UBX receiver, the mode is implicitly GET. If you want to create
 or parse an *input* (command or query) message, you must set the mode parameter to SET or POLL.
 
+---
 ## <a name="reading">Reading (Streaming)</a>
 
 ```
@@ -124,6 +133,7 @@ Example - File input (using iterator). This example will produce a `UBXStreamErr
 ...
 ```
 
+---
 ## <a name="parsing">Parsing</a>
 
 You can parse individual UBX messages using the static `UBXReader.parse(data)` function, which takes a bytes array containing a binary UBX message and returns a `UBXMessage` object.
@@ -171,6 +181,7 @@ e.g. the `NAV-POSLLH` message has the following attributes:
 
 Attributes within repeating groups are parsed with a two-digit suffix (svid_01, svid_02, etc.). The `payload` attribute always contains the raw payload as bytes.
 
+---
 ## <a name="generating">Generating</a>
 
 (see [below](#configinterface) for special methods relating to the UBX configuration interface)
@@ -217,6 +228,7 @@ C. Pass selected attribute as keyword argument; the rest will be set to nominal 
 <UBX(CFG-MSG, msgClass=NAV, msgID=NAV-STATUS, rateDDC=0, rateUART1=1, rateUART2=0, rateUSB=0, rateSPI=0, reserved=0)>
 ```
 
+---
 ## <a name="serializing">Serializing</a>
 
 The `UBXMessage` class implements a `serialize()` method to convert a `UBXMessage` object to a bytes array suitable for writing to an output stream.
@@ -236,6 +248,7 @@ b'\xb5b\x06\x01\x08\x00\xf0\x01\x00\x01\x00\x01\x00\x00\x022'
 >>> serialOut.write(output)
 ```
 
+---
 ## <a name="configinterface">Configuration Interface</a>
 
 **CFG-VALSET, CFG-VALDEL and CFG-VALGET message types**
@@ -337,6 +350,7 @@ Wild card queries can be performed by setting bits 0..15 of the keyID to `0xffff
 >>> serialOut.write(msg3of3.serialize())
 ```
 
+---
 ## <a name="examples">Examples</a>
 
 The following examples can be found in the `\examples` folder:
@@ -350,6 +364,7 @@ the pyubx2.UBXReader iterator function.
 1. `gpxtracker.py` illustrates a simple CLI tool to convert a binary UBX data dump to a `*.gpx` track file.
 1. `benchmark.py` illustrates a simple performance benchmarking tool for the `pyubx2` parser.
 
+---
 ## <a name="extensibility">Extensibility</a>
 
 The UBX protocol is principally defined in the modules `ubxtypes_*.py` as a series of dictionaries. Message payload definitions must conform to the following rules:
@@ -373,28 +388,62 @@ In most cases, a UBX message's content (payload) is uniquely defined by its clas
 
 However, there are a handful of message types which have multiple possible payload definitions for the same class, id and mode. These exceptional message types require dedicated routines in `ubxmessage.py` which examine elements of the payload itself in order to determine the appropriate dictionary definition. This currently applies to the following message types: CFG-NMEA, NAV-RELPOSNED, RXM-PMP, RXM-PMREQ, RXM-RLM, TIM-VCOCAL.
 
+---
 ## <a name="cli">Command Line Utility</a>
 
-If `pyubx2` is installed using pip, a simple command line utility `ubxdump` is automatically installed into the Python 3 scripts (bin) directory. This utility streams the parsed UBX output of a u-blox GNSS device to the terminal.
+If `pyubx2` is installed using pip, a command line utility `gnssdump` is automatically installed into the Python 3 scripts (bin) directory. This utility is capable of streaming and parsing both NMEA and UBX data from any data stream (including Serial and File) to the terminal or to designed NMEA and/or UBX protocol handlers. It utilises the `pynmeapgs` library for NMEA data and `pyubx2` for UBX data.
 
-Assuming the Python 3 scripts (bin) directory is in your PATH, the utility may be invoked thus (all args are optional):
+The `gnssdump` utility implements a new `GNSSStreamer` class which may be used directly within Python application code via:
 
-`ubxdump port=/dev/ttyACM1 baud=9600 timeout=5 ubxonly=0 validate=1 output=0 parsebitfield=1 filter=*`
+```python
+>>> from pyubx2cli import GNSSStreamer
+```
 
-Optional Args:
+Assuming the Python 3 scripts (bin) directory is in your PATH, the CLI utility may be invoked from the shell thus:
 
-- `port`: serial port e.g. `COM3` or `/dev/ttyACM1` (default `/dev/ttyACM1`)
-- `baudrate`: e.g. 9600 (default 9600)
-- `ubxonly`: 0 = ignore non-UBX data (default), 1 = terminate on any non-UBX data (e.g. NMEA).
-- `validate`: 1 = validate checksum (default), 0 = do not validate checksum
-- `output`: 0 = parsed (default), 1 = binary, 2 = hexadecimal
-- `parsebitfield`: 1 = parse bitfields as individual bits (default), 0 = leave bitfields as byte sequences
-- `filter`: comma-separated list of specific UBX message identities to display e.g. `filter=NAV-PVT,NAV-CLOCK` (defaults to "*" - all UBX messages).
+Serial input example (with simple external UBX protocol handler):
+
+```shell
+> gnssdump port=/dev/ttyACM1 baud=9600 timeout=5 protfilter=2 msgfilter=NAV-PVT ubxhandler="lambda msg: print(f'lat: {msg.lat}, lon: {msg.lon}')"
+```
+
+File input example:
+
+```shell
+> gnssdump filename=\user\downloads\nmealog.bin protfilter=1 msgfilter=GNGGA,GNGSA`
+```
+
+Keyword Arguments (with defaults):
+
+Any one of the following data stream specifiers must be provided:
+- `stream`: any instance of a stream class which implements a read(n) -> bytes method (None)
+- `filename`: name of binary input file e.g. `logfile.bin` (None)
+- `port`: serial port e.g. `COM3` or `/dev/ttyACM1` (None)
+
+The remaining keyword arguments are all optional:
+- `baudrate`: e.g. 9600 (9600)
+- `timeout`: e.g. 3 (3 seconds)
+- `format`: 1 = parsed, 2 = binary, 4 = hex, 8 = tabular hex (can be OR'd) (0)
+- `validate`: 1 = validate checksum, 0 = do not validate checksum (1)
+- `msgmode`: 0 = GET, 1 = SET, 2 = POLL (0)
+- `parsebitfield`: 1 = parse UBX bitfields as individual bits, 0 = leave bitfields as byte sequences (1)
+- `protfilter`: protocol filter 1 = NMEA, 2 = UBX, 3 = both (3)
+- `msgfilter`: message filter as comma-separated list of message identifiers e.g. `filter=NAV-PVT,GNGGA` (defaults to no filter).
+- `quitonerror`: 0 = (re) raise errors, 1 = log errors and continue, 2 = ignore errors (1)\n"
+- `verbosity`: log message verbosity 0 = low, 1 = medium, 2 = high (1)
+- `nmeahandler`: an evaluable expression defining an external NMEA protocol handler
+- `ubxhandler`: an evaluable expression defining an external UBX protocol handler
+- `errorhandler`: an evaluable expression defining an external error handler
 
 For help, type:
 
-`ubxdump -h`
+```shell
+> gnssdump -h
+```
 
+NB: The `gnssdump` utility renders the earlier `ubxdump` utility obsolete and this will be removed in future versions.
+
+---
 ## <a name="gui">Graphical Client</a>
 
 A python/tkinter graphical GPS client which supports both NMEA and UBX protocols (via pynmeagps and pyubx2 
@@ -402,6 +451,7 @@ respectively) is available at:
 
 [https://github.com/semuconsulting/PyGPSClient](https://github.com/semuconsulting/PyGPSClient)
 
+---
 ## <a name="author">Author & License Information</a>
 
 semuadmin@semuconsulting.com

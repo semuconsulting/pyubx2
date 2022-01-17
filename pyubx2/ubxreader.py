@@ -16,15 +16,13 @@ Created on 2 Oct 2020
 :license: BSD 3-Clause
 """
 
-from pyubx2.ubxmessage import UBXMessage
+from pyubx2 import UBXMessage
+from pynmeagps import NMEAReader
 from pyubx2.ubxhelpers import calc_checksum, val2bytes, bytes2val
 import pyubx2.ubxtypes_core as ubt
 import pyubx2.exceptions as ube
 
 NMEAMSG = "Looks like NMEA data. Set ubxonly flag to 'False' to ignore."
-# parser validation flag values
-VALNONE = 0
-VALCKSUM = 1
 
 
 class UBXReader:
@@ -32,23 +30,29 @@ class UBXReader:
     UBXReader class.
     """
 
-    def __init__(self, stream, **kwargs):
+    def __init__(self, datastream, **kwargs):
         """Constructor.
 
-        :param stream stream: input data stream
-        :param bool ubxonly: (kwarg) check non-UBX data (False (ignore - default), True (reject))
-        :param int validate: (kwarg) validate cksum (VALCKSUM (1)=True (default), VALNONE (0)=False)
-        :param int msgmode: (kwarg) message mode (0=GET (default), 1=SET, 2=POLL)
-        :param bool parsebitfield: (kwarg) parse bitfields True (default)/False
+        :param datastream stream: input data stream
+        :param int quitonerror: (kwarg) 0 = (re)raise errors, 1 = log errors, 2 = ignore errors (1)
+        :param int protfilter: (kwarg) protocol filter 1 = NMEA, 2 = UBX, 3 = BOTH (3)
+        :param int validate: (kwarg) 0 = ignore invalid checksum, 1 = validate checksum (1)
+        :param int msgmode: (kwarg) 0=GET, 1=SET, 2=POLL (0)
+        :param bool parsebitfield: (kwarg) 1 = parse bitfields, 0 = leave as bytes (1)
         :raises: UBXStreamError (if mode is invalid)
 
         """
 
-        self._stream = stream
-        self._ubx_only = kwargs.get("ubxonly", False)
-        self._validate = kwargs.get("validate", VALCKSUM)
-        self._parsebf = kwargs.get("parsebitfield", True)
-        self._msgmode = kwargs.get("msgmode", 0)
+        print(f"DEBUG UBXReader __init__ kwargs = {kwargs}")
+        self._stream = datastream
+        self._protfilter = int(
+            kwargs.get("protfilter", ubt.NMEA_PROTOCOL | ubt.UBX_PROTOCOL)
+        )
+        self._quitonerror = int(kwargs.get("quitonerror", ubt.ERR_LOG))
+        # self._ubxonly = kwargs.get("ubxonly", False) # flag superceded by protfilter
+        self._validate = int(kwargs.get("validate", ubt.VALCKSUM))
+        self._parsebf = int(kwargs.get("parsebitfield", True))
+        self._msgmode = int(kwargs.get("msgmode", 0))
 
         if self._msgmode not in (0, 1, 2):
             raise ube.UBXStreamError(
@@ -77,63 +81,113 @@ class UBXReader:
 
     def read(self) -> tuple:
         """
-        Read the binary data from the stream buffer.
+        Read a single NMEA or UBX message from the stream buffer
+        and return both raw and parsed data.
+
+        'protfilter' determines which protocols are parsed.
+        'quitonerror' determines whether to raise or ignore parsing errors.
 
         :return: tuple of (raw_data as bytes, parsed_data as UBXMessage)
         :rtype: tuple
-        :raises: UBXStreamError (if ubxonly=True and stream includes non-UBX data)
-
+        :raises: UBXStreamError (if unrecognised protocol and quitonerror is True)
         """
 
-        reading = True
+        parsing = True
         raw_data = None
         parsed_data = None
 
-        byte1 = self._stream.read(1)  # read the first byte
-
-        while reading:
-            is_ubx = False
-            is_nmea = False
-            if len(byte1) < 1:  # EOF
-                break
-            if byte1 == ubt.UBX_HDR[0:1]:
+        try:
+            while parsing:  # loop until end of valid message or EOF
+                byte1 = self._stream.read(1)  # read the first byte
+                if len(byte1) < 1:  # EOF
+                    raise EOFError()
+                # if not UBX or NMEA
+                if byte1 not in (b"\xb5", b"\x24"):
+                    continue  # discard and read next byte
                 byte2 = self._stream.read(1)
                 if len(byte2) < 1:  # EOF
-                    break
-                if byte2 == ubt.UBX_HDR[1:2]:
-                    is_ubx = True
-            if is_ubx:  # it's a UBX message
-                byten = self._stream.read(4)
-                if len(byten) < 4:  # EOF
-                    break
-                clsid = byten[0:1]
-                msgid = byten[1:2]
-                lenb = byten[2:4]
-                leni = int.from_bytes(lenb, "little", signed=False)
-                byten = self._stream.read(leni + 2)
-                if len(byten) < leni + 2:  # EOF
-                    break
-                plb = byten[0:leni]
-                cksum = byten[leni : leni + 2]
-                raw_data = ubt.UBX_HDR + clsid + msgid + lenb + plb + cksum
-                parsed_data = self.parse(
-                    raw_data,
-                    validate=self._validate,
-                    msgmode=self._msgmode,
-                    parsebitfield=self._parsebf,
-                )
-                reading = False
-            else:  # it's not a UBX message (NMEA or something else)
-                prevbyte = byte1
-                byte1 = self._stream.read(1)
-                if prevbyte == b"\x24" and byte1 in (b"\x47", b"\x50"):  # "$G" or "$P"
-                    is_nmea = True  # looks like an NMEA message
-                if self._ubx_only:  # raise error and quit
-                    nmeawarn = NMEAMSG if is_nmea else ""
-                    raise ube.UBXStreamError(
-                        f"Unknown data header {prevbyte + byte1}. {nmeawarn}"
-                    )
+                    raise EOFError()
+                # if it's a UBX message (b'\xb5\x62')
+                if byte1 + byte2 == ubt.UBX_HDR:
+                    (raw_data, parsed_data) = self._parse_ubx(byte1 + byte2)
+                    # if protfilter allows UBX, return message,
+                    # otherwise discard and continue
+                    if self._protfilter & ubt.UBX_PROTOCOL:
+                        parsing = False
+                    else:
+                        continue  # discard and read next byte
+                # if it's an NMEA message ('$G' or '$P')
+                elif byte1 == b"\x24" and byte2 in (b"\x47", b"\x50"):
+                    (raw_data, parsed_data) = self._parse_nmea(byte1 + byte2)
+                    # if protfilter allows NMEA, return message,
+                    # otherwise discard and continue
+                    if self._protfilter & ubt.NMEA_PROTOCOL:
+                        parsing = False
+                    else:
+                        continue
+                # unrecognised protocol header
+                else:
+                    if self._quitonerror < ubt.ERR_IGNORE:
+                        raise ube.UBXStreamError(f"Unknown protocol {byte1 + byte2}.")
+                    return (None, None)
 
+        except EOFError as error:
+            return (None, None)
+
+        return (raw_data, parsed_data)
+
+    def _parse_ubx(self, hdr: bytes) -> tuple:
+        """
+        Parse remainder of UBX message if not filtered out.
+
+        :param bytes hdr: UBX header (b'\xb5\x62')
+        :return: tuple of (raw_data as bytes, parsed_data as UBXMessage or None)
+        :rtype: tuple
+        """
+
+        byten = self._stream.read(4)
+        if len(byten) < 4:  # EOF
+            raise EOFError()
+        clsid = byten[0:1]
+        msgid = byten[1:2]
+        lenb = byten[2:4]
+        leni = int.from_bytes(lenb, "little", signed=False)
+        byten = self._stream.read(leni + 2)
+        if len(byten) < leni + 2:  # EOF
+            raise EOFError()
+        plb = byten[0:leni]
+        cksum = byten[leni : leni + 2]
+        raw_data = hdr + clsid + msgid + lenb + plb + cksum
+        if self._protfilter & ubt.UBX_PROTOCOL:
+            parsed_data = self.parse(
+                raw_data,
+                validate=self._validate,
+                msgmode=self._msgmode,
+                parsebitfield=self._parsebf,
+            )
+        else:
+            parsed_data = None
+        return (raw_data, parsed_data)
+
+    def _parse_nmea(self, hdr: bytes) -> tuple:
+        """
+        Parse remainder of NMEA message if not filtered out.
+
+        :param bytes hdr: NMEA header ($G or $P)
+        :return: tuple of (raw_data as bytes, parsed_data as NMEAMessage or None)
+        :rtype: tuple
+        """
+
+        byten = self._stream.readline()
+        raw_data = hdr + byten
+        if self._protfilter & ubt.NMEA_PROTOCOL:
+            parsed_data = NMEAReader.parse(
+                raw_data,
+                validate=self._validate,
+                msgmode=self._msgmode,
+            )
+        else:
+            parsed_data = None
         return (raw_data, parsed_data)
 
     def iterate(self, **kwargs) -> tuple:
@@ -148,7 +202,7 @@ class UBXReader:
 
         """
 
-        quitonerror = kwargs.get("quitonerror", True)
+        quitonerror = kwargs.get("quitonerror", ubt.ERR_IGNORE)
         errorhandler = kwargs.get("errorhandler", None)
 
         while True:
@@ -172,6 +226,17 @@ class UBXReader:
                         errorhandler(err)
                     continue
 
+    @property
+    def datastream(self) -> object:
+        """
+        Getter for stream.
+
+        :return: data stream
+        :rtype: object
+        """
+
+        return self._stream
+
     @staticmethod
     def parse(message: bytes, **kwargs) -> object:
         """
@@ -191,7 +256,7 @@ class UBXReader:
         """
 
         msgmode = kwargs.get("msgmode", ubt.GET)
-        validate = kwargs.get("validate", VALCKSUM)
+        validate = kwargs.get("validate", ubt.VALCKSUM)
         parsebf = kwargs.get("parsebitfield", True)
 
         if msgmode not in (0, 1, 2):
@@ -215,7 +280,7 @@ class UBXReader:
             ckv = calc_checksum(clsid + msgid + lenb + payload)
         else:
             ckv = calc_checksum(clsid + msgid + lenb)
-        if validate & VALCKSUM:
+        if validate & ubt.VALCKSUM:
             if hdr != ubt.UBX_HDR:
                 raise ube.UBXParseError(
                     (f"Invalid message header {hdr}" f" - should be {ubt.UBX_HDR}")

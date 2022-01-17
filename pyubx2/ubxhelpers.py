@@ -12,7 +12,7 @@ Created on 15 Dec 2020
 
 import struct
 from datetime import datetime, timedelta
-from pyubx2.ubxtypes_core import GNSSLIST
+from pyubx2.ubxtypes_core import GNSSLIST, UBX_HDR, NMEA_HDR
 import pyubx2.ubxtypes_core as ubt
 import pyubx2.ubxtypes_configdb as ubcdb
 import pyubx2.exceptions as ube
@@ -374,3 +374,47 @@ def cfgkey2name(keyID: int) -> tuple:
         if keyID == kid:
             return (key, typ)
     raise ube.UBXMessageError(f"Undefined configuration database key {hex(keyID)}")
+
+
+def protocol(raw: bytes) -> int:
+    """
+    Gets protocol of raw message.
+
+    :param bytes raw: raw (binary) message
+    :return: protocol type (1 = NMEA, 2 = UBX, 0 = unknown)
+    :rtype: int
+    """
+
+    p = raw[0:2]
+    if p == UBX_HDR:
+        return 2
+    elif p in NMEA_HDR:
+        return 1
+    else:
+        return 0
+
+
+def hextable(raw: bytes, cols: int = 8) -> str:
+    """
+    Formats raw (binary) message in tabular hexadecimal format e.g.
+
+    000: 2447 4e47 5341 2c41 2c33 2c33 342c 3233 | b'$GNGSA,A,3,34,23' |
+
+    :param bytes raw: raw (binary) data
+    :param int cols: number of columns in hex table (8)
+    :return: table of hex data
+    :rtype: str
+    """
+
+    hextable = ""
+    pad = " "
+    colw = cols * 4
+    rawh = raw.hex()
+    for i in range(0, len(rawh), colw):
+        rawl = rawh[i : i + colw].ljust(colw, pad)
+        hextable += f"{i:03}: "
+        for col in range(0, colw, 4):
+            hextable += f"{rawl[col : col + 4]} "
+        hextable += f" | {bytes.fromhex(rawl)} |\n"
+
+    return hextable

@@ -125,7 +125,9 @@
                 "-f", 
                 "-o",
                 "docs",
-                "${config:modulename}"
+                // "${config:modulename}"
+                ".",
+                "tests"
             ],
             "problemMatcher": []
         },

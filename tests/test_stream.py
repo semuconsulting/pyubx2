@@ -271,12 +271,12 @@ class StreamTest(unittest.TestCase):
                 self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
                 i += 1
 
-    def testMIX2VAL(self):  # test mixed UBX/NMEA stream with ubxonly set to True
-        EXPECTED_ERROR = "Unknown data header b'$G'. Looks like NMEA data. Set ubxonly flag to 'False' to ignore."
-        ubxreader = UBXReader(self.streamMIX2, ubxonly=True)
-        with self.assertRaises(UBXStreamError) as context:
-            (_, _) = ubxreader.read()
-        self.assertTrue(EXPECTED_ERROR in str(context.exception))
+    # def testMIX2VAL(self):  # test mixed UBX/NMEA stream with ubxonly set to True
+    #     EXPECTED_ERROR = "Unknown data header b'$G'. Looks like NMEA data. Set ubxonly flag to 'False' to ignore."
+    #     ubxreader = UBXReader(self.streamMIX2, ubxonly=True)
+    #     with self.assertRaises(UBXStreamError) as context:
+    #         (_, _) = ubxreader.read()
+    #     self.assertTrue(EXPECTED_ERROR in str(context.exception))
 
     def testIterator(
         self,
@@ -295,30 +295,30 @@ class StreamTest(unittest.TestCase):
             self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
             i += 1
 
-    def testIterator2(self):  # test iterator function with mixed data stream
-        EXPECTED_ERROR = "Unknown data header b'$G'. Looks like NMEA data. Set ubxonly flag to 'False' to ignore."
-        ubxreader = UBXReader(self.streamMIX, ubxonly=True)
-        with self.assertRaises(UBXStreamError) as context:
-            i = 0
-            #             (raw, parsed) = ubxreader.read()
-            for (_, _) in ubxreader:
-                i += 1
-        self.assertTrue(EXPECTED_ERROR in str(context.exception))
+    # def testIterator2(self):  # test iterator function with mixed data stream
+    #     EXPECTED_ERROR = "Unknown data header b'$G'. Looks like NMEA data. Set ubxonly flag to 'False' to ignore."
+    #     ubxreader = UBXReader(self.streamMIX, ubxonly=True)
+    #     with self.assertRaises(UBXStreamError) as context:
+    #         i = 0
+    #         #             (raw, parsed) = ubxreader.read()
+    #         for (_, _) in ubxreader:
+    #             i += 1
+    #     self.assertTrue(EXPECTED_ERROR in str(context.exception))
 
-    def testIterator3(self):  # test iterator function with mixed data stream
-        EXPECTED_RESULTS = (
-            "<UBX(NAV-SOL, iTOW=11:33:15, fTOW=52790, week=2128, gpsFix=3, gpsfixOK=1, diffSoln=0, wknSet=1, towSet=1, ecefX=380364134, ecefY=-14880030, ecefZ=510063062, pAcc=1026, ecefVX=-3, ecefVY=0, ecefVZ=1, sAcc=72, pDOP=1.35, reserved1=2, numSV=15, reserved2=215776)>",
-            "<UBX(NAV-PVT, iTOW=11:33:15, year=2020, month=10, day=23, hour=11, min=33, second=15, validDate=1, validTime=1, fullyResolved=1, validMag=0, tAcc=17, nano=52792, fixType=3, gnssFixOk=1, difSoln=0, psmState=0, headVehValid=0, carrSoln=0, confirmedAvai=0, confirmedDate=0, confirmedTime=0, numSV=15, lon=-2.2402964, lat=53.4506691, height=75699, hMSL=27215, hAcc=6298, vAcc=8101, velN=27, velE=-4, velD=11, gSpeed=27, headMot=7.70506, sAcc=715, headAcc=39.05453, pDOP=1.35, invalidLlh=0, lastCorrectionAge=0, reserved0=2312928, headVeh=0.0, magDec=0.0, magAcc=0.0)>",
-            "<UBX(NAV-SVINFO, iTOW=11:33:15, numCh=25, chipGen=4, reserved1=0, chn_01=13, svid_01=1, svUsed_01=0, diffCorr_01=0, orbitAvail_01=1, orbitEph_01=1, unhealthy_01=0, orbitAlm_01=0, orbitAop_01=0, smoothed_01=0, qualityInd_01=1, cno_01=0, elev_01=4, azim_01=142, prRes_01=0, chn_02=19, svid_02=2, svUsed_02=0, diffCorr_02=0, orbitAvail_02=1, orbitEph_02=0, unhealthy_02=0, orbitAlm_02=0, orbitAop_02=0, smoothed_02=0, qualityInd_02=1, cno_02=0, elev_02=19, azim_02=311, prRes_02=0, chn_03=3, svid_03=3, svUsed_03=1, diffCorr_03=0, orbitAvail_03=1, orbitEph_03=1, unhealthy_03=0, orbitAlm_03=0, orbitAop_03=0, smoothed_03=0, qualityInd_03=4, cno_03=24, elev_03=41, azim_03=89, prRes_03=469, chn_04=0, svid_04=4, svUsed_04=1, diffCorr_04=0, orbitAvail_04=1, orbitEph_04=1, unhealthy_04=0, orbitAlm_04=0, orbitAop_04=0, smoothed_04=0, qualityInd_04=7, cno_04=26, elev_04=70, azim_04=98, prRes_04=94, chn_05=1, svid_05=6, svUsed_05=1, diffCorr_05=0, orbitAvail_05=1, orbitEph_05=1, unhealthy_05=0, orbitAlm_05=0, orbitAop_05=0, smoothed_05=0, qualityInd_05=7, cno_05=29, elev_05=61, azim_05=287, prRes_05=-1023, chn_06=255, svid_06=7, svUsed_06=0, diffCorr_06=0, orbitAvail_06=1, orbitEph_06=0, unhealthy_06=0, orbitAlm_06=0, orbitAop_06=0, smoothed_06=0, qualityInd_06=0, cno_06=0, elev_06=0, azim_06=168, prRes_06=0, chn_07=2, svid_07=9, svUsed_07=1, diffCorr_07=0, orbitAvail_07=1, orbitEph_07=1, unhealthy_07=0, orbitAlm_07=0, orbitAop_07=0, smoothed_07=0, qualityInd_07=7, cno_07=32, elev_07=56, azim_07=200, prRes_07=-18, chn_08=23, svid_08=12, svUsed_08=0, diffCorr_08=0, orbitAvail_08=1, orbitEph_08=0, unhealthy_08=0, orbitAlm_08=0, orbitAop_08=0, smoothed_08=0, qualityInd_08=1, cno_08=0, elev_08=1, azim_08=311, prRes_08=0, chn_09=5, svid_09=17, svUsed_09=1, diffCorr_09=0, orbitAvail_09=1, orbitEph_09=1, unhealthy_09=0, orbitAlm_09=0, orbitAop_09=0, smoothed_09=0, qualityInd_09=4, cno_09=23, elev_09=26, azim_09=226, prRes_09=505, chn_10=4, svid_10=19, svUsed_10=1, diffCorr_10=0, orbitAvail_10=1, orbitEph_10=1, unhealthy_10=0, orbitAlm_10=0, orbitAop_10=0, smoothed_10=0, qualityInd_10=4, cno_10=25, elev_10=35, azim_10=242, prRes_10=1630, chn_11=6, svid_11=22, svUsed_11=1, diffCorr_11=0, orbitAvail_11=1, orbitEph_11=1, unhealthy_11=0, orbitAlm_11=0, orbitAop_11=0, smoothed_11=0, qualityInd_11=4, cno_11=21, elev_11=20, azim_11=96, prRes_11=-1033, chn_12=22, svid_12=25, svUsed_12=0, diffCorr_12=0, orbitAvail_12=1, orbitEph_12=0, unhealthy_12=0, orbitAlm_12=0, orbitAop_12=0, smoothed_12=0, qualityInd_12=1, cno_12=0, elev_12=4, azim_12=344, prRes_12=0, chn_13=11, svid_13=31, svUsed_13=1, diffCorr_13=0, orbitAvail_13=1, orbitEph_13=1, unhealthy_13=0, orbitAlm_13=0, orbitAop_13=0, smoothed_13=0, qualityInd_13=4, cno_13=14, elev_13=10, azim_13=27, prRes_13=1714, chn_14=18, svid_14=120, svUsed_14=0, diffCorr_14=0, orbitAvail_14=1, orbitEph_14=0, unhealthy_14=1, orbitAlm_14=0, orbitAop_14=0, smoothed_14=0, qualityInd_14=1, cno_14=0, elev_14=28, azim_14=196, prRes_14=0, chn_15=20, svid_15=123, svUsed_15=0, diffCorr_15=0, orbitAvail_15=1, orbitEph_15=0, unhealthy_15=1, orbitAlm_15=0, orbitAop_15=0, smoothed_15=0, qualityInd_15=1, cno_15=0, elev_15=22, azim_15=140, prRes_15=0, chn_16=16, svid_16=136, svUsed_16=0, diffCorr_16=0, orbitAvail_16=1, orbitEph_16=0, unhealthy_16=1, orbitAlm_16=0, orbitAop_16=0, smoothed_16=0, qualityInd_16=1, cno_16=0, elev_16=29, azim_16=171, prRes_16=0, chn_17=14, svid_17=65, svUsed_17=1, diffCorr_17=0, orbitAvail_17=1, orbitEph_17=1, unhealthy_17=0, orbitAlm_17=0, orbitAop_17=0, smoothed_17=0, qualityInd_17=4, cno_17=21, elev_17=33, azim_17=252, prRes_17=139, chn_18=8, svid_18=71, svUsed_18=1, diffCorr_18=0, orbitAvail_18=1, orbitEph_18=1, unhealthy_18=0, orbitAlm_18=0, orbitAop_18=0, smoothed_18=0, qualityInd_18=4, cno_18=19, elev_18=44, azim_18=53, prRes_18=1941, chn_19=9, svid_19=72, svUsed_19=1, diffCorr_19=0, orbitAvail_19=1, orbitEph_19=1, unhealthy_19=0, orbitAlm_19=0, orbitAop_19=0, smoothed_19=0, qualityInd_19=4, cno_19=20, elev_19=76, azim_19=286, prRes_19=-1155, chn_20=15, svid_20=73, svUsed_20=1, diffCorr_20=0, orbitAvail_20=1, orbitEph_20=1, unhealthy_20=0, orbitAlm_20=0, orbitAop_20=0, smoothed_20=0, qualityInd_20=6, cno_20=25, elev_20=19, azim_20=81, prRes_20=-115, chn_21=21, svid_21=79, svUsed_21=0, diffCorr_21=0, orbitAvail_21=1, orbitEph_21=0, unhealthy_21=0, orbitAlm_21=0, orbitAop_21=0, smoothed_21=0, qualityInd_21=1, cno_21=0, elev_21=0, azim_21=342, prRes_21=0, chn_22=17, svid_22=80, svUsed_22=0, diffCorr_22=0, orbitAvail_22=1, orbitEph_22=0, unhealthy_22=0, orbitAlm_22=0, orbitAop_22=0, smoothed_22=0, qualityInd_22=4, cno_22=18, elev_22=20, azim_22=29, prRes_22=0, chn_23=7, svid_23=86, svUsed_23=1, diffCorr_23=0, orbitAvail_23=1, orbitEph_23=1, unhealthy_23=0, orbitAlm_23=0, orbitAop_23=0, smoothed_23=0, qualityInd_23=4, cno_23=10, elev_23=18, azim_23=177, prRes_23=-149, chn_24=10, svid_24=87, svUsed_24=1, diffCorr_24=0, orbitAvail_24=1, orbitEph_24=1, unhealthy_24=0, orbitAlm_24=0, orbitAop_24=0, smoothed_24=0, qualityInd_24=7, cno_24=32, elev_24=65, azim_24=257, prRes_24=169, chn_25=12, svid_25=88, svUsed_25=1, diffCorr_25=0, orbitAvail_25=1, orbitEph_25=1, unhealthy_25=0, orbitAlm_25=0, orbitAop_25=0, smoothed_25=0, qualityInd_25=4, cno_25=23, elev_25=40, azim_25=318, prRes_25=-93)>",
-        )
-        i = 0
-        raw = 0
-        ubxreader = UBXReader(self.streamMIX, ubxonly=False)
-        while raw is not None and i < 3:
-            (raw, parsed) = ubxreader.read()
-            if raw is not None:
-                self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
-                i += 1
+    # def testIterator3(self):  # test iterator function with mixed data stream
+    #     EXPECTED_RESULTS = (
+    #         "<UBX(NAV-SOL, iTOW=11:33:15, fTOW=52790, week=2128, gpsFix=3, gpsfixOK=1, diffSoln=0, wknSet=1, towSet=1, ecefX=380364134, ecefY=-14880030, ecefZ=510063062, pAcc=1026, ecefVX=-3, ecefVY=0, ecefVZ=1, sAcc=72, pDOP=1.35, reserved1=2, numSV=15, reserved2=215776)>",
+    #         "<UBX(NAV-PVT, iTOW=11:33:15, year=2020, month=10, day=23, hour=11, min=33, second=15, validDate=1, validTime=1, fullyResolved=1, validMag=0, tAcc=17, nano=52792, fixType=3, gnssFixOk=1, difSoln=0, psmState=0, headVehValid=0, carrSoln=0, confirmedAvai=0, confirmedDate=0, confirmedTime=0, numSV=15, lon=-2.2402964, lat=53.4506691, height=75699, hMSL=27215, hAcc=6298, vAcc=8101, velN=27, velE=-4, velD=11, gSpeed=27, headMot=7.70506, sAcc=715, headAcc=39.05453, pDOP=1.35, invalidLlh=0, lastCorrectionAge=0, reserved0=2312928, headVeh=0.0, magDec=0.0, magAcc=0.0)>",
+    #         "<UBX(NAV-SVINFO, iTOW=11:33:15, numCh=25, chipGen=4, reserved1=0, chn_01=13, svid_01=1, svUsed_01=0, diffCorr_01=0, orbitAvail_01=1, orbitEph_01=1, unhealthy_01=0, orbitAlm_01=0, orbitAop_01=0, smoothed_01=0, qualityInd_01=1, cno_01=0, elev_01=4, azim_01=142, prRes_01=0, chn_02=19, svid_02=2, svUsed_02=0, diffCorr_02=0, orbitAvail_02=1, orbitEph_02=0, unhealthy_02=0, orbitAlm_02=0, orbitAop_02=0, smoothed_02=0, qualityInd_02=1, cno_02=0, elev_02=19, azim_02=311, prRes_02=0, chn_03=3, svid_03=3, svUsed_03=1, diffCorr_03=0, orbitAvail_03=1, orbitEph_03=1, unhealthy_03=0, orbitAlm_03=0, orbitAop_03=0, smoothed_03=0, qualityInd_03=4, cno_03=24, elev_03=41, azim_03=89, prRes_03=469, chn_04=0, svid_04=4, svUsed_04=1, diffCorr_04=0, orbitAvail_04=1, orbitEph_04=1, unhealthy_04=0, orbitAlm_04=0, orbitAop_04=0, smoothed_04=0, qualityInd_04=7, cno_04=26, elev_04=70, azim_04=98, prRes_04=94, chn_05=1, svid_05=6, svUsed_05=1, diffCorr_05=0, orbitAvail_05=1, orbitEph_05=1, unhealthy_05=0, orbitAlm_05=0, orbitAop_05=0, smoothed_05=0, qualityInd_05=7, cno_05=29, elev_05=61, azim_05=287, prRes_05=-1023, chn_06=255, svid_06=7, svUsed_06=0, diffCorr_06=0, orbitAvail_06=1, orbitEph_06=0, unhealthy_06=0, orbitAlm_06=0, orbitAop_06=0, smoothed_06=0, qualityInd_06=0, cno_06=0, elev_06=0, azim_06=168, prRes_06=0, chn_07=2, svid_07=9, svUsed_07=1, diffCorr_07=0, orbitAvail_07=1, orbitEph_07=1, unhealthy_07=0, orbitAlm_07=0, orbitAop_07=0, smoothed_07=0, qualityInd_07=7, cno_07=32, elev_07=56, azim_07=200, prRes_07=-18, chn_08=23, svid_08=12, svUsed_08=0, diffCorr_08=0, orbitAvail_08=1, orbitEph_08=0, unhealthy_08=0, orbitAlm_08=0, orbitAop_08=0, smoothed_08=0, qualityInd_08=1, cno_08=0, elev_08=1, azim_08=311, prRes_08=0, chn_09=5, svid_09=17, svUsed_09=1, diffCorr_09=0, orbitAvail_09=1, orbitEph_09=1, unhealthy_09=0, orbitAlm_09=0, orbitAop_09=0, smoothed_09=0, qualityInd_09=4, cno_09=23, elev_09=26, azim_09=226, prRes_09=505, chn_10=4, svid_10=19, svUsed_10=1, diffCorr_10=0, orbitAvail_10=1, orbitEph_10=1, unhealthy_10=0, orbitAlm_10=0, orbitAop_10=0, smoothed_10=0, qualityInd_10=4, cno_10=25, elev_10=35, azim_10=242, prRes_10=1630, chn_11=6, svid_11=22, svUsed_11=1, diffCorr_11=0, orbitAvail_11=1, orbitEph_11=1, unhealthy_11=0, orbitAlm_11=0, orbitAop_11=0, smoothed_11=0, qualityInd_11=4, cno_11=21, elev_11=20, azim_11=96, prRes_11=-1033, chn_12=22, svid_12=25, svUsed_12=0, diffCorr_12=0, orbitAvail_12=1, orbitEph_12=0, unhealthy_12=0, orbitAlm_12=0, orbitAop_12=0, smoothed_12=0, qualityInd_12=1, cno_12=0, elev_12=4, azim_12=344, prRes_12=0, chn_13=11, svid_13=31, svUsed_13=1, diffCorr_13=0, orbitAvail_13=1, orbitEph_13=1, unhealthy_13=0, orbitAlm_13=0, orbitAop_13=0, smoothed_13=0, qualityInd_13=4, cno_13=14, elev_13=10, azim_13=27, prRes_13=1714, chn_14=18, svid_14=120, svUsed_14=0, diffCorr_14=0, orbitAvail_14=1, orbitEph_14=0, unhealthy_14=1, orbitAlm_14=0, orbitAop_14=0, smoothed_14=0, qualityInd_14=1, cno_14=0, elev_14=28, azim_14=196, prRes_14=0, chn_15=20, svid_15=123, svUsed_15=0, diffCorr_15=0, orbitAvail_15=1, orbitEph_15=0, unhealthy_15=1, orbitAlm_15=0, orbitAop_15=0, smoothed_15=0, qualityInd_15=1, cno_15=0, elev_15=22, azim_15=140, prRes_15=0, chn_16=16, svid_16=136, svUsed_16=0, diffCorr_16=0, orbitAvail_16=1, orbitEph_16=0, unhealthy_16=1, orbitAlm_16=0, orbitAop_16=0, smoothed_16=0, qualityInd_16=1, cno_16=0, elev_16=29, azim_16=171, prRes_16=0, chn_17=14, svid_17=65, svUsed_17=1, diffCorr_17=0, orbitAvail_17=1, orbitEph_17=1, unhealthy_17=0, orbitAlm_17=0, orbitAop_17=0, smoothed_17=0, qualityInd_17=4, cno_17=21, elev_17=33, azim_17=252, prRes_17=139, chn_18=8, svid_18=71, svUsed_18=1, diffCorr_18=0, orbitAvail_18=1, orbitEph_18=1, unhealthy_18=0, orbitAlm_18=0, orbitAop_18=0, smoothed_18=0, qualityInd_18=4, cno_18=19, elev_18=44, azim_18=53, prRes_18=1941, chn_19=9, svid_19=72, svUsed_19=1, diffCorr_19=0, orbitAvail_19=1, orbitEph_19=1, unhealthy_19=0, orbitAlm_19=0, orbitAop_19=0, smoothed_19=0, qualityInd_19=4, cno_19=20, elev_19=76, azim_19=286, prRes_19=-1155, chn_20=15, svid_20=73, svUsed_20=1, diffCorr_20=0, orbitAvail_20=1, orbitEph_20=1, unhealthy_20=0, orbitAlm_20=0, orbitAop_20=0, smoothed_20=0, qualityInd_20=6, cno_20=25, elev_20=19, azim_20=81, prRes_20=-115, chn_21=21, svid_21=79, svUsed_21=0, diffCorr_21=0, orbitAvail_21=1, orbitEph_21=0, unhealthy_21=0, orbitAlm_21=0, orbitAop_21=0, smoothed_21=0, qualityInd_21=1, cno_21=0, elev_21=0, azim_21=342, prRes_21=0, chn_22=17, svid_22=80, svUsed_22=0, diffCorr_22=0, orbitAvail_22=1, orbitEph_22=0, unhealthy_22=0, orbitAlm_22=0, orbitAop_22=0, smoothed_22=0, qualityInd_22=4, cno_22=18, elev_22=20, azim_22=29, prRes_22=0, chn_23=7, svid_23=86, svUsed_23=1, diffCorr_23=0, orbitAvail_23=1, orbitEph_23=1, unhealthy_23=0, orbitAlm_23=0, orbitAop_23=0, smoothed_23=0, qualityInd_23=4, cno_23=10, elev_23=18, azim_23=177, prRes_23=-149, chn_24=10, svid_24=87, svUsed_24=1, diffCorr_24=0, orbitAvail_24=1, orbitEph_24=1, unhealthy_24=0, orbitAlm_24=0, orbitAop_24=0, smoothed_24=0, qualityInd_24=7, cno_24=32, elev_24=65, azim_24=257, prRes_24=169, chn_25=12, svid_25=88, svUsed_25=1, diffCorr_25=0, orbitAvail_25=1, orbitEph_25=1, unhealthy_25=0, orbitAlm_25=0, orbitAop_25=0, smoothed_25=0, qualityInd_25=4, cno_25=23, elev_25=40, azim_25=318, prRes_25=-93)>",
+    #     )
+    #     i = 0
+    #     raw = 0
+    #     ubxreader = UBXReader(self.streamMIX, ubxonly=False)
+    #     while raw is not None and i < 3:
+    #         (raw, parsed) = ubxreader.read()
+    #         if raw is not None:
+    #             self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
+    #             i += 1
 
     def testNMEAITERATE(self):  # UBXReader iterate() helper method
         EXPECTED_RESULTS = (
@@ -391,14 +391,21 @@ class StreamTest(unittest.TestCase):
             print(parsed)
         self.assertEqual(EXPECTED_RESULT, res)
 
-    def testBADHDR(self):  # invalid header in data with ubxonly set True
-        EXPECTED_ERROR = "Unknown data header b'\\xb5\\x01'"
+    def testBADHDR_FAIL(self):  # invalid header in data with ubxonly set True
+        EXPECTED_ERROR = "Unknown protocol b'\\xb5w'"
         with self.assertRaises(UBXStreamError) as context:
             i = 0
-            ubxreader = UBXReader(self.streamBADHDR, ubxonly=True)
+            ubxreader = UBXReader(self.streamBADHDR, quitonerror=0)
             for (_, _) in ubxreader:
                 i += 1
         self.assertTrue(EXPECTED_ERROR in str(context.exception))
+
+    def testBADHDR_IGNORE(self):  # invalid header in data with quitonerror = False
+        i = 0
+        ubxreader = UBXReader(self.streamBADHDR, quitonerror=2)
+        for (_, _) in ubxreader:
+            i += 1
+        self.assertEqual(i, 2)
 
     def testBADEOF1(self):  # premature EOF after header
         i = 0
