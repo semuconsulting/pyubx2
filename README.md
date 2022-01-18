@@ -393,10 +393,17 @@ However, there are a handful of message types which have multiple possible paylo
 
 If `pyubx2` is installed using pip, a command line utility `gnssdump` is automatically installed into the Python 3 scripts (bin) directory. This utility is capable of streaming and parsing both NMEA and UBX data from any data stream (including Serial and File) to the terminal or to designed NMEA and/or UBX protocol handlers. It utilises the `pynmeapgs` library for NMEA data and `pyubx2` for UBX data.
 
-The `gnssdump` utility implements a new `GNSSStreamer` class which may be used directly within Python application code via:
+The utility can output data in a variety of formats; parsed (1), raw binary (2), hexadecimal string (4), tabulated hexadecimal (8) or any combination thereof.
 
-```python
->>> from pyubx2cli import GNSSStreamer
+Any one of the following data stream specifiers must be provided:
+- `stream`: any instance of a stream class which implements a read(n) -> bytes method
+- `filename`: name of binary input file e.g. `logfile.bin`
+- `port`: serial port e.g. `COM3` or `/dev/ttyACM1`
+
+For help and full list of optional arguments, type:
+
+```shell
+> gnssdump -h
 ```
 
 Assuming the Python 3 scripts (bin) directory is in your PATH, the CLI utility may be invoked from the shell thus:
@@ -412,12 +419,12 @@ lat: 51.352179, lon: -2.130762
 lat: 51.352155, lon: -2.130751
 ```
 
-File input example:
+File input example (in tabulated hexadecimal format):
 
 ```shell
-> gnssdump filename=pygpsdata-GPS.log quitonerror=2 format=8 protfilter=1 msgfilter=GNGGA,GNGSA
+> gnssdump filename=pygpsdata.log quitonerror=2 format=8 protfilter=1 msgfilter=GNGGA,GNGSA
 
-Parsing GNSS data stream from file: <_io.BufferedReader name='pygpsdata-GPS.log'>...
+Parsing GNSS data stream from file: <_io.BufferedReader name='pygpsdata.log'>...
 
 000: 2447 5047 4741 2c30 3830 3234 372e 3030  | b'$GPGGA,080247.00' |
 032: 2c35 3332 372e 3034 3330 302c 4e2c 3030  | b',5327.04300,N,00' |
@@ -431,17 +438,10 @@ Parsing GNSS data stream from file: <_io.BufferedReader name='pygpsdata-GPS.log'
 096: 2e38 322a 3035 0d0a                      | b'.82*05\r\n' |
 ```
 
-Keyword Arguments (with defaults):
+The `gnssdump` utility implements a new `GNSSStreamer` class which may be used directly within Python application code via:
 
-Any one of the following data stream specifiers must be provided:
-- `stream`: any instance of a stream class which implements a read(n) -> bytes method
-- `filename`: name of binary input file e.g. `logfile.bin`
-- `port`: serial port e.g. `COM3` or `/dev/ttyACM1`
-
-For help and full list of optional arguments, type:
-
-```shell
-> gnssdump -h
+```python
+>>> from pyubx2cli import GNSSStreamer
 ```
 
 NB: The `gnssdump` utility renders the earlier `ubxdump` utility obsolete and this will be removed in future versions.
