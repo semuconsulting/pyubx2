@@ -412,7 +412,7 @@ def hextable(raw: bytes, cols: int = 8) -> str:
     rawh = raw.hex()
     for i in range(0, len(rawh), colw):
         rawl = rawh[i : i + colw].ljust(colw, pad)
-        hextable += f"{i:03}: "
+        hextable += f"{int(i/2):03}: "
         for col in range(0, colw, 4):
             hextable += f"{rawl[col : col + 4]} "
         hextable += f" | {bytes.fromhex(rawl)} |\n"
