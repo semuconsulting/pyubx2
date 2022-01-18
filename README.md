@@ -405,12 +405,30 @@ Serial input example (with simple external UBX protocol handler):
 
 ```shell
 > gnssdump port=/dev/ttyACM1 baud=9600 timeout=5 quitonerror=1 protfilter=2 msgfilter=NAV-PVT ubxhandler="lambda msg: print(f'lat: {msg.lat}, lon: {msg.lon}')"
+
+Parsing GNSS data stream from serial: Serial<id=0x10fe8f100, open=True>(port='/dev/ttyACM1', baudrate=9600, bytesize=8, parity='N', stopbits=1, timeout=5, xonxoff=False, rtscts=False, dsrdtr=False)...
+
+lat: 51.352179, lon: -2.130762
+lat: 51.352155, lon: -2.130751
 ```
 
 File input example:
 
 ```shell
-> gnssdump filename=\user\downloads\nmealog.bin quitonerror=2 protfilter=1 msgfilter=GNGGA,GNGSA`
+> gnssdump filename=pygpsdata-GPS.log quitonerror=2 format=8 protfilter=1 msgfilter=GNGGA,GNGSA
+
+Parsing GNSS data stream from file: <_io.BufferedReader name='pygpsdata-GPS.log'>...
+
+000: 2447 5047 4741 2c30 3830 3234 372e 3030  | b'$GPGGA,080247.00' |
+032: 2c35 3332 372e 3034 3330 302c 4e2c 3030  | b',5327.04300,N,00' |
+064: 3231 342e 3431 3338 352c 572c 312c 3037  | b'214.41385,W,1,07' |
+096: 2c31 2e36 332c 3336 2e37 2c4d 2c34 382e  | b',1.63,36.7,M,48.' |
+128: 352c 4d2c 2c2a 3737 0d0a                 | b'5,M,,*77\r\n' |
+
+000: 2447 5047 5341 2c41 2c33 2c30 322c 3133  | b'$GPGSA,A,3,02,13' |
+032: 2c32 302c 3037 2c30 352c 3330 2c30 392c  | b',20,07,05,30,09,' |
+064: 2c2c 2c2c 2c32 2e34 342c 312e 3633 2c31  | b',,,,,2.44,1.63,1' |
+096: 2e38 322a 3035 0d0a                      | b'.82*05\r\n' |
 ```
 
 Keyword Arguments (with defaults):
