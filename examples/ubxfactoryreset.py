@@ -1,5 +1,5 @@
 """
-Example implementation of a simple UBX receiver configuration utility
+Simple example implementation of a UBX receiver configuration utility
 
 This example resets the UBX receiver to its factory defaults
 

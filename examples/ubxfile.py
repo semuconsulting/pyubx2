@@ -1,6 +1,7 @@
 """
-Example implementation of a UBXMessage file reader
-using the UBXReader iterator functions
+Simple example implementation of a UBXMessage and/or 
+NMEAMessage binary logfile reader using the UBXReader iterator 
+functions
 
 Created on 25 Oct 2020
 
@@ -18,7 +19,7 @@ def errhandler(err):
     print(f"\nERROR: {err}\n")
 
 
-def read(stream, errorhandler, ubxonly, validate, msgmode):
+def read(stream, errorhandler, protfilter, validate, msgmode):
     """
     Reads and parses UBX message data from stream.
     """
@@ -27,7 +28,7 @@ def read(stream, errorhandler, ubxonly, validate, msgmode):
 
     ubr = UBXReader(
         stream,
-        ubxonly=ubxonly,
+        protfilter=protfilter,
         validate=validate,
         msgmode=msgmode,
         parsebitfield=True,
@@ -46,9 +47,12 @@ if __name__ == "__main__":
 
     print("Enter fully qualified name of file containing binary UBX data: ", end="")
     filename = input().strip('"')
-    print("Do you want to ignore any non-UBX data (y/n)? (y) ", end="")
-    val = input() or "y"
-    iubxonly = val in NO
+    print(
+        "Which protocols do you want to handle? (1 = NMEA, 2 = UBX, 3 = BOTH) (3) ",
+        end="",
+    )
+    val = input() or "3"
+    iprotfilter = int(val)
     print("Do you want to validate the message checksums (y/n)? (y) ", end="")
     val = input() or "y"
     ivalidate = val in YES
@@ -58,5 +62,5 @@ if __name__ == "__main__":
 
     print(f"Opening file {filename}...")
     with open(filename, "rb") as fstream:
-        read(fstream, errhandler, iubxonly, ivalidate, imsgmode)
+        read(fstream, errhandler, iprotfilter, ivalidate, imsgmode)
     print("Test Complete")

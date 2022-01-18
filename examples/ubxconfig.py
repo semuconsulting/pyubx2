@@ -1,5 +1,5 @@
 """
-Example implementation of a simple UBX receiver configuration utility
+Simple example implementation of a simple UBX receiver configuration utility
 
 This example sets the message rate for all UBX-NAV message types
 - these are the ones that provide principal navigation data -

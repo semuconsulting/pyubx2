@@ -1,5 +1,5 @@
 """
-Example implementation of a threaded UBXMessage streamer
+Simple example implementation of a threaded UBXMessage streamer.
 
 Connects to the receiver's serial port and sets up a
 threaded UBXReader process. With the reader process running
@@ -19,8 +19,16 @@ from io import BufferedReader
 from threading import Thread
 from time import sleep
 
-from pyubx2 import UBXMessage, GET, POLL, UBX_MSGIDS
-from pyubx2.ubxreader import UBXReader, VALCKSUM
+from pyubx2 import (
+    UBXMessage,
+    GET,
+    POLL,
+    UBX_MSGIDS,
+    VALCKSUM,
+    UBX_PROTOCOL,
+    NMEA_PROTOCOL,
+)
+from pyubx2.ubxreader import UBXReader
 from serial import Serial, SerialException, SerialTimeoutException
 
 import pyubx2.exceptions as ube
@@ -76,7 +84,7 @@ class UBXStreamer:
     UBXStreamer class.
     """
 
-    def __init__(self, port, baudrate, timeout=5, ubx_only=False):
+    def __init__(self, port, baudrate, timeout=5, protfilter=3):
         """
         Constructor.
         """
@@ -89,7 +97,7 @@ class UBXStreamer:
         self._port = port
         self._baudrate = baudrate
         self._timeout = timeout
-        self._ubx_only = ubx_only
+        self._protfilter = protfilter
 
     def __del__(self):
         """
@@ -110,7 +118,7 @@ class UBXStreamer:
                 self._port, self._baudrate, timeout=self._timeout
             )
             self._ubxreader = UBXReader(
-                BufferedReader(self._serial_object), ubxonly=self._ubx_only
+                BufferedReader(self._serial_object), protfilter=self._protfilter
             )
             self._connected = True
         except (SerialException, SerialTimeoutException) as err:
@@ -211,12 +219,15 @@ if __name__ == "__main__":
     print("Enter timeout (0.1): ", end="")
     val = input().strip('"') or "0.1"
     timout = float(val)
-    print("Do you want to ignore any non-UBX data (y/n)? (y) ", end="")
-    val = input() or "y"
-    ubxonly = val in NO
+    print(
+        "Which protocols do you want to handle? (1 = NMEA, 2 = UBX, 3 = BOTH) (3) ",
+        end="",
+    )
+    val = input() or "3"
+    protfilt = int(val)
 
     print("Instantiating UBXStreamer class...")
-    ubp = UBXStreamer(prt, baud, timout, ubxonly)
+    ubp = UBXStreamer(prt, baud, timout, protfilt)
     print(f"Connecting to serial port {prt} at {baud} baud...")
     if ubp.connect():
         print("Starting reader thread...")

@@ -1,5 +1,5 @@
 """
-Example implementation of a simple UBX receiver configuration utility
+Simple example implementation of a simple UBX receiver configuration utility
 
 This example sets the protocol(s) which will transmitted on the
 receiver's USB port to NMEA, UBX or both
