@@ -104,17 +104,16 @@ You can create a `UBXReader` object by calling the constructor with an active st
 The stream object can be any data stream which supports a `read(n) -> bytes` method (e.g. File or Serial, with 
 or without a buffer wrapper).
 
-Individual input UBX messages can then be read using the `UBXReader.read()` function, which returns both the raw binary
-data (as bytes) and the parsed data (as a `UBXMessage` object, via the `parse()` method). The function is thread-safe in so far as the incoming data stream object is thread-safe. `UBXReader` also implements an iterator.
+Individual input UBX and/or NMEA messages can then be read using the `UBXReader.read()` function, which returns both the raw binary data (as bytes) and the parsed data (as a `UBXMessage` or `NMEAMessage` object, via the `parse()` method). The function is thread-safe in so far as the incoming data stream object is thread-safe. `UBXReader` also implements an iterator.
 
 The constructor accepts the following optional keyword arguments:
 
-* `protfilter`: 1 = NMEA, 2 = UBX, 3 = BOTH (3)
+* `protfilter`: 1 = NMEA, 2 = UBX, 3 = BOTH (default)
 * `validate`: VALCKSUM (0x01) = validate checksum (default), VALNONE (0x00) = ignore invalid checksum or length
 * `parsebitfield`: 1 = parse bitfields ('X' type properties) as individual bit flags, where defined (default), 0 = leave bitfields as byte sequences
 * `msgmode`: 0 = GET (default), 1 = SET, 2 = POLL
 
-Example -  Serial input. This example will ignore any non-UBX data:
+Example -  Serial input. This example will output both UBX and NMEA messages:
 ```python
 >>> from serial import Serial
 >>> from pyubx2 import UBXReader
