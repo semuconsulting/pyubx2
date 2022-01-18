@@ -109,7 +109,7 @@ data (as bytes) and the parsed data (as a `UBXMessage` object, via the `parse()`
 
 The constructor accepts the following optional keyword arguments:
 
-* `ubxonly`: True = raise error if stream contains non-UBX data, False = ignore non-UBX data (default)
+* `protfilter`: 1 = NMEA, 2 = UBX, 3 = BOTH (3)
 * `validate`: VALCKSUM (0x01) = validate checksum (default), VALNONE (0x00) = ignore invalid checksum or length
 * `parsebitfield`: 1 = parse bitfields ('X' type properties) as individual bit flags, where defined (default), 0 = leave bitfields as byte sequences
 * `msgmode`: 0 = GET (default), 1 = SET, 2 = POLL
@@ -124,11 +124,11 @@ Example -  Serial input. This example will ignore any non-UBX data:
 >>> print(parsed_data)
 ```
 
-Example - File input (using iterator). This example will produce a `UBXStreamError` if non-UBX data is encountered:
+Example - File input (using iterator). This will only output UBX data:
 ```python
 >>> from pyubx2 import UBXReader
 >>> stream = open('ubxdata.bin', 'rb')
->>> ubr = UBXReader(stream, ubxonly=True)
+>>> ubr = UBXReader(stream, protfilter=2)
 >>> for (raw_data, parsed_data) in ubr: print(parsed_data)
 ...
 ```
