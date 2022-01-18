@@ -427,15 +427,15 @@ File input example (in tabulated hexadecimal format):
 Parsing GNSS data stream from file: <_io.BufferedReader name='pygpsdata.log'>...
 
 000: 2447 5047 4741 2c30 3830 3234 372e 3030  | b'$GPGGA,080247.00' |
-032: 2c35 3332 372e 3034 3330 302c 4e2c 3030  | b',5327.04300,N,00' |
-064: 3231 342e 3431 3338 352c 572c 312c 3037  | b'214.41385,W,1,07' |
-096: 2c31 2e36 332c 3336 2e37 2c4d 2c34 382e  | b',1.63,36.7,M,48.' |
-128: 352c 4d2c 2c2a 3737 0d0a                 | b'5,M,,*77\r\n' |
+016: 2c35 3332 372e 3034 3330 302c 4e2c 3030  | b',5327.04300,N,00' |
+032: 3231 342e 3431 3338 352c 572c 312c 3037  | b'214.41385,W,1,07' |
+048: 2c31 2e36 332c 3336 2e37 2c4d 2c34 382e  | b',1.63,36.7,M,48.' |
+064: 352c 4d2c 2c2a 3737 0d0a                 | b'5,M,,*77\r\n' |
 
 000: 2447 5047 5341 2c41 2c33 2c30 322c 3133  | b'$GPGSA,A,3,02,13' |
-032: 2c32 302c 3037 2c30 352c 3330 2c30 392c  | b',20,07,05,30,09,' |
-064: 2c2c 2c2c 2c32 2e34 342c 312e 3633 2c31  | b',,,,,2.44,1.63,1' |
-096: 2e38 322a 3035 0d0a                      | b'.82*05\r\n' |
+016: 2c32 302c 3037 2c30 352c 3330 2c30 392c  | b',20,07,05,30,09,' |
+032: 2c2c 2c2c 2c32 2e34 342c 312e 3633 2c31  | b',,,,,2.44,1.63,1' |
+048: 2e38 322a 3035 0d0a                      | b'.82*05\r\n' |
 ```
 
 The `gnssdump` utility implements a new `GNSSStreamer` class which may be used directly within Python application code via:
