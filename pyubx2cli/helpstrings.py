@@ -38,7 +38,7 @@ GNSSDUMP_HELP = (
     + "  protfilter - 1 = NMEA, 2 = UBX, 3 = both (3)\n"
     + "  msgfilter - comma-separated list of required message identities e.g. NAV-PVT,GNGSA (None)\n"
     + "  format - output format; 1 = parsed, 2 = binary (raw), 4 = hex, 8 = tabular hex (can be OR'd) (1)\n"
-    + "  quitonerror - 0 = (re) raise errors, 1 = log errors and continue, 2 = ignore errors (1)\n"
+    + "  quitonerror - 0 = ignore errors,  1 = log errors and continue, 2 = (re)raise errors (1)\n"
     + "  validate - 1 = validate message checksum, 0 = ignore invalid checksum (1)\n"
     + "  msgmode - 0 = GET, 1 = SET, 2 = POLL (0)\n"
     + "  parsebitfield - boolean True = parse UBX 'X' type attributes as bitfields, False = leave as bytes (True)\n"

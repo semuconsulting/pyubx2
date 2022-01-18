@@ -404,38 +404,23 @@ Assuming the Python 3 scripts (bin) directory is in your PATH, the CLI utility m
 Serial input example (with simple external UBX protocol handler):
 
 ```shell
-> gnssdump port=/dev/ttyACM1 baud=9600 timeout=5 protfilter=2 msgfilter=NAV-PVT ubxhandler="lambda msg: print(f'lat: {msg.lat}, lon: {msg.lon}')"
+> gnssdump port=/dev/ttyACM1 baud=9600 timeout=5 quitonerror=1 protfilter=2 msgfilter=NAV-PVT ubxhandler="lambda msg: print(f'lat: {msg.lat}, lon: {msg.lon}')"
 ```
 
 File input example:
 
 ```shell
-> gnssdump filename=\user\downloads\nmealog.bin protfilter=1 msgfilter=GNGGA,GNGSA`
+> gnssdump filename=\user\downloads\nmealog.bin quitonerror=2 protfilter=1 msgfilter=GNGGA,GNGSA`
 ```
 
 Keyword Arguments (with defaults):
 
 Any one of the following data stream specifiers must be provided:
-- `stream`: any instance of a stream class which implements a read(n) -> bytes method (None)
-- `filename`: name of binary input file e.g. `logfile.bin` (None)
-- `port`: serial port e.g. `COM3` or `/dev/ttyACM1` (None)
+- `stream`: any instance of a stream class which implements a read(n) -> bytes method
+- `filename`: name of binary input file e.g. `logfile.bin`
+- `port`: serial port e.g. `COM3` or `/dev/ttyACM1`
 
-The remaining keyword arguments are all optional:
-- `baudrate`: e.g. 9600 (9600)
-- `timeout`: e.g. 3 (3 seconds)
-- `format`: 1 = parsed, 2 = binary, 4 = hex, 8 = tabular hex (can be OR'd) (0)
-- `validate`: 1 = validate checksum, 0 = do not validate checksum (1)
-- `msgmode`: 0 = GET, 1 = SET, 2 = POLL (0)
-- `parsebitfield`: 1 = parse UBX bitfields as individual bits, 0 = leave bitfields as byte sequences (1)
-- `protfilter`: protocol filter 1 = NMEA, 2 = UBX, 3 = both (3)
-- `msgfilter`: message filter as comma-separated list of message identifiers e.g. `filter=NAV-PVT,GNGGA` (defaults to no filter).
-- `quitonerror`: 0 = (re) raise errors, 1 = log errors and continue, 2 = ignore errors (1)\n"
-- `verbosity`: log message verbosity 0 = low, 1 = medium, 2 = high (1)
-- `nmeahandler`: an evaluable expression defining an external NMEA protocol handler
-- `ubxhandler`: an evaluable expression defining an external UBX protocol handler
-- `errorhandler`: an evaluable expression defining an external error handler
-
-For help, type:
+For help and full list of optional arguments, type:
 
 ```shell
 > gnssdump -h

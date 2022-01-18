@@ -53,11 +53,11 @@ class GNSSStreamer:
     """
     GNSS Streamer Class.
 
-    Streams and parses UBX and NMEA GNSS messages from any data stream (e.g. Serial or File) to terminal
-    or designated NMEA and/or UBX protocol handler(s).
+    Streams and parses UBX and NMEA GNSS messages from any data stream (e.g. Serial or File) to the terminal
+    or to designated NMEA and/or UBX protocol handler(s).
 
     Input stream is defined via keyword arguments. One of either stream, port or filename MUST be specified.
-    The remainder are all optional.
+    The remaining arguments are all optional with defaults.
     """
 
     # pylint: disable=too-many-instance-attributes
@@ -70,22 +70,22 @@ class GNSSStreamer:
 
         gnssdump port=COM3 msgfilter=NAV-PVT ubxhandler="lambda msg: print(f'lat: {msg.lat}, lon: {msg.lon}')"
 
-        :param object stream: (kwarg) stream object - must implement read(n) -> bytes method
+        :param object stream: (kwarg) stream object (must implement read(n) -> bytes method)
         :param str port: (kwarg) serial port name
         :param str filename: (kwarg) input file FQN
-        :param int baudrate: (kwarg) serial baud rate, default is 9600
-        :param int timeout: (kwarg) serial timeout in seconds, default is 3
-        :param int validate: (kwarg) 1 = validate checksums (default), 0 = do not validate
-        :param int msgmode: (kwarg) 0 = GET (default), 1 = SET, 2 = POLL
-        :param int parsebitfield: (kwarg) 1 = parse UBX 'X' attributes as bitfields (default), 0 = leave as bytes
-        :param int format: (kwarg) output format 1 = parsed (default), 2 = raw, 4 = hex, 8 = tabulated hex (can be OR'd)
-        :param int quitonerror: (kwarg) 0 = (re)raise errors, 1 = log errors, 2 = ignore errors (1)
-        :param int protfilter: (kwarg) 1 = NMEA, 2 = UBX, 3 = BOTH (default)
-        :param str msgfilter: (kwarg) comma-separated string of message identities e.g. 'NAV-PVT,GNGSA'
-        :param int verbosity: (kwarg) log message verbosity 0 = low, 1 = medium (default), 3 = high
-        :param object errorhandler: (kwarg) evaluable expression defining external error handler
-        :param object nmeahandler: (kwarg) evaluable expression defining external NMEA message handler
-        :param object ubxhandler: (kwarg) evaluable expression defining external UBX message handler
+        :param int baudrate: (kwarg) serial baud rate (9600)
+        :param int timeout: (kwarg) serial timeout in seconds (3)
+        :param int validate: (kwarg) 1 = validate checksums, 0 = do not validate (1)
+        :param int msgmode: (kwarg) 0 = GET, 1 = SET, 2 = POLL (0)
+        :param int parsebitfield: (kwarg) 1 = parse UBX 'X' attributes as bitfields, 0 = leave as bytes (1)
+        :param int format: (kwarg) output format 1 = parsed, 2 = raw, 4 = hex, 8 = tabulated hex (1) (can be OR'd)
+        :param int quitonerror: (kwarg) 0 = ignore errors,  1 = log errors and continue, 2 = (re)raise errors (1)
+        :param int protfilter: (kwarg) 1 = NMEA, 2 = UBX, 3 = BOTH (3)
+        :param str msgfilter: (kwarg) comma-separated string of message identities e.g. 'NAV-PVT,GNGSA' (None)
+        :param int verbosity: (kwarg) log message verbosity 0 = low, 1 = medium, 3 = high (1)
+        :param object errorhandler: (kwarg) evaluable expression defining external error handler (None)
+        :param object nmeahandler: (kwarg) evaluable expression defining external NMEA message handler (None)
+        :param object ubxhandler: (kwarg) evaluable expression defining external UBX message handler (None)
         :raises: ParameterError
         """
         # pylint: disable=raise-missing-from
@@ -119,8 +119,8 @@ class GNSSStreamer:
             self._msgcount = 0
             self._errcount = 0
 
-            # evaluate protocol handler definitions CAUTION assumes
-            # expression is benign
+            # evaluate protocol handler expressions
+            # CAUTION assumes expressions are benign
             erh = kwargs.get("errorhandler", None)
             self._errorhandler = None if erh is None else eval(erh)
             nmh = kwargs.get("nmeahandler", None)
@@ -137,6 +137,7 @@ class GNSSStreamer:
         The data stream must support a read(n) -> bytes method.
         """
 
+        # instantiate a UBXReader object with the specified data stream
         if self._datastream is not None:
             with self._datastream as self._stream:
                 self._reader = UBXReader(self._stream, **self._kwargs)
@@ -171,7 +172,7 @@ class GNSSStreamer:
 
         try:
 
-            while True:  # loop until EOF, serial timeout or user hits Ctrl-C
+            while True:  # loop until EOF, stream timeout or user hits Ctrl-C
 
                 try:
                     (raw_data, parsed_data) = self._reader.read()
@@ -179,26 +180,30 @@ class GNSSStreamer:
                     self._do_error(err)
                     continue
 
-                # if protocol and message identity are not filtered out,
-                # send to output then continue
-                if raw_data is None:
+                if raw_data is None:  # EOF or timeout
                     raise EOFError
+
+                # get the message protocol (NMEA or UBX)
                 msgprot = protocol(raw_data)
+                # establish the appropriate handler and identity for this protocol
                 if msgprot == UBX_PROTOCOL:
                     msgidentity = parsed_data.identity
                     handler = self._ubxhandler
                 else:
                     msgidentity = parsed_data.talker + parsed_data.msgID
                     handler = self._nmeahandler
+                # does it pass the protocol filter?
                 if self._protfilter & msgprot:
+                    # does it pass the message identity filter if there is one?
                     if self._msgfilter is not None:
                         if msgidentity not in self._msgfilter:
                             continue
+                    # if it passes, send to designated output
                     self._do_output(raw_data, parsed_data, handler)
 
-        except KeyboardInterrupt:
+        except KeyboardInterrupt:  # user hit Ctrl-C
             self._do_log("user")
-        except EOFError:
+        except EOFError:  # end of stream
             self._do_log("eof")
         except (
             UBXMessageError,
@@ -209,7 +214,7 @@ class GNSSStreamer:
             NMEAParseError,
             NMEAStreamError,
             NMEATypeError,
-        ) as err:
+        ) as err:  # parsing error of some kind
             self._do_error(err)
         except Exception as err:  # pylint: disable=broad-except
             self._quitonerror = True  # don't ignore irrecoverable errors
@@ -217,12 +222,12 @@ class GNSSStreamer:
 
     def _do_output(self, raw: bytes, parsed: object, handler: object):
         """
-        Output message to terminal in selected format(s) OR pass
-        to external protocol handler.
+        Output message to terminal in specified format(s) OR pass
+        to external protocol handler if one is specified.
 
         :param bytes raw: raw (binary) message
         :param object parsed: parsed message
-        :param object handler: protocol handler
+        :param object handler: protocol handler (NMEA or UBX)
         """
 
         if handler is None:
@@ -241,7 +246,8 @@ class GNSSStreamer:
     def _do_error(self, err: Exception):
         """
         Handle error according to quitonerror flag;
-        either ignore, (re)raise or pass to external error handler.
+        either ignore, log, (re)raise or pass to
+        external error handler if one is specified.
 
         :param err Exception: error
         """
@@ -257,7 +263,7 @@ class GNSSStreamer:
 
     def _do_log(self, msg: str, loglevel: int = VERBOSITY_MEDIUM):
         """
-        Log output according to verbosity setting
+        Log output according to verbosity setting.
 
         :param str msg: log message
         :param int loglevel: min verbosity level for this message
@@ -291,7 +297,8 @@ def main():
     """
     CLI Entry point.
 
-    args as per parse_data() method
+    :param: as per GNSSStreamer constructor.
+    :raises: ValueError if parameters are invalid
     """
     # pylint: disable=raise-missing-from
 
