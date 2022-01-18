@@ -9,6 +9,14 @@ Created on 27 Sep 2020
 """
 
 
+class ParameterError(Exception):
+    """Parameter Error Class."""
+
+
+class GNSSStreamError(Exception):
+    """Generic Stream Error Class."""
+
+
 class UBXParseError(Exception):
     """
     UBX Parsing error.

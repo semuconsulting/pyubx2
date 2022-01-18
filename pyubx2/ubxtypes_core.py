@@ -9,9 +9,17 @@ Information sourced from u-blox Interface Specifications © 2013-2021, u-blox AG
 """
 
 UBX_HDR = b"\xb5\x62"
+NMEA_HDR = [b"\x24\x47", b"\x24\x50"]
 GET = 0
 SET = 1
 POLL = 2
+VALNONE = 0
+VALCKSUM = 1
+NMEA_PROTOCOL = 1
+UBX_PROTOCOL = 2
+ERR_RAISE = 2
+ERR_LOG = 1
+ERR_IGNORE = 0
 
 GNSSLIST = {
     0: "GPS",

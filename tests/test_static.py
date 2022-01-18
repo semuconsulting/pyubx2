@@ -9,9 +9,10 @@ Created on 3 Oct 2020
 """
 # pylint: disable=line-too-long, invalid-name, missing-docstring, no-member
 
+import os
 import unittest
 
-from pyubx2 import UBXMessage, UBX_CLASSES, POLL
+from pyubx2 import UBXMessage, UBXReader, UBX_CLASSES, POLL
 import pyubx2.ubxtypes_core as ubt
 import pyubx2.ubxtypes_get as ubg
 import pyubx2.ubxtypes_set as ubs
@@ -30,15 +31,19 @@ from pyubx2.ubxhelpers import (
     bytes2val,
     cfgkey2name,
     cfgname2key,
+    protocol,
+    hextable,
 )
 
 
 class StaticTest(unittest.TestCase):
     def setUp(self):
-        pass
+        self.maxDiff = None
+        dirname = os.path.dirname(__file__)
+        self.streamNAV = open(os.path.join(dirname, "pygpsdata-NAV.log"), "rb")
 
     def tearDown(self):
-        pass
+        self.streamNAV.close()
 
     # def testDefinitions(self):  # DEBUG test for possible missing payload definitions
     #     for msg in ubt.UBX_MSGIDS.values():
@@ -83,7 +88,7 @@ class StaticTest(unittest.TestCase):
             (b"\x44\x55", ubt.X2),
             (23.12345678, ubt.R4),
             (-23.12345678912345, ubt.R8),
-            ([1, 2, 3, 4,5], "A005"),
+            ([1, 2, 3, 4, 5], "A005"),
         ]
         EXPECTED_RESULTS = [
             b"\x29\x09",
@@ -215,6 +220,26 @@ class StaticTest(unittest.TestCase):
         EXPECTED_RESULT = 2
         res = UBXMessage("CFG", "CFG-MSG", POLL, msgClass=240, msgID=5)
         self.assertEqual(res.msgmode, EXPECTED_RESULT)
+
+    def testdatastream(self):  # test datastream getter
+        EXPECTED_RESULT = "<class '_io.BufferedReader'>"
+        res = str(type(UBXReader(self.streamNAV).datastream))
+        self.assertEqual(res, EXPECTED_RESULT)
+
+    def testprotocol(self):  # test protocol() method
+        res = protocol(b"\xb5b\x06\x01\x02\x00\xf0\x05\xfe\x16")
+        self.assertEqual(res, ubt.UBX_PROTOCOL)
+        res = protocol(b"$GNGLL,5327.04319,S,00214.41396,E,223232.00,A,A*68\r\n")
+        self.assertEqual(res, ubt.NMEA_PROTOCOL)
+        res = protocol(b"$PGRMM,WGS84*26\r\n")
+        self.assertEqual(res, ubt.NMEA_PROTOCOL)
+        res = protocol(b"aPiLeOfGarBage")
+        self.assertEqual(res, 0)
+
+    def testhextable(self):  # test hextable*( method)
+        EXPECTED_RESULT = "000: 2447 4e47 4c4c 2c35 3332 372e 3034 3331  | b'$GNGLL,5327.0431' |\n016: 392c 532c 3030 3231 342e 3431 3339 362c  | b'9,S,00214.41396,' |\n032: 452c 3232 3332 3332 2e30 302c 412c 412a  | b'E,223232.00,A,A*' |\n048: 3638 0d0a                                | b'68\\r\\n' |\n"
+        res = hextable(b"$GNGLL,5327.04319,S,00214.41396,E,223232.00,A,A*68\r\n", 8)
+        self.assertEqual(res, EXPECTED_RESULT)
 
 
 if __name__ == "__main__":

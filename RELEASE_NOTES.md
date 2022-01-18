@@ -1,5 +1,15 @@
 # pyubx2 Release Notes
 
+
+### RELEASE 1.2.4
+
+ENHANCEMENTS:
+
+1. By popular request, **`UBXReader` now optionally streams NMEA data (via the companion `pynmeagps` library)** in addition to UBX. The `UBXReader.read()` method has been internally refactored to allow for configurable protocol filtering and error handling.
+1. New CLI utility `gnssdump` added. This leverages the new `UBXReader.read()` functionality to parse both NMEA and UBX data from any data stream (including Serial and File) to the terminal or to designated NMEA and/or UBX protocol handlers. The utility implements a new `GNSSStreamer` class which may also be invoked within application code (see examples).  `gnssdump` renders the older `ubxdump` and `nmeadump` CLI utilities obsolete and these will be removed in future versions. `gnssdump` requires the `pyserial` library in addition to `pyubx2` and `pynmeagps` (these will be installed automatically via pip).
+4. A new helper method `hextable()` has been added to `ubxhelpers.py` which formats raw (binary) data into tabular hexadecimal format, similar to that used in most hex editors.
+
+
 ### RELEASE 1.2.3
 
 ENHANCEMENTS:

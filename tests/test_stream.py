@@ -12,7 +12,15 @@ Created on 3 Oct 2020
 import os
 import unittest
 
-from pyubx2 import UBXReader, VALCKSUM
+from pyubx2 import (
+    UBXReader,
+    VALCKSUM,
+    UBX_PROTOCOL,
+    NMEA_PROTOCOL,
+    ERR_RAISE,
+    ERR_LOG,
+    ERR_IGNORE,
+)
 from pyubx2.exceptions import UBXStreamError, UBXParseError
 
 
@@ -29,13 +37,19 @@ class StreamTest(unittest.TestCase):
         self.streamCFG = open(os.path.join(dirname, "pygpsdata-CFG.log"), "rb")
         self.streamMON = open(os.path.join(dirname, "pygpsdata-MON.log"), "rb")
         self.streamITER = open(os.path.join(dirname, "pygpsdata-ITER.log"), "rb")
-        self.streamMIX = open(os.path.join(dirname, "pygpsdata-MIXED.log"), "rb")
-        self.streamMIX2 = open(os.path.join(dirname, "pygpsdata-MIXED2.log"), "rb")
+        self.streamMIX = open(os.path.join(dirname, "pygpsdata-MIXED3.log"), "rb")
+        self.streamMIXBADCK = open(
+            os.path.join(dirname, "pygpsdata-MIXED3BADCK.log"), "rb"
+        )
+        # self.streamMIX2 = open(os.path.join(dirname, "pygpsdata-MIXED2.log"), "rb")
         self.streamBADHDR = open(os.path.join(dirname, "pygpsdata-BADHDR.log"), "rb")
         self.streamBADEOF1 = open(os.path.join(dirname, "pygpsdata-BADEOF1.log"), "rb")
         self.streamBADEOF2 = open(os.path.join(dirname, "pygpsdata-BADEOF2.log"), "rb")
         self.streamBADEOF3 = open(os.path.join(dirname, "pygpsdata-BADEOF3.log"), "rb")
-        self.streamBADCK = open(os.path.join(dirname, "pygpsdata-BADCK.log"), "rb")
+        self.streamBADCK2 = open(os.path.join(dirname, "pygpsdata-BADCK2.log"), "rb")
+        self.streamBADNMEAEOF = open(
+            os.path.join(dirname, "pygpsdata-BADNMEAEOF.log"), "rb"
+        )
 
     def tearDown(self):
         # self.testdump.close()
@@ -48,12 +62,14 @@ class StreamTest(unittest.TestCase):
         self.streamMON.close()
         self.streamITER.close()
         self.streamMIX.close()
-        self.streamMIX2.close()
+        self.streamMIXBADCK.close()
+        # self.streamMIX2.close()
         self.streamBADHDR.close()
         self.streamBADEOF1.close()
         self.streamBADEOF2.close()
         self.streamBADEOF3.close()
-        self.streamBADCK.close()
+        self.streamBADCK2.close()
+        self.streamBADNMEAEOF.close()
 
     def testNAVLOG(
         self,
@@ -271,12 +287,64 @@ class StreamTest(unittest.TestCase):
                 self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
                 i += 1
 
-    def testMIX2VAL(self):  # test mixed UBX/NMEA stream with ubxonly set to True
-        EXPECTED_ERROR = "Unknown data header b'$G'. Looks like NMEA data. Set ubxonly flag to 'False' to ignore."
-        ubxreader = UBXReader(self.streamMIX2, ubxonly=True)
-        with self.assertRaises(UBXStreamError) as context:
-            (_, _) = ubxreader.read()
-        self.assertTrue(EXPECTED_ERROR in str(context.exception))
+    def testMIXED(self):  # TODO test mixed UBX/NMEA stream with no protfilter
+        dirname = os.path.dirname(__file__)
+        stream = open(os.path.join(dirname, "pygpsdata-MIXED3.log"), "rb")
+        EXPECTED_RESULTS = (
+            "<UBX(NAV-PVT, iTOW=08:02:47, year=2022, month=1, day=18, hour=8, min=2, second=47, validDate=1, validTime=1, fullyResolved=1, validMag=0, tAcc=37, nano=-175377, fixType=3, gnssFixOk=1, difSoln=0, psmState=0, headVehValid=0, carrSoln=0, confirmedAvai=1, confirmedDate=1, confirmedTime=1, numSV=7, lon=-2.2402308, lat=53.4507167, height=85162, hMSL=36678, hAcc=8927, vAcc=7261, velN=-109, velE=-4, velD=7, gSpeed=109, headMot=0.0, sAcc=872, headAcc=103.82556, pDOP=2.44, invalidLlh=0, lastCorrectionAge=0, reserved0=793711598, headVeh=0.0, magDec=0.0, magAcc=0.0)>",
+            "<NMEA(GPGGA, time=08:02:47, lat=53.45071667, NS=N, lon=-2.24023083, EW=W, quality=1, numSV=7, HDOP=1.63, alt=36.7, altUnit=M, sep=48.5, sepUnit=M, diffAge=, diffStation=)>",
+            "<NMEA(GPGSA, opMode=A, navMode=3, svid_01=2, svid_02=13, svid_03=20, svid_04=7, svid_05=5, svid_06=30, svid_07=9, svid_08=, svid_09=, svid_10=, svid_11=, svid_12=, PDOP=2.44, HDOP=1.63, VDOP=1.82)>",
+            "<UBX(NAV-PVT, iTOW=08:02:48, year=2022, month=1, day=18, hour=8, min=2, second=48, validDate=1, validTime=1, fullyResolved=1, validMag=0, tAcc=37, nano=-175363, fixType=3, gnssFixOk=1, difSoln=0, psmState=0, headVehValid=0, carrSoln=0, confirmedAvai=1, confirmedDate=1, confirmedTime=1, numSV=7, lon=-2.2402314, lat=53.4507186, height=85266, hMSL=36782, hAcc=8931, vAcc=7312, velN=72, velE=-12, velD=10, gSpeed=73, headMot=0.0, sAcc=861, headAcc=103.86284, pDOP=2.44, invalidLlh=0, lastCorrectionAge=0, reserved0=793711598, headVeh=0.0, magDec=0.0, magAcc=0.0)>",
+            "<NMEA(GPGGA, time=08:02:48, lat=53.45071867, NS=N, lon=-2.2402315, EW=W, quality=1, numSV=7, HDOP=1.63, alt=36.8, altUnit=M, sep=48.5, sepUnit=M, diffAge=, diffStation=)>",
+            "<NMEA(GPGSA, opMode=A, navMode=3, svid_01=2, svid_02=13, svid_03=20, svid_04=7, svid_05=5, svid_06=30, svid_07=9, svid_08=, svid_09=, svid_10=, svid_11=, svid_12=, PDOP=2.44, HDOP=1.63, VDOP=1.82)>",
+            "<UBX(NAV-PVT, iTOW=08:02:49, year=2022, month=1, day=18, hour=8, min=2, second=49, validDate=1, validTime=1, fullyResolved=1, validMag=0, tAcc=38, nano=-175349, fixType=3, gnssFixOk=1, difSoln=0, psmState=0, headVehValid=0, carrSoln=0, confirmedAvai=1, confirmedDate=1, confirmedTime=1, numSV=7, lon=-2.2402319, lat=53.4507207, height=85325, hMSL=36841, hAcc=8930, vAcc=7363, velN=110, velE=-25, velD=1, gSpeed=113, headMot=0.0, sAcc=855, headAcc=103.8999, pDOP=2.44, invalidLlh=0, lastCorrectionAge=0, reserved0=793711598, headVeh=0.0, magDec=0.0, magAcc=0.0)>",
+        )
+        i = 0
+        raw = 0
+        ubxreader = UBXReader(stream)
+        while raw is not None:
+            (raw, parsed) = ubxreader.read()
+            if raw is not None:
+                self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
+                i += 1
+        stream.close()
+
+    def testMIXEDUBXFILT(self):  # TODO test mixed UBX/NMEA stream with UBX protfilter
+        dirname = os.path.dirname(__file__)
+        stream = open(os.path.join(dirname, "pygpsdata-MIXED3.log"), "rb")
+        EXPECTED_RESULTS = (
+            "<UBX(NAV-PVT, iTOW=08:02:47, year=2022, month=1, day=18, hour=8, min=2, second=47, validDate=1, validTime=1, fullyResolved=1, validMag=0, tAcc=37, nano=-175377, fixType=3, gnssFixOk=1, difSoln=0, psmState=0, headVehValid=0, carrSoln=0, confirmedAvai=1, confirmedDate=1, confirmedTime=1, numSV=7, lon=-2.2402308, lat=53.4507167, height=85162, hMSL=36678, hAcc=8927, vAcc=7261, velN=-109, velE=-4, velD=7, gSpeed=109, headMot=0.0, sAcc=872, headAcc=103.82556, pDOP=2.44, invalidLlh=0, lastCorrectionAge=0, reserved0=793711598, headVeh=0.0, magDec=0.0, magAcc=0.0)>",
+            "<UBX(NAV-PVT, iTOW=08:02:48, year=2022, month=1, day=18, hour=8, min=2, second=48, validDate=1, validTime=1, fullyResolved=1, validMag=0, tAcc=37, nano=-175363, fixType=3, gnssFixOk=1, difSoln=0, psmState=0, headVehValid=0, carrSoln=0, confirmedAvai=1, confirmedDate=1, confirmedTime=1, numSV=7, lon=-2.2402314, lat=53.4507186, height=85266, hMSL=36782, hAcc=8931, vAcc=7312, velN=72, velE=-12, velD=10, gSpeed=73, headMot=0.0, sAcc=861, headAcc=103.86284, pDOP=2.44, invalidLlh=0, lastCorrectionAge=0, reserved0=793711598, headVeh=0.0, magDec=0.0, magAcc=0.0)>",
+            "<UBX(NAV-PVT, iTOW=08:02:49, year=2022, month=1, day=18, hour=8, min=2, second=49, validDate=1, validTime=1, fullyResolved=1, validMag=0, tAcc=38, nano=-175349, fixType=3, gnssFixOk=1, difSoln=0, psmState=0, headVehValid=0, carrSoln=0, confirmedAvai=1, confirmedDate=1, confirmedTime=1, numSV=7, lon=-2.2402319, lat=53.4507207, height=85325, hMSL=36841, hAcc=8930, vAcc=7363, velN=110, velE=-25, velD=1, gSpeed=113, headMot=0.0, sAcc=855, headAcc=103.8999, pDOP=2.44, invalidLlh=0, lastCorrectionAge=0, reserved0=793711598, headVeh=0.0, magDec=0.0, magAcc=0.0)>",
+        )
+        i = 0
+        raw = 0
+        ubxreader = UBXReader(stream, protfilter=UBX_PROTOCOL)
+        while raw is not None:
+            (raw, parsed) = ubxreader.read()
+            if raw is not None:
+                self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
+                i += 1
+        stream.close()
+
+    def testMIXEDNMEAFILT(self):  # TODO test mixed UBX/NMEA stream with NMEA protfilter
+        dirname = os.path.dirname(__file__)
+        stream = open(os.path.join(dirname, "pygpsdata-MIXED3.log"), "rb")
+        EXPECTED_RESULTS = (
+            "<NMEA(GPGGA, time=08:02:47, lat=53.45071667, NS=N, lon=-2.24023083, EW=W, quality=1, numSV=7, HDOP=1.63, alt=36.7, altUnit=M, sep=48.5, sepUnit=M, diffAge=, diffStation=)>",
+            "<NMEA(GPGSA, opMode=A, navMode=3, svid_01=2, svid_02=13, svid_03=20, svid_04=7, svid_05=5, svid_06=30, svid_07=9, svid_08=, svid_09=, svid_10=, svid_11=, svid_12=, PDOP=2.44, HDOP=1.63, VDOP=1.82)>",
+            "<NMEA(GPGGA, time=08:02:48, lat=53.45071867, NS=N, lon=-2.2402315, EW=W, quality=1, numSV=7, HDOP=1.63, alt=36.8, altUnit=M, sep=48.5, sepUnit=M, diffAge=, diffStation=)>",
+            "<NMEA(GPGSA, opMode=A, navMode=3, svid_01=2, svid_02=13, svid_03=20, svid_04=7, svid_05=5, svid_06=30, svid_07=9, svid_08=, svid_09=, svid_10=, svid_11=, svid_12=, PDOP=2.44, HDOP=1.63, VDOP=1.82)>",
+        )
+        i = 0
+        raw = 0
+        ubxreader = UBXReader(stream, protfilter=NMEA_PROTOCOL)
+        while raw is not None:
+            (raw, parsed) = ubxreader.read()
+            if raw is not None:
+                self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
+                i += 1
+        stream.close()
 
     def testIterator(
         self,
@@ -295,31 +363,6 @@ class StreamTest(unittest.TestCase):
             self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
             i += 1
 
-    def testIterator2(self):  # test iterator function with mixed data stream
-        EXPECTED_ERROR = "Unknown data header b'$G'. Looks like NMEA data. Set ubxonly flag to 'False' to ignore."
-        ubxreader = UBXReader(self.streamMIX, ubxonly=True)
-        with self.assertRaises(UBXStreamError) as context:
-            i = 0
-            #             (raw, parsed) = ubxreader.read()
-            for (_, _) in ubxreader:
-                i += 1
-        self.assertTrue(EXPECTED_ERROR in str(context.exception))
-
-    def testIterator3(self):  # test iterator function with mixed data stream
-        EXPECTED_RESULTS = (
-            "<UBX(NAV-SOL, iTOW=11:33:15, fTOW=52790, week=2128, gpsFix=3, gpsfixOK=1, diffSoln=0, wknSet=1, towSet=1, ecefX=380364134, ecefY=-14880030, ecefZ=510063062, pAcc=1026, ecefVX=-3, ecefVY=0, ecefVZ=1, sAcc=72, pDOP=1.35, reserved1=2, numSV=15, reserved2=215776)>",
-            "<UBX(NAV-PVT, iTOW=11:33:15, year=2020, month=10, day=23, hour=11, min=33, second=15, validDate=1, validTime=1, fullyResolved=1, validMag=0, tAcc=17, nano=52792, fixType=3, gnssFixOk=1, difSoln=0, psmState=0, headVehValid=0, carrSoln=0, confirmedAvai=0, confirmedDate=0, confirmedTime=0, numSV=15, lon=-2.2402964, lat=53.4506691, height=75699, hMSL=27215, hAcc=6298, vAcc=8101, velN=27, velE=-4, velD=11, gSpeed=27, headMot=7.70506, sAcc=715, headAcc=39.05453, pDOP=1.35, invalidLlh=0, lastCorrectionAge=0, reserved0=2312928, headVeh=0.0, magDec=0.0, magAcc=0.0)>",
-            "<UBX(NAV-SVINFO, iTOW=11:33:15, numCh=25, chipGen=4, reserved1=0, chn_01=13, svid_01=1, svUsed_01=0, diffCorr_01=0, orbitAvail_01=1, orbitEph_01=1, unhealthy_01=0, orbitAlm_01=0, orbitAop_01=0, smoothed_01=0, qualityInd_01=1, cno_01=0, elev_01=4, azim_01=142, prRes_01=0, chn_02=19, svid_02=2, svUsed_02=0, diffCorr_02=0, orbitAvail_02=1, orbitEph_02=0, unhealthy_02=0, orbitAlm_02=0, orbitAop_02=0, smoothed_02=0, qualityInd_02=1, cno_02=0, elev_02=19, azim_02=311, prRes_02=0, chn_03=3, svid_03=3, svUsed_03=1, diffCorr_03=0, orbitAvail_03=1, orbitEph_03=1, unhealthy_03=0, orbitAlm_03=0, orbitAop_03=0, smoothed_03=0, qualityInd_03=4, cno_03=24, elev_03=41, azim_03=89, prRes_03=469, chn_04=0, svid_04=4, svUsed_04=1, diffCorr_04=0, orbitAvail_04=1, orbitEph_04=1, unhealthy_04=0, orbitAlm_04=0, orbitAop_04=0, smoothed_04=0, qualityInd_04=7, cno_04=26, elev_04=70, azim_04=98, prRes_04=94, chn_05=1, svid_05=6, svUsed_05=1, diffCorr_05=0, orbitAvail_05=1, orbitEph_05=1, unhealthy_05=0, orbitAlm_05=0, orbitAop_05=0, smoothed_05=0, qualityInd_05=7, cno_05=29, elev_05=61, azim_05=287, prRes_05=-1023, chn_06=255, svid_06=7, svUsed_06=0, diffCorr_06=0, orbitAvail_06=1, orbitEph_06=0, unhealthy_06=0, orbitAlm_06=0, orbitAop_06=0, smoothed_06=0, qualityInd_06=0, cno_06=0, elev_06=0, azim_06=168, prRes_06=0, chn_07=2, svid_07=9, svUsed_07=1, diffCorr_07=0, orbitAvail_07=1, orbitEph_07=1, unhealthy_07=0, orbitAlm_07=0, orbitAop_07=0, smoothed_07=0, qualityInd_07=7, cno_07=32, elev_07=56, azim_07=200, prRes_07=-18, chn_08=23, svid_08=12, svUsed_08=0, diffCorr_08=0, orbitAvail_08=1, orbitEph_08=0, unhealthy_08=0, orbitAlm_08=0, orbitAop_08=0, smoothed_08=0, qualityInd_08=1, cno_08=0, elev_08=1, azim_08=311, prRes_08=0, chn_09=5, svid_09=17, svUsed_09=1, diffCorr_09=0, orbitAvail_09=1, orbitEph_09=1, unhealthy_09=0, orbitAlm_09=0, orbitAop_09=0, smoothed_09=0, qualityInd_09=4, cno_09=23, elev_09=26, azim_09=226, prRes_09=505, chn_10=4, svid_10=19, svUsed_10=1, diffCorr_10=0, orbitAvail_10=1, orbitEph_10=1, unhealthy_10=0, orbitAlm_10=0, orbitAop_10=0, smoothed_10=0, qualityInd_10=4, cno_10=25, elev_10=35, azim_10=242, prRes_10=1630, chn_11=6, svid_11=22, svUsed_11=1, diffCorr_11=0, orbitAvail_11=1, orbitEph_11=1, unhealthy_11=0, orbitAlm_11=0, orbitAop_11=0, smoothed_11=0, qualityInd_11=4, cno_11=21, elev_11=20, azim_11=96, prRes_11=-1033, chn_12=22, svid_12=25, svUsed_12=0, diffCorr_12=0, orbitAvail_12=1, orbitEph_12=0, unhealthy_12=0, orbitAlm_12=0, orbitAop_12=0, smoothed_12=0, qualityInd_12=1, cno_12=0, elev_12=4, azim_12=344, prRes_12=0, chn_13=11, svid_13=31, svUsed_13=1, diffCorr_13=0, orbitAvail_13=1, orbitEph_13=1, unhealthy_13=0, orbitAlm_13=0, orbitAop_13=0, smoothed_13=0, qualityInd_13=4, cno_13=14, elev_13=10, azim_13=27, prRes_13=1714, chn_14=18, svid_14=120, svUsed_14=0, diffCorr_14=0, orbitAvail_14=1, orbitEph_14=0, unhealthy_14=1, orbitAlm_14=0, orbitAop_14=0, smoothed_14=0, qualityInd_14=1, cno_14=0, elev_14=28, azim_14=196, prRes_14=0, chn_15=20, svid_15=123, svUsed_15=0, diffCorr_15=0, orbitAvail_15=1, orbitEph_15=0, unhealthy_15=1, orbitAlm_15=0, orbitAop_15=0, smoothed_15=0, qualityInd_15=1, cno_15=0, elev_15=22, azim_15=140, prRes_15=0, chn_16=16, svid_16=136, svUsed_16=0, diffCorr_16=0, orbitAvail_16=1, orbitEph_16=0, unhealthy_16=1, orbitAlm_16=0, orbitAop_16=0, smoothed_16=0, qualityInd_16=1, cno_16=0, elev_16=29, azim_16=171, prRes_16=0, chn_17=14, svid_17=65, svUsed_17=1, diffCorr_17=0, orbitAvail_17=1, orbitEph_17=1, unhealthy_17=0, orbitAlm_17=0, orbitAop_17=0, smoothed_17=0, qualityInd_17=4, cno_17=21, elev_17=33, azim_17=252, prRes_17=139, chn_18=8, svid_18=71, svUsed_18=1, diffCorr_18=0, orbitAvail_18=1, orbitEph_18=1, unhealthy_18=0, orbitAlm_18=0, orbitAop_18=0, smoothed_18=0, qualityInd_18=4, cno_18=19, elev_18=44, azim_18=53, prRes_18=1941, chn_19=9, svid_19=72, svUsed_19=1, diffCorr_19=0, orbitAvail_19=1, orbitEph_19=1, unhealthy_19=0, orbitAlm_19=0, orbitAop_19=0, smoothed_19=0, qualityInd_19=4, cno_19=20, elev_19=76, azim_19=286, prRes_19=-1155, chn_20=15, svid_20=73, svUsed_20=1, diffCorr_20=0, orbitAvail_20=1, orbitEph_20=1, unhealthy_20=0, orbitAlm_20=0, orbitAop_20=0, smoothed_20=0, qualityInd_20=6, cno_20=25, elev_20=19, azim_20=81, prRes_20=-115, chn_21=21, svid_21=79, svUsed_21=0, diffCorr_21=0, orbitAvail_21=1, orbitEph_21=0, unhealthy_21=0, orbitAlm_21=0, orbitAop_21=0, smoothed_21=0, qualityInd_21=1, cno_21=0, elev_21=0, azim_21=342, prRes_21=0, chn_22=17, svid_22=80, svUsed_22=0, diffCorr_22=0, orbitAvail_22=1, orbitEph_22=0, unhealthy_22=0, orbitAlm_22=0, orbitAop_22=0, smoothed_22=0, qualityInd_22=4, cno_22=18, elev_22=20, azim_22=29, prRes_22=0, chn_23=7, svid_23=86, svUsed_23=1, diffCorr_23=0, orbitAvail_23=1, orbitEph_23=1, unhealthy_23=0, orbitAlm_23=0, orbitAop_23=0, smoothed_23=0, qualityInd_23=4, cno_23=10, elev_23=18, azim_23=177, prRes_23=-149, chn_24=10, svid_24=87, svUsed_24=1, diffCorr_24=0, orbitAvail_24=1, orbitEph_24=1, unhealthy_24=0, orbitAlm_24=0, orbitAop_24=0, smoothed_24=0, qualityInd_24=7, cno_24=32, elev_24=65, azim_24=257, prRes_24=169, chn_25=12, svid_25=88, svUsed_25=1, diffCorr_25=0, orbitAvail_25=1, orbitEph_25=1, unhealthy_25=0, orbitAlm_25=0, orbitAop_25=0, smoothed_25=0, qualityInd_25=4, cno_25=23, elev_25=40, azim_25=318, prRes_25=-93)>",
-        )
-        i = 0
-        raw = 0
-        ubxreader = UBXReader(self.streamMIX, ubxonly=False)
-        while raw is not None and i < 3:
-            (raw, parsed) = ubxreader.read()
-            if raw is not None:
-                self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
-                i += 1
-
     def testNMEAITERATE(self):  # UBXReader iterate() helper method
         EXPECTED_RESULTS = (
             "<UBX(MON-MSGPP, msg1_01=0, msg1_02=0, msg1_03=0, msg1_04=0, msg1_05=0, msg1_06=0, msg1_07=0, msg1_08=0, msg2_01=0, msg2_02=0, msg2_03=0, msg2_04=0, msg2_05=0, msg2_06=0, msg2_07=0, msg2_08=0, msg3_01=0, msg3_02=0, msg3_03=0, msg3_04=0, msg3_05=0, msg3_06=0, msg3_07=0, msg3_08=0, msg4_01=69, msg4_02=0, msg4_03=0, msg4_04=0, msg4_05=0, msg4_06=0, msg4_07=0, msg4_08=0, msg5_01=0, msg5_02=0, msg5_03=0, msg5_04=0, msg5_05=0, msg5_06=0, msg5_07=0, msg5_08=0, msg6_01=0, msg6_02=0, msg6_03=0, msg6_04=0, msg6_05=0, msg6_06=0, msg6_07=0, msg6_08=0, skipped_01=0, skipped_02=0, skipped_03=0, skipped_04=0, skipped_05=0, skipped_06=0)>",
@@ -330,7 +373,7 @@ class StreamTest(unittest.TestCase):
             "<UBX(MON-HW2, ofsI=4, magI=110, ofsQ=5, magQ=112, cfgSource=111, reserved0=1800, lowLevCfg=4294967295, reserved1=18446744073709551615, postStatus=0, reserved2=0)>",
         )
         i = 0
-        ubr = UBXReader(self.streamITER, ubxonly=False, parsebitfield=False)
+        ubr = UBXReader(self.streamITER, protfilter=3, parsebitfield=False)
         for (_, parsed) in ubr.iterate():
             self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
             i += 1
@@ -338,46 +381,65 @@ class StreamTest(unittest.TestCase):
     def testUBXITERATE_ERR1(
         self,
     ):  # UBXReader iterate() helper method with bad checksum
-        EXPECTED_ERROR = "Message checksum b'&\\x88' invalid - should be b'&e'"
+        dirname = os.path.dirname(__file__)
+        stream = open(os.path.join(dirname, "pygpsdata-MIXED3BADCK.log"), "rb")
+        EXPECTED_ERROR = (
+            "Message checksum b'\\xe2\\x99' invalid - should be b'\\xe2\\xb0'"
+        )
         with self.assertRaises(UBXParseError) as context:
             ubr = UBXReader(
-                self.streamBADCK,  # TODO add stream log with back checksum
-                ubxonly=False,
+                stream,
+                protfilter=3,
                 validate=VALCKSUM,
                 msgmode=0,
                 parsebitfield=True,
             )
             for (raw, parsed) in ubr.iterate(
-                quitonerror=True,
+                quitonerror=ERR_RAISE,
             ):
                 pass
         self.assertTrue(EXPECTED_ERROR in str(context.exception))
+        stream.close()
 
     def testUBXITERATE_ERR2(
         self,
     ):  # UBXReader iterate() helper method ignoring bad checksum and passing error handler
-        EXPECTED_RESULT = "<UBX(NAV-PVT, iTOW=11:34:59, year=2021, month=12, day=4, hour=11, min=34, second=59, validDate=1, validTime=1, fullyResolved=1, validMag=0, tAcc=26, nano=-361668, fixType=3, gnssFixOk=1, difSoln=1, psmState=0, headVehValid=0, carrSoln=0, confirmedAvai=1, confirmedDate=1, confirmedTime=1, numSV=26, lon=-2.2402855, lat=53.4507228, height=91184, hMSL=42701, hAcc=1491, vAcc=2065, velN=-7, velE=4, velD=9, gSpeed=8, headMot=0.0, sAcc=259, headAcc=180.0, pDOP=1.01, invalidLlh=0, lastCorrectionAge=0, reserved0=793711598, headVeh=0.0, magDec=0.0, magAcc=0.0)>"
+        dirname = os.path.dirname(__file__)
+        stream = open(os.path.join(dirname, "pygpsdata-MIXED3BADCK.log"), "rb")
+        EXPECTED_RESULTS = (
+            "<UBX(NAV-PVT, iTOW=08:02:47, year=2022, month=1, day=18, hour=8, min=2, second=47, validDate=1, validTime=1, fullyResolved=1, validMag=0, tAcc=37, nano=-175377, fixType=3, gnssFixOk=1, difSoln=0, psmState=0, headVehValid=0, carrSoln=0, confirmedAvai=1, confirmedDate=1, confirmedTime=1, numSV=7, lon=-2.2402308, lat=53.4507167, height=85162, hMSL=36678, hAcc=8927, vAcc=7261, velN=-109, velE=-4, velD=7, gSpeed=109, headMot=0.0, sAcc=872, headAcc=103.82556, pDOP=2.44, invalidLlh=0, lastCorrectionAge=0, reserved0=793711598, headVeh=0.0, magDec=0.0, magAcc=0.0)>",
+            "<NMEA(GPGGA, time=08:02:47, lat=53.45071667, NS=N, lon=-2.24023083, EW=W, quality=1, numSV=7, HDOP=1.63, alt=36.7, altUnit=M, sep=48.5, sepUnit=M, diffAge=, diffStation=)>",
+            "<NMEA(GPGSA, opMode=A, navMode=3, svid_01=2, svid_02=13, svid_03=20, svid_04=7, svid_05=5, svid_06=30, svid_07=9, svid_08=, svid_09=, svid_10=, svid_11=, svid_12=, PDOP=2.44, HDOP=1.63, VDOP=1.82)>",
+            "<UBX(NAV-PVT, iTOW=08:02:48, year=2022, month=1, day=18, hour=8, min=2, second=48, validDate=1, validTime=1, fullyResolved=1, validMag=0, tAcc=37, nano=-175363, fixType=3, gnssFixOk=1, difSoln=0, psmState=0, headVehValid=0, carrSoln=0, confirmedAvai=1, confirmedDate=1, confirmedTime=1, numSV=7, lon=-2.2402314, lat=53.4507186, height=85266, hMSL=36782, hAcc=8931, vAcc=7312, velN=72, velE=-12, velD=10, gSpeed=73, headMot=0.0, sAcc=861, headAcc=103.86284, pDOP=2.44, invalidLlh=0, lastCorrectionAge=0, reserved0=793711598, headVeh=0.0, magDec=0.0, magAcc=0.0)>",
+            "<NMEA(GPGGA, time=08:02:48, lat=53.45071867, NS=N, lon=-2.2402315, EW=W, quality=1, numSV=7, HDOP=1.63, alt=36.8, altUnit=M, sep=48.5, sepUnit=M, diffAge=, diffStation=)>",
+            "None",
+        )
         ubr = UBXReader(
-            self.streamBADCK,  # TODO add stream log with back checksum
-            ubxonly=False,
+            stream,
+            protfilter=3,
             validate=VALCKSUM,
             msgmode=0,
             parsebitfield=True,
         )
         res = ""
+        i = 0
         for (raw, parsed) in ubr.iterate(
-            quitonerror=False,
+            quitonerror=ERR_LOG,
             errorhandler=lambda e: print(f"I ignored the following error: {e}"),
         ):
             res = str(parsed)
-        self.assertEqual(EXPECTED_RESULT, res)
+            self.assertEqual(EXPECTED_RESULTS[i], res)
+            i += 1
+        self.assertEqual(i, 6)
 
     def testUBXITERATE_ERR3(
         self,
     ):  # UBXReader iterate() helper method ignoring bad checksum and continuing
-        EXPECTED_RESULT = "<UBX(NAV-PVT, iTOW=11:34:59, year=2021, month=12, day=4, hour=11, min=34, second=59, validDate=1, validTime=1, fullyResolved=1, validMag=0, tAcc=26, nano=-361668, fixType=3, gnssFixOk=1, difSoln=1, psmState=0, headVehValid=0, carrSoln=0, confirmedAvai=1, confirmedDate=1, confirmedTime=1, numSV=26, lon=-2.2402855, lat=53.4507228, height=91184, hMSL=42701, hAcc=1491, vAcc=2065, velN=-7, velE=4, velD=9, gSpeed=8, headMot=0.0, sAcc=259, headAcc=180.0, pDOP=1.01, invalidLlh=0, lastCorrectionAge=0, reserved0=793711598, headVeh=0.0, magDec=0.0, magAcc=0.0)>"
+        dirname = os.path.dirname(__file__)
+        stream = open(os.path.join(dirname, "pygpsdata-MIXED3BADCK.log"), "rb")
+        EXPECTED_RESULT = "None"
         ubr = UBXReader(
-            self.streamBADCK,  # TODO add stream log with back checksum
+            stream,
             ubxonly=False,
             validate=VALCKSUM,
             msgmode=0,
@@ -385,20 +447,27 @@ class StreamTest(unittest.TestCase):
         )
         res = ""
         for (raw, parsed) in ubr.iterate(
-            quitonerror=False,
+            quitonerror=ERR_LOG,
         ):
             res = str(parsed)
-            print(parsed)
         self.assertEqual(EXPECTED_RESULT, res)
+        stream.close()
 
-    def testBADHDR(self):  # invalid header in data with ubxonly set True
-        EXPECTED_ERROR = "Unknown data header b'\\xb5\\x01'"
+    def testBADHDR_FAIL(self):  # invalid header in data with ubxonly set True
+        EXPECTED_ERROR = "Unknown protocol b'\\xb5w'"
         with self.assertRaises(UBXStreamError) as context:
             i = 0
-            ubxreader = UBXReader(self.streamBADHDR, ubxonly=True)
+            ubxreader = UBXReader(self.streamBADHDR, quitonerror=ERR_RAISE)
             for (_, _) in ubxreader:
                 i += 1
         self.assertTrue(EXPECTED_ERROR in str(context.exception))
+
+    def testBADHDR_IGNORE(self):  # invalid header in data with quitonerror = False
+        i = 0
+        ubxreader = UBXReader(self.streamBADHDR, quitonerror=ERR_IGNORE)
+        for (raw, parsed) in ubxreader:
+            i += 1
+        self.assertEqual(i, 2)
 
     def testBADEOF1(self):  # premature EOF after header
         i = 0
@@ -426,6 +495,15 @@ class StreamTest(unittest.TestCase):
             (raw, _) = ubxreader.read()
             i += 1
         self.assertEqual(i, 3)
+
+    def testBADNMEAEOF(self):  # premature EOF of NMEA stream
+        i = 0
+        raw = 0
+        ubxreader = UBXReader(self.streamBADNMEAEOF)
+        while raw is not None:
+            (raw, parsed) = ubxreader.read()
+            i += 1
+        self.assertEqual(i, 6)
 
 
 if __name__ == "__main__":
