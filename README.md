@@ -422,7 +422,7 @@ lat: 51.352155, lon: -2.130751
 File input example (in tabulated hexadecimal format):
 
 ```shell
-> gnssdump filename=pygpsdata.log quitonerror=2 format=8 protfilter=1 msgfilter=GNGGA,GNGSA
+> gnssdump filename=pygpsdata.log quitonerror=2 format=8 protfilter=1 msgfilter=GPGGA,GPGSA
 
 Parsing GNSS data stream from file: <_io.BufferedReader name='pygpsdata.log'>...
 

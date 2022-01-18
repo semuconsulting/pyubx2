@@ -1,4 +1,7 @@
 """
+
+NB: THIS UTILITY HAS BEEN SUPERCEDED BY GNSSDUMP AND WILL BE REMOVED IN FUTURE VERSIONS
+
 Simple command line utility, installed with PyPi library pyubx2,
 to stream the parsed UBX output of a u-blox GNSS device.
 

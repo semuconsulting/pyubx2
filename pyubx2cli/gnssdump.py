@@ -108,7 +108,7 @@ class GNSSStreamer:
             self._msgmode = int(kwargs.get("msgmode", GET))
             self._parsebitfield = int(kwargs.get("parsebitfield", 1))
             self._format = int(kwargs.get("format", FORMAT_PARSED))
-            self._quitonerror = int(kwargs.get("quitonerror", 1))
+            self._quitonerror = int(kwargs.get("quitonerror", ERR_LOG))
             self._protfilter = int(
                 kwargs.get("protfilter", NMEA_PROTOCOL | UBX_PROTOCOL)
             )
@@ -217,7 +217,7 @@ class GNSSStreamer:
         ) as err:  # parsing error of some kind
             self._do_error(err)
         except Exception as err:  # pylint: disable=broad-except
-            self._quitonerror = True  # don't ignore irrecoverable errors
+            self._quitonerror = ERR_RAISE  # don't ignore irrecoverable errors
             self._do_error(err)
 
     def _do_output(self, raw: bytes, parsed: object, handler: object):
@@ -298,7 +298,7 @@ def main():
     CLI Entry point.
 
     :param: as per GNSSStreamer constructor.
-    :raises: ValueError if parameters are invalid
+    :raises: ParameterError if parameters are invalid
     """
     # pylint: disable=raise-missing-from
 

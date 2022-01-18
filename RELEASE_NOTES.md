@@ -7,16 +7,6 @@ ENHANCEMENTS:
 
 1. By popular request, **`UBXReader` now optionally streams NMEA data (via the companion `pynmeagps` library)** in addition to UBX. The `UBXReader.read()` method has been internally refactored to allow for configurable protocol filtering and error handling.
 1. New CLI utility `gnssdump` added. This leverages the new `UBXReader.read()` functionality to parse both NMEA and UBX data from any data stream (including Serial and File) to the terminal or to designated NMEA and/or UBX protocol handlers. The utility implements a new `GNSSStreamer` class which may also be invoked within application code (see examples).  `gnssdump` renders the older `ubxdump` and `nmeadump` CLI utilities obsolete and these will be removed in future versions. `gnssdump` requires the `pyserial` library in addition to `pyubx2` and `pynmeagps` (these will be installed automatically via pip).
-1. Example of `gnssdump` usage with external protocol handler:
-```shell
-> gnssdump port=COM3 msgfilter=NAV-PVT ubxhandler="lambda msg: print(f'lat: {msg.lat}, lon: {msg.lon}')"
-
-Parsing GNSS data stream from serial: Serial<id=0x24fee01bee0, open=True>(port='COM3', baudrate=9600, bytesize=8, parity='N', stopbits=1, timeout=3, xonxoff=False, rtscts=False, dsrdtr=False)...
-
-lat: 51.287589, lon: -2.13576
-lat: 51.287491, lon: -2.135763
-...
-```
 4. A new helper method `hextable()` has been added to `ubxhelpers.py` which formats raw (binary) data into tabular hexadecimal format, similar to that used in most hex editors.
 
 
