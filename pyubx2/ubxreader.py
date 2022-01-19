@@ -106,9 +106,10 @@ class UBXReader:
                 byte2 = self._stream.read(1)
                 if len(byte2) < 1:
                     raise EOFError()
+                bytehdr = byte1 + byte2
                 # if it's a UBX message (b'\xb5\x62')
-                if byte1 + byte2 == ubt.UBX_HDR:
-                    (raw_data, parsed_data) = self._parse_ubx(byte1 + byte2)
+                if bytehdr == ubt.UBX_HDR:
+                    (raw_data, parsed_data) = self._parse_ubx(bytehdr)
                     # if protocol filter passes UBX, return message,
                     # otherwise discard and continue
                     if self._protfilter & ubt.UBX_PROTOCOL:
@@ -116,8 +117,8 @@ class UBXReader:
                     else:
                         continue
                 # if it's an NMEA message ('$G' or '$P')
-                elif byte1 + byte2 in ubt.NMEA_HDR:
-                    (raw_data, parsed_data) = self._parse_nmea(byte1 + byte2)
+                elif bytehdr in ubt.NMEA_HDR:
+                    (raw_data, parsed_data) = self._parse_nmea(bytehdr)
                     # if protocol filter passes NMEA, return message,
                     # otherwise discard and continue
                     if self._protfilter & ubt.NMEA_PROTOCOL:
@@ -126,9 +127,12 @@ class UBXReader:
                         continue
                 # unrecognised protocol header
                 else:
-                    if self._quitonerror != ubt.ERR_IGNORE:
-                        raise ube.UBXStreamError(f"Unknown protocol {byte1 + byte2}.")
-                    return (None, None)
+                    if self._quitonerror == ubt.ERR_RAISE:
+                        raise ube.UBXStreamError(f"Unknown protocol {bytehdr}.")
+                    elif self._quitonerror == ubt.ERR_LOG:
+                        return (bytehdr, f"<UNKNOWN PROTOCOL(header={bytehdr})>")
+                    else:  # ignore unknown protocol and continue
+                        continue
 
         except EOFError:
             return (None, None)

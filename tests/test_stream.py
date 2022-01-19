@@ -453,7 +453,7 @@ class StreamTest(unittest.TestCase):
         self.assertEqual(EXPECTED_RESULT, res)
         stream.close()
 
-    def testBADHDR_FAIL(self):  # invalid header in data with ubxonly set True
+    def testBADHDR_FAIL(self):  # invalid header in data with quitonerror = 2
         EXPECTED_ERROR = "Unknown protocol b'\\xb5w'"
         with self.assertRaises(UBXStreamError) as context:
             i = 0
@@ -462,7 +462,14 @@ class StreamTest(unittest.TestCase):
                 i += 1
         self.assertTrue(EXPECTED_ERROR in str(context.exception))
 
-    def testBADHDR_IGNORE(self):  # invalid header in data with quitonerror = False
+    def testBADHDR_LOG(self):  # invalid header in data with quitonerror = 1
+        i = 0
+        ubxreader = UBXReader(self.streamBADHDR, quitonerror=ERR_LOG)
+        for (raw, parsed) in ubxreader:
+            i += 1
+        self.assertEqual(parsed, "<UNKNOWN PROTOCOL(header=b'\\xb5w')>")
+
+    def testBADHDR_IGNORE(self):  # invalid header in data with quitonerror = 0
         i = 0
         ubxreader = UBXReader(self.streamBADHDR, quitonerror=ERR_IGNORE)
         for (raw, parsed) in ubxreader:
