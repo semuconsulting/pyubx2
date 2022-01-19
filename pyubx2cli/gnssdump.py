@@ -189,7 +189,7 @@ class GNSSStreamer:
                 if msgprot == UBX_PROTOCOL:
                     msgidentity = parsed_data.identity
                     handler = self._ubxhandler
-                else:
+                elif msgprot == NMEA_PROTOCOL:
                     msgidentity = parsed_data.talker + parsed_data.msgID
                     handler = self._nmeahandler
                 # does it pass the protocol filter?
