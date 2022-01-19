@@ -82,6 +82,7 @@ class GNSSStreamer:
         :param int quitonerror: (kwarg) 0 = ignore errors,  1 = log errors and continue, 2 = (re)raise errors (1)
         :param int protfilter: (kwarg) 1 = NMEA, 2 = UBX, 3 = BOTH (3)
         :param str msgfilter: (kwarg) comma-separated string of message identities e.g. 'NAV-PVT,GNGSA' (None)
+        :param int limit: (kwarg) maximum number of messages to read (0 = unlimited)
         :param int verbosity: (kwarg) log message verbosity 0 = low, 1 = medium, 3 = high (1)
         :param object errorhandler: (kwarg) evaluable expression defining external error handler (None)
         :param object nmeahandler: (kwarg) evaluable expression defining external NMEA message handler (None)
@@ -114,6 +115,7 @@ class GNSSStreamer:
             )
             self._msgfilter = kwargs.get("msgfilter", None)
             self._verbosity = int(kwargs.get("verbosity", VERBOSITY_MEDIUM))
+            self._limit = int(kwargs.get("limit", 0))
             self._parsing = False
             self._stream = None
             self._msgcount = 0
@@ -131,11 +133,15 @@ class GNSSStreamer:
         except ValueError:
             raise ParameterError(f"Invalid parameter(s).\n{GNSSDUMP_HELP}")
 
-    def run(self):
+    def run(self, **kwargs):
         """
         Read from provided data stream (serial, file or other stream type).
         The data stream must support a read(n) -> bytes method.
+
+        :param int limit: (kwarg) maximum number of messages to read (0 = unlimited)
         """
+
+        self._limit = int(kwargs.get("limit", self._limit))
 
         # instantiate a UBXReader object with the specified data stream
         if self._datastream is not None:
@@ -165,7 +171,7 @@ class GNSSStreamer:
         Read the data stream and direct to the appropriate
         UBX or NMEA parser.
 
-        :raises: EOFError if stream ends prematurely
+        :raises: EOFError if stream ends prematurely or message limit reached
         :raises: KeyboardInterrupt if user presses Ctrl-C
         :raises: Exception for any other uncaptured Exception
         """
@@ -200,6 +206,9 @@ class GNSSStreamer:
                             continue
                     # if it passes, send to designated output
                     self._do_output(raw_data, parsed_data, handler)
+
+                if self._limit and self._msgcount >= self._limit:
+                    raise EOFError
 
         except KeyboardInterrupt:  # user hit Ctrl-C
             self._do_log("user")
