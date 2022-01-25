@@ -1,7 +1,9 @@
 """
-Simple example implementation of a UBXMessage and/or 
-NMEAMessage binary logfile reader using the UBXReader iterator 
-functions
+ubxfile.py
+
+This example illustrates a simple example implementation of a 
+UBXMessage and/or NMEAMessage binary logfile reader using the
+UBXReader iterator functions and an external error handler.
 
 Created on 25 Oct 2020
 

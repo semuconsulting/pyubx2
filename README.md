@@ -352,16 +352,16 @@ Wild card queries can be performed by setting bits 0..15 of the keyID to `0xffff
 ---
 ## <a name="examples">Examples</a>
 
-The following examples can be found in the `\examples` folder:
+The following command line examples can be found in the `\examples` folder:
 
 1. `ubxoptions.py` illustrates the various options available for parsing and constructing UBX messages.
-1. `ubxstreamer.py` illustrates how to implement a threaded serial reader for UBX messages using pyubx2.UBXReader. 
-1. `ubxfile.py` illustrates how to implement a binary file reader for UBX messages using 
-the pyubx2.UBXReader iterator function. 
-1. `ubxcfgval.py` illustrates how to invoke the Generation 9 configuration interface via CFG-VALSET, CF-VALDEL and CFG-VALGET messages.
-1. `ubxconfig.py` illustrates how to invoke legacy (pre-Generation 9) configuration messages (CFG-MSG).
-1. `gpxtracker.py` illustrates a simple CLI tool to convert a binary UBX data dump to a `*.gpx` track file.
-1. `benchmark.py` illustrates a simple performance benchmarking tool for the `pyubx2` parser.
+1. `ubxpoller.py` illustrates how to implement a simple threaded configuration polling utility for UBX messages. 
+1. `ubxsetrates.py` illustrates how to use legacy configuration messages (CFG-MSG) to set navigation message rates.
+1. `ubxfactoryreset.py` illustrates how to send a factory reset (CFG-CFG) command.
+1. `ubxfile.py` illustrates how to implement a binary file reader for UBX messages using `UBXReader` iterator functionality. 
+1. `gpxtracker.py` illustrates a simple tool to convert a binary UBX data dump to a `*.gpx` track file.
+1. `ubxconfigdb.py` illustrates how to invoke the Generation 9 configuration database interface via CFG-VALSET, CF-VALDEL and CFG-VALGET messages.
+1. `benchmark.py` provides a simple performance benchmarking tool for the `pyubx2` parser.
 
 ---
 ## <a name="extensibility">Extensibility</a>
