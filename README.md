@@ -443,8 +443,6 @@ The `gnssdump` utility implements a new `GNSSStreamer` class which may be used d
 >>> from pyubx2cli import GNSSStreamer
 ```
 
-NB: The `gnssdump` utility renders the earlier `ubxdump` utility obsolete and this will be removed in future versions.
-
 ---
 ## <a name="gui">Graphical Client</a>
 

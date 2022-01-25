@@ -26,7 +26,6 @@ setuptools.setup(
     ],
     entry_points={
         "console_scripts": [
-            "ubxdump = pyubx2cli.ubxdump:main",
             "gnssdump = pyubx2cli.gnssdump:main",
         ]
     },
