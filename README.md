@@ -357,10 +357,10 @@ The following command line examples can be found in the `\examples` folder:
 1. `ubxoptions.py` illustrates the various options available for parsing and constructing UBX messages.
 1. `ubxpoller.py` illustrates how to implement a simple threaded configuration polling utility for UBX messages. 
 1. `ubxsetrates.py` illustrates how to use legacy configuration messages (CFG-MSG) to set navigation message rates.
+1. `ubxconfigdb.py` illustrates how to invoke the Generation 9 configuration database interface via CFG-VALSET, CF-VALDEL and CFG-VALGET messages.
 1. `ubxfactoryreset.py` illustrates how to send a factory reset (CFG-CFG) command.
 1. `ubxfile.py` illustrates how to implement a binary file reader for UBX messages using `UBXReader` iterator functionality. 
 1. `gpxtracker.py` illustrates a simple tool to convert a binary UBX data dump to a `*.gpx` track file.
-1. `ubxconfigdb.py` illustrates how to invoke the Generation 9 configuration database interface via CFG-VALSET, CF-VALDEL and CFG-VALGET messages.
 1. `benchmark.py` provides a simple performance benchmarking tool for the `pyubx2` parser.
 
 ---

@@ -2,7 +2,11 @@
 ubxsetrates.py
 
 This example illustrates a simple implementation of a
-threaded UBXMessage message rate configuration utility.
+'pseudo-concurrent' threaded UBXMessage message rate
+configuration utility.
+
+(NB: Since Python implements a Global Interpreter Lock (GIL),
+threads are not truly concurrent.)
 
 It connects to the receiver's serial port and sets up a
 UBXReader read thread. With the read thread running

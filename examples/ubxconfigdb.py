@@ -2,15 +2,18 @@
 ubxconfigdb.py
 
 This example illustrates a simple implementation of a
-threaded UBXMessage configuration database utility using
-the newer CFG-VALGET, CFG-VALSET and CFG-VALDEL configuration
-database message types.
+'pseudo-concurrent' threaded UBXMessage configuration
+database utility using the newer CFG-VALGET, CFG-VALSET
+and CFG-VALDEL configuration database message types.
+
+(NB: Since Python implements a Global Interpreter Lock (GIL),
+threads are not truly concurrent.)
 
 You can use any of the configuration database keys defined in
 UBX_CONFIG_DATABASE.
 
-NB: These will only work on Generation 9+ devices (e.g. NEO-M9N,
-UBX protocol 23.01 or later).
+NB: These will only work on Generation 9+ devices running
+UBX protocol 23.01 or later (e.g. NEO-M9N).
 
 It connects to the receiver's serial port and sets up a
 UBXReader read thread. With the read thread running
