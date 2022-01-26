@@ -10,15 +10,13 @@ and CFG-VALDEL configuration database message types.
 threads are not truly concurrent.)
 
 You can use any of the configuration database keys defined in
-UBX_CONFIG_DATABASE.
-
-NB: These will only work on Generation 9+ devices running
-UBX protocol 23.01 or later (e.g. NEO-M9N).
+UBX_CONFIG_DATABASE. NB: These will only work on Generation 9+
+devices running UBX protocol 23.01 or later (e.g. NEO-M9N).
 
 It connects to the receiver's serial port and sets up a
 UBXReader read thread. With the read thread running
 in the background, it sends a series of CFG-VAL* commands to
-the device to set and unset the baud rates on the UART1 and UART2 ports.
+the device to apply the designated configuration commands.
 
 The read thread reads and parses any responses and outputs
 them to the terminal.
