@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="keywords" content="GPS,NMEA">
+    <meta name="description" content="GPS Server Demo">
+    <meta name="author" content="semuadmin">
+    <title>GPS Server Demo</title>
+    <link rel="shortcut icon" type="image/png" href="favicon.ico">
+    <script src="scripts.js"></script>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+
+<body onload="start()">
+    <div class="main-container">
+        <header>
+            <h1>GPS Server Demo</h1>
+        </header>
+        <table>
+            <tr>
+                <td>UTC Date</td>
+                <td class="right-align" id="date">0000-00-00</td>
+            </tr>
+            <tr>
+                <td>UTC Time</td>
+                <td class="right-align" id="time">00:00:00</td>
+            </tr>
+            <tr>
+                <td>Latitude</td>
+                <td class="right-align" id="latitude">00.00000</td>
+            </tr>
+            <tr>
+                <td>Longitude</td>
+                <td class="right-align" id="longitude">00.00000</td>
+            </tr>
+            <tr>
+                <td>Elevation</td>
+                <td class="right-align" id="elevation">000.00</td>
+            </tr>
+            <tr>
+                <td>Speed</td>
+                <td class="right-align" id="speed">000.00</td>
+            </tr>
+            <tr>
+                <td>Track</td>
+                <td class="right-align" id="track">000.00</td>
+            </tr>
+            <tr>
+                <td>Fix</td>
+                <td class="right-align" id="fix">No Fix</td>
+            </tr>
+            <tr>
+                <td>SIV</td>
+                <td class="right-align" id="siv">0</td>
+            </tr>
+            <tr>
+                <td>PDOP</td>
+                <td class="right-align" id="pdop">00.00</td>
+            </tr>
+            <tr>
+                <td>HDOP</td>
+                <td class="right-align" id="hdop">00.00</td>
+            </tr>
+            <tr>
+                <td>VDOP</td>
+                <td class="right-align" id="vdop">00.00</td>
+            </tr>
+        </table>
+        <footer>
+            SEMU Consulting &copy; 2021.
+            <a href="https://github.com/semuconsulting/pyubx2/tree/master/examples">Source Code</a>
+        </footer>
+    </div>
+    <!-- /.main-container-->
+</body>
+
+</html>

@@ -361,6 +361,7 @@ The following command line examples can be found in the `\examples` folder:
 1. `ubxfactoryreset.py` illustrates how to send a factory reset (CFG-CFG) command.
 1. `ubxfile.py` illustrates how to implement a binary file reader for UBX messages using `UBXReader` iterator functionality. 
 1. `gpxtracker.py` illustrates a simple tool to convert a binary UBX data dump to a `*.gpx` track file.
+1. `ubxserver.py` in the \examples\webserver folder illustrates a simple HTTP web server wrapper around `pyubx2.UBXreader`; it presents data from selected UBX messages as a web page http://localhost:8080 or a RESTful API http://localhost:8080/gps.
 1. `benchmark.py` provides a simple performance benchmarking tool for the `pyubx2` parser.
 
 ---
