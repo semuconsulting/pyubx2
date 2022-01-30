@@ -51,17 +51,3 @@ GNSSDUMP_HELP = (
     + f"{YELLOW}© 2022 SEMU Consulting BSD 3-Clause license\n"
     + f"https://github.com/semuconsulting/pyubx2/tree/master#cli{NORMAL}\n\n"
 )
-
-UBXDUMP_HELP = (
-    "\n\nUBXDUMP\n"
-    + "=======\n\n"
-    + "ubxdump is a simple command line utility to stream"
-    + " the parsed UBX output of a u-blox GNSS device to the terminal.\n\n"
-    + "Usage (all args are optional):\n\n"
-    + "  ubxdump port=/dev/ttyACM0 baud=9600 timeout=3 "
-    + "ubxonly=0 validate=1 output=0 parsebitfield=1 "
-    + "filter=*\n\n"
-    + "Type Ctrl-C to terminate.\n\n"
-    + "© 2021 SEMU Consulting BSD 3-Clause license\n"
-    + "https://github.com/semuconsulting/pyubx2/tree/master#cli\n\n"
-)
