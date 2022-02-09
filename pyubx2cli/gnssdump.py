@@ -25,6 +25,7 @@ from pyubx2 import (
     GET,
     UBX_PROTOCOL,
     NMEA_PROTOCOL,
+    RTCM3_PROTOCOL,
     ERR_IGNORE,
     ERR_LOG,
     ERR_RAISE,
@@ -80,7 +81,7 @@ class GNSSStreamer:
         :param int parsebitfield: (kwarg) 1 = parse UBX 'X' attributes as bitfields, 0 = leave as bytes (1)
         :param int format: (kwarg) output format 1 = parsed, 2 = raw, 4 = hex, 8 = tabulated hex (1) (can be OR'd)
         :param int quitonerror: (kwarg) 0 = ignore errors,  1 = log errors and continue, 2 = (re)raise errors (1)
-        :param int protfilter: (kwarg) 1 = NMEA, 2 = UBX, 3 = BOTH (3)
+        :param int protfilter: (kwarg) 1 = NMEA, 2 = UBX, 4 = RTCM3 (3 - NMEA & UBX)
         :param str msgfilter: (kwarg) comma-separated string of message identities e.g. 'NAV-PVT,GNGSA' (None)
         :param int limit: (kwarg) maximum number of messages to read (0 = unlimited)
         :param int verbosity: (kwarg) log message verbosity 0 = low, 1 = medium, 3 = high (1)
@@ -191,6 +192,7 @@ class GNSSStreamer:
 
                 # get the message protocol (NMEA or UBX)
                 msgprot = protocol(raw_data)
+                handler = None
                 # establish the appropriate handler and identity for this protocol
                 if msgprot == UBX_PROTOCOL:
                     msgidentity = parsed_data.identity
