@@ -109,6 +109,7 @@ Individual input UBX and/or NMEA messages can then be read using the `UBXReader.
 The constructor accepts the following optional keyword arguments:
 
 * `protfilter`: 1 = NMEA, 2 = UBX, 3 = BOTH (default)
+* `quitonerror`: 0 = ignore errors, 1 = log errors and continue (default), 2 = (re)raise errors and terminate
 * `validate`: VALCKSUM (0x01) = validate checksum (default), VALNONE (0x00) = ignore invalid checksum or length
 * `parsebitfield`: 1 = parse bitfields ('X' type properties) as individual bit flags, where defined (default), 0 = leave bitfields as byte sequences
 * `msgmode`: 0 = GET (default), 1 = SET, 2 = POLL
