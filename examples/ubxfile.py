@@ -21,7 +21,7 @@ def errhandler(err):
     print(f"\nERROR: {err}\n")
 
 
-def read(stream, errorhandler, protfilter, validate, msgmode):
+def read(stream, errorhandler, protfilter, quitonerror, validate, msgmode):
     """
     Reads and parses UBX message data from stream.
     """
@@ -31,11 +31,14 @@ def read(stream, errorhandler, protfilter, validate, msgmode):
     ubr = UBXReader(
         stream,
         protfilter=protfilter,
+        quitonerror=quitonerror,
         validate=validate,
         msgmode=msgmode,
         parsebitfield=True,
     )
-    for (_, parsed_data) in ubr.iterate(quitonerror=False, errorhandler=errorhandler):
+    for (_, parsed_data) in ubr.iterate(
+        quitonerror=quitonerror, errorhandler=errorhandler
+    ):
         print(parsed_data)
         msgcount += 1
 
@@ -55,6 +58,12 @@ if __name__ == "__main__":
     )
     val = input() or "3"
     iprotfilter = int(val)
+    print(
+        "How do you want to handle protocol errors? (0 = ignore, 1 = log and continue, 3 = raise and stop) (1) ",
+        end="",
+    )
+    val = input() or "1"
+    iquitonerror = int(val)
     print("Do you want to validate the message checksums (y/n)? (y) ", end="")
     val = input() or "y"
     ivalidate = val in YES
@@ -64,5 +73,5 @@ if __name__ == "__main__":
 
     print(f"Opening file {filename}...")
     with open(filename, "rb") as fstream:
-        read(fstream, errhandler, iprotfilter, ivalidate, imsgmode)
+        read(fstream, errhandler, iprotfilter, iquitonerror, ivalidate, imsgmode)
     print("Test Complete")
