@@ -38,10 +38,12 @@ class StreamTest(unittest.TestCase):
         self.streamMON = open(os.path.join(dirname, "pygpsdata-MON.log"), "rb")
         self.streamITER = open(os.path.join(dirname, "pygpsdata-ITER.log"), "rb")
         self.streamMIX = open(os.path.join(dirname, "pygpsdata-MIXED3.log"), "rb")
+        # self.streamMIXRTCM3 = open(
+        #     os.path.join(dirname, "pygpsdata-MIXED-RTCM3.log"), "rb"
+        # )
         self.streamMIXBADCK = open(
             os.path.join(dirname, "pygpsdata-MIXED3BADCK.log"), "rb"
         )
-        # self.streamMIX2 = open(os.path.join(dirname, "pygpsdata-MIXED2.log"), "rb")
         self.streamBADHDR = open(os.path.join(dirname, "pygpsdata-BADHDR.log"), "rb")
         self.streamBADEOF1 = open(os.path.join(dirname, "pygpsdata-BADEOF1.log"), "rb")
         self.streamBADEOF2 = open(os.path.join(dirname, "pygpsdata-BADEOF2.log"), "rb")
@@ -62,8 +64,8 @@ class StreamTest(unittest.TestCase):
         self.streamMON.close()
         self.streamITER.close()
         self.streamMIX.close()
+        # self.streamMIXRTCM3.close()
         self.streamMIXBADCK.close()
-        # self.streamMIX2.close()
         self.streamBADHDR.close()
         self.streamBADEOF1.close()
         self.streamBADEOF2.close()
@@ -344,6 +346,38 @@ class StreamTest(unittest.TestCase):
             if raw is not None:
                 self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
                 i += 1
+        stream.close()
+
+    def testMIXEDRTCM(
+        self,
+    ):  # test mixed stream of NMEA, UBX & RTCM messages with protfilter = 7
+        dirname = os.path.dirname(__file__)
+        stream = open(os.path.join(dirname, "pygpsdata-MIXED-RTCM3.log"), "rb")
+        i = 0
+        raw = 0
+        ubxreader = UBXReader(stream, protfilter=7)
+        while raw is not None:
+            (raw, parsed) = ubxreader.read()
+            if raw is not None:
+                i += 1
+        self.assertEqual(i, 10)
+        print(i)
+        stream.close()
+
+    def testMIXEDRTCM2(
+        self,
+    ):  # test mixed stream of NMEA, UBX & RTCM messages with protfilter = 3
+        dirname = os.path.dirname(__file__)
+        stream = open(os.path.join(dirname, "pygpsdata-MIXED-RTCM3.log"), "rb")
+        i = 0
+        raw = 0
+        ubxreader = UBXReader(stream, protfilter=3)
+        while raw is not None:
+            (raw, parsed) = ubxreader.read()
+            if raw is not None:
+                print(parsed)
+                i += 1
+        self.assertEqual(i, 3)
         stream.close()
 
     def testIterator(
