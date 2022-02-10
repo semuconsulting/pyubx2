@@ -21,7 +21,6 @@ from pyubx2 import (
     UBXStreamError,
     UBXTypeError,
     ParameterError,
-    # GNSSStreamError,
     GET,
     UBX_PROTOCOL,
     NMEA_PROTOCOL,
@@ -204,6 +203,7 @@ class GNSSStreamer:
                     msgidentity = parsed_data.talker + parsed_data.msgID
                     handler = self._nmeahandler
                 elif msgprot == RTCM3_PROTOCOL:
+                    msgidentity = parsed_data.identity
                     handler = self._rtcmhandler
                 # does it pass the protocol filter?
                 if self._protfilter & msgprot:

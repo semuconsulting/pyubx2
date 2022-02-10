@@ -1,16 +1,15 @@
 """
 UBXReader class.
 
-Reads and parses individual UBX or NMEA messages from any stream
+Reads and parses individual UBX, NMEA or RTCM3 messages from any stream
 which supports a read(n) -> bytes method.
 
-It will also accommodate (but not actually parse) any RTCM3 data
-in the stream.
+NB: pyubx2 does not currently decode RTCM3 data.
 
 Returns both the raw binary data (as bytes) and the parsed data
-(as a UBXMessage or NMEAMessage object).
+(as a UBXMessage, NMEAMessage or stub RTCMMessage object).
 
-'protfilter' governs which protocols (NMEA, UBX or RTCM) are processed
+'protfilter' governs which protocols (NMEA, UBX or RTCM3) are processed
 'quitonerror' governs how errors are handled
 
 Created on 2 Oct 2020
@@ -22,7 +21,7 @@ Created on 2 Oct 2020
 
 from pynmeagps import NMEAReader
 import pynmeagps.exceptions as nme
-from pyubx2 import UBXMessage
+from pyubx2 import UBXMessage, RTCMMessage
 from pyubx2.ubxhelpers import calc_checksum, val2bytes, bytes2val
 import pyubx2.ubxtypes_core as ubt
 import pyubx2.exceptions as ube
@@ -51,7 +50,6 @@ class UBXReader:
             kwargs.get("protfilter", ubt.NMEA_PROTOCOL | ubt.UBX_PROTOCOL)
         )
         self._quitonerror = int(kwargs.get("quitonerror", ubt.ERR_LOG))
-        # self._ubxonly = kwargs.get("ubxonly", False) # flag superceded by protfilter
         self._validate = int(kwargs.get("validate", ubt.VALCKSUM))
         self._parsebf = int(kwargs.get("parsebitfield", True))
         self._msgmode = int(kwargs.get("msgmode", 0))
@@ -207,20 +205,12 @@ class UBXReader:
 
     def _parse_rtcm3(self, hdr: bytes) -> tuple:
         """
-        Handle any RTCM data in the stream.
-
-        NB: pyubx2 does not currently parse RTCM3 data; we
-        simply read to the end of the RTCM3 message and return
-        the raw data bytes in an <RTCM3()> 'wrapper'.
-
-        RTCM3 message format:
-        +---------+--------+--------+----------------+--------+
-        |  0xd3   | 000000 | length |  data message  |  crc   |
-        +---------+--------+--------+----------------+--------+
-        |<-- 8 -->|<- 6 -->|<- 10 ->|<- length x 8 ->|<- 24 ->|
+        Parse any RTCM data in the stream.
+        NB: pyubx2 does not decode RTCM data; the
+        RTCMMessage object is simply a stub.
 
         :param bytes hdr: first 2 bytes of RTCM header
-        :return: tuple of (raw_data as bytes, parsed_stub as string)
+        :return: tuple of (raw_data as bytes, parsed_stub as RTCMMessage)
         :rtype: tuple
         """
 
@@ -229,8 +219,8 @@ class UBXReader:
         payload = self._read_bytes(size)
         crc = self._read_bytes(3)
         raw_data = hdr + hdr3 + payload + crc
-        parsed_stub = f"<RTCM3(data={payload}, crc={crc})>"
-        return (raw_data, parsed_stub)
+        parsed_data = RTCMMessage(payload)
+        return (raw_data, parsed_data)
 
     def _read_bytes(self, size: int) -> bytes:
         """
