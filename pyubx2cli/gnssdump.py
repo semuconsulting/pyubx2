@@ -88,6 +88,7 @@ class GNSSStreamer:
         :param object errorhandler: (kwarg) evaluable expression defining external error handler (None)
         :param object nmeahandler: (kwarg) evaluable expression defining external NMEA message handler (None)
         :param object ubxhandler: (kwarg) evaluable expression defining external UBX message handler (None)
+        :param object rtcmhandler: (kwarg) evaluable expression defining external RTCM3 message handler (None)
         :raises: ParameterError
         """
         # pylint: disable=raise-missing-from
@@ -130,6 +131,8 @@ class GNSSStreamer:
             self._nmeahandler = None if nmh is None else eval(nmh)
             ubh = kwargs.get("ubxhandler", None)
             self._ubxhandler = None if ubh is None else eval(ubh)
+            rth = kwargs.get("rtcmhandler", None)
+            self._rtcmhandler = None if rth is None else eval(rth)
 
         except ValueError:
             raise ParameterError(f"Invalid parameter(s).\n{GNSSDUMP_HELP}")
@@ -200,6 +203,8 @@ class GNSSStreamer:
                 elif msgprot == NMEA_PROTOCOL:
                     msgidentity = parsed_data.talker + parsed_data.msgID
                     handler = self._nmeahandler
+                elif msgprot == RTCM3_PROTOCOL:
+                    handler = self._rtcmhandler
                 # does it pass the protocol filter?
                 if self._protfilter & msgprot:
                     # does it pass the message identity filter if there is one?

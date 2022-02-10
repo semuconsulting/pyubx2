@@ -375,7 +375,6 @@ class StreamTest(unittest.TestCase):
         while raw is not None:
             (raw, parsed) = ubxreader.read()
             if raw is not None:
-                print(parsed)
                 i += 1
         self.assertEqual(i, 3)
         stream.close()

@@ -46,6 +46,7 @@ GNSSDUMP_HELP = (
     + "  verbosity - log message verbosity 0 = low, 1 = medium, 2 = high (1)\n\n"
     + "  nmeahandler - evaluable expression defining external NMEA handler (None)\n"
     + "  ubxhandler - evaluable expression defining external UBX handler (None)\n"
+    + "  rtcmhandler - evaluable expression defining external RTCM3 handler (None)\n"
     + "  errorhandler - evaluable expression defining external error handler (None)\n\n"
     + f"{GREEN}Type Ctrl-C to terminate.{NORMAL}\n\n"
     + f"{YELLOW}© 2022 SEMU Consulting BSD 3-Clause license\n"
