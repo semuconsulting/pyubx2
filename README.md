@@ -98,7 +98,7 @@ You can create a `UBXReader` object by calling the constructor with an active st
 The stream object can be any data stream which supports a `read(n) -> bytes` method (e.g. File or Serial, with 
 or without a buffer wrapper).
 
-Individual input UBX and/or NMEA messages can then be read using the `UBXReader.read()` function, which returns both the raw binary data (as bytes) and the parsed data (as a `UBXMessage` or `NMEAMessage` object, via the `parse()` method). `UBXReader.read()` also reads (*but does not parse*) any RTCM3 data in the stream. The function is thread-safe in so far as the incoming data stream object is thread-safe. `UBXReader` also implements an iterator.
+Individual input UBX and/or NMEA messages can then be read using the `UBXReader.read()` function, which returns both the raw binary data (as bytes) and the parsed data (as a `UBXMessage` or `NMEAMessage` object, via the `parse()` method). `UBXReader.read()` can also return (*but not decode*) any RTCM3 data in the stream as a `RTCMMessage` object. The function is thread-safe in so far as the incoming data stream object is thread-safe. `UBXReader` also implements an iterator.
 
 The constructor accepts the following optional keyword arguments:
 
@@ -386,7 +386,7 @@ However, there are a handful of message types which have multiple possible paylo
 ---
 ## <a name="cli">Command Line Utility</a>
 
-If `pyubx2` is installed using pip, a command line utility `gnssdump` is automatically installed into the Python 3 scripts (bin) directory. This utility is capable of streaming and parsing both NMEA and UBX data from any data stream (including Serial and File) to the terminal or to designed NMEA and/or UBX protocol handlers. It utilises the `pynmeapgs` library for NMEA data and `pyubx2` for UBX data.
+If `pyubx2` is installed using pip, a command line utility `gnssdump` is automatically installed into the Python 3 scripts (bin) directory. This utility is capable of streaming and parsing both NMEA and UBX data from any data stream (including Serial and File) to the terminal or to designed NMEA and/or UBX protocol handlers. It utilises the `pynmeapgs` library for NMEA data and `pyubx2` for UBX data. `gnssdump` can also return (*but not decode*) any RTCM3 data in the stream.
 
 The utility can output data in a variety of formats; parsed (1), raw binary (2), hexadecimal string (4), tabulated hexadecimal (8) or any combination thereof.
 
