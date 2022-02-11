@@ -23,12 +23,6 @@ This is an independent project and we have no affiliation whatsoever with u-blox
 
 **FYI** There is a companion library [pynmeagps](http://github.com/semuconsulting/pynmeagps), which handles standard NMEA 0183 &copy; GNSS/GPS messages.
 
----
-**NEW in v1.2.4:**
-1. `UBXReader` now optionally streams both UBX *and* NMEA GNSS data.
-1. New `gnssdump` command line utility capable of streaming and parsing both NMEA and UBX data from any GNSS data stream (including Serial and File) either to the terminal or to designated UBX and/or NMEA protocol handlers. See [cli utility](#cli) below for details.
----
-
 ## <a name="currentstatus">Current Status</a>
 
 ![Status](https://img.shields.io/pypi/status/pyubx2)
@@ -104,11 +98,11 @@ You can create a `UBXReader` object by calling the constructor with an active st
 The stream object can be any data stream which supports a `read(n) -> bytes` method (e.g. File or Serial, with 
 or without a buffer wrapper).
 
-Individual input UBX and/or NMEA messages can then be read using the `UBXReader.read()` function, which returns both the raw binary data (as bytes) and the parsed data (as a `UBXMessage` or `NMEAMessage` object, via the `parse()` method). The function is thread-safe in so far as the incoming data stream object is thread-safe. `UBXReader` also implements an iterator.
+Individual input UBX and/or NMEA messages can then be read using the `UBXReader.read()` function, which returns both the raw binary data (as bytes) and the parsed data (as a `UBXMessage` or `NMEAMessage` object, via the `parse()` method). `UBXReader.read()` can also return (*but not decode*) any RTCM3 data in the stream as a `RTCMMessage` object. The function is thread-safe in so far as the incoming data stream object is thread-safe. `UBXReader` also implements an iterator.
 
 The constructor accepts the following optional keyword arguments:
 
-* `protfilter`: 1 = NMEA, 2 = UBX, 3 = BOTH (default)
+* `protfilter`: 1 = NMEA, 2 = UBX, 4 = RTCM3 (can be OR'd. default is 3 - NMEA & UBX)
 * `quitonerror`: 0 = ignore errors, 1 = log errors and continue (default), 2 = (re)raise errors and terminate
 * `validate`: VALCKSUM (0x01) = validate checksum (default), VALNONE (0x00) = ignore invalid checksum or length
 * `parsebitfield`: 1 = parse bitfields ('X' type properties) as individual bit flags, where defined (default), 0 = leave bitfields as byte sequences
@@ -392,7 +386,7 @@ However, there are a handful of message types which have multiple possible paylo
 ---
 ## <a name="cli">Command Line Utility</a>
 
-If `pyubx2` is installed using pip, a command line utility `gnssdump` is automatically installed into the Python 3 scripts (bin) directory. This utility is capable of streaming and parsing both NMEA and UBX data from any data stream (including Serial and File) to the terminal or to designed NMEA and/or UBX protocol handlers. It utilises the `pynmeapgs` library for NMEA data and `pyubx2` for UBX data.
+If `pyubx2` is installed using pip, a command line utility `gnssdump` is automatically installed into the Python 3 scripts (bin) directory. This utility is capable of streaming and parsing both NMEA and UBX data from any data stream (including Serial and File) to the terminal or to designed NMEA and/or UBX protocol handlers. It utilises the `pynmeapgs` library for NMEA data and `pyubx2` for UBX data. `gnssdump` can also return (*but not decode*) any RTCM3 data in the stream.
 
 The utility can output data in a variety of formats; parsed (1), raw binary (2), hexadecimal string (4), tabulated hexadecimal (8) or any combination thereof.
 

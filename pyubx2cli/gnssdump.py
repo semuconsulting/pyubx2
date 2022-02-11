@@ -21,10 +21,10 @@ from pyubx2 import (
     UBXStreamError,
     UBXTypeError,
     ParameterError,
-    # GNSSStreamError,
     GET,
     UBX_PROTOCOL,
     NMEA_PROTOCOL,
+    RTCM3_PROTOCOL,
     ERR_IGNORE,
     ERR_LOG,
     ERR_RAISE,
@@ -80,13 +80,14 @@ class GNSSStreamer:
         :param int parsebitfield: (kwarg) 1 = parse UBX 'X' attributes as bitfields, 0 = leave as bytes (1)
         :param int format: (kwarg) output format 1 = parsed, 2 = raw, 4 = hex, 8 = tabulated hex (1) (can be OR'd)
         :param int quitonerror: (kwarg) 0 = ignore errors,  1 = log errors and continue, 2 = (re)raise errors (1)
-        :param int protfilter: (kwarg) 1 = NMEA, 2 = UBX, 3 = BOTH (3)
+        :param int protfilter: (kwarg) 1 = NMEA, 2 = UBX, 4 = RTCM3 (3 - NMEA & UBX)
         :param str msgfilter: (kwarg) comma-separated string of message identities e.g. 'NAV-PVT,GNGSA' (None)
         :param int limit: (kwarg) maximum number of messages to read (0 = unlimited)
         :param int verbosity: (kwarg) log message verbosity 0 = low, 1 = medium, 3 = high (1)
         :param object errorhandler: (kwarg) evaluable expression defining external error handler (None)
         :param object nmeahandler: (kwarg) evaluable expression defining external NMEA message handler (None)
         :param object ubxhandler: (kwarg) evaluable expression defining external UBX message handler (None)
+        :param object rtcmhandler: (kwarg) evaluable expression defining external RTCM3 message handler (None)
         :raises: ParameterError
         """
         # pylint: disable=raise-missing-from
@@ -129,6 +130,8 @@ class GNSSStreamer:
             self._nmeahandler = None if nmh is None else eval(nmh)
             ubh = kwargs.get("ubxhandler", None)
             self._ubxhandler = None if ubh is None else eval(ubh)
+            rth = kwargs.get("rtcmhandler", None)
+            self._rtcmhandler = None if rth is None else eval(rth)
 
         except ValueError:
             raise ParameterError(f"Invalid parameter(s).\n{GNSSDUMP_HELP}")
@@ -191,6 +194,7 @@ class GNSSStreamer:
 
                 # get the message protocol (NMEA or UBX)
                 msgprot = protocol(raw_data)
+                handler = None
                 # establish the appropriate handler and identity for this protocol
                 if msgprot == UBX_PROTOCOL:
                     msgidentity = parsed_data.identity
@@ -198,6 +202,9 @@ class GNSSStreamer:
                 elif msgprot == NMEA_PROTOCOL:
                     msgidentity = parsed_data.talker + parsed_data.msgID
                     handler = self._nmeahandler
+                elif msgprot == RTCM3_PROTOCOL:
+                    msgidentity = parsed_data.identity
+                    handler = self._rtcmhandler
                 # does it pass the protocol filter?
                 if self._protfilter & msgprot:
                     # does it pass the message identity filter if there is one?

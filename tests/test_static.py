@@ -233,6 +233,8 @@ class StaticTest(unittest.TestCase):
         self.assertEqual(res, ubt.NMEA_PROTOCOL)
         res = protocol(b"$PGRMM,WGS84*26\r\n")
         self.assertEqual(res, ubt.NMEA_PROTOCOL)
+        res = protocol(b"\xd3\x00\x04L\xe0\x00\x80\xed\xed\xd6")
+        self.assertEqual(res, ubt.RTCM3_PROTOCOL)
         res = protocol(b"aPiLeOfGarBage")
         self.assertEqual(res, 0)
 

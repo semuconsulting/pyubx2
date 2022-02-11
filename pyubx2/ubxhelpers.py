@@ -381,7 +381,7 @@ def protocol(raw: bytes) -> int:
     Gets protocol of raw message.
 
     :param bytes raw: raw (binary) message
-    :return: protocol type (1 = NMEA, 2 = UBX, 0 = unknown)
+    :return: protocol type (1 = NMEA, 2 = UBX, 4 = RTCM3, 0 = unknown)
     :rtype: int
     """
 
@@ -390,6 +390,8 @@ def protocol(raw: bytes) -> int:
         return 2
     elif p in NMEA_HDR:
         return 1
+    elif p[0] == 0xD3 and (p[1] & ~0x03) == 0:
+        return 4
     else:
         return 0
 

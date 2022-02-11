@@ -53,7 +53,7 @@ if __name__ == "__main__":
     print("Enter fully qualified name of file containing binary UBX data: ", end="")
     filename = input().strip('"')
     print(
-        "Which protocols do you want to handle? (1 = NMEA, 2 = UBX, 3 = BOTH) (3) ",
+        "Which protocol(s) do you want to handle? (1 = NMEA, 2 = UBX, 4 = RTCM3 (3) ",
         end="",
     )
     val = input() or "3"
