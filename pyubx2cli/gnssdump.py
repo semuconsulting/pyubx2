@@ -185,7 +185,16 @@ class GNSSStreamer:
 
                 try:
                     (raw_data, parsed_data) = self._reader.read()
-                except UBXStreamError as err:
+                except (
+                    UBXMessageError,
+                    UBXParseError,
+                    UBXStreamError,
+                    UBXTypeError,
+                    NMEAMessageError,
+                    NMEAParseError,
+                    NMEAStreamError,
+                    NMEATypeError,
+                ) as err:
                     self._do_error(err)
                     continue
 
@@ -221,17 +230,6 @@ class GNSSStreamer:
             self._do_log("user")
         except EOFError:  # end of stream
             self._do_log("eof")
-        except (
-            UBXMessageError,
-            UBXParseError,
-            UBXStreamError,
-            UBXTypeError,
-            NMEAMessageError,
-            NMEAParseError,
-            NMEAStreamError,
-            NMEATypeError,
-        ) as err:  # parsing error of some kind
-            self._do_error(err)
         except Exception as err:  # pylint: disable=broad-except
             self._quitonerror = ERR_RAISE  # don't ignore irrecoverable errors
             self._do_error(err)
