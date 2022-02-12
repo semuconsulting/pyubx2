@@ -22,7 +22,7 @@ Created on 2 Oct 2020
 from pynmeagps import NMEAReader
 import pynmeagps.exceptions as nme
 from pyubx2 import UBXMessage, RTCMMessage
-from pyubx2.ubxhelpers import calc_checksum, val2bytes, bytes2val
+from pyubx2.ubxhelpers import calc_checksum, val2bytes, bytes2val, calc_crc24q
 import pyubx2.ubxtypes_core as ubt
 import pyubx2.exceptions as ube
 
@@ -123,7 +123,7 @@ class UBXReader:
                     else:
                         continue
                 # if it's a RTCM3 message
-                # (byte1 = b'\xd3'; byte2 = 0b000000**)
+                # (byte1 = 0xd3; byte2 = 0b000000**)
                 elif byte1 == b"\xd3" and (byte2[0] & ~0x03) == 0:
                     (raw_data, parsed_data) = self._parse_rtcm3(bytehdr)
                     # if protocol filter passes RTCM, return message,
@@ -203,13 +203,14 @@ class UBXReader:
             parsed_data = None
         return (raw_data, parsed_data)
 
-    def _parse_rtcm3(self, hdr: bytes) -> tuple:
+    def _parse_rtcm3(self, hdr: bytes, **kwargs) -> tuple:
         """
-        Parse any RTCM data in the stream.
-        NB: pyubx2 does not decode RTCM data; the
+        Parse any RTCM3 data in the stream.
+        NB: pyubx2 does not decode RTCM3 data; the
         RTCMMessage object is simply a stub.
 
-        :param bytes hdr: first 2 bytes of RTCM header
+        :param bytes hdr: first 2 bytes of RTCM3 header
+        :param bool validate: (kwarg) validate crc Y/N
         :return: tuple of (raw_data as bytes, parsed_stub as RTCMMessage)
         :rtype: tuple
         """
@@ -219,6 +220,9 @@ class UBXReader:
         payload = self._read_bytes(size)
         crc = self._read_bytes(3)
         raw_data = hdr + hdr3 + payload + crc
+        if self._validate & ubt.VALCKSUM:
+            if calc_crc24q(raw_data):
+                raise ube.UBXParseError(f"RTCM3 message invalid - failed CRC: {crc}")
         parsed_data = RTCMMessage(payload)
         return (raw_data, parsed_data)
 
@@ -240,7 +244,7 @@ class UBXReader:
         """
         Invoke the iterator within an exception handling framework.
 
-        :param int quitonerror: (kwarg) 0 = ignore errors,  1 = log errors and continue, 2 = (re)raise errors (0)
+        :param int quitonerror: (kwarg) 0 = ignore errors,  1 = log errors and continue, 2 = (re)raise errors (1)
         :param object errorhandler: (kwarg) Optional error handler (None)
         :return: tuple of (raw_data as bytes, parsed_data as UBXMessage or NMEAMessage)
         :rtype: tuple
@@ -248,7 +252,7 @@ class UBXReader:
 
         """
 
-        quitonerror = kwargs.get("quitonerror", ubt.ERR_IGNORE)
+        quitonerror = kwargs.get("quitonerror", self._quitonerror)
         errorhandler = kwargs.get("errorhandler", None)
 
         while True:

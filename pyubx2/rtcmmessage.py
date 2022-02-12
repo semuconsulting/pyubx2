@@ -10,7 +10,7 @@ RTCM3 transport layer bit format:
 | 0xd3  | 000000 | length |  type  |    content     |  crc   |
 +-------+--------+--------+--------+----------------+--------+
 |<- 8 ->|<- 6 -->|<- 10 ->|<- 12 ->|<-- variable -->|<- 24 ->|
-                          |<----- length x 8 ------>|
+                          |<- payload; length x 8 ->|
 
 Created on 10 Feb 2022
 
@@ -29,8 +29,7 @@ class RTCMMessage:
         :param bytes payload: message payload
         """
 
-        self.payload = payload
-        self.identity = str(payload[0] << 4 | payload[1] >> 4)
+        self._payload = payload
 
     def __str__(self) -> str:
         """
@@ -40,4 +39,24 @@ class RTCMMessage:
         :rtype: str
         """
 
-        return f"<RTCM({self.identity})>"
+        return f"<RTCM3({self.identity})>"
+
+    @property
+    def identity(self) -> str:
+        """Getter for identity.
+
+        :return: message identity e.g. "1005"
+        :rtype: str
+        """
+
+        return str(self._payload[0] << 4 | self._payload[1] >> 4)
+
+    @property
+    def payload(self) -> bytes:
+        """Getter for payload.
+
+        :return: message payload
+        :rtype: bytes
+        """
+
+        return self._payload

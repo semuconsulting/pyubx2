@@ -11,7 +11,7 @@ Created on 21 Oct 2020
 
 import unittest
 
-from pyubx2 import UBXMessage, UBXReader, GET, SET, POLL
+from pyubx2 import UBXMessage, UBXReader, GET, SET, POLL, RTCMMessage
 
 
 class FillTest(unittest.TestCase):
@@ -325,6 +325,12 @@ class FillTest(unittest.TestCase):
         )
         res2 = UBXMessage("NAV", "NAV-SBAS", GET, payload=res1.payload)
         self.assertEqual(str(res1), str(res2))
+
+    def testRTCM(self):  # test RTCMMessage constructor
+        payload = b">\xd0\x00\x03\x8aX\xd9I<\x87/4\x10\x9d\x07\xd6\xafH "
+        msg = RTCMMessage(payload)
+        self.assertEqual(msg.payload, payload)
+        self.assertEqual(msg.identity, "1005")
 
 
 if __name__ == "__main__":

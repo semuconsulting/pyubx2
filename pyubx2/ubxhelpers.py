@@ -55,6 +55,32 @@ def isvalid_checksum(message: bytes) -> bool:
     return ckm == calc_checksum(message[2 : lenm - 2])
 
 
+def calc_crc24q(message: bytes) -> int:
+    """
+    Perform CRC24Q cyclic redundancy check.
+
+    If the message includes the appended CRC bytes, the
+    function will return 0 if the message is valid.
+    If the message excludes the appended CRC bytes, the
+    function will return the applicable CRC.
+
+    :param bytes message: message
+    :return: CRC or 0
+    :rtype: int
+
+    """
+
+    POLY = 0x1864CFB
+    crc = 0
+    for octet in message:
+        crc ^= octet << 16
+        for _ in range(8):
+            crc <<= 1
+            if crc & 0x1000000:
+                crc ^= POLY
+    return crc & 0xFFFFFF
+
+
 def atttyp(att: str) -> str:
     """
     Helper function to return attribute type as string.
@@ -388,12 +414,11 @@ def protocol(raw: bytes) -> int:
     p = raw[0:2]
     if p == UBX_HDR:
         return 2
-    elif p in NMEA_HDR:
+    if p in NMEA_HDR:
         return 1
-    elif p[0] == 0xD3 and (p[1] & ~0x03) == 0:
+    if p[0] == 0xD3 and (p[1] & ~0x03) == 0:
         return 4
-    else:
-        return 0
+    return 0
 
 
 def hextable(raw: bytes, cols: int = 8) -> str:

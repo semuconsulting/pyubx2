@@ -22,6 +22,7 @@ from pyubx2 import (
     ERR_IGNORE,
 )
 from pyubx2.exceptions import UBXStreamError, UBXParseError
+import pyubx2.ubxtypes_core as ubt
 
 
 class StreamTest(unittest.TestCase):
@@ -353,13 +354,13 @@ class StreamTest(unittest.TestCase):
     ):  # test mixed stream of NMEA, UBX & RTCM messages with protfilter = 7
         EXPECTED_RESULTS = (
             "<NMEA(GNGLL, lat=32.0658325, NS=N, lon=34.773819, EW=E, time=08:41:58, status=A, posMode=D)>",
-            "<RTCM(1005)>",
-            "<RTCM(4072)>",
-            "<RTCM(1077)>",
-            "<RTCM(1087)>",
-            "<RTCM(1097)>",
-            "<RTCM(1127)>",
-            "<RTCM(1230)>",
+            "<RTCM3(1005)>",
+            "<RTCM3(4072)>",
+            "<RTCM3(1077)>",
+            "<RTCM3(1087)>",
+            "<RTCM3(1097)>",
+            "<RTCM3(1127)>",
+            "<RTCM3(1230)>",
             "<UBX(NAV-PVT, iTOW=08:41:59, year=2022, month=2, day=8, hour=8, min=41, second=59, validDate=1, validTime=1, fullyResolved=1, validMag=0, tAcc=21, nano=360400, fixType=5, gnssFixOk=1, difSoln=1, psmState=0, headVehValid=0, carrSoln=0, confirmedAvai=1, confirmedDate=1, confirmedTime=1, numSV=31, lon=34.773819, lat=32.0658325, height=72134, hMSL=54642, hAcc=685, vAcc=484, velN=0, velE=0, velD=0, gSpeed=0, headMot=290.13822, sAcc=10, headAcc=20.15693, pDOP=99.99, invalidLlh=0, lastCorrectionAge=0, reserved0=860200482, headVeh=0.0, magDec=0.0, magAcc=0.0)>",
             "<NMEA(GNRMC, time=08:41:59, status=A, lat=32.0658325, NS=N, lon=34.773819, EW=E, spd=0.0, cog=, date=2022-02-08, mv=, mvEW=, posMode=D, navStatus=V)>",
         )
@@ -367,14 +368,11 @@ class StreamTest(unittest.TestCase):
         stream = open(os.path.join(dirname, "pygpsdata-MIXED-RTCM3.log"), "rb")
         i = 0
         raw = 0
-        ubxreader = UBXReader(stream, protfilter=7)
-        while raw is not None:
-            (raw, parsed) = ubxreader.read()
+        ubr = UBXReader(stream, protfilter=7)
+        for (raw, parsed) in ubr.iterate(quitonerror=ubt.ERR_RAISE):
             if raw is not None:
                 self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
                 i += 1
-        self.assertEqual(i, 10)
-        print(i)
         stream.close()
 
     def testMIXEDRTCM2(
@@ -389,13 +387,26 @@ class StreamTest(unittest.TestCase):
         stream = open(os.path.join(dirname, "pygpsdata-MIXED-RTCM3.log"), "rb")
         i = 0
         raw = 0
-        ubxreader = UBXReader(stream, protfilter=3)
-        while raw is not None:
-            (raw, parsed) = ubxreader.read()
+        ubr = UBXReader(stream, protfilter=3)
+        for (raw, parsed) in ubr.iterate(quitonerror=ubt.ERR_RAISE):
             if raw is not None:
                 self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
                 i += 1
-        self.assertEqual(i, 3)
+        stream.close()
+
+    def testMIXEDRTCMBADCRC(
+        self,
+    ):  # test mixed stream of NMEA, UBX & RTCM messages with invalid RTCM CRC
+        EXPECTED_ERROR = "RTCM3 message invalid - failed CRC: (.*)"
+        dirname = os.path.dirname(__file__)
+        stream = open(os.path.join(dirname, "pygpsdata-MIXED-RTCM3BADCRC.log"), "rb")
+        i = 0
+        raw = 0
+        ubr = UBXReader(stream, protfilter=7)
+        with self.assertRaisesRegex(UBXParseError, EXPECTED_ERROR):
+            for (raw, parsed) in ubr.iterate(quitonerror=ubt.ERR_RAISE):
+                if raw is not None:
+                    i += 1
         stream.close()
 
     def testIterator(
