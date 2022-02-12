@@ -35,7 +35,7 @@ GNSSDUMP_HELP = (
     + "  Other stream object: gnssdump stream=stream, **kwargs\n"
     + "  Help: gnssdump -h\n\n"
     + f"{GREEN}Optional keyword arguments (default):{NORMAL}\n\n"
-    + "  protfilter - 1 = NMEA, 2 = UBX, 4 = RTCM3 (3 - NMEA & UBX)\n"
+    + "  protfilter - 1 = NMEA, 2 = UBX, 4 = RTCM3 (7 - ALL)\n"
     + "  msgfilter - comma-separated list of required message identities e.g. NAV-PVT,GNGSA (None)\n"
     + "  limit - maximum number of messages to read (0 = unlimited)\n"
     + "  format - output format; 1 = parsed, 2 = binary (raw), 4 = hex, 8 = tabular hex (can be OR'd) (1)\n"

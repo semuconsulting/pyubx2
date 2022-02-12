@@ -25,7 +25,6 @@ from pyubx2 import (
     UBX_PROTOCOL,
     NMEA_PROTOCOL,
     RTCM3_PROTOCOL,
-    ERR_IGNORE,
     ERR_LOG,
     ERR_RAISE,
     hextable,
@@ -80,7 +79,7 @@ class GNSSStreamer:
         :param int parsebitfield: (kwarg) 1 = parse UBX 'X' attributes as bitfields, 0 = leave as bytes (1)
         :param int format: (kwarg) output format 1 = parsed, 2 = raw, 4 = hex, 8 = tabulated hex (1) (can be OR'd)
         :param int quitonerror: (kwarg) 0 = ignore errors,  1 = log errors and continue, 2 = (re)raise errors (1)
-        :param int protfilter: (kwarg) 1 = NMEA, 2 = UBX, 4 = RTCM3 (3 - NMEA & UBX)
+        :param int protfilter: (kwarg) 1 = NMEA, 2 = UBX, 4 = RTCM3 (7 - ALL)
         :param str msgfilter: (kwarg) comma-separated string of message identities e.g. 'NAV-PVT,GNGSA' (None)
         :param int limit: (kwarg) maximum number of messages to read (0 = unlimited)
         :param int verbosity: (kwarg) log message verbosity 0 = low, 1 = medium, 3 = high (1)
@@ -92,7 +91,6 @@ class GNSSStreamer:
         """
         # pylint: disable=raise-missing-from
 
-        self._kwargs = kwargs
         self._reader = None
         self._datastream = kwargs.get("datastream", None)
         self._port = kwargs.get("port", None)
@@ -112,7 +110,7 @@ class GNSSStreamer:
             self._format = int(kwargs.get("format", FORMAT_PARSED))
             self._quitonerror = int(kwargs.get("quitonerror", ERR_LOG))
             self._protfilter = int(
-                kwargs.get("protfilter", NMEA_PROTOCOL | UBX_PROTOCOL)
+                kwargs.get("protfilter", NMEA_PROTOCOL | UBX_PROTOCOL | RTCM3_PROTOCOL)
             )
             self._msgfilter = kwargs.get("msgfilter", None)
             self._verbosity = int(kwargs.get("verbosity", VERBOSITY_MEDIUM))
@@ -146,28 +144,32 @@ class GNSSStreamer:
 
         self._limit = int(kwargs.get("limit", self._limit))
 
-        # instantiate a UBXReader object with the specified data stream
+        # open the specified input stream
         if self._datastream is not None:
             with self._datastream as self._stream:
-                self._reader = UBXReader(self._stream, **self._kwargs)
-                self._do_log(f"\nParsing GNSS data stream from: {self._stream}...\n")
-                self._do_parse()
+                self._start_reader()
         elif self._port is not None:
             with Serial(
                 self._port, self._baudrate, timeout=self._timeout
             ) as self._stream:
-                self._reader = UBXReader(self._stream, **self._kwargs)
-                self._do_log(
-                    f"\nParsing GNSS data stream from serial: {self._stream}...\n"
-                )
-                self._do_parse()
+                self._start_reader()
         elif self._filename is not None:
             with open(self._filename, "rb") as self._stream:
-                self._reader = UBXReader(self._stream, **self._kwargs)
-                self._do_log(
-                    f"\nParsing GNSS data stream from file: {self._stream}...\n"
-                )
-                self._do_parse()
+                self._start_reader()
+
+    def _start_reader(self):
+        """Create UBXReader instance."""
+
+        self._reader = UBXReader(
+            self._stream,
+            quitonerror=self._quitonerror,
+            protfilter=self._protfilter,
+            validate=self._validate,
+            msgmode=self._msgmode,
+            parsebitfield=self._parsebitfield,
+        )
+        self._do_log(f"\nParsing GNSS data stream from: {self._stream}...\n")
+        self._do_parse()
 
     def _do_parse(self):
         """
@@ -269,7 +271,7 @@ class GNSSStreamer:
         if self._errorhandler is None:
             if self._quitonerror == ERR_RAISE:
                 raise err
-            elif self._quitonerror == ERR_LOG:
+            if self._quitonerror == ERR_LOG:
                 print(err)
         else:
             self._errorhandler(err)
