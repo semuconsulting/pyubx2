@@ -232,6 +232,7 @@ class UBXReader:
 
         :param int size: number of bytes to read
         :return: bytes
+        :rtype: bytes
         :raises: EOFError if stream ends prematurely
         """
 
