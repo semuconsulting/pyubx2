@@ -1,5 +1,14 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.2.5
+
+FIXES:
+
+1. Fix issue where presence of RTCM3 data in input stream could cause iterator to fail - thanks to @flytrex-vadim for contributions.
+
+ENHANCEMENTS:
+
+1. `UBXReader` can now accommodate any RTCM3 data in the input stream, alongside UBX and/or NMEA data. It can read the RTCM3 message, verify the CRC (if the `validate` flag is set to VALCKSUM), and return a 'stub' `RTCMMessage` object containing the raw (undecoded) payload e.g. `<RTCM3(1005)>`. **NOTE THAT** `pyubx2` does not decode the RTCM3 payload (*other than the message type*) and there are no current plans to add such functionality.
 
 ### RELEASE 1.2.4
 

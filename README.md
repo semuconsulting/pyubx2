@@ -43,6 +43,10 @@ Contributions welcome - please refer to [CONTRIBUTING.MD](https://github.com/sem
 
 [Bug reports](https://github.com/semuconsulting/pyubx2/blob/master/.github/ISSUE_TEMPLATE/bug_report.md) and [Feature requests](https://github.com/semuconsulting/pyubx2/blob/master/.github/ISSUE_TEMPLATE/feature_request.md) - please use the templates provided.
 
+### New in v1.2.5
+
+1. `pyubx2.UBXReader` can now accommodate any RTCM3 data in the input stream, alongside UBX and/or NMEA data. See release notes for details.
+
 ---
 ## <a name="installation">Installation</a>
 
