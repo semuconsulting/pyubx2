@@ -1,5 +1,11 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.2.6
+
+FIXES:
+
+1. Rounding for scaled navigation attributes increased from 8 dp to 12 dp
+
 ### RELEASE 1.2.5
 
 FIXES:
