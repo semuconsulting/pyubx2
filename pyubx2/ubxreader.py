@@ -41,6 +41,7 @@ class UBXReader:
         :param int validate: (kwarg) 0 = ignore invalid checksum, 1 = validate checksum (1)
         :param int msgmode: (kwarg) 0=GET, 1=SET, 2=POLL (0)
         :param bool parsebitfield: (kwarg) 1 = parse bitfields, 0 = leave as bytes (1)
+        :param bool scaling: (kwarg) 1 = apply scale factors, 0 = do not apply (1)
         :raises: UBXStreamError (if mode is invalid)
 
         """
@@ -52,6 +53,7 @@ class UBXReader:
         self._quitonerror = int(kwargs.get("quitonerror", ubt.ERR_LOG))
         self._validate = int(kwargs.get("validate", ubt.VALCKSUM))
         self._parsebf = int(kwargs.get("parsebitfield", True))
+        self._scaling = int(kwargs.get("scaling", True))
         self._msgmode = int(kwargs.get("msgmode", 0))
 
         if self._msgmode not in (0, 1, 2):
@@ -172,6 +174,7 @@ class UBXReader:
                 validate=self._validate,
                 msgmode=self._msgmode,
                 parsebitfield=self._parsebf,
+                scaling=self._scaling,
             )
         else:
             parsed_data = None
@@ -305,7 +308,8 @@ class UBXReader:
         :param bytes message: binary message to parse
         :param int validate: (kwarg) validate cksum (VALCKSUM (1)=True (default), VALNONE (0)=False)
         :param int msgmode: (kwarg) message mode (0=GET (default), 1=SET, 2=POLL)
-        :param bool parsebitfield: (kwarg) parse bitfields True (default)/False
+        :param bool parsebitfield: (kwarg) 1 = parse bitfields, 0 = leave as bytes (1)
+        :param bool scaling: (kwarg) 1 = apply scale factors, 0 = do not apply (1)
         :return: UBXMessage object
         :rtype: UBXMessage
         :raises: UBXParseError (if data stream contains invalid data or unknown message type)
@@ -315,6 +319,7 @@ class UBXReader:
         msgmode = kwargs.get("msgmode", ubt.GET)
         validate = kwargs.get("validate", ubt.VALCKSUM)
         parsebf = kwargs.get("parsebitfield", True)
+        scaling = kwargs.get("scaling", True)
 
         if msgmode not in (0, 1, 2):
             raise ube.UBXParseError(
@@ -362,6 +367,7 @@ class UBXReader:
                 msgmode,
                 payload=payload,
                 parsebitfield=parsebf,
+                scaling=scaling,
             )
         except KeyError as err:
             modestr = ["GET", "SET", "POLL"][msgmode]

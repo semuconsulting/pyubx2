@@ -47,6 +47,8 @@ class UBXMessage:
         :param object msgClass: message class as str, int or byte
         :param object msgID: message ID as str, int or byte
         :param int msgmode: message mode (0=GET, 1=SET, 2=POLL)
+        :param bool parsebitfield: (kwarg) parse bitfields ('X' type attributes) Y/N
+        :param bool scaling: (kwarg) apply scale factors Y/N
         :param kwargs: optional payload key/value pairs
         :raises: UBXMessageError
 
@@ -60,6 +62,7 @@ class UBXMessage:
         self._checksum = b""
 
         self._parsebf = kwargs.get("parsebitfield", True)  # parsing bitfields Y/N?
+        self._scaling = kwargs.get("scaling", True)  # apply scale factors Y/N?
 
         if msgmode not in (0, 1, 2):
             raise ube.UBXMessageError(f"Invalid msgmode {msgmode} - must be 0, 1 or 2.")
@@ -234,7 +237,7 @@ class UBXMessage:
 
         # if attribute is scaled
         scale = 1
-        if isinstance(att, list):
+        if isinstance(att, list) and self._scaling:
             scale = att[1]
             att = att[0]
 
