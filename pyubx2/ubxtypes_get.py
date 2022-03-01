@@ -244,12 +244,12 @@ UBX_PAYLOADS_GET = {
                 ),
                 "freq": [U4, 0.25],
                 "phaseOffset": I4,
-                "withTemp": [U4, 2 ** -8],
-                "withAge": [U4, 2 ** -8],
+                "withTemp": [U4, 2**-8],
+                "withAge": [U4, 2**-8],
                 "timeToTemp": U2,
                 "reserved3": U2,
-                "gainVco": [I4, 2 ** -16],
-                "gainUncertainty": [U1, 2 ** -8],
+                "gainVco": [I4, 2**-16],
+                "gainUncertainty": [U1, 2**-8],
                 "reserved4": U3,
             },
         ),
@@ -306,7 +306,7 @@ UBX_PAYLOADS_GET = {
     "CFG-ESFA": {
         "version": U1,
         "reserved1": U9,
-        "accelRmsThdl": [U1, 2 ** -6],
+        "accelRmsThdl": [U1, 2**-6],
         "frequency": U1,
         "latency": U2,
         "accuracy": [U2, SCAL4],
@@ -316,7 +316,7 @@ UBX_PAYLOADS_GET = {
         "version": U1,
         "reserved1": U7,
         "tcTableSaveRate": U2,
-        "gyroRmsThdl": [U1, 2 ** -8],
+        "gyroRmsThdl": [U1, 2**-8],
         "frequency": U1,
         "latency": U2,
         "accuracy": [U2, SCAL3],
@@ -402,8 +402,8 @@ UBX_PAYLOADS_GET = {
                 ),
                 "freq": [U4, 0.25],
                 "reserved2": U4,
-                "withTemp": [U4, 2 ** -8],
-                "withAge": [U4, 2 ** -8],
+                "withTemp": [U4, 2**-8],
+                "withAge": [U4, 2**-8],
                 "timeToTemp": U2,
                 "maxDevLifeTim": U2,
                 "offset": I4,
@@ -2012,7 +2012,7 @@ UBX_PAYLOADS_GET = {
         "pulses": I4,
         "period": I4,
         "gyroMean": [U4, SCAL2],
-        "temperature": [I2, 2 ** -8],
+        "temperature": [I2, 2**-8],
         "direction": I1,
         "calibStatus": (
             X1,
@@ -2055,16 +2055,20 @@ UBX_PAYLOADS_GET = {
             {"state": U1, "reserved1": U1},
         ),
     },
+    # NB: special handling for NAV-HPPOS* message types;
+    # private standard and high precision attributes are
+    # combined into a single public attribute in
+    # accordance with interface specification
     "NAV-HPPOSECEF": {
         "version": U1,
         "reserved0": U3,
         "iTOW": U4,
-        "ecefX": I4,
-        "ecefY": I4,
-        "ecefZ": I4,
-        "ecefXHp": [I1, SCAL1],
-        "ecefYHp": [I1, SCAL1],
-        "ecefZHp": [I1, SCAL1],
+        "_ecefX": I4,  # cm
+        "_ecefY": I4,  # cm
+        "_ecefZ": I4,  # cm
+        "_ecefXHp": [I1, SCAL1],  # mm
+        "_ecefYHp": [I1, SCAL1],  # mm
+        "_ecefZHp": [I1, SCAL1],  # mm
         "flags": (
             X1,
             {
@@ -2083,14 +2087,14 @@ UBX_PAYLOADS_GET = {
             },
         ),
         "iTOW": U4,
-        "lon": [I4, SCAL7],
-        "lat": [I4, SCAL7],
-        "height": I4,
-        "hMSL": I4,
-        "lonHp": [I1, SCAL9],
-        "latHp": [I1, SCAL9],
-        "heightHp": [I1, SCAL1],
-        "hMSLHp": [I1, SCAL1],
+        "_lon": [I4, SCAL7],
+        "_lat": [I4, SCAL7],
+        "_height": I4,  # mm
+        "_hMSL": I4,  # mm
+        "_lonHp": [I1, SCAL9],
+        "_latHp": [I1, SCAL9],
+        "_heightHp": [I1, SCAL1],  # mm
+        "_hMSLHp": [I1, SCAL1],  # mm
         "hAcc": [U4, SCAL1],
         "vAcc": [U4, SCAL1],
     },
@@ -3331,7 +3335,7 @@ UBX_PAYLOADS_GET = {
                 "reserved3": U3,
                 "cno": U1,
                 "reserved4": U2,
-                "doppler": [I4, 2 ** -12],
+                "doppler": [I4, 2**-12],
                 "position1_1": (
                     X4,
                     {
@@ -3355,8 +3359,8 @@ UBX_PAYLOADS_GET = {
                         "pos2Valid": U1,
                     },
                 ),
-                "lat": [I4, 180 * 2 ** -24],
-                "lon": [I4, 360 * 2 ** -32],
+                "lat": [I4, 180 * 2**-24],
+                "lon": [I4, 360 * 2**-32],
                 "shortIdFrame": (
                     X4,
                     {
@@ -3409,7 +3413,7 @@ UBX_PAYLOADS_GET = {
                 "dopplerHz": [I4, 0.2],
                 "wholeChips": U2,
                 "fracChips": U2,
-                "codePhase": [U4, 2 ** -21],
+                "codePhase": [U4, 2**-21],
                 "intCodePhase": U1,
                 "pseuRangeRMSErr": U1,
                 "reserved4": U2,
@@ -3458,7 +3462,7 @@ UBX_PAYLOADS_GET = {
     "RXM-QZSSL6": {
         "version": U1,
         "svId": U1,
-        "cno": [U2, 2 ** -8],
+        "cno": [U2, 2**-8],
         "timeTag": U4,
         "groupDelay": U1,
         "bitErrCorr": U1,
@@ -3728,11 +3732,11 @@ UBX_PAYLOADS_GET = {
         "version": U1,
         "reserved1": U3,
         "iTOW": U4,
-        "intDeltaFreq": [I4, 2 ** -8],
-        "intDeltaFreqU": [U4, 2 ** -8],
+        "intDeltaFreq": [I4, 2**-8],
+        "intDeltaFreqU": [U4, 2**-8],
         "intRaw": U4,
-        "extDeltaFreq": [I4, 2 ** -8],
-        "extDeltaFreqU": [U4, 2 ** -8],
+        "extDeltaFreq": [I4, 2**-8],
+        "extDeltaFreqU": [U4, 2**-8],
         "extRaw": U4,
     },
     "TIM-SMEAS": {
@@ -3752,13 +3756,13 @@ UBX_PAYLOADS_GET = {
                         "phaseValid": U1,
                     },
                 ),
-                "phaseOffsetFrac": [I1, 2 ** -8],
-                "phaseUncFrac": [U1, 2 ** -8],
+                "phaseOffsetFrac": [I1, 2**-8],
+                "phaseUncFrac": [U1, 2**-8],
                 "phaseOffset": I4,
                 "phaseUnc": U4,
                 "reserved3": U4,
-                "freqOffset": [I4, 2 ** -8],
-                "freqUnc": [U4, 2 ** -8],
+                "freqOffset": [I4, 2**-8],
+                "freqUnc": [U4, 2**-8],
             },
         ),
     },
@@ -3830,14 +3834,14 @@ UBX_PAYLOADS_GET = {
         "TOW": U4,
         "gnssOffset": I4,
         "gnssUncertainty": U4,
-        "intOscOffset": [I4, 2 ** -8],
-        "intOscUncertainty": [U4, 2 ** -8],
-        "extOscOffset": [I4, 2 ** -8],
-        "extOscUncertainty": [U4, 2 ** -8],
+        "intOscOffset": [I4, 2**-8],
+        "intOscUncertainty": [U4, 2**-8],
+        "extOscOffset": [I4, 2**-8],
+        "extOscUncertainty": [U4, 2**-8],
     },
     "TIM-TP": {
         "towMS": U4,
-        "towSubMS": [U4, 2 ** -32],
+        "towSubMS": [U4, 2**-32],
         "qErr": I4,
         "week": U2,
         "flags": (
@@ -3862,8 +3866,8 @@ UBX_PAYLOADS_GET = {
         "version": U1,
         "oscId": U1,
         "reserved1": U3,
-        "gainUncertainty": [U2, 2 ** -16],
-        "gainVco": [I4, 2 ** -16],
+        "gainUncertainty": [U2, 2**-16],
+        "gainVco": [I4, 2**-16],
     },
     "TIM-VRFY": {
         "itow": I4,

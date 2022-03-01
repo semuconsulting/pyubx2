@@ -253,6 +253,32 @@ class UBXMessage:
         else:
             atts = attsiz(att)
 
+        # if HP element of NAV-HPPOSLLH or NAV-HPPOSECEF message type
+        isNavHP = False
+        if (
+            self._ubxClass == b"\x01"
+            and self._ubxID in (b"\x13", b"\x14")
+            and key
+            in (
+                "_lat",
+                "_latHp",
+                "_lon",
+                "_lonHp",
+                "_height",
+                "_heightHp",
+                "_hMSL",
+                "_hMSLHp",
+                "_ecefX",
+                "_ecefXHp",
+                "_ecefY",
+                "_ecefYHp",
+                "_ecefZ",
+                "_ecefZHp",
+            )
+        ):
+            isNavHP = True
+            scale = 1
+
         # if payload keyword has been provided,
         # use the appropriate offset of the payload
         if "payload" in kwargs:
@@ -274,6 +300,10 @@ class UBXMessage:
 
         setattr(self, keyr, val)
         offset += atts
+
+        # if HP element of NAV-HPPOSLLH or NAV-HPPOSECEF message type
+        if isNavHP:
+            self._set_attribute_navhp(key)
 
         return offset
 
@@ -361,6 +391,36 @@ class UBXMessage:
             setattr(self, keyr, val)
         bfoffset += atts
         return (bitfield, bfoffset)
+
+    def _set_attribute_navhp(self, key: str):
+        """
+        Combine separate private standard and high precision
+        attributes of NAV-HPPOSLLH and NAV-HPPOSECEF message
+        types into single public attribute
+        e.g. '_lat' and '_latHp' are combined into 'lat'.
+
+        :param str key: attribute keyword
+        """
+        # pylint: disable=no-member
+
+        if key == "_latHp":
+            val = (self._lat + self._latHp * 0.01) * 1e-7
+        elif key == "_lonHp":
+            val = (self._lon + self._lonHp * 0.01) * 1e-7
+        elif key == "_heightHp":
+            val = self._height + self._heightHp * 0.1  # mm
+        elif key == "_hMSLHp":
+            val = self._hMSL + self._hMSLHp * 0.1  # mm
+        elif key == "_ecefXHp":
+            val = self._ecefX + self._ecefXHp * 0.01  # cm
+        elif key == "_ecefYHp":
+            val = self._ecefY + self._ecefYHp * 0.01  # cm
+        elif key == "_ecefZHp":
+            val = self._ecefZ + self._ecefZHp * 0.01  # cm
+        else:
+            return
+
+        setattr(self, key[1:-2], round(val, ubt.SCALROUND))
 
     def _set_attribute_cfgval(self, offset: int, **kwargs):
         """

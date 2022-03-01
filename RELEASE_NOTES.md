@@ -2,9 +2,13 @@
 
 ### RELEASE 1.2.6
 
-FIXES:
+ENHANCEMENTS:
 
-1. Rounding for scaled navigation attributes increased from 8 dp to 12 dp
+1. Parsing of NAV-HPPOSECEF and NAV-HPPOSLLH messages enhanced to render standard and high precision elements as single high precision attributes, in accordance with the interface specification e.g.
+```lat = (lat + latHp * 0.01) * 1e-7```
+2. Applies to the following attributes: ```lat``` + ```latHp```, ```lon``` + ```lonHp```, ```height``` + ```heightHp```, ```hMSL``` + ```hMSLHp```, ```ecefX``` + ```ecefXHp```, ```ecefY``` + ```ecefYHp```, ```ecefZ``` + ```ecefZHp```.
+3. NB: Dimensions in interface specification have been retained i.e. NAV-HPPOSLLH returns height in mm, NAV-HPPOSECEF returns height in cm.
+4. Rounding precision for scaled attributes increased to 12 dp from 8 dp.
 
 ### RELEASE 1.2.5
 
