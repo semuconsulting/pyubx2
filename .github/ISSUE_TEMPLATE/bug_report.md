@@ -16,12 +16,14 @@ assignees: semuadmin
 A clear and concise description of what the bug is.
 
 Please specify the pyubx2 version (`>>> pyubx2.version`) and, where possible, include:
- - The error message and full traceback.
- - A binary / hexadecimal dump of the UBX data stream (e.g. from PuTTY, screen or u-center).
+
+- The error message and full traceback.
+- A binary / hexadecimal dump of the UBX data stream (e.g. from PuTTY, screen or u-center).
 
 **To Reproduce**
 
-Steps to reproduce the behaviour:
+Steps to reproduce the behavior:
+
 1. Any relevant device configuration (if other than factory defaults).
 2. Any causal UBX command input(s).
 
@@ -31,17 +33,17 @@ A clear and concise description of what you expected to happen.
 
 **Desktop (please complete the following information):**
 
- - The operating system you're using [e.g. Windows 10, MacOS Big Sur, Ubuntu Bionic]
- - The type of serial connection [e.g. USB, UART1, I2C]
+- The operating system you're using [e.g. Windows 10, MacOS Big Sur, Ubuntu Bionic]
+- The type of serial connection [e.g. USB, UART1, I2C]
 
 **GNSS/GPS Device (please complete the following information as best you can):**
 
- - Device Model/Generation: [e.g. u-blox NEO-9M]
- - Firmware Version: [e.g. SPG 4.03]
- - Protocol: [e.g. 32.00]
- 
-This information is typically output by the device at startup via a series of NMEA TXT messages. 
-It can also be found by polling the device with a UBX MON-VER message. If you're using the 
+- Device Model/Generation: [e.g. u-blox NEO-9M]
+- Firmware Version: [e.g. SPG 4.03]
+- Protocol: [e.g. 32.00]
+
+This information is typically output by the device at startup via a series of NMEA TXT messages.
+It can also be found by polling the device with a UBX MON-VER message. If you're using the
 PyGPSClient GUI, a screenshot of the UBXConfig window should suffice.
 
 **Additional context**

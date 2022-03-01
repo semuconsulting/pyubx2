@@ -25,7 +25,7 @@ A clear and concise description of any alternative solutions or features you've 
 
 **Would you be willing to assist with testing?**
 
-If the request relates to a specific u-blox device that is not currently supported, would you be 
+If the request relates to a specific u-blox device that is not currently supported, would you be
 willing to assist with testing e.g. by contributing a test device to the project, providing real data dumps, or writing unittest scripts?
 
 **Additional context**

@@ -14,7 +14,7 @@ Please describe any test cases you have amended or added to this suite to mainta
 - [ ] Test A
 - [ ] Test B
 
-## Checklist:
+## Checklist
 
 - [ ] My code follows the style guidelines of this project (see `CONTRIBUTING.MD`).
 - [ ] I have performed a self-review of my own code.
