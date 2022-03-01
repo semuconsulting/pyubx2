@@ -43,9 +43,9 @@ Contributions welcome - please refer to [CONTRIBUTING.MD](https://github.com/sem
 
 [Bug reports](https://github.com/semuconsulting/pyubx2/blob/master/.github/ISSUE_TEMPLATE/bug_report.md) and [Feature requests](https://github.com/semuconsulting/pyubx2/blob/master/.github/ISSUE_TEMPLATE/feature_request.md) - please use the templates provided.
 
-### New in v1.2.5
+### New in v1.2.6
 
-1. `pyubx2.UBXReader` can now accommodate any RTCM3 data in the input stream, alongside UBX and/or NMEA data. See release notes for details.
+1. The standard and high precision elements of the `NAV-HPPOSLLH` and `NAV-HPPOSECEF` message types are now parsed as single high precision attributes for ease of use. See release notes for details.
 
 ---
 ## <a name="installation">Installation</a>
