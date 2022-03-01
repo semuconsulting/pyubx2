@@ -31,6 +31,9 @@ class StreamTest(unittest.TestCase):
         dirname = os.path.dirname(__file__)
         # self.testdump = open(os.path.join(dirname, "testdump.log"), "wb")
         self.streamNAV = open(os.path.join(dirname, "pygpsdata-NAV.log"), "rb")
+        self.streamNAVHPPOS = open(
+            os.path.join(dirname, "pygpsdata-NAVHPPOS.log"), "rb"
+        )
         self.streamHNR = open(os.path.join(dirname, "pygpsdata-HNR.log"), "rb")
         self.streamRXM = open(os.path.join(dirname, "pygpsdata-RXM.log"), "rb")
         self.streamESF = open(os.path.join(dirname, "pygpsdata-ESF.log"), "rb")
@@ -57,6 +60,7 @@ class StreamTest(unittest.TestCase):
     def tearDown(self):
         # self.testdump.close()
         self.streamNAV.close()
+        self.streamNAVHPPOS.close()
         self.streamHNR.close()
         self.streamRXM.close()
         self.streamESF.close()
@@ -142,6 +146,27 @@ class StreamTest(unittest.TestCase):
             (raw, parsed) = ubxreader.read()
             # print(f"{i} = {parsed}")
             if raw is not None:
+                self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
+                i += 1
+
+    def testNAVHPPOS(
+        self,
+    ):  # test stream of UBX NAV-HPPOS* messages
+        EXPECTED_RESULTS = (
+            "<UBX(NAV-HPPOSECEF, version=0, reserved0=0, iTOW=12:11:19, ecefX=381429769.95, ecefY=-13697582.76, ecefZ=509330640.95, invalidEcef=0, pAcc=587.3)>",
+            "<UBX(NAV-HPPOSLLH, version=0, reserved0=0, invalidLlh=0, iTOW=12:11:19, lon=-2.056673696, lat=53.337816927, height=281785.8, hMSL=233522.7, hAcc=335.0, vAcc=482.4)>",
+            "<UBX(NAV-HPPOSECEF, version=0, reserved0=0, iTOW=12:11:20, ecefX=381429768.07, ecefY=-13697583.38, ecefZ=509330643.41, invalidEcef=0, pAcc=588.6)>",
+            "<UBX(NAV-HPPOSLLH, version=0, reserved0=0, invalidLlh=0, iTOW=12:11:20, lon=-2.056673798, lat=53.337817193, height=281794.4, hMSL=233531.3, hAcc=336.0, vAcc=483.3)>",
+        )
+
+        i = 0
+        raw = 0
+        ubxreader = UBXReader(self.streamNAVHPPOS)
+        while raw is not None:
+            (raw, parsed) = ubxreader.read()
+            # print(f"{i} = {parsed}")
+            if raw is not None:
+                # print(parsed)
                 self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
                 i += 1
 
