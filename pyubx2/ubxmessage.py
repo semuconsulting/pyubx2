@@ -254,29 +254,8 @@ class UBXMessage:
             atts = attsiz(att)
 
         # if HP element of NAV-HPPOSLLH or NAV-HPPOSECEF message type
-        isNavHP = False
-        if (
-            self._ubxClass == b"\x01"
-            and self._ubxID in (b"\x13", b"\x14")
-            and key
-            in (
-                "_lat",
-                "_latHp",
-                "_lon",
-                "_lonHp",
-                "_height",
-                "_heightHp",
-                "_hMSL",
-                "_hMSLHp",
-                "_ecefX",
-                "_ecefXHp",
-                "_ecefY",
-                "_ecefYHp",
-                "_ecefZ",
-                "_ecefZHp",
-            )
-        ):
-            isNavHP = True
+        isNavHP = self._is_navhp(key)
+        if isNavHP:
             scale = 1
 
         # if payload keyword has been provided,
@@ -391,6 +370,39 @@ class UBXMessage:
             setattr(self, keyr, val)
         bfoffset += atts
         return (bitfield, bfoffset)
+
+    def _is_navhp(self, key) -> bool:
+        """
+        Check for NAV-HPPOSLLH or NAV-HPPOSECEF
+        high precision attribute type, e.g.
+        '_latHp' or '_heightHp'.
+
+        :param str key: attribute name e.g. '_latHp'
+        :return: True or False
+        :rtype: bool
+        """
+
+        return (
+            self._ubxClass == b"\x01"
+            and self._ubxID in (b"\x13", b"\x14")
+            and key
+            in (
+                "_lat",
+                "_latHp",
+                "_lon",
+                "_lonHp",
+                "_height",
+                "_heightHp",
+                "_hMSL",
+                "_hMSLHp",
+                "_ecefX",
+                "_ecefXHp",
+                "_ecefY",
+                "_ecefYHp",
+                "_ecefZ",
+                "_ecefZHp",
+            )
+        )
 
     def _set_attribute_navhp(self, key: str):
         """
