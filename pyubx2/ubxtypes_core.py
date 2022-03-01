@@ -42,7 +42,7 @@ SCAL4 = 1e-4  # 0.0001
 SCAL3 = 1e-3  # 0.001
 SCAL2 = 1e-2  # 0.01
 SCAL1 = 1e-1  # 0.1
-SCALROUND = 8  # number of dp to round scaled attributes to
+SCALROUND = 12  # number of dp to round scaled attributes to
 
 # **************************************************
 # THESE ARE THE UBX PROTOCOL PAYLOAD ATTRIBUTE TYPES
