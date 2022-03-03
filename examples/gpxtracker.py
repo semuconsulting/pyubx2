@@ -18,7 +18,7 @@ Created on 27 Oct 2020
 import os
 from datetime import datetime
 from time import strftime
-from pyubx2.ubxreader import UBXReader, VALCKSUM
+from pyubx2 import UBXReader, VALCKSUM
 import pyubx2.exceptions as ube
 
 XML_HDR = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
