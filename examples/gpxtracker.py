@@ -3,10 +3,12 @@ Simple CLI utility which creates a GPX track file
 from a binary UBX dump (such as that created by
 PyGPSClient's datalogging facility) using pyubx2.UBXReader().
 
-Dump must contain UBX NAV-PVT messages.
+Dump must contain UBX NAV-PVT, NAV-POSLLH or NAV-HPPOSLLH messages.
+If the message doesn't include an explicit date, the utility will use
+today's date in conjunction with the message iTOW.
 
 There are a number of free online GPX viewers
-e.g. https://gpx-viewer.com/view
+e.g. https://maplorer.com/view_gpx.html
 
 Could have used minidom for XML but didn't seem worth it.
 
@@ -16,9 +18,9 @@ Created on 27 Oct 2020
 """
 
 import os
-from datetime import datetime
+from datetime import datetime, date
 from time import strftime
-from pyubx2 import UBXReader, VALCKSUM
+from pyubx2 import UBXReader, VALCKSUM, itow2utc
 import pyubx2.exceptions as ube
 
 XML_HDR = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
@@ -80,7 +82,12 @@ class UBXTracker:
 
         self.write_gpx_hdr()
 
-        for (_, msg) in self._ubxreader:  # invokes iterator method
+        for (
+            _,
+            msg,
+        ) in (
+            self._ubxreader.iterate()
+        ):  # invokes iterator method with exception handling wrapper
             try:
                 if msg.identity == "NAV-PVT":
                     time = (
@@ -102,6 +109,20 @@ class UBXTracker:
                         time=time,
                         fix=fix,
                     )
+                if msg.identity in ("NAV-POSLLH", "NAV-HPPOSLLH"):
+                    time = (
+                        date.today().isoformat()
+                        + "T"
+                        + itow2utc(msg.iTOW).isoformat()
+                        + "Z"
+                    )
+                    self.write_gpx_trkpnt(
+                        msg.lat,
+                        msg.lon,
+                        ele=msg.hMSL / 1000,  # height in meters
+                        time=time,
+                    )
+
                 i += 1
             except (ube.UBXMessageError, ube.UBXTypeError, ube.UBXParseError) as err:
                 print(f"Something went wrong {err}")
@@ -109,9 +130,7 @@ class UBXTracker:
 
         self.write_gpx_tlr()
 
-        print(
-            f"\n{i} NAV-PVT message{'' if i == 1 else 's'} read from {self._filename}"
-        )
+        print(f"\n{i} NAV message{'' if i == 1 else 's'} read from {self._filename}")
         print(f"{i} trackpoint{'' if i == 1 else 's'} written to {self._trkfname}")
 
     def write_gpx_hdr(self):
