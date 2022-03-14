@@ -235,10 +235,14 @@ class UBXMessage:
         """
         # pylint: disable=no-member
 
+        # if HP element of NAV-HPPOSLLH or NAV-HPPOSECEF message type
+        isNavHP = self._is_navhp(key)
+
         # if attribute is scaled
         scale = 1
         if isinstance(att, list) and self._scaling:
-            scale = att[1]
+            if not isNavHP:  # don't scale NavHP elements at this point
+                scale = att[1]
             att = att[0]
 
         # if attribute is part of a (nested) repeating group, suffix name with index
@@ -252,11 +256,6 @@ class UBXMessage:
             atts = len(self._payload)
         else:
             atts = attsiz(att)
-
-        # if HP element of NAV-HPPOSLLH or NAV-HPPOSECEF message type
-        isNavHP = self._is_navhp(key)
-        if isNavHP:
-            scale = 1
 
         # if payload keyword has been provided,
         # use the appropriate offset of the payload
