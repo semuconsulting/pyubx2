@@ -50,7 +50,7 @@ Contributions welcome - please refer to [CONTRIBUTING.MD](https://github.com/sem
 ---
 ## <a name="installation">Installation</a>
 
-`pyubx2` is compatible with Python 3.6+ and has no third-party library dependencies.
+`pyubx2` is compatible with Python >=3.7 and has no third-party library dependencies.
 
 In the following, `python` & `pip` refer to the Python 3 executables. You may need to type 
 `python3` or `pip3`, depending on your particular environment.
