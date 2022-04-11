@@ -26,7 +26,7 @@ from threading import Thread, Event
 from time import sleep
 import json
 from serial import Serial, SerialException, SerialTimeoutException
-from pyubx2 import UBXReader, GET, UBX_PROTOCOL
+from pyubx2 import UBXMessage, UBXReader, GET, UBX_PROTOCOL
 import pyubx2.exceptions as ube
 from gpshttpserver import GPSHTTPServer, GPSHTTPHandler
 
@@ -146,7 +146,7 @@ class UBXServer:
             if self._serial_object.in_waiting:
                 try:
                     (raw_data, parsed_data) = self._ubxreader.read()
-                    if parsed_data:
+                    if isinstance(parsed_data, UBXMessage):
                         self.set_data(parsed_data)
                 except (
                     ube.UBXStreamError,
@@ -187,7 +187,6 @@ class UBXServer:
                 self.gpsdata["vdop"] = parsed_data.vDOP
             if parsed_data.identity == "NAV-SAT":
                 self.gpsdata["siv"] = parsed_data.numSvs
-
         except ube.UBXMessageError() as err:
             print(err)
             self._stopevent.set()

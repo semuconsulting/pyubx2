@@ -93,19 +93,22 @@ class GPSHTTPHandler(SimpleHTTPRequestHandler):
         mimetype = self.guess_type(self.path)
         rc = 200
 
-        if self.path in (HTML, JS, CSS, ICON):
-            res = open(self.path[1:]).read()
-        elif self.path == "/gps":  # invoke GPS REST API
-            res = self.server.gps.get_data()
-            mimetype = "application/json"
-        else:
-            res = "Unknown Request"
-            rc = 501
+        try:
+            if self.path in (HTML, JS, CSS, ICON):
+                res = open(self.path[1:]).read()
+            elif self.path == "/gps":  # invoke GPS REST API
+                res = self.server.gps.get_data()
+                mimetype = "application/json"
+            else:
+                res = "Unknown Request"
+                rc = 501
 
-        self.send_response(rc)
-        self.send_header("Content-type", mimetype)
-        self.end_headers()
-        self.wfile.write(res.encode())
+            self.send_response(rc)
+            self.send_header("Content-type", mimetype)
+            self.end_headers()
+            self.wfile.write(res.encode())
+        except UnicodeDecodeError as err:
+            pass
 
 
 if __name__ == "__main__":
