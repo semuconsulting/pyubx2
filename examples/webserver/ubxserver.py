@@ -187,7 +187,7 @@ class UBXServer:
                 self.gpsdata["vdop"] = parsed_data.vDOP
             if parsed_data.identity == "NAV-SAT":
                 self.gpsdata["siv"] = parsed_data.numSvs
-        except ube.UBXMessageError() as err:
+        except ube.UBXMessageError as err:
             print(err)
             self._stopevent.set()
 
