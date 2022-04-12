@@ -7,7 +7,10 @@ It displays selected GPS data from NAV-PVT, NAV-POSLLH, NAV-DOP and NAV-SAT
 messages on a dynamically updated web page using the native Python 3 http.server
 library and a RESTful API implemented by the pyubx2 streaming and parsing service.
 
-NB: Must be executed from the root folder i.e. /examples/webserver/.
+NB: Must be executed from the root folder i.e. /examples/webserver/:
+
+> python3 ubxserver.py
+
 Press CTRL-C to terminate.
 
 The web page can be accessed at http://localhost:8080. The parsed
@@ -211,7 +214,7 @@ if __name__ == "__main__":
     if platform == "win32":  # Windows
         prt = "COM13"
     elif platform == "darwin":  # MacOS
-        prt = "/dev/tty.usbmodem14101"
+        prt = "/dev/cu.usbmodem14101"
     else:  # Linux
         prt = "/dev/ttyACM1"
     baud = 9600

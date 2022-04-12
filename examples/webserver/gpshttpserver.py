@@ -2,7 +2,10 @@
 This is a simple HTTP Server utilising the native
 Python 3 http.server library.
 
-It implements a REST API /gps to retrieve GPS data
+NB: http.server is NOT recommended for production use - it
+only implements basic security checks.
+
+This example implements a REST API /gps to retrieve GPS data
 from the designated GPSClass object.
 
 A dummy GPSDataStub object is provided to simulate
