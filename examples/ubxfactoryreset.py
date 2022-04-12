@@ -14,6 +14,9 @@ in the background, it sends a factory reset command CFG-CFG.
 The read thread picks up any acknowledgement and outputs
 it to the terminal.
 
+NB: THIS CLEARS THE CURRENT CONFIGURATIONS IN ALL MEMORY
+LAYERS (BBR, Flash and EEPROM) - USE WITH CAUTION!!
+
 Created on 2 Oct 2020
 
 @author: semuadmin
@@ -76,7 +79,7 @@ if __name__ == "__main__":
     if platform == "win32":  # Windows
         port = "COM13"
     elif platform == "darwin":  # MacOS
-        port = "/dev/tty.usbmodem14101"
+        port = "/dev/tty.usbmodem141301"
     else:  # Linux
         port = "/dev/ttyACM1"
     baudrate = 9600
