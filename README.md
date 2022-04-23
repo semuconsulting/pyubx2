@@ -394,7 +394,7 @@ However, there are a handful of message types which have multiple possible paylo
 ---
 ## <a name="cli">Command Line Utility</a>
 
-If `pyubx2` is installed using pip, a command line utility `gnssdump` is automatically installed into the Python 3 scripts (bin) directory. This utility is capable of streaming and parsing NMEA, UBX and RTCM3 data from any data stream (including Serial and File) to the terminal or to designed NMEA, UBX or RTCM3 protocol handlers. It utilises the `pynmeapgs` library for NMEA data, the `pyrtcm` library for RTCM3 data and `pyubx2` for UBX data.
+If `pyubx2` is installed using pip, a command line utility `gnssdump` is automatically installed into the Python 3 scripts (bin) directory. This utility is capable of streaming and parsing NMEA, UBX and RTCM3 data from any data stream (including Serial and File) to the terminal or to designated NMEA, UBX or RTCM3 protocol handlers.
 
 The utility can output data in a variety of formats; parsed (1), raw binary (2), hexadecimal string (4), tabulated hexadecimal (8) or any combination thereof.
 
