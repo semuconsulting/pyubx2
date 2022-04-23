@@ -1,5 +1,15 @@
 # pyubx2 Release Notes
 
+### RELEASE CANDIDATE 1.2.7
+
+ENHANCEMENTS:
+
+1. `pyubx2` now capable of fully parsing RTCM3 messages via the `pyrtcm` library (`pyrtcm>=0.2.5`).
+
+CHANGES:
+
+1. Remove support for Python 3.6, now end of life (should still work fine on 3.6 but no longer actively tested on this version)
+
 ### RELEASE 1.2.6
 
 ENHANCEMENTS:

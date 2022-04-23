@@ -4,10 +4,8 @@ UBXReader class.
 Reads and parses individual UBX, NMEA or RTCM3 messages from any stream
 which supports a read(n) -> bytes method.
 
-NB: pyubx2 does not currently decode RTCM3 data.
-
 Returns both the raw binary data (as bytes) and the parsed data
-(as a UBXMessage, NMEAMessage or stub RTCMMessage object).
+(as a UBXMessage, NMEAMessage or RTCMMessage object).
 
 'protfilter' governs which protocols (NMEA, UBX or RTCM3) are processed
 'quitonerror' governs how errors are handled
@@ -19,10 +17,13 @@ Created on 2 Oct 2020
 :license: BSD 3-Clause
 """
 
+from pyrtcm import RTCMReader
+from pyrtcm.rtcmhelpers import calc_crc24q
+import pyrtcm.exceptions as rte
 from pynmeagps import NMEAReader
 import pynmeagps.exceptions as nme
-from pyubx2 import UBXMessage, RTCMMessage
-from pyubx2.ubxhelpers import calc_checksum, val2bytes, bytes2val, calc_crc24q
+from pyubx2 import UBXMessage
+from pyubx2.ubxhelpers import calc_checksum, val2bytes, bytes2val
 import pyubx2.ubxtypes_core as ubt
 import pyubx2.exceptions as ube
 
@@ -208,9 +209,7 @@ class UBXReader:
 
     def _parse_rtcm3(self, hdr: bytes, **kwargs) -> tuple:
         """
-        Parse any RTCM3 data in the stream.
-        NB: pyubx2 does not decode RTCM3 data; the
-        RTCMMessage object is simply a stub.
+        Parse any RTCM3 data in the stream (using pyrtcm library).
 
         :param bytes hdr: first 2 bytes of RTCM3 header
         :param bool validate: (kwarg) validate crc Y/N
@@ -223,10 +222,15 @@ class UBXReader:
         payload = self._read_bytes(size)
         crc = self._read_bytes(3)
         raw_data = hdr + hdr3 + payload + crc
-        if self._validate & ubt.VALCKSUM:
-            if calc_crc24q(raw_data):
-                raise ube.UBXParseError(f"RTCM3 message invalid - failed CRC: {crc}")
-        parsed_data = RTCMMessage(payload)
+        # only parse if we need to (filter passes RTCM)
+        if self._protfilter & ubt.RTCM3_PROTOCOL:
+            # invoke pyrtcm parser
+            parsed_data = RTCMReader.parse(
+                raw_data,
+                validate=self._validate,
+            )
+        else:
+            parsed_data = None
         return (raw_data, parsed_data)
 
     def _read_bytes(self, size: int) -> bytes:
@@ -273,6 +277,10 @@ class UBXReader:
                 nme.NMEATypeError,
                 nme.NMEAParseError,
                 nme.NMEAStreamError,
+                rte.RTCMMessageError,
+                rte.RTCMParseError,
+                rte.RTCMStreamError,
+                rte.RTCMTypeError,
             ) as err:
                 # raise, log or ignore any error depending
                 # on the quitonerror setting

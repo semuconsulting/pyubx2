@@ -84,7 +84,9 @@ class UBXServer:
 
         self._connected = False
         try:
-            print(f"Connecting to serial port {self._port} at {self._baudrate} baud...")
+            print(
+                f"Connecting to serial port {self._port} at {self._baudrate} baud ..."
+            )
             self._serial_object = Serial(
                 self._port, self._baudrate, timeout=self._timeout
             )
@@ -121,7 +123,7 @@ class UBXServer:
         """
 
         if self._connected:
-            print("\nStarting serial read thread...")
+            print("\nStarting serial read thread ...")
             self._reading = True
             self._serial_thread = Thread(
                 target=self._read_thread, args=(self._stopevent,)
@@ -180,7 +182,7 @@ class UBXServer:
                 self.gpsdata["track"] = parsed_data.headVeh
                 self.gpsdata["fix"] = parsed_data.fixType
                 self.gpsdata["pDOP"] = parsed_data.pDOP
-            if parsed_data.identity == "NAV-POSLLH":
+            if parsed_data.identity in ("NAV-POSLLH", "NAV-HPPOSLLH"):
                 self.gpsdata["latitude"] = parsed_data.lat
                 self.gpsdata["longitude"] = parsed_data.lon
                 self.gpsdata["elevation"] = parsed_data.height / 1000
@@ -214,7 +216,7 @@ if __name__ == "__main__":
     if platform == "win32":  # Windows
         prt = "COM13"
     elif platform == "darwin":  # MacOS
-        prt = "/dev/cu.usbmodem14101"
+        prt = "/dev/tty.usbmodem14101"
     else:  # Linux
         prt = "/dev/ttyACM1"
     baud = 9600
@@ -226,11 +228,8 @@ if __name__ == "__main__":
     if ubs.connect():
         ubs.start_read_thread()
         print(
-            "\nStarting HTTP Server on http://"
-            + ADDRESS
-            + ":"
-            + str(TCPPORT)
-            + " ...\nPress Ctrl-C to terminate.\n"
+            f"\nStarting HTTP Server on http://{ADDRESS}:{TCPPORT} ...",
+            "\nPress Ctrl-C to terminate.\n",
         )
         httpd_thread = Thread(target=httpd.serve_forever, daemon=True)
         httpd_thread.start()
