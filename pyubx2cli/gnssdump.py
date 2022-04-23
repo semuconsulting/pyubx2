@@ -36,6 +36,12 @@ from pynmeagps import (
     NMEAStreamError,
     NMEATypeError,
 )
+from pyrtcm import (
+    RTCMMessageError,
+    RTCMParseError,
+    RTCMStreamError,
+    RTCMTypeError,
+)
 from pyubx2cli.helpstrings import GNSSDUMP_HELP
 
 MIN_NMEA_PAYLOAD = 3  # minimum viable length of NMEA message payload
@@ -196,6 +202,10 @@ class GNSSStreamer:
                     NMEAParseError,
                     NMEAStreamError,
                     NMEATypeError,
+                    RTCMMessageError,
+                    RTCMParseError,
+                    RTCMStreamError,
+                    RTCMTypeError,
                 ) as err:
                     self._do_error(err)
                     continue
