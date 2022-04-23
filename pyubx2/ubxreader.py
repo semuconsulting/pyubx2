@@ -222,9 +222,6 @@ class UBXReader:
         payload = self._read_bytes(size)
         crc = self._read_bytes(3)
         raw_data = hdr + hdr3 + payload + crc
-        # if self._validate & ubt.VALCKSUM:
-        #     if calc_crc24q(raw_data):
-        #         raise rte.RTCMParseError(f"RTCM3 message invalid - failed CRC: {crc}")
         # only parse if we need to (filter passes RTCM)
         if self._protfilter & ubt.RTCM3_PROTOCOL:
             # invoke pyrtcm parser
