@@ -22,6 +22,7 @@ setuptools.setup(
     packages=setuptools.find_packages(exclude=["tests", "examples", "docs"]),
     install_requires=[
         "pynmeagps>=1.0.8",
+        "pyrtcm>=0.2.4",
         "pyserial>=3.4",
     ],
     entry_points={

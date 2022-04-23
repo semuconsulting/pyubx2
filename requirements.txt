@@ -1,2 +1,3 @@
 pynmeagps>=1.0.8
+pyrtcm>=0.2.4
 pyserial>=3.4

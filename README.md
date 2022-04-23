@@ -21,7 +21,11 @@ The `pyubx2` homepage is located at [https://github.com/semuconsulting/pyubx2](h
 
 This is an independent project and we have no affiliation whatsoever with u-blox.
 
-**FYI** There is a companion library [pynmeagps](http://github.com/semuconsulting/pynmeagps), which handles standard NMEA 0183 &copy; GNSS/GPS messages.
+**FYI** There are companion libraries which handle standard NMEA 0183 &copy; and RTCM3 &copy; GNSS/GPS messages.
+
+- [pynmeagps](http://github.com/semuconsulting/pynmeagps)
+- [pyrtcm](http://github.com/semuconsulting/pyrtcm)
+
 
 ## <a name="currentstatus">Current Status</a>
 
@@ -43,9 +47,9 @@ Contributions welcome - please refer to [CONTRIBUTING.MD](https://github.com/sem
 
 [Bug reports](https://github.com/semuconsulting/pyubx2/blob/master/.github/ISSUE_TEMPLATE/bug_report.md) and [Feature requests](https://github.com/semuconsulting/pyubx2/blob/master/.github/ISSUE_TEMPLATE/feature_request.md) - please use the templates provided.
 
-### New in v1.2.6
+### New in v1.2.7
 
-1. The standard and high precision elements of the `NAV-HPPOSLLH` and `NAV-HPPOSECEF` message types are now parsed as single high precision attributes for ease of use. See release notes for details.
+1. `pyubx2` can now parse RTCM3 messages as well as UBX and NMEA.
 
 ---
 ## <a name="installation">Installation</a>
@@ -390,7 +394,7 @@ However, there are a handful of message types which have multiple possible paylo
 ---
 ## <a name="cli">Command Line Utility</a>
 
-If `pyubx2` is installed using pip, a command line utility `gnssdump` is automatically installed into the Python 3 scripts (bin) directory. This utility is capable of streaming and parsing both NMEA and UBX data from any data stream (including Serial and File) to the terminal or to designed NMEA and/or UBX protocol handlers. It utilises the `pynmeapgs` library for NMEA data and `pyubx2` for UBX data. `gnssdump` can also return (*but not decode*) any RTCM3 data in the stream.
+If `pyubx2` is installed using pip, a command line utility `gnssdump` is automatically installed into the Python 3 scripts (bin) directory. This utility is capable of streaming and parsing NMEA, UBX and RTCM3 data from any data stream (including Serial and File) to the terminal or to designed NMEA, UBX or RTCM3 protocol handlers. It utilises the `pynmeapgs` library for NMEA data, the `pyrtcm` library for RTCM3 data and `pyubx2` for UBX data.
 
 The utility can output data in a variety of formats; parsed (1), raw binary (2), hexadecimal string (4), tabulated hexadecimal (8) or any combination thereof.
 
