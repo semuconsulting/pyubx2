@@ -106,7 +106,7 @@ You can create a `UBXReader` object by calling the constructor with an active st
 The stream object can be any data stream which supports a `read(n) -> bytes` method (e.g. File or Serial, with 
 or without a buffer wrapper).
 
-Individual input UBX and/or NMEA messages can then be read using the `UBXReader.read()` function, which returns both the raw binary data (as bytes) and the parsed data (as a `UBXMessage` or `NMEAMessage` object, via the `parse()` method). `UBXReader.read()` can also return (*but not decode*) any RTCM3 data in the stream as a `RTCMMessage` object. The function is thread-safe in so far as the incoming data stream object is thread-safe. `UBXReader` also implements an iterator.
+Individual input UBX, NMEA or RTCM3 messages can then be read using the `UBXReader.read()` function, which returns both the raw binary data (as bytes) and the parsed data (as a `UBXMessage`, `NMEAMessage` or `RTCMMessage` object, via the `parse()` method). The function is thread-safe in so far as the incoming data stream object is thread-safe. `UBXReader` also implements an iterator.
 
 The constructor accepts the following optional keyword arguments:
 
