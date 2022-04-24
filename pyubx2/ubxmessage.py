@@ -746,7 +746,7 @@ class UBXMessage:
     def _get_cfgdat_version(self, **kwargs) -> dict:
         """
         Select appropriate CFG-DAT SET payload definition by checking
-        the payload length.
+        presence of datumNum keyword or payload length of 2 bytes.
 
         :param kwargs: optional payload key/value pairs
         :return: dictionary representing payload definition
