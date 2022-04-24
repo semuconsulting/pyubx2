@@ -12,7 +12,6 @@ Created on 3 Oct 2020
 # pylint: disable=line-too-long, invalid-name, missing-docstring, no-member
 
 import unittest
-
 from pyubx2 import UBXMessage, UBXReader, SET, GET
 import pyubx2.ubxtypes_configdb as ubxcdb
 
@@ -157,8 +156,8 @@ class SpecialTest(unittest.TestCase):
             b"\x03",
             SET,
             type=5,
-            a0UTC=1.312 * 2 ** -30,
-            a1UTC=1.458 * 2 ** -50,
+            a0UTC=1.312 * 2**-30,
+            a1UTC=1.458 * 2**-50,
             wnRec=23,
             wnLSF=41,
         )
@@ -238,6 +237,40 @@ class SpecialTest(unittest.TestCase):
             maxStepSize=2,
         )
         res2 = UBXMessage("TIM", "TIM-VCOCAL", SET, payload=res.payload)
+        self.assertEqual(str(res), EXPECTED_RESULT)
+        self.assertEqual(str(res2), EXPECTED_RESULT)
+
+    def testFill_CFGDAT(self):  # test CFG-DAT constructor
+        EXPECTED_RESULT = "<UBX(CFG-DAT, majA=15.2, flat=23.4, dX=4.6, dY=7.2, dZ=15.7, rotX=123.3, rotY=18.4, rotZ=43.5, scale=2.3)>"
+        res = UBXMessage(
+            "CFG",
+            "CFG-DAT",
+            SET,
+            majA=15.2,
+            flat=23.4,
+            dX=4.6,
+            dY=7.2,
+            dZ=15.7,
+            rotX=123.3,
+            rotY=18.4,
+            rotZ=43.5,
+            scale=2.3,
+        )
+        self.assertEqual(str(res), EXPECTED_RESULT)
+        res2 = UBXMessage("CFG", "CFG-DAT", SET, payload=res.payload)
+        self.assertAlmostEqual(res2.majA, 15.2, 5)
+        self.assertAlmostEqual(res2.dX, 4.6, 5)
+        self.assertAlmostEqual(res2.scale, 2.3, 5)
+
+    def testFill_CFGDAT_NUM(self):  # test CFG-DAT-NUM constructor
+        EXPECTED_RESULT = "<UBX(CFG-DAT, datumNum=7)>"
+        res = UBXMessage(
+            "CFG",
+            "CFG-DAT",
+            SET,
+            datumNum=7,
+        )
+        res2 = UBXMessage("CFG", "CFG-DAT", SET, payload=res.payload)
         self.assertEqual(str(res), EXPECTED_RESULT)
         self.assertEqual(str(res2), EXPECTED_RESULT)
 

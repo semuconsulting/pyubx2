@@ -145,7 +145,7 @@ UBX_MSGIDS = {
     b"\x06\x13": "CFG-ANT",
     b"\x06\x93": "CFG-BATCH",
     b"\x06\x09": "CFG-CFG",
-    b"\x06\x06": "CFG-DAT",
+    b"\x06\x06": "CFG-DAT",  # two versions
     b"\x06\x70": "CFG-DGNSS",
     b"\x06\x61": "CFG-DOSC",
     b"\x06\x85": "CFG-DYNSEED",

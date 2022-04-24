@@ -165,6 +165,9 @@ UBX_PAYLOADS_SET = {
             },
         ),
     },
+    "CFG-DAT-NUM": {
+        "datumNum": U2,
+    },
     "CFG-DAT": {
         "majA": R8,
         "flat": R8,

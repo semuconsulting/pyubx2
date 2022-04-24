@@ -504,6 +504,8 @@ class UBXMessage:
                 pdict = self._get_rxmpmreq_version(**kwargs)
             elif self._ubxClass == b"\x0d" and self._ubxID == b"\x15":  # TIM-VCOCAL SET
                 pdict = self._get_timvcocal_version(**kwargs)
+            elif self._ubxClass == b"\x06" and self._ubxID == b"\x06":  # CFG-DAT SET
+                pdict = self._get_cfgdat_version(**kwargs)
             else:
                 pdict = ubs.UBX_PAYLOADS_SET[self.identity]
         else:  # GET message
@@ -739,6 +741,27 @@ class UBXMessage:
             pdict = ubs.UBX_PAYLOADS_SET["TIM-VCOCAL-V0"]  # stop cal
         else:
             pdict = ubs.UBX_PAYLOADS_SET["TIM-VCOCAL"]  # cal
+        return pdict
+
+    def _get_cfgdat_version(self, **kwargs) -> dict:
+        """
+        Select appropriate CFG-DAT SET payload definition by checking
+        presence of datumNum keyword or payload length of 2 bytes.
+
+        :param kwargs: optional payload key/value pairs
+        :return: dictionary representing payload definition
+        :rtype: dict
+
+        """
+        # pylint: disable=no-self-use
+
+        lpd = 0
+        if "payload" in kwargs:
+            lpd = len(kwargs["payload"])
+        if lpd == 2 or "datumNum" in kwargs:
+            pdict = ubs.UBX_PAYLOADS_SET["CFG-DAT-NUM"]  # datum num set
+        else:
+            pdict = ubs.UBX_PAYLOADS_SET["CFG-DAT"]  # manual datum set
         return pdict
 
     def _calc_num_repeats(
