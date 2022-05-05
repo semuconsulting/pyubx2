@@ -18,6 +18,7 @@ from pyubx2.exceptions import (
 )
 from pyubx2.ubxmessage import UBXMessage
 from pyubx2.ubxreader import UBXReader
+from pyubx2.ubxsocket import UBXSocket
 from pyubx2.ubxtypes_core import *
 from pyubx2.ubxtypes_get import *
 from pyubx2.ubxtypes_poll import *

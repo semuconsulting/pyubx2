@@ -17,12 +17,15 @@ Created on 2 Oct 2020
 :license: BSD 3-Clause
 """
 
+from socket import socket
 from pyrtcm import RTCMReader
-from pyrtcm.rtcmhelpers import calc_crc24q
+
+# from pyrtcm.rtcmhelpers import calc_crc24q
 import pyrtcm.exceptions as rte
 from pynmeagps import NMEAReader
 import pynmeagps.exceptions as nme
-from pyubx2 import UBXMessage
+from pyubx2.ubxsocket import UBXSocket
+from pyubx2.ubxmessage import UBXMessage
 from pyubx2.ubxhelpers import calc_checksum, val2bytes, bytes2val
 import pyubx2.ubxtypes_core as ubt
 import pyubx2.exceptions as ube
@@ -47,7 +50,10 @@ class UBXReader:
 
         """
 
-        self._stream = datastream
+        if isinstance(datastream, socket):
+            self._stream = UBXSocket(datastream)
+        else:
+            self._stream = datastream
         self._protfilter = int(
             kwargs.get("protfilter", ubt.NMEA_PROTOCOL | ubt.UBX_PROTOCOL)
         )
