@@ -1,6 +1,12 @@
 # pyubx2 Release Notes
 
-### RELEASE CANDIDATE 1.2.7
+### RELEASE 1.2.8
+
+ENHANCEMENTS:
+
+1. Add support for NAV-PL message type (new to HPG 1.30). Thanks to @ArrEssJay for contribution.
+
+### RELEASE 1.2.7
 
 ENHANCEMENTS:
 
