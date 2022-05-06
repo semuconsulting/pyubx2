@@ -4,6 +4,11 @@ socket_stream class.
 A skeleton socket wrapper which provides basic stream-like
 read(bytes) and readline() methods.
 
+NB: this will read from a socket indefinitely. It is the
+responsibility of the calling application to monitor
+data returned and implement appropriate socket error,
+timeout or inactivity procedures.
+
 Created on 4 Apr 2022
 
 :author: semuadmin
