@@ -46,12 +46,14 @@ class UBXReader:
         :param int msgmode: (kwarg) 0=GET, 1=SET, 2=POLL (0)
         :param bool parsebitfield: (kwarg) 1 = parse bitfields, 0 = leave as bytes (1)
         :param bool scaling: (kwarg) 1 = apply scale factors, 0 = do not apply (1)
+        :param int bufsize: (kwarg) socket recv buffer size (1024)
         :raises: UBXStreamError (if mode is invalid)
 
         """
 
+        bufsize = int(kwargs.get("bufsize", 4096))
         if isinstance(datastream, socket):
-            self._stream = SocketStream(datastream)
+            self._stream = SocketStream(datastream, bufsize=bufsize)
         else:
             self._stream = datastream
         self._protfilter = int(
