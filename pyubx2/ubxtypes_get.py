@@ -3019,7 +3019,7 @@ UBX_PAYLOADS_GET = {
         "iTOW": U4,
         "version": U1,
         "numSvs": U1,
-        "reserved0": I1,
+        "reserved0": U2,
         "group": (
             "numSvs",
             {  # repeating group * numSvs

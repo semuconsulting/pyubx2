@@ -1,9 +1,13 @@
 """
-ubxsock.py
+ubxsocket.py
 
-This example illustrates a simple example implementation of a 
-UBXMessage and/or NMEAMessage socket reader using the
-UBXReader iterator functions and an external error handler.
+A very simple example implementation of a 
+GNSS socket reader using the UBXReader iterator
+functions. Parses UBX, NMEA and RTCM3 messages.
+
+Designed to be used in conjunction with the 
+tcpserver_thread.py test harness, but can be
+used with any accessible open TCP socket.
 
 Created on 05 May 2022
 
@@ -14,17 +18,9 @@ import socket
 from pyubx2.ubxreader import UBXReader
 
 
-def errhandler(err):
+def read(stream: socket.socket):
     """
-    Handles errors output by iterator.
-    """
-
-    print(f"\nERROR: {err}\n")
-
-
-def read(stream):
-    """
-    Reads and parses UBX message data from stream.
+    Reads and parses UBX, NMEA and RTCM3 message data from stream.
     """
 
     msgcount = 0
@@ -44,6 +40,7 @@ if __name__ == "__main__":
 
     SERVER = "localhost"
     PORT = 50007
+
     print(f"Opening socket {SERVER}:{PORT}...")
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         sock.connect((SERVER, PORT))

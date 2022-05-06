@@ -24,7 +24,7 @@ from pyrtcm import RTCMReader
 import pyrtcm.exceptions as rte
 from pynmeagps import NMEAReader
 import pynmeagps.exceptions as nme
-from pyubx2.ubxsocket import UBXSocket
+from pyubx2.socket_wrapper import socket_wrapper
 from pyubx2.ubxmessage import UBXMessage
 from pyubx2.ubxhelpers import calc_checksum, val2bytes, bytes2val
 import pyubx2.ubxtypes_core as ubt
@@ -51,7 +51,7 @@ class UBXReader:
         """
 
         if isinstance(datastream, socket):
-            self._stream = UBXSocket(datastream)
+            self._stream = socket_wrapper(datastream)
         else:
             self._stream = datastream
         self._protfilter = int(

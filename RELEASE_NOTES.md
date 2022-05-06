@@ -1,6 +1,24 @@
 # pyubx2 Release Notes
 
-### RELEASE CANDIDATE 1.2.7
+### RELEASE CANDIDATE 1.2.9
+
+ENHANCEMENTS:
+
+1. Add capability to read from TCP/UDP socket as well as serial stream. Utilises a socket_wrapper
+utility class to allow sockets to be read using standard stream-like read(bytes) and readline() 
+methods.
+
+FIXES:
+
+1. Fix typo in NAV2-SAT message definition (`reserved0` is now U2 rather than I1).
+
+### RELEASE 1.2.8
+
+ENHANCEMENTS:
+
+1. Add support for NAV-PL message type (new to HPG 1.30). Thanks to @ArrEssJay for contribution.
+
+### RELEASE 1.2.7
 
 ENHANCEMENTS:
 
