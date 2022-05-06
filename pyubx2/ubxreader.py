@@ -147,10 +147,9 @@ class UBXReader:
                 else:
                     if self._quitonerror == ubt.ERR_RAISE:
                         raise ube.UBXStreamError(f"Unknown protocol {bytehdr}.")
-                    elif self._quitonerror == ubt.ERR_LOG:
+                    if self._quitonerror == ubt.ERR_LOG:
                         return (bytehdr, f"<UNKNOWN PROTOCOL(header={bytehdr})>")
-                    else:  # ignore unknown protocol and continue
-                        continue
+                    continue
 
         except EOFError:
             return (None, None)
@@ -294,7 +293,7 @@ class UBXReader:
                 # on the quitonerror setting
                 if quitonerror == ubt.ERR_RAISE:
                     raise err
-                elif quitonerror == ubt.ERR_LOG:
+                if quitonerror == ubt.ERR_LOG:
                     # pass to error handler if there is one
                     if errorhandler is None:
                         print(err)
