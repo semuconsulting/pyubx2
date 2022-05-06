@@ -42,7 +42,7 @@ class socket_wrapper:
         try:
             data = self._socket.recv(bufsiz)
             self._buffer += data
-        except TimeoutError:
+        except (OSError, TimeoutError):
             return False
         return True
 
