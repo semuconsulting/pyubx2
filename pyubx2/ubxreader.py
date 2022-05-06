@@ -17,12 +17,15 @@ Created on 2 Oct 2020
 :license: BSD 3-Clause
 """
 
+from socket import socket
 from pyrtcm import RTCMReader
-from pyrtcm.rtcmhelpers import calc_crc24q
+
+# from pyrtcm.rtcmhelpers import calc_crc24q
 import pyrtcm.exceptions as rte
 from pynmeagps import NMEAReader
 import pynmeagps.exceptions as nme
-from pyubx2 import UBXMessage
+from pyubx2.socket_stream import SocketStream
+from pyubx2.ubxmessage import UBXMessage
 from pyubx2.ubxhelpers import calc_checksum, val2bytes, bytes2val
 import pyubx2.ubxtypes_core as ubt
 import pyubx2.exceptions as ube
@@ -43,11 +46,16 @@ class UBXReader:
         :param int msgmode: (kwarg) 0=GET, 1=SET, 2=POLL (0)
         :param bool parsebitfield: (kwarg) 1 = parse bitfields, 0 = leave as bytes (1)
         :param bool scaling: (kwarg) 1 = apply scale factors, 0 = do not apply (1)
+        :param int bufsize: (kwarg) socket recv buffer size (1024)
         :raises: UBXStreamError (if mode is invalid)
 
         """
 
-        self._stream = datastream
+        bufsize = int(kwargs.get("bufsize", 4096))
+        if isinstance(datastream, socket):
+            self._stream = SocketStream(datastream, bufsize=bufsize)
+        else:
+            self._stream = datastream
         self._protfilter = int(
             kwargs.get("protfilter", ubt.NMEA_PROTOCOL | ubt.UBX_PROTOCOL)
         )
@@ -139,10 +147,9 @@ class UBXReader:
                 else:
                     if self._quitonerror == ubt.ERR_RAISE:
                         raise ube.UBXStreamError(f"Unknown protocol {bytehdr}.")
-                    elif self._quitonerror == ubt.ERR_LOG:
+                    if self._quitonerror == ubt.ERR_LOG:
                         return (bytehdr, f"<UNKNOWN PROTOCOL(header={bytehdr})>")
-                    else:  # ignore unknown protocol and continue
-                        continue
+                    continue
 
         except EOFError:
             return (None, None)
@@ -286,7 +293,7 @@ class UBXReader:
                 # on the quitonerror setting
                 if quitonerror == ubt.ERR_RAISE:
                     raise err
-                elif quitonerror == ubt.ERR_LOG:
+                if quitonerror == ubt.ERR_LOG:
                     # pass to error handler if there is one
                     if errorhandler is None:
                         print(err)
