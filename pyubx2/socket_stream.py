@@ -1,8 +1,8 @@
 """
-socket_wrapper class.
+socket_stream class.
 
-Wraps a socket object and provides stream-like read(bytes) and 
-readline() methods.
+A skeleton socket wrapper which provides basic stream-like
+read(bytes) and readline() methods.
 
 Created on 4 Apr 2022
 
@@ -14,35 +14,36 @@ Created on 4 Apr 2022
 from socket import socket
 
 
-class socket_wrapper:
+class SocketStream:
     """
-    socket wrapper class.
+    socket stream class.
     """
 
-    def __init__(self, socket: socket, *args, **kwargs):
+    def __init__(self, sock: socket, **kwargs):
         """
         Constructor.
 
-        :param socket socket: socket object
+        :param sock socket: socket object
+        :param int bufsize: (kwarg) internal buffer size (4096)
         """
 
-        self._socket = socket
+        self._socket = sock
+        self._bufsize = kwargs.get("bufsize", 4096)
         self._buffer = bytearray()
-        self.recv()  # populate initial buffer
+        self._recv()  # populate initial buffer
 
-    def recv(self, bufsiz: int = 4096) -> bool:
+    def _recv(self) -> bool:
         """
         Read bytes from socket into internal buffer.
 
-        :param int bufsize: buffer size (defaults to 4096)
         :return: return code (0 = failure, 1 = success)
         :rtype: bool
         """
 
         try:
-            data = self._socket.recv(bufsiz)
+            data = self._socket.recv(self._bufsize)
             self._buffer += data
-        except TimeoutError:
+        except (OSError, TimeoutError):
             return False
         return True
 
@@ -57,16 +58,6 @@ class socket_wrapper:
 
         return self._buffer
 
-    @buffer.setter
-    def buffer(self, buffer: bytearray):
-        """
-        Setter for buffer.
-
-        :param bytearray buffer: buffer
-        """
-
-        self._buffer = buffer
-
     def read(self, num: int) -> bytes:
         """
         Read specified number of bytes from buffer.
@@ -77,8 +68,9 @@ class socket_wrapper:
         :rtype: bytes
         """
 
-        if len(self._buffer) < num:
-            if not self.recv():
+        # if at end of internal buffer, top it up from socket
+        while len(self._buffer) < num:
+            if not self._recv():
                 return b""
         data = self._buffer[:num]
         self._buffer = self._buffer[num:]
@@ -91,7 +83,6 @@ class socket_wrapper:
 
         :return: bytes
         :rtype: bytes
-        :raises: EOFError
         """
 
         line = b""
