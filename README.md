@@ -48,6 +48,10 @@ Contributions welcome - please refer to [CONTRIBUTING.MD](https://github.com/sem
 
 [Bug reports](https://github.com/semuconsulting/pyubx2/blob/master/.github/ISSUE_TEMPLATE/bug_report.md) and [Feature requests](https://github.com/semuconsulting/pyubx2/blob/master/.github/ISSUE_TEMPLATE/feature_request.md) - please use the templates provided.
 
+### New in v1.2.9
+
+1. Ability to read from socket as well as serial or file datastream.
+
 ---
 ## <a name="installation">Installation</a>
 
