@@ -48,10 +48,6 @@ Contributions welcome - please refer to [CONTRIBUTING.MD](https://github.com/sem
 
 [Bug reports](https://github.com/semuconsulting/pyubx2/blob/master/.github/ISSUE_TEMPLATE/bug_report.md) and [Feature requests](https://github.com/semuconsulting/pyubx2/blob/master/.github/ISSUE_TEMPLATE/feature_request.md) - please use the templates provided.
 
-### New in v1.2.7
-
-1. `pyubx2` can now parse RTCM3 messages as well as UBX and NMEA.
-
 ---
 ## <a name="installation">Installation</a>
 
