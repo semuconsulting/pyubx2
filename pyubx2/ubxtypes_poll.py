@@ -143,6 +143,7 @@ UBX_PAYLOADS_POLL = {
     "NAV-NMI": {},
     "NAV-ODO": {},
     "NAV-ORB": {},
+    "NAV-PL": {},
     "NAV-POSECEF": {},
     "NAV-POSLLH": {},
     "NAV-PVT": {},

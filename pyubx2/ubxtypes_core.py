@@ -304,6 +304,7 @@ UBX_MSGIDS = {
     b"\x01\x28": "NAV-NMI",
     b"\x01\x09": "NAV-ODO",
     b"\x01\x34": "NAV-ORB",
+    b"\x01\x62": "NAV-PL",
     b"\x01\x01": "NAV-POSECEF",
     b"\x01\x02": "NAV-POSLLH",
     b"\x01\x17": "NAV-PVAT",
