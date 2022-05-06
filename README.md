@@ -48,9 +48,9 @@ Contributions welcome - please refer to [CONTRIBUTING.MD](https://github.com/sem
 
 [Bug reports](https://github.com/semuconsulting/pyubx2/blob/master/.github/ISSUE_TEMPLATE/bug_report.md) and [Feature requests](https://github.com/semuconsulting/pyubx2/blob/master/.github/ISSUE_TEMPLATE/feature_request.md) - please use the templates provided.
 
-### New in v1.2.7
+### New in v1.2.9
 
-1. `pyubx2` can now parse RTCM3 messages as well as UBX and NMEA.
+1. `pyubx2.UBXReader` can now read from TCP/UDP socket in addition to serial or file stream.
 
 ---
 ## <a name="installation">Installation</a>
@@ -105,7 +105,7 @@ class pyubx2.ubxreader.UBXReader(stream, *args, **kwargs)
 
 You can create a `UBXReader` object by calling the constructor with an active stream object. 
 The stream object can be any data stream which supports a `read(n) -> bytes` method (e.g. File or Serial, with 
-or without a buffer wrapper).
+or without a buffer wrapper). `pyubx2` implements an internal `SocketStream` class to allow sockets to be read in the same way as other streams (see example below).
 
 Individual input UBX, NMEA or RTCM3 messages can then be read using the `UBXReader.read()` function, which returns both the raw binary data (as bytes) and the parsed data (as a `UBXMessage`, `NMEAMessage` or `RTCMMessage` object, via the `parse()` method). The function is thread-safe in so far as the incoming data stream object is thread-safe. `UBXReader` also implements an iterator.
 
@@ -133,6 +133,17 @@ Example - File input (using iterator). This will only output UBX data:
 >>> stream = open('ubxdata.bin', 'rb')
 >>> ubr = UBXReader(stream, protfilter=2)
 >>> for (raw_data, parsed_data) in ubr: print(parsed_data)
+...
+```
+
+Example - Socket input (using enhanced iterator). This will output UBX, NMEA and RTCM3 data:
+```python
+>>> import socket
+>>> from pyubx2 import UBXReader
+>>> stream = socket.socket(socket.AF_INET, socket.SOCK_STREAM):
+>>> stream.connect(("localhost", 50007))
+>>> ubr = UBXReader(stream, protfilter=7)
+>>> for (raw_data, parsed_data) in ubr.iterate(): print(parsed_data)
 ...
 ```
 
@@ -364,6 +375,7 @@ The following command line examples can be found in the `\examples` folder:
 1. `ubxconfigdb.py` illustrates how to invoke the Generation 9 configuration database interface via CFG-VALSET, CF-VALDEL and CFG-VALGET messages.
 1. `ubxfactoryreset.py` illustrates how to send a factory reset (CFG-CFG) command.
 1. `ubxfile.py` illustrates how to implement a binary file reader for UBX messages using `UBXReader` iterator functionality. 
+1. `ubxsocket.py` illustrates how to implement a TCP Socket reader for UBX messages using `UBXReader` iterator functionality. Can be used in conjunction with the `tcpserver_threaded.py` socket server test harness.
 1. `gpxtracker.py` illustrates a simple tool to convert a binary UBX data dump to a `*.gpx` track file.
 1. `ubxserver.py` in the \examples\webserver folder illustrates a simple HTTP web server wrapper around `pyubx2.UBXreader`; it presents data from selected UBX messages as a web page http://localhost:8080 or a RESTful API http://localhost:8080/gps.
 1. `benchmark.py` provides a simple performance benchmarking tool for the `pyubx2` parser.
