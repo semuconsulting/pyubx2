@@ -1,6 +1,6 @@
 """
 Command line utility, installed with PyPi library pyubx2,
-to stream the parsed UBX and/or NMEA output of a GNSS device
+to stream the parsed UBX, NMEA or RTCM3 output of a GNSS device
 to the terminal or a designated protocol handler.
 
 Created on 15 Jan 2022
@@ -12,6 +12,7 @@ Created on 15 Jan 2022
 # pylint: disable=line-too-long
 
 import sys
+from socket import socket
 from serial import Serial
 from pyubx2 import (
     UBXReader,
@@ -78,6 +79,7 @@ class GNSSStreamer:
         :param object stream: (kwarg) stream object (must implement read(n) -> bytes method)
         :param str port: (kwarg) serial port name
         :param str filename: (kwarg) input file FQN
+        :param str socket: (kwarg) input socket host:port
         :param int baudrate: (kwarg) serial baud rate (9600)
         :param int timeout: (kwarg) serial timeout in seconds (3)
         :param int validate: (kwarg) 1 = validate checksums, 0 = do not validate (1)
@@ -100,10 +102,16 @@ class GNSSStreamer:
         self._reader = None
         self._datastream = kwargs.get("datastream", None)
         self._port = kwargs.get("port", None)
+        self._socket = kwargs.get("socket", None)
         self._filename = kwargs.get("filename", None)
-        if self._datastream is None and self._port is None and self._filename is None:
+        if (
+            self._datastream is None
+            and self._port is None
+            and self._socket is None
+            and self._filename is None
+        ):
             raise ParameterError(
-                f"Either stream, port or filename keyword argument must be provided.\n{GNSSDUMP_HELP}"
+                f"Either stream, port, socket or filename keyword argument must be provided.\nType gnssdump -h for help."
             )
 
         try:
@@ -151,15 +159,26 @@ class GNSSStreamer:
         self._limit = int(kwargs.get("limit", self._limit))
 
         # open the specified input stream
-        if self._datastream is not None:
+        if self._datastream is not None:  # generic stream
             with self._datastream as self._stream:
                 self._start_reader()
-        elif self._port is not None:
+        elif self._port is not None:  # serial
             with Serial(
                 self._port, self._baudrate, timeout=self._timeout
             ) as self._stream:
                 self._start_reader()
-        elif self._filename is not None:
+        elif self._socket is not None:  # socket
+            with socket() as self._stream:
+                sock = self._socket.split(":")
+                if len(sock) != 2:
+                    raise ParameterError(
+                        f"socket keyword must be in the format host:port.\nType gnssdump -h for help."
+                    )
+                host = sock[0]
+                port = int(sock[1])
+                self._stream.connect((host, port))
+                self._start_reader()
+        elif self._filename is not None:  # binary file
             with open(self._filename, "rb") as self._stream:
                 self._start_reader()
 
