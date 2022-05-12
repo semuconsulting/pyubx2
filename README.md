@@ -415,6 +415,7 @@ Any one of the following data stream specifiers must be provided:
 - `stream`: any instance of a stream class which implements a read(n) -> bytes method
 - `filename`: name of binary input file e.g. `logfile.bin`
 - `port`: serial port e.g. `COM3` or `/dev/ttyACM1`
+- `socket`: socket e.g. `192.168.0.72:50007` (port must be specified)
 
 For help and full list of optional arguments, type:
 
