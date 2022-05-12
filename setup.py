@@ -21,8 +21,8 @@ setuptools.setup(
     url="https://github.com/semuconsulting/pyubx2",
     packages=setuptools.find_packages(exclude=["tests", "examples", "docs"]),
     install_requires=[
-        "pynmeagps>=1.0.10",
-        "pyrtcm>=0.2.5",
+        "pynmeagps>=1.0.12",
+        "pyrtcm>=0.2.6",
         "pyserial>=3.4",
     ],
     entry_points={
