@@ -464,17 +464,19 @@ The `gnssdump` utility implements a new `GNSSStreamer` class which may be used d
 ---
 ## <a name="troubleshoot">Troubleshooting</a>
 
-#### `Unknown Protocol` errors.
+#### 1. `Unknown Protocol` errors.
 These are usually due to corruption of the serial data stream, either because the serial port configuration is incorrect (baud rate, parity, etc.) or because another process is attempting to use the same data stream. 
 - Check that your UBX receiver UART1 or UART2 ports are configured for the desired baud rate - remember the factory default is 38400 (*not* 9600).
 - Check that no other process is attempting to use the same serial port, including daemon processes like gpsd.
-#### `Serial Permission` errors. 
+#### 2. `Serial Permission` errors. 
 These are usually caused by inadequate user privileges or contention with another process. 
 - On Linux platforms, check that the user is a member of the `tty` and/or `dialout` groups.
 - Check that no other process is attempting to use the same serial port, including daemon processes like gpsd.
-#### `UnicodeDecode` errors.
+#### 3. `UnicodeDecode` errors.
 - If reading UBX data from a log file, check that the file.open() procedure is using the `rb` (read binary) setting e.g.
 `stream = open('ubxdatalog.log', 'rb')`.
+#### 4. Reading from NMEA log file returns no results.
+- If reading from a binary log file containing NMEA messages, ensure that the message terminator is `CRLF` (`\r\n`or `x0d0a`) rather than just `LF` (`\n` or `0x0a`). Some standard text editors may replace a `CRLF` with `LF` - use a dedicated hex editor instead.
 
 
 ---
