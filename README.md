@@ -476,7 +476,7 @@ These are usually caused by inadequate user privileges or contention with anothe
 - If reading UBX data from a log file, check that the file.open() procedure is using the `rb` (read binary) setting e.g.
 `stream = open('ubxdatalog.log', 'rb')`.
 #### 4. Reading from NMEA log file returns no results.
-- If reading from a binary log file containing NMEA messages, ensure that the message terminator is `CRLF` (`\r\n`or `x0d0a`) rather than just `LF` (`\n` or `0x0a`). Some standard text editors may replace a `CRLF` with `LF` - use a dedicated hex editor instead.
+- If reading from a binary log file containing NMEA messages, ensure that the message terminator is `CRLF` (`\r\n` or `x0d0a`) rather than just `LF` (`\n` or `0x0a`). Some standard text editors may replace a `CRLF` with `LF` - use a dedicated hex editor instead.
 
 
 ---

@@ -83,8 +83,8 @@ class SocketStream:
 
     def readline(self) -> bytes:
         """
-        Read bytes from buffer until CRLF reached.
-        NB: always check that return data terminator is CRLF.
+        Read bytes from buffer until LF reached.
+        NB: always check that return data terminator is LF.
 
         :return: bytes
         :rtype: bytes
@@ -95,7 +95,7 @@ class SocketStream:
             data = self.read(1)
             if len(data) == 1:
                 line += data
-                if line[-2:] == b"\x0d\x0a":  # CRLF
+                if line[-1:] == b"\n":  # LF
                     break
             else:
                 break
