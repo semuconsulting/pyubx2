@@ -1,6 +1,13 @@
 # pyubx2 Release Notes
 
-### RELEASE CANDIDATE 1.2.9
+### RELEASE 1.2.9
+
+ENHANCEMENTS:
+
+1. Add socket reading capability to `gnssdump` CLI utility.
+2. Enhance test coverage of socket reader functionality.
+
+### RELEASE 1.2.9
 
 ENHANCEMENTS:
 
