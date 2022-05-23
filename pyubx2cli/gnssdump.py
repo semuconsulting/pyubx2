@@ -1,7 +1,7 @@
 """
 Command line utility, installed with PyPi library pyubx2,
 to stream the parsed UBX, NMEA or RTCM3 output of a GNSS device
-to the terminal or a designated protocol handler.
+to the stdout or a designated protocol handler.
 
 Created on 15 Jan 2022
 
@@ -9,10 +9,12 @@ Created on 15 Jan 2022
 :copyright: SEMU Consulting © 2022
 :license: BSD 3-Clause
 """
-# pylint: disable=line-too-long
+# pylint: disable=line-too-long eval-used
 
 import sys
 from socket import socket
+from queue import Queue
+from io import TextIOWrapper, BufferedWriter
 from serial import Serial
 from pyubx2 import (
     UBXReader,
@@ -53,17 +55,26 @@ FORMAT_HEXTABLE = 8
 VERBOSITY_LOW = 0
 VERBOSITY_MEDIUM = 1
 VERBOSITY_HIGH = 2
+HANDLERMODE_RAW = 0
+HANDLERMODE_PARSED = 1
+HANDLERMODE_STRPARSED = 2
 
 
 class GNSSStreamer:
     """
     GNSS Streamer Class.
 
-    Streams and parses UBX and NMEA GNSS messages from any data stream (e.g. Serial or File) to the terminal
-    or to designated NMEA and/or UBX protocol handler(s).
+    Streams and parses UBX, NMEA or RTCM3 GNSS messages from any data stream (e.g. Serial, Socket or File)
+    to stdout (e.g. terminal) or to designated NMEA, UBX or RTCM protocol handler(s). The protocol
+    handler can either be a writeable output medium (Serial, File, socket or Queue) or an evaluable
+    expression. The 'handlermode' flag signifies whether to output raw, parsed or str(parsed) data to the
+    protocol handler.
 
-    Input stream is defined via keyword arguments. One of either stream, port or filename MUST be specified.
-    The remaining arguments are all optional with defaults.
+    Ensure the output media type is consistent with the handlermode e.g. don't try writing binary data to
+    a text file.
+
+    Input stream is defined via keyword arguments. One of either stream, socket, port or filename MUST be
+    specified. The remaining arguments are all optional with defaults.
     """
 
     # pylint: disable=too-many-instance-attributes
@@ -91,10 +102,11 @@ class GNSSStreamer:
         :param str msgfilter: (kwarg) comma-separated string of message identities e.g. 'NAV-PVT,GNGSA' (None)
         :param int limit: (kwarg) maximum number of messages to read (0 = unlimited)
         :param int verbosity: (kwarg) log message verbosity 0 = low, 1 = medium, 3 = high (1)
-        :param object errorhandler: (kwarg) evaluable expression defining external error handler (None)
-        :param object nmeahandler: (kwarg) evaluable expression defining external NMEA message handler (None)
-        :param object ubxhandler: (kwarg) evaluable expression defining external UBX message handler (None)
-        :param object rtcmhandler: (kwarg) evaluable expression defining external RTCM3 message handler (None)
+        :param int handlermode: (kwarg) protocol handler output mode 0 = raw, 1 = parsed, 2 = str(parsed)
+        :param object errorhandler: (kwarg) either writeable output medium or evaluable expression (None)
+        :param object nmeahandler: (kwarg) either writeable output medium or evaluable expression (None)
+        :param object ubxhandler: (kwarg) either writeable output medium or evaluable expression (None)
+        :param object rtcmhandler: (kwarg) either writeable output medium or evaluable expression (None)
         :raises: ParameterError
         """
         # pylint: disable=raise-missing-from
@@ -111,7 +123,7 @@ class GNSSStreamer:
             and self._filename is None
         ):
             raise ParameterError(
-                f"Either stream, port, socket or filename keyword argument must be provided.\nType gnssdump -h for help."
+                "Either stream, port, socket or filename keyword argument must be provided.\nType gnssdump -h for help.",
             )
 
         try:
@@ -134,16 +146,34 @@ class GNSSStreamer:
             self._msgcount = 0
             self._errcount = 0
 
-            # evaluate protocol handler expressions
-            # CAUTION assumes expressions are benign
+            # protocol handlers can either be writeable output media
+            # (Serial, File, socket or Queue) or an evaluable expression
+            # if an output medium, the 'handlermode' flag signifies
+            # whether to output raw or parsed data
+            # acceptable output media types:
+            htypes = (Serial, TextIOWrapper, BufferedWriter, Queue, socket)
+            self._handlermode = kwargs.get("handlermode", HANDLERMODE_RAW)
+
             erh = kwargs.get("errorhandler", None)
-            self._errorhandler = None if erh is None else eval(erh)
+            if isinstance(erh, htypes) or erh is None:
+                self._errorhandler = erh
+            else:
+                self._errorhandler = eval(erh)
             nmh = kwargs.get("nmeahandler", None)
-            self._nmeahandler = None if nmh is None else eval(nmh)
+            if isinstance(nmh, htypes) or nmh is None:
+                self._nmeahandler = nmh
+            else:
+                self._nmeahandler = eval(nmh)
             ubh = kwargs.get("ubxhandler", None)
-            self._ubxhandler = None if ubh is None else eval(ubh)
+            if isinstance(ubh, htypes) or ubh is None:
+                self._ubxhandler = ubh
+            else:
+                self._ubxhandler = eval(ubh)
             rth = kwargs.get("rtcmhandler", None)
-            self._rtcmhandler = None if rth is None else eval(rth)
+            if isinstance(rth, htypes) or rth is None:
+                self._rtcmhandler = rth
+            else:
+                self._rtcmhandler = eval(rth)
 
         except ValueError:
             raise ParameterError(f"Invalid parameter(s).\n{GNSSDUMP_HELP}")
@@ -172,7 +202,7 @@ class GNSSStreamer:
                 sock = self._socket.split(":")
                 if len(sock) != 2:
                     raise ParameterError(
-                        f"socket keyword must be in the format host:port.\nType gnssdump -h for help."
+                        "socket keyword must be in the format host:port.\nType gnssdump -h for help."
                     )
                 host = sock[0]
                 port = int(sock[1])
@@ -272,10 +302,16 @@ class GNSSStreamer:
 
         :param bytes raw: raw (binary) message
         :param object parsed: parsed message
-        :param object handler: protocol handler (NMEA or UBX)
+        :param object handler: Queue, socket or protocol handler (NMEA, UBX or RTCM3)
         """
 
-        if handler is None:
+        if self._handlermode == HANDLERMODE_PARSED:
+            output = parsed
+        elif self._handlermode == HANDLERMODE_STRPARSED:
+            output = str(parsed)
+        else:
+            output = raw
+        if handler is None:  # stdout
             if self._format & FORMAT_PARSED:
                 print(str(parsed))
             if self._format & FORMAT_BINARY:
@@ -284,8 +320,16 @@ class GNSSStreamer:
                 print(raw.hex())
             if self._format & FORMAT_HEXTABLE:
                 print(hextable(raw))
-        else:
-            handler(parsed)
+        # writeable output media...
+        elif isinstance(handler, (Serial, TextIOWrapper, BufferedWriter)):
+            handler.write(output)
+        elif isinstance(handler, Queue):
+            handler.put(output)
+        elif isinstance(handler, socket):
+            handler.wfile.write(output)
+            handler.wfile.flush()
+        else:  # evaluable expression
+            handler(output)
         self._msgcount += 1
 
     def _do_error(self, err: Exception):
@@ -302,6 +346,15 @@ class GNSSStreamer:
                 raise err
             if self._quitonerror == ERR_LOG:
                 print(err)
+        elif isinstance(self._errorhandler, (Serial, BufferedWriter)):
+            self._errorhandler.write(err)
+        elif isinstance(self._errorhandler, TextIOWrapper):
+            self._errorhandler.write(str(err))
+        elif isinstance(self._errorhandler, Queue):
+            self._errorhandler.put(err)
+        elif isinstance(self._errorhandler, socket):
+            self._errorhandler.wfile.write(err)
+            self._errorhandler.wfile.flush()
         else:
             self._errorhandler(err)
         self._errcount += 1
