@@ -52,12 +52,10 @@ FORMAT_PARSED = 1
 FORMAT_BINARY = 2
 FORMAT_HEX = 4
 FORMAT_HEXTABLE = 8
+FORMAT_PARSEDSTRING = 16
 VERBOSITY_LOW = 0
 VERBOSITY_MEDIUM = 1
 VERBOSITY_HIGH = 2
-HANDLERMODE_RAW = 0
-HANDLERMODE_PARSED = 1
-HANDLERMODE_STRPARSED = 2
 
 
 class GNSSStreamer:
@@ -67,10 +65,9 @@ class GNSSStreamer:
     Streams and parses UBX, NMEA or RTCM3 GNSS messages from any data stream (e.g. Serial, Socket or File)
     to stdout (e.g. terminal) or to designated NMEA, UBX or RTCM protocol handler(s). The protocol
     handler can either be a writeable output medium (Serial, File, socket or Queue) or an evaluable
-    expression. The 'handlermode' flag signifies whether to output raw, parsed or str(parsed) data to the
-    protocol handler.
+    expression.
 
-    Ensure the output media type is consistent with the handlermode e.g. don't try writing binary data to
+    Ensure the output media type is consistent with the format e.g. don't try writing binary data to
     a text file.
 
     Input stream is defined via keyword arguments. One of either stream, socket, port or filename MUST be
@@ -96,13 +93,12 @@ class GNSSStreamer:
         :param int validate: (kwarg) 1 = validate checksums, 0 = do not validate (1)
         :param int msgmode: (kwarg) 0 = GET, 1 = SET, 2 = POLL (0)
         :param int parsebitfield: (kwarg) 1 = parse UBX 'X' attributes as bitfields, 0 = leave as bytes (1)
-        :param int format: (kwarg) output format 1 = parsed, 2 = raw, 4 = hex, 8 = tabulated hex (1) (can be OR'd)
+        :param int format: (kwarg) output format 1 = parsed, 2 = raw, 4 = hex, 8 = tabulated hex, 16 = parsed as string (1) (can be OR'd)
         :param int quitonerror: (kwarg) 0 = ignore errors,  1 = log errors and continue, 2 = (re)raise errors (1)
         :param int protfilter: (kwarg) 1 = NMEA, 2 = UBX, 4 = RTCM3 (7 - ALL)
         :param str msgfilter: (kwarg) comma-separated string of message identities e.g. 'NAV-PVT,GNGSA' (None)
         :param int limit: (kwarg) maximum number of messages to read (0 = unlimited)
         :param int verbosity: (kwarg) log message verbosity 0 = low, 1 = medium, 3 = high (1)
-        :param int handlermode: (kwarg) protocol handler output mode 0 = raw, 1 = parsed, 2 = str(parsed)
         :param object errorhandler: (kwarg) either writeable output medium or evaluable expression (None)
         :param object nmeahandler: (kwarg) either writeable output medium or evaluable expression (None)
         :param object ubxhandler: (kwarg) either writeable output medium or evaluable expression (None)
@@ -148,11 +144,8 @@ class GNSSStreamer:
 
             # protocol handlers can either be writeable output media
             # (Serial, File, socket or Queue) or an evaluable expression
-            # if an output medium, the 'handlermode' flag signifies
-            # whether to output raw or parsed data
             # acceptable output media types:
             htypes = (Serial, TextIOWrapper, BufferedWriter, Queue, socket)
-            self._handlermode = kwargs.get("handlermode", HANDLERMODE_RAW)
 
             erh = kwargs.get("errorhandler", None)
             if isinstance(erh, htypes) or erh is None:
@@ -305,32 +298,43 @@ class GNSSStreamer:
         :param object handler: Queue, socket or protocol handler (NMEA, UBX or RTCM3)
         """
 
-        if self._handlermode == HANDLERMODE_PARSED:
-            output = parsed
-        elif self._handlermode == HANDLERMODE_STRPARSED:
-            output = str(parsed)
-        else:
-            output = raw
-        if handler is None:  # stdout
+        self._msgcount += 1
+
+        # stdout (can output multiple formats)
+        if handler is None:
             if self._format & FORMAT_PARSED:
-                print(str(parsed))
+                print(parsed)
             if self._format & FORMAT_BINARY:
                 print(raw)
             if self._format & FORMAT_HEX:
                 print(raw.hex())
             if self._format & FORMAT_HEXTABLE:
                 print(hextable(raw))
-        # writeable output media...
-        elif isinstance(handler, (Serial, TextIOWrapper, BufferedWriter)):
+            if self._format & FORMAT_PARSEDSTRING:
+                print(str(parsed))
+            return
+
+        # writeable output media (can output one format)
+        if self._format == FORMAT_PARSED:
+            output = parsed
+        elif self._format == FORMAT_PARSEDSTRING:
+            output = f"{parsed}\n"
+        elif self._format == FORMAT_HEX:
+            output = str(raw.hex())
+        elif self._format == FORMAT_HEXTABLE:
+            output = str(hextable(raw))
+        else:
+            output = raw
+        if isinstance(handler, (Serial, TextIOWrapper, BufferedWriter)):
             handler.write(output)
         elif isinstance(handler, Queue):
             handler.put(output)
         elif isinstance(handler, socket):
             handler.wfile.write(output)
             handler.wfile.flush()
-        else:  # evaluable expression
+        # treated as evaluable expression
+        else:
             handler(output)
-        self._msgcount += 1
 
     def _do_error(self, err: Exception):
         """
