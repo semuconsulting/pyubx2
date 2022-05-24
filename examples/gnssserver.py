@@ -52,6 +52,7 @@ Created on 24 May 2022
 # pylint: disable=too-many-arguments
 
 import sys
+from time import sleep
 from queue import Queue
 from threading import Thread
 from pyubx2cli import GNSSStreamer, FORMAT_BINARY
@@ -242,7 +243,7 @@ def main():
         goodtogo = server.run()
 
         while goodtogo:  # run until user presses CTRL-C
-            pass
+            sleep(1)
 
     except KeyboardInterrupt:
         server.stop()
