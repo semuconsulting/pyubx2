@@ -24,3 +24,4 @@ Pipfile*.*
 /.pytest_cache/
 pylint_report.txt
 venv
+output.*
