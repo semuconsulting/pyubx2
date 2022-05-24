@@ -5,7 +5,7 @@ This is a simple but fully-functional example of a TCP Socket
 Server or NTRIP Server which reads the binary data stream from
 a connected GNSS receiver and broadcasts the data to any
 TCP socket or NTRIP client running on a local or remote
-machine (assuming firewalls allow the hostip:port).
+machine (assuming firewalls allow the hostip:outport).
 
 Settings can be entered as optional command line arguments, e.g.
 > python3 gnssserver.py hostip=192.168.0.20 inport="/dev/tty.usbmodem14101" outport=6000
@@ -131,7 +131,7 @@ class GNSSServer:
         """
 
         if self._validargs:
-            print("Starting server, waiting for clients (type CTRL-C to stop)...")
+            print("Starting server (type CTRL-C to stop)...")
             self.start_input_thread(**self._kwargs)
             self.start_output_thread(**self._kwargs)
             return 1
@@ -151,7 +151,7 @@ class GNSSServer:
         Start input (read) thread.
         """
 
-        print("Starting input thread...")
+        print(f"Starting input thread, reading from {kwargs['port']}...")
         thread = Thread(
             target=self._input_thread,
             args=(kwargs,),
@@ -164,7 +164,9 @@ class GNSSServer:
         Start output (socket) thread.
         """
 
-        print("Starting output thread...")
+        print(
+            f"Starting output thread, broadcasting on {kwargs['hostip']}:{kwargs['outport']}..."
+        )
         thread = Thread(
             target=self._output_thread,
             args=(
