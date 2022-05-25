@@ -379,6 +379,7 @@ The following command line examples can be found in the `\examples` folder:
 1. `gpxtracker.py` illustrates a simple tool to convert a binary UBX data dump to a `*.gpx` track file.
 1. `ubxserver.py` in the \examples\webserver folder illustrates a simple HTTP web server wrapper around `pyubx2.UBXreader`; it presents data from selected UBX messages as a web page http://localhost:8080 or a RESTful API http://localhost:8080/gps.
 1. `benchmark.py` provides a simple performance benchmarking tool for the `pyubx2` parser.
+1. `gnssserver.py` implements a simple but fully-functional command-line TCP Socket Server or NTRIP server, broadcasting GNSS data from the receiver to any connected TCP socket client.
 
 ---
 ## <a name="extensibility">Extensibility</a>
@@ -407,7 +408,8 @@ However, there are a handful of message types which have multiple possible paylo
 ---
 ## <a name="cli">Command Line Utility</a>
 
-If `pyubx2` is installed using pip, a command line utility `gnssdump` is automatically installed into the Python 3 scripts (bin) directory. This utility is capable of streaming and parsing NMEA, UBX and RTCM3 data from any data stream (including Serial and File) to the terminal or to designated NMEA, UBX or RTCM3 protocol handlers.
+If `pyubx2` is installed using pip, a command line utility `gnssdump` is automatically installed into the Python 3 scripts (bin) directory. This utility is capable of streaming and parsing NMEA, UBX and RTCM3 data from any data stream (including Serial and File) to the terminal or to designated NMEA, UBX or RTCM3 protocol handlers. A protocol handler could be a 
+writeable output media (e.g. File or socket) or an evaluable Python expression.
 
 The utility can output data in a variety of formats; parsed (1), raw binary (2), hexadecimal string (4), tabulated hexadecimal (8) or any combination thereof.
 

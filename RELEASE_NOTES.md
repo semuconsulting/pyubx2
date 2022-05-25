@@ -1,5 +1,18 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.2.11
+
+ENHANCEMENTS:
+
+1. `GNSSStreamer` class at heart of `gnssdump` CLI utility enhanced to allow a variety
+of writeable output medium to be used as an external protocol handler for NMEA, UBX
+and/or RTCM protocols. Acceptable output media types include Serial, File (text or
+binary), socket or Queue. Essentially this means that `gnssdump` can write its output
+data to any of these media rather than to sys.stdout (terminal).
+2. New example `gnssserver.py` added to `/examples` folder. This utilises the enhanced
+`GNSSStreamer` class to implement a simple but fully-functional command-line TCP Socket
+Server or NTRIP Server.
+
 ### RELEASE 1.2.10
 
 ENHANCEMENTS:
