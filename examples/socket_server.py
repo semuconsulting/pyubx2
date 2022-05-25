@@ -33,11 +33,13 @@ from threading import Thread, Event
 from queue import Queue
 from base64 import b64encode
 from datetime import datetime, timezone
-from pygpsclient import version as PYGPSVERSION
+
+# from pygpsclient import version as PYGPSVERSION
 
 RTCM = b"rtcm"
 BUFSIZE = 1024
 PYGPSMP = "pygpsclient"
+PYGPSVERSION = "1.3.5"
 
 
 class SocketServer(ThreadingTCPServer):
