@@ -109,9 +109,8 @@ class GNSSServer:
             self._kwargs["outport"] = int(kwargs.get("outport", 50010))
             # 5 is an arbitrary limit; could be significantly higher
             self._kwargs["maxclients"] = int(kwargs.get("maxclients", 5))
-
+            self._kwargs["format"] = int(kwargs.get("format", FORMAT_BINARY))
             # required fixed arguments...
-            self._kwargs["format"] = FORMAT_BINARY
             msgqueue = Queue()
             self._kwargs["ubxhandler"] = msgqueue
             self._kwargs["nmeahandler"] = msgqueue
