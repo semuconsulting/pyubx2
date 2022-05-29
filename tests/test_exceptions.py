@@ -336,6 +336,20 @@ class ExceptionTest(unittest.TestCase):
         with self.assertRaisesRegex(UBXTypeError, EXPECTED_ERROR):
             bytes2val(b"\x01", "Z001")
 
+    def testWRONGMSGMODE(self):  # test parse of SET message with GET msgmode
+        EXPECTED_ERROR = (
+            "Unknown message type clsid (.*), msgid (.*), mode GET\n"
+            + "Check 'msgmode' keyword argument is appropriate for message category"
+        )
+        res = UBXMessage(
+            "CFG",
+            "CFG-VALSET",
+            SET,
+            payload=b"\x00\x03\x00\x00\x01\x00\x52\x40\x80\x25\x00\x00",
+        )
+        with self.assertRaisesRegex(UBXParseError, EXPECTED_ERROR):
+            msg = UBXReader.parse(res.serialize())
+
 
 #     # can only be tested by temporarily removing a valid message definition
 #     def testIdentity(self):  # test for invalid message identity
