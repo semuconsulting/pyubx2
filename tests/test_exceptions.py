@@ -351,7 +351,7 @@ class ExceptionTest(unittest.TestCase):
         with self.assertRaisesRegex(UBXParseError, EXPECTED_ERROR):
             msg = UBXReader.parse(res.serialize())
         msg = UBXReader.parse(res.serialize(), msgmode=SET)
-        self.assertEquals(str(msg), EXPECTED_RESULT)
+        self.assertEqual(str(msg), EXPECTED_RESULT)
 
 
 #     # can only be tested by temporarily removing a valid message definition
