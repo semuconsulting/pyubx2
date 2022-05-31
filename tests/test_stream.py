@@ -1,7 +1,7 @@
 """
-Stream method tests using actual receiver binary outputs for pyubx2.UBXReader 
+Stream method tests using actual receiver binary outputs for pyubx2.UBXReader
 
-Created on 3 Oct 2020 
+Created on 3 Oct 2020
 
 *** NB: must be saved in UTF-8 format ***
 
@@ -109,6 +109,7 @@ class StreamTest(unittest.TestCase):
             "<UBX(NAV-EELL, iTOW=11:34:59, version=0, reserved0=0, errEllipseOrient=160.23, errEllipseMajor=3162, errEllipseMinor=1933)>",
             "<UBX(NAV-GEOFENCE, iTOW=11:34:59, version=0, status=0, numFences=0, combState=0)>",
             "<UBX(NAV-EOE, iTOW=11:34:59)>",
+            "<UBX(NAV-TIMENAVIC, iTOW=19:09:01, NavICTow=241759, fNavICTow=97081, NavICWno=1188, leapS=18, NavICTowValid=1, NavICWnoValid=1, leapSValid=1, tAcc=3337)>"
         )
 
         i = 0

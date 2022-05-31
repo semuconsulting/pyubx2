@@ -2789,6 +2789,22 @@ UBX_PAYLOADS_GET = {
             },
         ),
     },
+    "NAV-TIMENAVIC": {
+        "iTOW": U4,
+        "NavICTow": U4,
+        "fNavICTow": I4,
+        "NavICWno": I2,
+        "leapS": I1,
+        "valid": (
+            X1,
+            {
+                "NavICTowValid": U1,
+                "NavICWnoValid": U1,
+                "leapSValid": U1,
+            },
+        ),
+        "tAcc": U4,
+    },
     "NAV-TIMEQZSS": {
         "iTOW": U4,
         "qzssTow": U4,
@@ -3264,6 +3280,22 @@ UBX_PAYLOADS_GET = {
                 "validTimeToLsEvent": U1,
             },
         ),
+    },
+    "NAV2-TIMENAVIC": {
+        "iTOW": U4,
+        "NavICTow": U4,
+        "fNavICTow": I4,
+        "NavICWno": I2,
+        "leapS": I1,
+        "valid": (
+            X1,
+            {
+                "NavICTowValid": U1,
+                "NavICWnoValid": U1,
+                "leapSValid": U1,
+            },
+        ),
+        "tAcc": U4,
     },
     "NAV2-TIMEUTC": {
         "iTOW": U4,
