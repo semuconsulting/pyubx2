@@ -387,5 +387,6 @@ class UBXReader:
         except KeyError as err:
             modestr = ["GET", "SET", "POLL"][msgmode]
             raise ube.UBXParseError(
-                (f"Unknown message type clsid {clsid}, msgid {msgid}, mode {modestr}")
+                f"Unknown message type clsid {clsid}, msgid {msgid}, mode {modestr}\n"
+                + "Check 'msgmode' keyword argument is appropriate for message category"
             ) from err

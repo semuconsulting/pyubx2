@@ -495,35 +495,50 @@ class UBXMessage:
 
         """
 
-        if self._mode == ubt.POLL:
-            pdict = ubp.UBX_PAYLOADS_POLL[self.identity]
-        elif self._mode == ubt.SET:
-            if self._ubxClass == b"\x13" and self._ubxID != b"\x80":  # MGA SET
-                pdict = self._get_mga_version(ubt.SET, **kwargs)
-            elif self._ubxClass == b"\x02" and self._ubxID == b"\x41":  # RXM-PMREQ SET
-                pdict = self._get_rxmpmreq_version(**kwargs)
-            elif self._ubxClass == b"\x0d" and self._ubxID == b"\x15":  # TIM-VCOCAL SET
-                pdict = self._get_timvcocal_version(**kwargs)
-            elif self._ubxClass == b"\x06" and self._ubxID == b"\x06":  # CFG-DAT SET
-                pdict = self._get_cfgdat_version(**kwargs)
-            else:
-                pdict = ubs.UBX_PAYLOADS_SET[self.identity]
-        else:  # GET message
-            if self._ubxClass == b"\x13" and self._ubxID != b"\x80":  # MGA GET
-                pdict = self._get_mga_version(ubt.GET, **kwargs)
-            elif self._ubxClass == b"\x02" and self._ubxID == b"\x72":  # RXM-PMP
-                pdict = self._get_rxmpmp_version(**kwargs)
-            elif self._ubxClass == b"\x02" and self._ubxID == b"\x59":  # RXM-RLM
-                pdict = self._get_rxmrlm_version(**kwargs)
-            elif self._ubxClass == b"\x06" and self._ubxID == b"\x17":  # CFG-NMEA
-                pdict = self._get_cfgnmea_version(**kwargs)
-            elif self._ubxClass == b"\x01" and self._ubxID == b"\x60":  # NAV-AOPSTATUS
-                pdict = self._get_aopstatus_version(**kwargs)
-            elif self._ubxClass == b"\x01" and self._ubxID == b"\x3C":  # NAV-RELPOSNED
-                pdict = self._get_relposned_version(**kwargs)
-            else:
-                pdict = ubg.UBX_PAYLOADS_GET[self.identity]
-        return pdict
+        try:
+            if self._mode == ubt.POLL:
+                pdict = ubp.UBX_PAYLOADS_POLL[self.identity]
+            elif self._mode == ubt.SET:
+                if self._ubxClass == b"\x13" and self._ubxID != b"\x80":  # MGA SET
+                    pdict = self._get_mga_version(ubt.SET, **kwargs)
+                elif (
+                    self._ubxClass == b"\x02" and self._ubxID == b"\x41"
+                ):  # RXM-PMREQ SET
+                    pdict = self._get_rxmpmreq_version(**kwargs)
+                elif (
+                    self._ubxClass == b"\x0d" and self._ubxID == b"\x15"
+                ):  # TIM-VCOCAL SET
+                    pdict = self._get_timvcocal_version(**kwargs)
+                elif (
+                    self._ubxClass == b"\x06" and self._ubxID == b"\x06"
+                ):  # CFG-DAT SET
+                    pdict = self._get_cfgdat_version(**kwargs)
+                else:
+                    pdict = ubs.UBX_PAYLOADS_SET[self.identity]
+            else:  # GET message
+                if self._ubxClass == b"\x13" and self._ubxID != b"\x80":  # MGA GET
+                    pdict = self._get_mga_version(ubt.GET, **kwargs)
+                elif self._ubxClass == b"\x02" and self._ubxID == b"\x72":  # RXM-PMP
+                    pdict = self._get_rxmpmp_version(**kwargs)
+                elif self._ubxClass == b"\x02" and self._ubxID == b"\x59":  # RXM-RLM
+                    pdict = self._get_rxmrlm_version(**kwargs)
+                elif self._ubxClass == b"\x06" and self._ubxID == b"\x17":  # CFG-NMEA
+                    pdict = self._get_cfgnmea_version(**kwargs)
+                elif (
+                    self._ubxClass == b"\x01" and self._ubxID == b"\x60"
+                ):  # NAV-AOPSTATUS
+                    pdict = self._get_aopstatus_version(**kwargs)
+                elif (
+                    self._ubxClass == b"\x01" and self._ubxID == b"\x3C"
+                ):  # NAV-RELPOSNED
+                    pdict = self._get_relposned_version(**kwargs)
+                else:
+                    pdict = ubg.UBX_PAYLOADS_GET[self.identity]
+            return pdict
+        except KeyError as err:
+            raise KeyError(
+                f"{err} - Check 'msgmode' keyword argument is appropriate for message category"
+            )
 
     def _get_mga_version(self, mode: int, **kwargs) -> dict:
         """
