@@ -579,7 +579,6 @@ class UBXMessage:
         :raises: UBXMessageError
 
         """
-        # pylint: disable=no-self-use
 
         lpd = 0
         if "version" in kwargs:  # assume longer version
@@ -607,7 +606,6 @@ class UBXMessage:
         :raises: UBXMessageError
 
         """
-        # pylint: disable=no-self-use
 
         if "version" in kwargs:
             ver = val2bytes(kwargs["version"], ubt.U1)
@@ -634,7 +632,6 @@ class UBXMessage:
         :raises: UBXMessageError
 
         """
-        # pylint: disable=no-self-use
 
         if "type" in kwargs:
             typ = val2bytes(kwargs["type"], ubt.U1)
@@ -661,7 +658,6 @@ class UBXMessage:
         :raises: UBXMessageError
 
         """
-        # pylint: disable=no-self-use
 
         if "payload" in kwargs:
             lpd = len(kwargs["payload"])
@@ -688,7 +684,6 @@ class UBXMessage:
         :raises: UBXMessageError
 
         """
-        # pylint: disable=no-self-use
 
         if "payload" in kwargs:
             lpd = len(kwargs["payload"])
@@ -713,7 +708,6 @@ class UBXMessage:
         :raises: UBXMessageError
 
         """
-        # pylint: disable=no-self-use
 
         if "version" in kwargs:
             ver = val2bytes(kwargs["version"], ubt.U1)
@@ -740,7 +734,6 @@ class UBXMessage:
         :raises: UBXMessageError
 
         """
-        # pylint: disable=no-self-use
 
         lpd = 1
         typ = 0
@@ -768,7 +761,6 @@ class UBXMessage:
         :rtype: dict
 
         """
-        # pylint: disable=no-self-use
 
         lpd = 0
         if "payload" in kwargs:
@@ -797,7 +789,6 @@ class UBXMessage:
         :rtype: int
 
         """
-        # pylint: disable=no-self-use
 
         lenpayload = len(payload) - offset - offsetend
         lengroup = 0
