@@ -185,7 +185,7 @@ UBX_PAYLOADS_POLL = {
     "NAV2-TIMEGLO": {},
     "NAV2-TIMEGPS": {},
     "NAV2-TIMELS": {},
-    "NAV-TIMENAVIC": {},
+    "NAV2-TIMENAVIC": {},
     "NAV2-TIMEUTC": {},
     "NAV2-VELECEF": {},
     "NAV2-VELNED": {},
