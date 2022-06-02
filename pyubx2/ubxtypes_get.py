@@ -2982,6 +2982,38 @@ UBX_PAYLOADS_GET = {
             },
         ),
     },
+    "RXM-MEAS20": {
+        "group": (
+            "None",
+            {
+                "payload": U1,
+            },
+        )
+    },
+    "RXM-MEAS50": {
+        "group": (
+            "None",
+            {
+                "payload": U1,
+            },
+        )
+    },
+    "RXM-MEASC12": {
+        "group": (
+            "None",
+            {
+                "payload": U1,
+            },
+        )
+    },
+    "RXM-MEASD12": {
+        "group": (
+            "None",
+            {
+                "payload": U1,
+            },
+        )
+    },
     "RXM-MEASX": {
         "version": U1,
         "reserved0": U3,

@@ -363,6 +363,10 @@ UBX_MSGIDS = {
     b"\x02\x34": "RXM-COR",
     b"\x02\x31": "RXM-EPH",  # obsolete, use AID-EPH or MGA-*-EPH
     b"\x02\x61": "RXM-IMES",
+    b"\x02\x84": "RXM-MEAS20",
+    b"\x02\x86": "RXM-MEAS50",
+    b"\x02\x82": "RXM-MEASC12",
+    b"\x02\x80": "RXM-MEASD12",
     b"\x02\x14": "RXM-MEASX",
     b"\x02\x72": "RXM-PMP",  # 2 versions
     b"\x02\x41": "RXM-PMREQ",  # 2 versions

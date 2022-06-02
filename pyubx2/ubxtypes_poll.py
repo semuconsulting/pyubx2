@@ -105,6 +105,7 @@ UBX_PAYLOADS_POLL = {
     },
     # *************************************************
     "ESF-ALG": {},
+    "ESF-CAL": {},
     "ESF-INS": {},
     "ESF-STATUS": {},
     # *************************************************
@@ -194,6 +195,10 @@ UBX_PAYLOADS_POLL = {
     "RXM-COR": {},
     "RXM-EPH": {},
     "RXM-IMES": {},
+    "RXM-MEAS20": {},
+    "RXM-MEAS50": {},
+    "RXM-MEASC12": {},
+    "RXM-MEASD12": {},
     "RXM-MEASX": {},
     "RXM-POSREQ": {},
     "RXM-RAW": {},
