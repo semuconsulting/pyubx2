@@ -1,5 +1,12 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.2.13
+
+ENHANCEMENTS:
+
+1. Message definitions added: `ESF-CAL`, `RXM-MEAS20`, `RXM-MEAS50`, `RXM-MEASC12`, `RXM-MEASD12`.
+2. 43 new configuration database keys added.
+
 ### RELEASE 1.2.12
 
 ENHANCEMENTS:
