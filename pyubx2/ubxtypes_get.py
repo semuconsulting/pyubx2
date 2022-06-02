@@ -1136,6 +1136,24 @@ UBX_PAYLOADS_GET = {
         "pitch": [I2, SCAL2],
         "roll": [I2, SCAL2],
     },
+    "ESF-CAL": {
+        "sTtag": U4,
+        "version": U1,
+        "reserved0": U3,
+        "reserved1": U4,
+        "group": (  # variable by size repeating group
+            "None",
+            {
+                "data": (
+                    X4,
+                    {
+                        "dataField": X24,  # U24 in spec but should be X24
+                        "dataType": U6,
+                    },
+                ),
+            },
+        ),
+    },
     "ESF-INS": {
         "bitfield0": (
             X4,
