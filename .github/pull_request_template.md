@@ -10,7 +10,7 @@ Fixes # (issue)
 
 Please test all changes, however trivial, against the supplied unittest suite `tests/test_*.py` e.g. by executing the `tests/testsuite.py` module or using your IDE's native Python unittest integration facilities. Please describe any test cases you have amended or added to this suite to maintain >= 99% code coverage.
 
-If you're adding new UBX message definitions for generation 9+ devices, please check for any corresponding configuration database updates (`ubxtypes_configdb.py`).
+If you're adding new UBX message definitions for Generation 9+ devices, please check for any corresponding configuration database updates (`ubxtypes_configdb.py`).
 
 - [ ] Test A
 - [ ] Test B
