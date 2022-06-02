@@ -1,5 +1,16 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.2.12
+
+ENHANCEMENTS:
+
+1. `NAV-TIMENAVIC` and `NAV2-TIMENAVIC` message definitions and corresponding configuration database keyes (from ZED-F9T) added - thanks to @alinsavix for contribution.
+
+CHANGES:
+
+1. Internal de-duplication of code in `ubxtypes_get.py` between NAV and NAV2 message definitions.
+2. Add setup classifier for Python 3.11.
+
 ### RELEASE 1.2.11
 
 ENHANCEMENTS:
