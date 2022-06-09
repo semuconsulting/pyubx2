@@ -364,7 +364,6 @@ class ClientHandler(StreamRequestHandler):
         :return: HTTP NTRIP header
         :rtype: str
         """
-        # pylint: disable=no-self-use
 
         codes = {200: "OK", 401: "Unauthorized", 403: "Forbidden", 404: "Not Found"}
 
