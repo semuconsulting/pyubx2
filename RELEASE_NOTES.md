@@ -5,7 +5,7 @@
 ENHANCEMENTS:
 
 1. Message definitions added: `ESF-CAL`, `RXM-MEAS20`, `RXM-MEAS50`, `RXM-MEASC12`, `RXM-MEASD12`.
-2. 43 new configuration database keys added.
+2. 43 new configuration database keys added, covering outstanding keys from LEA-F9T, MAX-M10S, NEO-D9C, NEO-D9S, NEO-M10S, NEO-M9L, NEO-M9N, NEO-M9V, ZED-F9-LAP, ZED-F9, ZED-F9H, ZED-F9K, ZED-F9P and ZED-F9R. To the best of my knowledge this encompasses all available 9th and 10th generation u-blox GNSS devices as at June 2022.
 
 ### RELEASE 1.2.12
 
