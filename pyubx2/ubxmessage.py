@@ -151,7 +151,7 @@ class UBXMessage:
             att, tuple
         ):  # repeating group of attributes or subdefined bitfield
             numr, _ = att
-            if numr in (ubt.X1, ubt.X2, ubt.X4, ubt.X6, ubt.X8):  # bitfield
+            if numr in (ubt.X1, ubt.X2, ubt.X4, ubt.X6, ubt.X8, ubt.X24):  # bitfield
                 if self._parsebf:  # if we're parsing bitfields
                     (offset, index) = self._set_attribute_bitfield(
                         att, offset, index, **kwargs
@@ -202,6 +202,14 @@ class UBXMessage:
                 rng = self._calc_num_repeats(attd, self._payload, offset, 0)
             else:  # number of repeats is defined in named attribute
                 rng = getattr(self, numr)
+                # special handling for ESF-MEAS message types
+                if (
+                    self._ubxClass == b"\x10"
+                    and self._ubxID == b"\x02"
+                    and self._mode == ubt.SET
+                ):
+                    if getattr(self, "calibTtagValid", 0):
+                        rng += 1
             # recursively process each group attribute,
             # incrementing the payload offset and index as we go
             for i in range(rng):
