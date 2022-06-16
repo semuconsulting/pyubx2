@@ -1,5 +1,17 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.2.14
+
+ENHANCEMENTS:
+
+1. Added message definitions for NAV2-SLAS, NAV2-SVIN and NAV2-TIMEQZSS.
+2. Modify handling of ESF-MEAS SET messages to use appropriate data group dimension based on values of `calibTtagValid` and `numMeas` bitfields. If `calibTtagValid` is True, `numMeas` is automatically incremented by 1 to cater for the additional appended calibration dataField (`dataType` = 0). See test cases `testESFMEASSET0` and `testESFMEASSET1` in [`/tests/set_specialcases.py`](https://github.com/semuconsulting/pyubx2/blob/master/tests/test_specialcases.py) for illustrations of how this works.
+
+FIXES:
+
+1. Minor amendment to correctly parse X24 bitfields as bytes (applies to ESF-CAL and ESF-MEAS messages).
+
+
 ### RELEASE 1.2.13
 
 ENHANCEMENTS:
