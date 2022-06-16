@@ -339,7 +339,7 @@ UBX_PAYLOADS_SET = {
         ),
         "id": U2,
         "group": (
-            "None",
+            "numMeas",
             {  # repeating group * numMeas
                 "data": (
                     X4,

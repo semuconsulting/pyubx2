@@ -320,6 +320,42 @@ class SpecialTest(unittest.TestCase):
             "<UBX(CFG-VALGET, version=0, layer=2, position=0, keys_01=1079115777, keys_02=1079181313)>",
         )
 
+    def testESFMEASSET0(self):  # test generation fo ESF-MEAS with calibTtagValid=0
+        EXPECTED_RESULT = "<UBX(ESF-MEAS, timeTag=12345000, timeMarkSent=0, timeMarkEdge=0, calibTtagValid=0, numMeas=1, id=0, dataField_01=188, dataType_01=11)>"
+        msg = UBXMessage(
+            "ESF",
+            "ESF-MEAS",
+            SET,
+            timeTag=12345000,
+            timeMarkSent=0,
+            timeMarkEdge=0,
+            calibTtagValid=0,
+            numMeas=1,
+            dataField_01=188,
+            dataType_01=11,
+        )
+        self.assertEqual(str(msg), EXPECTED_RESULT)
+
+    def testESFMEASSET1(self):  # test generation fo ESF-MEAS with calibTtagValid=1
+        EXPECTED_RESULT = "<UBX(ESF-MEAS, timeTag=12345000, timeMarkSent=0, timeMarkEdge=0, calibTtagValid=1, numMeas=2, id=0, dataField_01=223, dataType_01=9, dataField_02=118, dataType_02=11, dataField_03=12345000, dataType_03=0)>"
+        msg = UBXMessage(
+            "ESF",
+            "ESF-MEAS",
+            SET,
+            timeTag=12345000,
+            timeMarkSent=0,
+            timeMarkEdge=0,
+            calibTtagValid=1,
+            numMeas=2,
+            dataField_01=223,
+            dataType_01=9,
+            dataField_02=118,
+            dataType_02=11,
+            dataField_03=12345000,
+            dataType_03=0,
+        )
+        self.assertEqual(str(msg), EXPECTED_RESULT)
+
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
