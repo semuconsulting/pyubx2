@@ -25,11 +25,6 @@ setuptools.setup(
         "pyrtcm>=0.2.6",
         "pyserial>=3.4",
     ],
-    entry_points={
-        "console_scripts": [
-            "gnssdump = pyubx2cli.gnssdump:main",
-        ]
-    },
     license="BSD 3-Clause 'Modified' License",
     keywords="pyubx2 GNSS GPS GLONASS UBX NMEA GIS u-blox",
     platforms="Windows, MacOS, Linux",
