@@ -71,7 +71,7 @@ class SocketTest(unittest.TestCase):
             "<UBX(ESF-MEAS, timeTag=514157, timeMarkSent=0, timeMarkEdge=0, calibTtagValid=1, numMeas=4, id=0, dataField_01=1741, dataType_01=14, dataField_02=16776932, dataType_02=13, dataField_03=16775683, dataType_03=5, dataField_04=2825, dataType_04=12, dataField_05=514157, dataType_05=0)>",
             "<UBX(ESF-MEAS, timeTag=514162, timeMarkSent=0, timeMarkEdge=0, calibTtagValid=1, numMeas=3, id=0, dataField_01=16776523, dataType_01=16, dataField_02=576, dataType_02=17, dataField_03=10275, dataType_03=18, dataField_04=514162, dataType_04=0)>",
             "<NMEA(GNDTM, datum=W84, subDatum=, latOfset=0.0, NS=N, lonOfset=0.0, EW=E, alt=0.0, refDatum=W84)>",
-            "<NMEA(GNRMC, time=10:36:07, status=A, lat=53.450657, NS=N, lon=-102.24041033, EW=W, spd=0.046, cog=, date=2021-03-06, mv=, mvEW=, posMode=A, navStatus=V)>",
+            "<NMEA(GNRMC, time=10:36:07, status=A, lat=53.450657, NS=N, lon=-102.2404103333, EW=W, spd=0.046, cog=, date=2021-03-06, mv=, mvEW=, posMode=A, navStatus=V)>",
             "<NMEA(GPRTE, numMsg=2, msgNum=1, status=c, active=0, wpt_01=PBRCPK, wpt_02=PBRTO, wpt_03=PTELGR, wpt_04=PPLAND, wpt_05=PYAMBU, wpt_06=PPFAIR, wpt_07=PWARRN, wpt_08=PMORTL, wpt_09=PLISMR)>",
             "<RTCM(1005, DF002=1005, DF003=2003, DF021=0, DF022=1, DF023=0, DF024=0, DF141=0, DF025=1114104.5999, DF142=0, DF001_1=0, DF026=-4850729.7108, DF364=0, DF027=3975521.4643)>",
             "<RTCM(1005, DF002=1005, DF003=0, DF021=0, DF022=1, DF023=1, DF024=1, DF141=0, DF025=4444030.8028, DF142=1, DF001_1=0, DF026=3085671.2349, DF364=0, DF027=3366658.256)>",

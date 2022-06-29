@@ -109,7 +109,7 @@ class StreamTest(unittest.TestCase):
             "<UBX(NAV-EELL, iTOW=11:34:59, version=0, reserved0=0, errEllipseOrient=160.23, errEllipseMajor=3162, errEllipseMinor=1933)>",
             "<UBX(NAV-GEOFENCE, iTOW=11:34:59, version=0, status=0, numFences=0, combState=0)>",
             "<UBX(NAV-EOE, iTOW=11:34:59)>",
-            "<UBX(NAV-TIMENAVIC, iTOW=19:09:01, NavICTow=241759, fNavICTow=97081, NavICWno=1188, leapS=18, NavICTowValid=1, NavICWnoValid=1, leapSValid=1, tAcc=3337)>"
+            "<UBX(NAV-TIMENAVIC, iTOW=19:09:01, NavICTow=241759, fNavICTow=97081, NavICWno=1188, leapS=18, NavICTowValid=1, NavICWnoValid=1, leapSValid=1, tAcc=3337)>",
         )
 
         i = 0
@@ -322,10 +322,10 @@ class StreamTest(unittest.TestCase):
         stream = open(os.path.join(dirname, "pygpsdata-MIXED3.log"), "rb")
         EXPECTED_RESULTS = (
             "<UBX(NAV-PVT, iTOW=08:02:47, year=2022, month=1, day=18, hour=8, min=2, second=47, validDate=1, validTime=1, fullyResolved=1, validMag=0, tAcc=37, nano=-175377, fixType=3, gnssFixOk=1, difSoln=0, psmState=0, headVehValid=0, carrSoln=0, confirmedAvai=1, confirmedDate=1, confirmedTime=1, numSV=7, lon=-2.2402308, lat=53.4507167, height=85162, hMSL=36678, hAcc=8927, vAcc=7261, velN=-109, velE=-4, velD=7, gSpeed=109, headMot=0.0, sAcc=872, headAcc=103.82556, pDOP=2.44, invalidLlh=0, lastCorrectionAge=0, reserved0=793711598, headVeh=0.0, magDec=0.0, magAcc=0.0)>",
-            "<NMEA(GPGGA, time=08:02:47, lat=53.45071667, NS=N, lon=-2.24023083, EW=W, quality=1, numSV=7, HDOP=1.63, alt=36.7, altUnit=M, sep=48.5, sepUnit=M, diffAge=, diffStation=)>",
+            "<NMEA(GPGGA, time=08:02:47, lat=53.4507166667, NS=N, lon=-2.2402308333, EW=W, quality=1, numSV=7, HDOP=1.63, alt=36.7, altUnit=M, sep=48.5, sepUnit=M, diffAge=, diffStation=)>",
             "<NMEA(GPGSA, opMode=A, navMode=3, svid_01=2, svid_02=13, svid_03=20, svid_04=7, svid_05=5, svid_06=30, svid_07=9, svid_08=, svid_09=, svid_10=, svid_11=, svid_12=, PDOP=2.44, HDOP=1.63, VDOP=1.82)>",
             "<UBX(NAV-PVT, iTOW=08:02:48, year=2022, month=1, day=18, hour=8, min=2, second=48, validDate=1, validTime=1, fullyResolved=1, validMag=0, tAcc=37, nano=-175363, fixType=3, gnssFixOk=1, difSoln=0, psmState=0, headVehValid=0, carrSoln=0, confirmedAvai=1, confirmedDate=1, confirmedTime=1, numSV=7, lon=-2.2402314, lat=53.4507186, height=85266, hMSL=36782, hAcc=8931, vAcc=7312, velN=72, velE=-12, velD=10, gSpeed=73, headMot=0.0, sAcc=861, headAcc=103.86284, pDOP=2.44, invalidLlh=0, lastCorrectionAge=0, reserved0=793711598, headVeh=0.0, magDec=0.0, magAcc=0.0)>",
-            "<NMEA(GPGGA, time=08:02:48, lat=53.45071867, NS=N, lon=-2.2402315, EW=W, quality=1, numSV=7, HDOP=1.63, alt=36.8, altUnit=M, sep=48.5, sepUnit=M, diffAge=, diffStation=)>",
+            "<NMEA(GPGGA, time=08:02:48, lat=53.4507186667, NS=N, lon=-2.2402315, EW=W, quality=1, numSV=7, HDOP=1.63, alt=36.8, altUnit=M, sep=48.5, sepUnit=M, diffAge=, diffStation=)>",
             "<NMEA(GPGSA, opMode=A, navMode=3, svid_01=2, svid_02=13, svid_03=20, svid_04=7, svid_05=5, svid_06=30, svid_07=9, svid_08=, svid_09=, svid_10=, svid_11=, svid_12=, PDOP=2.44, HDOP=1.63, VDOP=1.82)>",
             "<UBX(NAV-PVT, iTOW=08:02:49, year=2022, month=1, day=18, hour=8, min=2, second=49, validDate=1, validTime=1, fullyResolved=1, validMag=0, tAcc=38, nano=-175349, fixType=3, gnssFixOk=1, difSoln=0, psmState=0, headVehValid=0, carrSoln=0, confirmedAvai=1, confirmedDate=1, confirmedTime=1, numSV=7, lon=-2.2402319, lat=53.4507207, height=85325, hMSL=36841, hAcc=8930, vAcc=7363, velN=110, velE=-25, velD=1, gSpeed=113, headMot=0.0, sAcc=855, headAcc=103.8999, pDOP=2.44, invalidLlh=0, lastCorrectionAge=0, reserved0=793711598, headVeh=0.0, magDec=0.0, magAcc=0.0)>",
         )
@@ -361,9 +361,9 @@ class StreamTest(unittest.TestCase):
         dirname = os.path.dirname(__file__)
         stream = open(os.path.join(dirname, "pygpsdata-MIXED3.log"), "rb")
         EXPECTED_RESULTS = (
-            "<NMEA(GPGGA, time=08:02:47, lat=53.45071667, NS=N, lon=-2.24023083, EW=W, quality=1, numSV=7, HDOP=1.63, alt=36.7, altUnit=M, sep=48.5, sepUnit=M, diffAge=, diffStation=)>",
+            "<NMEA(GPGGA, time=08:02:47, lat=53.4507166667, NS=N, lon=-2.2402308333, EW=W, quality=1, numSV=7, HDOP=1.63, alt=36.7, altUnit=M, sep=48.5, sepUnit=M, diffAge=, diffStation=)>",
             "<NMEA(GPGSA, opMode=A, navMode=3, svid_01=2, svid_02=13, svid_03=20, svid_04=7, svid_05=5, svid_06=30, svid_07=9, svid_08=, svid_09=, svid_10=, svid_11=, svid_12=, PDOP=2.44, HDOP=1.63, VDOP=1.82)>",
-            "<NMEA(GPGGA, time=08:02:48, lat=53.45071867, NS=N, lon=-2.2402315, EW=W, quality=1, numSV=7, HDOP=1.63, alt=36.8, altUnit=M, sep=48.5, sepUnit=M, diffAge=, diffStation=)>",
+            "<NMEA(GPGGA, time=08:02:48, lat=53.4507186667, NS=N, lon=-2.2402315, EW=W, quality=1, numSV=7, HDOP=1.63, alt=36.8, altUnit=M, sep=48.5, sepUnit=M, diffAge=, diffStation=)>",
             "<NMEA(GPGSA, opMode=A, navMode=3, svid_01=2, svid_02=13, svid_03=20, svid_04=7, svid_05=5, svid_06=30, svid_07=9, svid_08=, svid_09=, svid_10=, svid_11=, svid_12=, PDOP=2.44, HDOP=1.63, VDOP=1.82)>",
         )
         i = 0
@@ -527,7 +527,7 @@ class StreamTest(unittest.TestCase):
     ):  # UBXReader iterate() helper method ignoring bad checksum and continuing
         dirname = os.path.dirname(__file__)
         stream = open(os.path.join(dirname, "pygpsdata-MIXED3BADCK.log"), "rb")
-        EXPECTED_RESULT = "<NMEA(GPGGA, time=08:02:48, lat=53.45071867, NS=N, lon=-2.2402315, EW=W, quality=1, numSV=7, HDOP=1.63, alt=36.8, altUnit=M, sep=48.5, sepUnit=M, diffAge=, diffStation=)>"
+        EXPECTED_RESULT = "<NMEA(GPGGA, time=08:02:48, lat=53.4507186667, NS=N, lon=-2.2402315, EW=W, quality=1, numSV=7, HDOP=1.63, alt=36.8, altUnit=M, sep=48.5, sepUnit=M, diffAge=, diffStation=)>"
         ubr = UBXReader(
             stream,
             ubxonly=False,
