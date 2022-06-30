@@ -99,15 +99,15 @@ R8 = "R008"  # Float (IEEE 754) Double Precision 8 bytes
 UBX_CLASSES = {
     b"\x01": "NAV",  # Navigation Results: Position, Speed, Time, Acc, Heading, DOP, SVs used
     b"\x02": "RXM",  # Receiver Manager Messages: Satellite Status, RTC Status
-    b"\x03": "DEBUG-03",  # u-blox Debug 03 Messages
+    b"\x03": "TRK-03",  # u-blox Tracking Messages (not documented)
     b"\x04": "INF",  # Information Messages: Printf-Style Messages, with IDs such as Error, Warning, Notice
     b"\x05": "ACK",  # Ack/Nack Messages: as replies to CFG Input Messages
     b"\x06": "CFG",  # Configuration Input Messages: Set Dynamic Model, Set DOP Mask, Set Baud Rate, etc.
-    b"\x08": "DEBUG-08",  # u-blox Debug 08 Messages
+    b"\x08": "DBG-08",  # u-blox Debug Messages (not documented)
     b"\x09": "UPD",  # Firmware Update Messages: Memory/Flash erase/write, Reboot, Flash identification, etc.
     b"\x0a": "MON",  # Monitoring Messages: Communication Status, CPU Load, Stack Usage, Task Status
     b"\x0b": "AID",  # AssistNow Aiding Messages: Ephemeris, Almanac, other A-GPS data input
-    b"\x0c": "DEBUG-0c",  # u-blox Debug 0C Messages
+    b"\x0c": "DBG-0c",  # u-blox Debug Messages (not documented)
     b"\x0d": "TIM",  # Timing Messages: Timepulse Output, Timemark Results
     b"\x10": "ESF",  # External Sensor Fusion Messages: External sensor measurements and status information
     b"\x13": "MGA",  # Multiple GNSS Assistance Messages: Assistance data for various GNSS
@@ -289,8 +289,9 @@ UBX_MSGIDS = {
     b"\x0a\x2f": "MON-SPT",
     b"\x0a\x39": "MON-SYS",
     b"\x0a\x08": "MON-TXBUF",
-    b"\x0a\x05": "MON-0a05",
-    b"\x0a\x11": "MON-0a11",
+    b"\x0a\x05": "MON-0a05",  # enabled by u-center debug mode but not defined
+    b"\x0a\x11": "MON-0a11",  # as above
+    b"\x0a\x26": "MON-0a26",  # as above
     b"\x0a\x04": "MON-VER",
     # ***************************************************************
     # Navigation messages
@@ -393,7 +394,7 @@ UBX_MSGIDS = {
     # ***************************************************************
     # Security messages
     # ***************************************************************
-    b"\x27\x00": "SEC-2700",
+    b"\x27\x00": "SEC-2700",  # enabled by u-center debug mode but not defined
     b"\x27\x09": "SEC-SIG",
     b"\x27\x10": "SEC-SIGLOG",
     b"\x27\x01": "SEC-SIGN",

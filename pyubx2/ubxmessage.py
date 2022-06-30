@@ -926,9 +926,9 @@ class UBXMessage:
                 umsg_name = ubt.UBX_MSGIDS[
                     self._ubxClass + self._ubxID + self._payload[0:1]
                 ]
-            # u-blox debug messages, parsed to a generic UBX-DEBUG definition
+            # undocumented u-blox debug & tracking messages, parsed to a nominal UBX-DEBUG definition
             elif self._ubxClass in [b"\x03", b"\x08", b"\x0c"]:
-                umsg_name = f"{ubt.UBX_CLASSES[self._ubxClass]}{hex(int.from_bytes(self._ubxID, 'little'))[2:]}"
+                umsg_name = f"{ubt.UBX_CLASSES[self._ubxClass]}{int.from_bytes(self._ubxID, 'little'):02x}"
             else:
                 umsg_name = ubt.UBX_MSGIDS[self._ubxClass + self._ubxID]
         except KeyError as err:
