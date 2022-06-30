@@ -3526,6 +3526,16 @@ UBX_PAYLOADS_GET = {
         "reserved1": U3,
     },
     # ********************************************************************
+    # UBX u-center debug message
+    "UBX-DEBUG": {
+        "group": (
+            "None",
+            {
+                "data": X1,
+            },
+        )
+    },
+    # ********************************************************************
     # Dummy message for error testing
     "FOO-BAR": {"spam": "Z2", "eggs": "Y1"},
 }
@@ -3563,6 +3573,10 @@ _UBX_PAYLOADS_GET_NAV2 = {
     "NAV2-TIMEUTC": UBX_PAYLOADS_GET["NAV-TIMEUTC"],
     "NAV2-VELECEF": UBX_PAYLOADS_GET["NAV-VELECEF"],
     "NAV2-VELNED": UBX_PAYLOADS_GET["NAV-VELNED"],
+    # a few other debug message types which reuse existing definitions...
+    "MON-0a05": UBX_PAYLOADS_GET["UBX-DEBUG"],
+    "MON-0a11": UBX_PAYLOADS_GET["UBX-DEBUG"],
+    "SEC-2700": UBX_PAYLOADS_GET["UBX-DEBUG"],
 }
 
 # Update main dictionary with NAV2 definitions

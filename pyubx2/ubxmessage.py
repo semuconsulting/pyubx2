@@ -540,6 +540,8 @@ class UBXMessage:
                     self._ubxClass == b"\x01" and self._ubxID == b"\x3C"
                 ):  # NAV-RELPOSNED
                     pdict = self._get_relposned_version(**kwargs)
+                elif self._ubxClass in [b"\x03", b"\x08", b"\x0c"]:  # u-blox debug msgs
+                    pdict = ubg.UBX_PAYLOADS_GET["UBX-DEBUG"]
                 else:
                     pdict = ubg.UBX_PAYLOADS_GET[self.identity]
             return pdict
@@ -816,6 +818,7 @@ class UBXMessage:
         """
 
         clsid = None
+        msgid = None
 
         umsg_name = self.identity
         if self.payload is None:
@@ -831,20 +834,26 @@ class UBXMessage:
                     val = itow2utc(val)  # show time in UTC format
                 # if it's an ACK-ACK or ACK-NAK, we show what it's acknowledging in plain text
                 if self._ubxClass == b"\x05":  # ACK
-                    if att == "clsID":
-                        clsid = val2bytes(val, ubt.U1)
-                        val = ubt.UBX_CLASSES[clsid]
-                    if att == "msgID" and clsid:
-                        msgid = val2bytes(val, ubt.U1)
-                        val = ubt.UBX_MSGIDS[clsid + msgid]
+                    try:
+                        if att == "clsID":
+                            clsid = val2bytes(val, ubt.U1)
+                            val = ubt.UBX_CLASSES[clsid]
+                        if att == "msgID" and clsid:
+                            msgid = val2bytes(val, ubt.U1)
+                            val = ubt.UBX_MSGIDS[clsid + msgid]
+                    except KeyError:
+                        pass
                 # if it's a CFG-MSG, we show what message class/id it refers to in plain text
                 if self._ubxClass == b"\x06" and self._ubxID == b"\x01":  # CFG-MSG
-                    if att == "msgClass":
-                        clsid = val2bytes(val, ubt.U1)
-                        val = ubt.UBX_CLASSES[clsid]
-                    if att == "msgID" and clsid:
-                        msgid = val2bytes(val, ubt.U1)
-                        val = ubt.UBX_MSGIDS[clsid + msgid]
+                    try:
+                        if att == "msgClass":
+                            clsid = val2bytes(val, ubt.U1)
+                            val = ubt.UBX_CLASSES[clsid]
+                        if att == "msgID" and clsid:
+                            msgid = val2bytes(val, ubt.U1)
+                            val = ubt.UBX_MSGIDS[clsid + msgid]
+                    except KeyError:
+                        pass
                 stg += att + "=" + str(val)
                 if i < len(self.__dict__) - 1:
                     stg += ", "
@@ -917,6 +926,9 @@ class UBXMessage:
                 umsg_name = ubt.UBX_MSGIDS[
                     self._ubxClass + self._ubxID + self._payload[0:1]
                 ]
+            # u-blox debug messages, parsed to a generic UBX-DEBUG definition
+            elif self._ubxClass in [b"\x03", b"\x08", b"\x0c"]:
+                umsg_name = f"{ubt.UBX_CLASSES[self._ubxClass]}{hex(int.from_bytes(self._ubxID, 'little'))[2:]}"
             else:
                 umsg_name = ubt.UBX_MSGIDS[self._ubxClass + self._ubxID]
         except KeyError as err:
