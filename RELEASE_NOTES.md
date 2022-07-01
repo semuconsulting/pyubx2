@@ -1,5 +1,16 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.2.15
+
+ENHANCEMENTS:
+
+1. Add support for u-blox debug and tracking messages (UBX message classes x03, x08 & x0c, in addition to a handful of messages in the MON x0a and SEC x27 classes). These are the message types that are enabled by invoking debug mode in u-center. **NB:** the payload definitions for these classes are not publicly documented - pyubx2 simply parses them to a nominal byte array.
+
+CHANGES:
+
+1. The `gnssdump` CLI utility has now been moved to the `pygnssutils` library and enhanced with additional features.
+2. Test cases amended to reflect additional precision output by `pynmeagps` NMEA parser v1.0.15.
+
 ### RELEASE 1.2.14
 
 ENHANCEMENTS:
