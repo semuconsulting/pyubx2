@@ -74,8 +74,7 @@ UBX_PAYLOADS_POLL = {
     "CFG-NVS": {},
     "CFG-ODO": {},
     "CFG-PM2": {},
-    # 'CFG-PM': {
-    # },
+    "CFG-PM": {},
     "CFG-PMS": {},
     "CFG-PRT": {"portID": U1},
     "CFG-PWR": {},
@@ -87,14 +86,12 @@ UBX_PAYLOADS_POLL = {
     "CFG-SLAS": {},
     "CFG-SMGR": {},
     "CFG-SPT": {},
+    "CFG-TMODE": {},
     "CFG-TMODE2": {},
     "CFG-TMODE3": {},
-    # 'CFG-TMODE': {
-    # },
+    "CFG-TP": {},
     "CFG-TP5": {},
     "CFG-TP5-TPX": {"tIdx": U1},
-    # 'CFG-TP': {
-    # },
     "CFG-TXSLOT": {},
     "CFG-USB": {},
     "CFG-VALGET": {

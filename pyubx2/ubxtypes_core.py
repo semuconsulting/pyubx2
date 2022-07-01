@@ -173,6 +173,7 @@ UBX_MSGIDS = {
     b"\x06\x17": "CFG-NMEA",  # NB: 3 versions of this
     b"\x06\x22": "CFG-NVS",
     b"\x06\x1e": "CFG-ODO",
+    b"\x06\x32": "CFG-PM",  # obsolete M5/6
     b"\x06\x3b": "CFG-PM2",
     b"\x06\x86": "CFG-PMS",
     b"\x06\x00": "CFG-PRT",
@@ -186,8 +187,10 @@ UBX_MSGIDS = {
     b"\x06\x8D": "CFG-SLAS",
     b"\x06\x62": "CFG-SMGR",
     b"\x06\x64": "CFG-SPT",
+    b"\x06\x1d": "CFG-TMODE",  # obsolete M5/6
     b"\x06\x3d": "CFG-TMODE2",
     b"\x06\x71": "CFG-TMODE3",
+    b"\x06\x07": "CFG-TP",  # obsolete M5/6
     b"\x06\x31": "CFG-TP5",
     b"\x06\x53": "CFG-TXSLOT",
     b"\x06\x1b": "CFG-USB",
@@ -289,7 +292,7 @@ UBX_MSGIDS = {
     b"\x0a\x2f": "MON-SPT",
     b"\x0a\x39": "MON-SYS",
     b"\x0a\x08": "MON-TXBUF",
-    b"\x0a\x05": "MON-0a05",  # enabled by u-center debug mode but not defined
+    b"\x0a\x05": "MON-0a05",  # enabled by u-center debug mode but undocumented
     b"\x0a\x11": "MON-0a11",  # as above
     b"\x0a\x26": "MON-0a26",  # as above
     b"\x0a\x04": "MON-VER",
@@ -394,7 +397,7 @@ UBX_MSGIDS = {
     # ***************************************************************
     # Security messages
     # ***************************************************************
-    b"\x27\x00": "SEC-2700",  # enabled by u-center debug mode but not defined
+    b"\x27\x00": "SEC-2700",  # enabled by u-center debug mode but undocumented
     b"\x27\x09": "SEC-SIG",
     b"\x27\x10": "SEC-SIGLOG",
     b"\x27\x01": "SEC-SIGN",
