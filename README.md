@@ -11,8 +11,8 @@ pyubx2
 [Configuration Interface](#configinterface) |
 [Examples](#examples) |
 [Extensibility](#extensibility) |
-[Command Line Utility](#cli) |
 [Troubleshooting](#troubleshoot) |
+[Command Line Utility](#cli) |
 [Graphical Client](#gui) |
 [Author & License](#author)
 
@@ -399,6 +399,26 @@ In most cases, a UBX message's content (payload) is uniquely defined by its clas
 However, there are a handful of message types which have multiple possible payload definitions for the same class, id and mode. These exceptional message types require dedicated routines in `ubxmessage.py` which examine elements of the payload itself in order to determine the appropriate dictionary definition. This currently applies to the following message types: CFG-NMEA, NAV-RELPOSNED, RXM-PMP, RXM-PMREQ, RXM-RLM, TIM-VCOCAL.
 
 ---
+## <a name="troubleshoot">Troubleshooting</a>
+
+#### 1. `KeyError` or `UBXMessageError` errors when parsing .ubx files recorded in u-center.
+By default, u-center 21.09 adds a series of debugging and diagnostic messages to any recorded .ubx file. These message classes are not publicly documented and are only really of relevance to u-blox support technicians. 
+- If you want to parse u-center .ubx files using an external parser such as `pyubx2` (or its companion libraries), select 'No' when prompted to 'Add Receiver Configuration' in u-center before recording data.
+#### 2. `Unknown Protocol` errors.
+These are usually due to corruption of the serial data stream, either because the serial port configuration is incorrect (baud rate, parity, etc.) or because another process is attempting to use the same data stream. 
+- Check that your UBX receiver UART1 or UART2 ports are configured for the desired baud rate - remember the factory default is 38400 (*not* 9600).
+- Check that no other process is attempting to use the same serial port, including daemon processes like gpsd.
+#### 3. `Serial Permission` errors. 
+These are usually caused by inadequate user privileges or contention with another process. 
+- On Linux platforms, check that the user is a member of the `tty` and/or `dialout` groups.
+- Check that no other process is attempting to use the same serial port, including daemon processes like gpsd.
+#### 4. `UnicodeDecode` errors.
+- If reading UBX data from a log file, check that the file.open() procedure is using the `rb` (read binary) setting e.g.
+`stream = open('ubxdatalog.log', 'rb')`.
+#### 5. Reading from NMEA log file returns no results.
+- If reading from a binary log file containing NMEA messages, ensure that the message terminator is `CRLF` (`\r\n` or `x0d0a`) rather than just `LF` (`\n` or `0x0a`). Some standard text editors may replace a `CRLF` with `LF` - use a dedicated hex editor instead.
+
+---
 ## <a name="cli">Command Line Utility</a>
 
 A command line utility `gnssdump` is available via the `pygnssutils` package. This is capable of reading and parsing NMEA, UBX and RTCM3 data from a variety of input sources (e.g. serial, socket and file) and outputting to a variety of media in a variety of formats. See https://github.com/semuconsulting/pygnssutils for further details.
@@ -412,24 +432,6 @@ For help with the `gnssdump` utility, type:
 ```
 gnssdump -h
 ```
-
----
-## <a name="troubleshoot">Troubleshooting</a>
-
-#### 1. `Unknown Protocol` errors.
-These are usually due to corruption of the serial data stream, either because the serial port configuration is incorrect (baud rate, parity, etc.) or because another process is attempting to use the same data stream. 
-- Check that your UBX receiver UART1 or UART2 ports are configured for the desired baud rate - remember the factory default is 38400 (*not* 9600).
-- Check that no other process is attempting to use the same serial port, including daemon processes like gpsd.
-#### 2. `Serial Permission` errors. 
-These are usually caused by inadequate user privileges or contention with another process. 
-- On Linux platforms, check that the user is a member of the `tty` and/or `dialout` groups.
-- Check that no other process is attempting to use the same serial port, including daemon processes like gpsd.
-#### 3. `UnicodeDecode` errors.
-- If reading UBX data from a log file, check that the file.open() procedure is using the `rb` (read binary) setting e.g.
-`stream = open('ubxdatalog.log', 'rb')`.
-#### 4. Reading from NMEA log file returns no results.
-- If reading from a binary log file containing NMEA messages, ensure that the message terminator is `CRLF` (`\r\n` or `x0d0a`) rather than just `LF` (`\n` or `0x0a`). Some standard text editors may replace a `CRLF` with `LF` - use a dedicated hex editor instead.
-
 
 ---
 ## <a name="gui">Graphical Client</a>
