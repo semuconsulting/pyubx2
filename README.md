@@ -22,7 +22,7 @@ The `pyubx2` homepage is located at [https://github.com/semuconsulting/pyubx2](h
 
 This is an independent project and we have no affiliation whatsoever with u-blox.
 
-**FYI** There are companion libraries which handle standard NMEA 0183 &copy; and RTCM3 &copy; GNSS/GPS messages.
+**FYI** `pyubx2` utilises the following companion libraries, which handle standard NMEA 0183 &copy; and RTCM3 &copy; GNSS/GPS messages.
 
 - [pynmeagps](http://github.com/semuconsulting/pynmeagps)
 - [pyrtcm](http://github.com/semuconsulting/pyrtcm)
@@ -51,10 +51,7 @@ Contributions welcome - please refer to [CONTRIBUTING.MD](https://github.com/sem
 ---
 ## <a name="installation">Installation</a>
 
-`pyubx2` is compatible with Python >=3.7 and has no third-party library dependencies.
-
-In the following, `python3` & `pip` refer to the Python 3 executables. You may need to type 
-`python` or `pip3`, depending on your particular environment.
+`pyubx2` is compatible with Python >=3.7. In the following, `python3` & `pip` refer to the Python 3 executables. You may need to type `python` or `pip3`, depending on your particular environment.
 
 ![Python version](https://img.shields.io/pypi/pyversions/pyubx2.svg?style=flat)
 [![PyPI version](https://img.shields.io/pypi/v/pyubx2.svg?style=flat)](https://pypi.org/project/pyubx2/)
