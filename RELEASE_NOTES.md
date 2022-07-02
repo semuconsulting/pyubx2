@@ -1,5 +1,11 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.2.16
+
+ENHANCEMENTS:
+
+1. Further enhancements in support of u-center .ubx log files which include receiver configuration poll response data - including CFG-VALGET poll responses for undocumented Generation 9 configuration database keys. This hopefully resolves the earlier `UBXMessageError: Undefined configuration database key` and `KeyError` errors when attempting to parse u-center .ubx log files.
+
 ### RELEASE 1.2.15
 
 ENHANCEMENTS:
