@@ -55,5 +55,5 @@ setuptools.setup(
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Topic :: Scientific/Engineering :: GIS",
     ],
-    python_requires=">=3.6",
+    python_requires=">=3.7",
 )
