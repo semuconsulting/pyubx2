@@ -19,8 +19,6 @@ Created on 2 Oct 2020
 
 from socket import socket
 from pyrtcm import RTCMReader
-
-# from pyrtcm.rtcmhelpers import calc_crc24q
 import pyrtcm.exceptions as rte
 from pynmeagps import NMEAReader
 import pynmeagps.exceptions as nme
@@ -92,13 +90,13 @@ class UBXReader:
 
     def read(self) -> tuple:
         """
-        Read a single NMEA or UBX message from the stream buffer
+        Read a single NMEA, UBX or RTCM3 message from the stream buffer
         and return both raw and parsed data.
 
         'protfilter' determines which protocols are parsed.
         'quitonerror' determines whether to raise, log or ignore parsing errors.
 
-        :return: tuple of (raw_data as bytes, parsed_data as UBXMessage or NMEAMessage)
+        :return: tuple of (raw_data as bytes, parsed_data as UBXMessage, NMEAMessage or RTCMMessage)
         :rtype: tuple
         :raises: UBXStreamError (if unrecognised protocol in data stream)
         """
