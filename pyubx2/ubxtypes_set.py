@@ -150,21 +150,7 @@ UBX_PAYLOADS_SET = {
     # GET definitions here to avoid duplication
     "CFG-ANT": UBX_GET["CFG-ANT"],
     "CFG-BATCH": UBX_GET["CFG-BATCH"],
-    "CFG-CFG": {
-        "clearMask": X4,
-        "saveMask": X4,
-        "loadMask": X4,
-        "deviceMask": (
-            X1,
-            {
-                "devBBR": U1,
-                "devFlash": U1,
-                "devEEPROM": U1,
-                "reserved1": U1,
-                "devSpiFlash": U1,
-            },
-        ),
-    },
+    "CFG-CFG": UBX_GET["CFG-CFG"],
     "CFG-DAT-NUM": {
         "datumNum": U2,
     },

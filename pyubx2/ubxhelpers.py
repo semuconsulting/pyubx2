@@ -368,12 +368,22 @@ def cfgkey2name(keyID: int) -> tuple:
 
     """
 
-    val = None
-    for key, val in ubcdb.UBX_CONFIG_DATABASE.items():
-        (kid, typ) = val
-        if keyID == kid:
-            return (key, typ)
-    raise ube.UBXMessageError(f"Undefined configuration database key {hex(keyID)}")
+    try:
+
+        val = None
+        for key, val in ubcdb.UBX_CONFIG_DATABASE.items():
+            (kid, typ) = val
+            if keyID == kid:
+                return (key, typ)
+
+        # undocumented configuration database key
+        # type is derived from keyID
+        key = f"CFG_{hex(keyID)}"
+        typ = f"X{ubcdb.UBX_CONFIG_STORSIZE[int(hex(keyID)[2:3])]:03d}"
+        return (key, typ)
+
+    except KeyError:
+        raise ube.UBXMessageError(f"Invalid configuration database key {hex(keyID)}")
 
 
 def protocol(raw: bytes) -> int:

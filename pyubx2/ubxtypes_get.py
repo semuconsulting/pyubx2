@@ -209,6 +209,21 @@ UBX_PAYLOADS_GET = {
         "pioId": U1,
         "reserved0": U1,
     },
+    "CFG-CFG": {
+        "clearMask": X4,
+        "saveMask": X4,
+        "loadMask": X4,
+        "deviceMask": (
+            X1,
+            {
+                "devBBR": U1,
+                "devFlash": U1,
+                "devEEPROM": U1,
+                "reserved1": U1,
+                "devSpiFlash": U1,
+            },
+        ),
+    },
     "CFG-DAT": {
         "datumNum": U2,
         "datumName": C6,

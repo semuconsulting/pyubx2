@@ -540,7 +540,11 @@ class UBXMessage:
                     self._ubxClass == b"\x01" and self._ubxID == b"\x3C"
                 ):  # NAV-RELPOSNED
                     pdict = self._get_relposned_version(**kwargs)
-                elif self._ubxClass in [b"\x03", b"\x08", b"\x0c"]:  # u-blox debug msgs
+                elif self._ubxClass in [
+                    b"\x03",
+                    b"\x08",
+                    b"\x0c",
+                ]:  # u-blox TRK, TUN & DBG msgs
                     pdict = ubg.UBX_PAYLOADS_GET["UBX-DEBUG"]
                 else:
                     pdict = ubg.UBX_PAYLOADS_GET[self.identity]
@@ -915,9 +919,14 @@ class UBXMessage:
                 umsg_name = ubt.UBX_MSGIDS[
                     self._ubxClass + self._ubxID + self._payload[0:1]
                 ]
-            # undocumented u-blox debug & tracking messages, parsed to a nominal UBX-DEBUG definition
+            # undocumented u-blox DBG, TRK & TUN messages,
+            # parsed to a nominal UBX-DEBUG definition
             elif self._ubxClass in [b"\x03", b"\x08", b"\x0c"]:
-                umsg_name = f"{ubt.UBX_CLASSES[self._ubxClass]}{int.from_bytes(self._ubxID, 'little'):02x}"
+                umsg_name = (
+                    f"{ubt.UBX_CLASSES[self._ubxClass]}-"
+                    + f"{int.from_bytes(self._ubxClass, 'little'):02x}"
+                    + f"{int.from_bytes(self._ubxID, 'little'):02x}"
+                )
             else:
                 umsg_name = ubt.UBX_MSGIDS[self._ubxClass + self._ubxID]
         except KeyError as err:

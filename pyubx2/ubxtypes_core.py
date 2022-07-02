@@ -99,15 +99,15 @@ R8 = "R008"  # Float (IEEE 754) Double Precision 8 bytes
 UBX_CLASSES = {
     b"\x01": "NAV",  # Navigation Results: Position, Speed, Time, Acc, Heading, DOP, SVs used
     b"\x02": "RXM",  # Receiver Manager Messages: Satellite Status, RTC Status
-    b"\x03": "TRK-03",  # u-blox Tracking Messages (not documented)
+    b"\x03": "TRK",  # u-blox Tracking Messages (not documented)
     b"\x04": "INF",  # Information Messages: Printf-Style Messages, with IDs such as Error, Warning, Notice
     b"\x05": "ACK",  # Ack/Nack Messages: as replies to CFG Input Messages
     b"\x06": "CFG",  # Configuration Input Messages: Set Dynamic Model, Set DOP Mask, Set Baud Rate, etc.
-    b"\x08": "DBG-08",  # u-blox Debug Messages (not documented)
+    b"\x08": "TUN",  # u-blox Debug Messages (not documented)
     b"\x09": "UPD",  # Firmware Update Messages: Memory/Flash erase/write, Reboot, Flash identification, etc.
     b"\x0a": "MON",  # Monitoring Messages: Communication Status, CPU Load, Stack Usage, Task Status
     b"\x0b": "AID",  # AssistNow Aiding Messages: Ephemeris, Almanac, other A-GPS data input
-    b"\x0c": "DBG-0c",  # u-blox Debug Messages (not documented)
+    b"\x0c": "DBG",  # u-blox Debug Messages (not documented)
     b"\x0d": "TIM",  # Timing Messages: Timepulse Output, Timemark Results
     b"\x10": "ESF",  # External Sensor Fusion Messages: External sensor measurements and status information
     b"\x13": "MGA",  # Multiple GNSS Assistance Messages: Assistance data for various GNSS
@@ -117,7 +117,10 @@ UBX_CLASSES = {
     b"\x29": "NAV2",  # Navigation 2 Results: Position, Speed, Time, Acc, Heading, DOP, SVs used
     b"\xf0": "NMEA-Standard",  # Standard NMEA Messages: Used for message rate configuration via CFG-MSG
     b"\xf1": "NMEA-Proprietary",  # Proprietary NMEA Messages: Used for message rate configuration via CFG-MSG
-    b"\xf5": "RTCM",  # RTCM Messages: Used for message rate configuration via CFG-MSG
+    b"\xf4": "RTCM2",  # RTCM2 Messages: Used for message rate configuration via CFG-MSG
+    b"\xf5": "RTCM3",  # RTCM3 Messages: Used for message rate configuration via CFG-MSG
+    b"\xf6": "SPARTN",  # SPARTN Messages: Used for message rate configuration via CFG-MSG
+    b"\xf7": "NMEA-NAV2",  # NMEA-NAV2 Messages: Used for message rate configuration via CFG-MSG
     b"\x66": "FOO",  # Dummy message class for testing
 }
 
@@ -420,7 +423,8 @@ UBX_MSGIDS = {
     # ***************************************************************
     b"\x09\x14": "UPD-SOS",
     # ***************************************************************
-    # NMEA Standard message types (used by CFG-MSG)
+    # NMEA Standard message types
+    # Used to poll message rates via CFG-MSG; not parsed by pyubx2
     # ***************************************************************
     b"\xf0\x0a": "DTM",  # Datum Reference
     b"\xf0\x45": "GAQ",  # Poll Standard Message - Talker ID GA (Galileo)
@@ -445,15 +449,71 @@ UBX_MSGIDS = {
     b"\xf0\x05": "VTG",  # Course over ground and Groundspeed
     b"\xf0\x08": "ZDA",  # Time and Date
     # ***************************************************************
-    # NMEA Proprietary message types (used by CFG-MSG)
+    # NMEA Proprietary message types
+    # Used to poll message rates via CFG-MSG; not parsed by pyubx2
     # ***************************************************************
     b"\xf1\x00": "UBX-00",  # aka PUBX-POSITION Lat/Long Position Data
+    b"\xf1\x01": "UBX-01",  # unknown - not publicly documented?
     b"\xf1\x03": "UBX-03",  # aka PUBX-SVSTATUS Satellite Status
     b"\xf1\x04": "UBX-04",  # aka PUBX-TIME Time of Day and Clock Information
     b"\xf1\x05": "UBX-05",  # Lat/Long Position Data
     b"\xf1\x06": "UBX-06",  # Lat/Long Position Data
     b"\xf1\x40": "UBX-40",  # Set NMEA message output rate
     b"\xf1\x41": "UBX-41",  # aka PUBX-CONFIG Set Protocols and Baudrate
+    # ***************************************************************
+    # RTCM3 Message types
+    # Used to poll message rates via CFG-MSG; not parsed by pyubx2
+    # ***************************************************************
+    b"\xf5\x01": "RTCM3-1001",  # L1-only GPS RTK observables (Input)
+    b"\xf5\x02": "RTCM3-1002",  # Extended L1-only GPS RTK observables (Input)
+    b"\xf5\x03": "RTCM3-1003",  # L1/L2 GPS RTK observables (Input)
+    b"\xf5\x04": "RTCM3-1004",  # Extended L1/L2 GPS RTK observables (Input)
+    b"\xf5\x05": "RTCM3-1005",  # Stationary RTK reference station ARP (Input/output)
+    b"\xf5\x06": "RTCM3-1006",  # Stationary RTK reference station ARP with antenna height (Input)
+    b"\xf5\x07": "RTCM3-1007",  # Antenna descriptor (Input)
+    b"\xf5\x09": "RTCM3-1009",  # L1-only GLONASS RTK observables (Input)
+    b"\xf5\x0a": "RTCM3-1010",  # Extended L1-Only GLONASS RTK observables (Input)
+    b"\xf5\xa1": "RTCM3-1011",  # L1&L2 GLONASS RTK observables (Input)
+    b"\xf5\xa2": "RTCM3-1012",  # Extended L1&L2 GLONASS RTK observables (Input)
+    b"\xf5\x21": "RTCM3-1033",  # Receiver and antenna descriptors (Input)
+    b"\xf5\x4a": "RTCM3-1074",  # GPS MSM4 (Input/output)
+    b"\xf5\x4b": "RTCM3-1075",  # GPS MSM5 (Input)
+    b"\xf5\x4d": "RTCM3-1077",  # GPS MSM7 (Input/output)
+    b"\xf5\x54": "RTCM3-1084",  # GLONASS MSM4 (Input/output)
+    b"\xf5\x55": "RTCM3-1085",  # GLONASS MSM5 (Input)
+    b"\xf5\x57": "RTCM3-1087",  # GLONASS MSM7 (Input/output)
+    b"\xf5\x5e": "RTCM3-1094",  # Galileo MSM4 (Input/output)
+    b"\xf5\x5f": "RTCM3-1095",  # Galileo MSM5 (Input)
+    b"\xf5\x61": "RTCM3-1097",  # Galileo MSM7 (Input/output)
+    b"\xf5\x7c": "RTCM3-1124",  # BeiDou MSM4 (Input/output)
+    b"\xf5\x7d": "RTCM3-1125",  # BeiDou MSM5 (Input)
+    b"\xf5\x7f": "RTCM3-1127",  # BeiDou MSM7 (Input/output)
+    b"\xf5\xe6": "RTCM3-1230",  # GLONASS L1 and L2 code-phase biases (Input/output)
+    b"\xf5\xfe": "RTCM3-4072",  # Reference station PVT (u-blox proprietary) (Input/output)
+    b"\xf5\xfd": "RTCM3-4072",  # Additional reference station information
+    # ***************************************************************
+    # SPARTN Message types
+    # Used to poll message rates via CFG-MSG; not parsed by pyubx2
+    # ***************************************************************
+    b"\xf6\x01": "SPARTN-0-0",  # GPS orbit, clock, bias (OCB) (Input)
+    b"\xf6\x02": "SPARTN-0-1",  # GLONASS orbit, clock, bias (OCB) (Input)
+    b"\xf6\x03": "SPARTN-0-2",  # Galileo orbit, clock, bias (OCB) (Input)
+    b"\xf6\x0a": "SPARTN-1-0",  # GPS high-precision atmosphere correction (HPAC) (Input)
+    b"\xf6\x0b": "SPARTN-1-1",  # GLONASS high-precision atmosphere correction (HPAC) (Input)
+    b"\xf6\x0c": "SPARTN-1-2",  # Galileo high-precision atmosphere correction (HPAC) (Input)
+    b"\xf6\x13": "SPARTN-2-0",  # Geographic area definition (GAD) (Input)
+    # ***************************************************************
+    # UNKNOWN Message types (not publicly documented by u-blox)
+    # Used to poll message rates via CFG-MSG; not parsed by pyubx2
+    # ***************************************************************
+    b"\xf7\x00": "NMEA-NAV2-00",  #
+    b"\xf7\x01": "NMEA-NAV2-01",  #
+    b"\xf7\x02": "NMEA-NAV2-02",  #
+    b"\xf7\x03": "NMEA-NAV2-03",  #
+    b"\xf7\x04": "NMEA-NAV2-04",  #
+    b"\xf7\x05": "NMEA-NAV2-05",  #
+    b"\xf7\x08": "NMEA-NAV2-08",  #
+    b"\xf7\x0d": "NMEA-NAV2-0d",  #
     # ***************************************************************
     # Dummy message for testing only
     # ***************************************************************

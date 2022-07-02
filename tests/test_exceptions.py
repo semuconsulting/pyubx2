@@ -189,10 +189,19 @@ class ExceptionTest(unittest.TestCase):
         with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
             UBXMessage.config_set(0, 0, cfgData)
 
-    def testBadCfgKey(self):  # test for invalid key
-        EXPECTED_ERROR = "Undefined configuration database key 0x11223344"
+    def testBadCfgKey(self):  # test for invalid configuration database key
+        EXPECTED_ERROR = "Invalid configuration database key 0x81111111"
+        cfgData = [(0x81111111, 9600)]
         with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
-            cfgkey2name(0x11223344)
+            UBXMessage.config_set(0, 0, cfgData)
+
+    def testBadCfgKey2(self):  # test for unknown configuration database key
+        EXPECTED_RESULT = ("CFG_0x11223344", "X001")
+        EXPECTED_RESULT2 = ("CFG_0x51223344", "X008")
+        res = cfgkey2name(0x11223344)
+        self.assertEqual(res, EXPECTED_RESULT)
+        res = cfgkey2name(0x51223344)
+        self.assertEqual(res, EXPECTED_RESULT2)
 
     def testMaxConfigSet(self):  # test for >64 configuration tuples
         EXPECTED_ERROR = "Number of configuration tuples 65 exceeds maximum of 64"
