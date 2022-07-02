@@ -832,28 +832,17 @@ class UBXMessage:
                     val = gnss2str(val)  # get string representation e.g. 'GPS'
                 if att == "iTOW":  # attribute is a GPS Time of Week
                     val = itow2utc(val)  # show time in UTC format
-                # if it's an ACK-ACK or ACK-NAK, we show what it's acknowledging in plain text
-                if self._ubxClass == b"\x05":  # ACK
-                    try:
-                        if att == "clsID":
-                            clsid = val2bytes(val, ubt.U1)
-                            val = ubt.UBX_CLASSES[clsid]
-                        if att == "msgID" and clsid:
-                            msgid = val2bytes(val, ubt.U1)
-                            val = ubt.UBX_MSGIDS[clsid + msgid]
-                    except KeyError:
-                        pass
+                # if it's an ACK, we show what it's acknowledging in plain text
                 # if it's a CFG-MSG, we show what message class/id it refers to in plain text
-                if self._ubxClass == b"\x06" and self._ubxID == b"\x01":  # CFG-MSG
-                    try:
-                        if att == "msgClass":
-                            clsid = val2bytes(val, ubt.U1)
-                            val = ubt.UBX_CLASSES[clsid]
-                        if att == "msgID" and clsid:
-                            msgid = val2bytes(val, ubt.U1)
-                            val = ubt.UBX_MSGIDS[clsid + msgid]
-                    except KeyError:
-                        pass
+                if self._ubxClass == b"\x05" or (
+                    self._ubxClass == b"\x06" and self._ubxID == b"\x01"
+                ):
+                    if att in ["clsID", "msgClass"]:
+                        clsid = val2bytes(val, ubt.U1)
+                        val = ubt.UBX_CLASSES.get(clsid, clsid)
+                    if att == "msgID" and clsid:
+                        msgid = val2bytes(val, ubt.U1)
+                        val = ubt.UBX_MSGIDS.get(clsid + msgid, clsid + msgid)
                 stg += att + "=" + str(val)
                 if i < len(self.__dict__) - 1:
                     stg += ", "
@@ -933,7 +922,7 @@ class UBXMessage:
                 umsg_name = ubt.UBX_MSGIDS[self._ubxClass + self._ubxID]
         except KeyError as err:
             raise ube.UBXMessageError(
-                f"Unknown UBX message type class {self._ubxClass} id {self._ubxID}"
+                f"Undefined message class {self._ubxClass}, id {self._ubxID}"
             ) from err
         return umsg_name
 

@@ -401,9 +401,9 @@ However, there are a handful of message types which have multiple possible paylo
 ---
 ## <a name="troubleshoot">Troubleshooting</a>
 
-#### 1. `KeyError` or `UBXMessageError` errors when parsing .ubx files recorded in u-center.
-By default, u-center 21.09 adds a series of debugging and diagnostic messages to any recorded .ubx file. These message classes are not publicly documented and are only really of relevance to u-blox support technicians. 
-- If you want to parse u-center .ubx files using an external parser such as `pyubx2` (or its companion libraries), select 'No' when prompted to 'Add Receiver Configuration' in u-center before recording data.
+#### 1. `KeyError`, `UBXMessageError` or `Undefined Configuration Database Key` errors when parsing .ubx files recorded in u-center.
+By default, u-center 21.09 adds a series of GET and POLL debugging and diagnostic messages to any recorded .ubx file. These message classes are not publicly documented and are only really of relevance to u-blox support technicians. 
+- If you want to parse u-center .ubx files using an external parser such as `pyubx2` (or its companion libraries), select 'No' when prompted to 'Add Receiver Configuration' in u-center before recording data, or add appropriate exception handling routines to your Python script to ignore these errors.
 #### 2. `Unknown Protocol` errors.
 These are usually due to corruption of the serial data stream, either because the serial port configuration is incorrect (baud rate, parity, etc.) or because another process is attempting to use the same data stream. 
 - Check that your UBX receiver UART1 or UART2 ports are configured for the desired baud rate - remember the factory default is 38400 (*not* 9600).

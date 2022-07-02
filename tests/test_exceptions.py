@@ -353,13 +353,11 @@ class ExceptionTest(unittest.TestCase):
         msg = UBXReader.parse(res.serialize(), msgmode=SET)
         self.assertEqual(str(msg), EXPECTED_RESULT)
 
-
-#     # can only be tested by temporarily removing a valid message definition
-#     def testIdentity(self):  # test for invalid message identity
-#         EXPECTED_ERROR = "Unknown UBX message type class {'b\x77'} id {'b\x88'}"
-#         msg = UBXMessage('b\x77', 'b\x88', POLL)
-#         with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
-#             msg.identity()
+    def testIdentity(self):  # test for invalid message identity
+        EXPECTED_ERROR = "Undefined message class b'U', id b'f'"
+        with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
+            msg = UBXReader.parse(b"\xb5b\x55\x66\x00\x00\xbb\x86")
+            msg.identity()
 
 
 if __name__ == "__main__":

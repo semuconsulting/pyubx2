@@ -356,6 +356,16 @@ class SpecialTest(unittest.TestCase):
         )
         self.assertEqual(str(msg), EXPECTED_RESULT)
 
+    def testACKACKNK(self):  # test ACK-ACK of unknown message class
+        EXPECTED_RESULT = "<UBX(ACK-ACK, clsID=b'w', msgID=b'w\\x88')>"
+        msg = UBXMessage("ACK", "ACK-ACK", GET, clsID=0x77, msgID=0x88)
+        self.assertEqual(str(msg), EXPECTED_RESULT)
+
+    def testCFGMSGNK(self):  # test CFG-MSG of unknown message class
+        EXPECTED_RESULT = "<UBX(CFG-MSG, msgClass=b'w', msgID=b'w\\x88', rateDDC=0, rateUART1=4, rateUART2=0, rateUSB=0, rateSPI=0, reserved=0)>"
+        msg = UBXMessage("CFG", "CFG-MSG", GET, msgClass=0x77, msgID=0x88, rateUART1=4)
+        self.assertEqual(str(msg), EXPECTED_RESULT)
+
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
