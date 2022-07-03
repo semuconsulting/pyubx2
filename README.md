@@ -401,22 +401,22 @@ However, there are a handful of message types which have multiple possible paylo
 ---
 ## <a name="troubleshoot">Troubleshooting</a>
 
-#### 1. `KeyError`, `UBXMessageError` or `Undefined Configuration Database Key` errors when parsing .ubx files recorded in u-center.
-By default, u-center 21.09 adds a series of GET and POLL debugging and diagnostic messages to any recorded .ubx file. These message classes are not publicly documented and are only really of relevance to u-blox support technicians. 
-- If you want to parse u-center .ubx files using an external parser such as `pyubx2` (or its companion libraries), select 'No' when prompted to 'Add Receiver Configuration' in u-center before recording data, or add appropriate exception handling routines to your Python script to ignore these errors.
-#### 2. `Unknown Protocol` errors.
+#### 1. `Unknown Protocol` errors.
 These are usually due to corruption of the serial data stream, either because the serial port configuration is incorrect (baud rate, parity, etc.) or because another process is attempting to use the same data stream. 
 - Check that your UBX receiver UART1 or UART2 ports are configured for the desired baud rate - remember the factory default is 38400 (*not* 9600).
 - Check that no other process is attempting to use the same serial port, including daemon processes like gpsd.
-#### 3. `Serial Permission` errors. 
+#### 2. `Serial Permission` errors. 
 These are usually caused by inadequate user privileges or contention with another process. 
 - On Linux platforms, check that the user is a member of the `tty` and/or `dialout` groups.
 - Check that no other process is attempting to use the same serial port, including daemon processes like gpsd.
-#### 4. `UnicodeDecode` errors.
+#### 3. `UnicodeDecode` errors.
 - If reading UBX data from a log file, check that the file.open() procedure is using the `rb` (read binary) setting e.g.
 `stream = open('ubxdatalog.log', 'rb')`.
-#### 5. Reading from NMEA log file returns no results.
+#### 4. Reading from NMEA log file returns no results.
 - If reading from a binary log file containing NMEA messages, ensure that the message terminator is `CRLF` (`\r\n` or `x0d0a`) rather than just `LF` (`\n` or `0x0a`). Some standard text editors may replace a `CRLF` with `LF` - use a dedicated hex editor instead.
+#### 5. Spurious `CFG-VALGET`, `DBG`, `TRK`, `TUN` and `SEC` data in *.ubx files recorded in u-center.
+By default, u-center 21.09 records a series of configuration messages (CFG-VALGET) containing undocumented configuration database keys. In addition, clicking the 'debug' option results in a large number of undocumented DBG, TRK, TUN and SEC message classes. As of version v1.2.15, `pyubx2` is capable of parsing these undocumented message classes (to a nominal payload definition), but they are really only of relevance to u-blox technical support. If you are *not* intending to send the recordings to u-blox;
+- When recording GNSS output data in u-center, select 'No' when prompted to 'Add Receiver Configuration' to the recording, and avoid the 'debug' option.
 
 ---
 ## <a name="cli">Command Line Utility</a>
