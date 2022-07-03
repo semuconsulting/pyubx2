@@ -507,45 +507,42 @@ class UBXMessage:
             if self._mode == ubt.POLL:
                 pdict = ubp.UBX_PAYLOADS_POLL[self.identity]
             elif self._mode == ubt.SET:
-                if self._ubxClass == b"\x13" and self._ubxID != b"\x80":  # MGA SET
+                # MGA SET
+                if self._ubxClass == b"\x13" and self._ubxID != b"\x80":
                     pdict = self._get_mga_version(ubt.SET, **kwargs)
-                elif (
-                    self._ubxClass == b"\x02" and self._ubxID == b"\x41"
-                ):  # RXM-PMREQ SET
+                # RXM-PMREQ SET
+                elif self._ubxClass == b"\x02" and self._ubxID == b"\x41":
                     pdict = self._get_rxmpmreq_version(**kwargs)
-                elif (
-                    self._ubxClass == b"\x0d" and self._ubxID == b"\x15"
-                ):  # TIM-VCOCAL SET
+                # TIM-VCOCAL SET
+                elif self._ubxClass == b"\x0d" and self._ubxID == b"\x15":
                     pdict = self._get_timvcocal_version(**kwargs)
-                elif (
-                    self._ubxClass == b"\x06" and self._ubxID == b"\x06"
-                ):  # CFG-DAT SET
+                # CFG-DAT SET
+                elif self._ubxClass == b"\x06" and self._ubxID == b"\x06":
                     pdict = self._get_cfgdat_version(**kwargs)
                 else:
                     pdict = ubs.UBX_PAYLOADS_SET[self.identity]
-            else:  # GET message
-                if self._ubxClass == b"\x13" and self._ubxID != b"\x80":  # MGA GET
+            else:
+                # MGA GET
+                if self._ubxClass == b"\x13" and self._ubxID != b"\x80":
                     pdict = self._get_mga_version(ubt.GET, **kwargs)
-                elif self._ubxClass == b"\x02" and self._ubxID == b"\x72":  # RXM-PMP
+                # RXM-PMP GET
+                elif self._ubxClass == b"\x02" and self._ubxID == b"\x72":
                     pdict = self._get_rxmpmp_version(**kwargs)
-                elif self._ubxClass == b"\x02" and self._ubxID == b"\x59":  # RXM-RLM
+                # RXM-RLM GET
+                elif self._ubxClass == b"\x02" and self._ubxID == b"\x59":
                     pdict = self._get_rxmrlm_version(**kwargs)
-                elif self._ubxClass == b"\x06" and self._ubxID == b"\x17":  # CFG-NMEA
+                # CFG-NMEA GET
+                elif self._ubxClass == b"\x06" and self._ubxID == b"\x17":
                     pdict = self._get_cfgnmea_version(**kwargs)
-                elif (
-                    self._ubxClass == b"\x01" and self._ubxID == b"\x60"
-                ):  # NAV-AOPSTATUS
+                # NAV-AOPSTATUS GET
+                elif self._ubxClass == b"\x01" and self._ubxID == b"\x60":
                     pdict = self._get_aopstatus_version(**kwargs)
-                elif (
-                    self._ubxClass == b"\x01" and self._ubxID == b"\x3C"
-                ):  # NAV-RELPOSNED
+                # NAV-RELPOSNED GET
+                elif self._ubxClass == b"\x01" and self._ubxID == b"\x3C":
                     pdict = self._get_relposned_version(**kwargs)
-                elif self._ubxClass in [
-                    b"\x03",
-                    b"\x08",
-                    b"\x0c",
-                ]:  # u-blox TRK, TUN & DBG msgs
-                    pdict = ubg.UBX_PAYLOADS_GET["UBX-DEBUG"]
+                # Unknown GET message, parsed to nominal definition
+                elif self.identity[-7:] == "NOMINAL":
+                    pdict = ubg.UBX_PAYLOADS_GET["UBX-NOMINAL"]
                 else:
                     pdict = ubg.UBX_PAYLOADS_GET[self.identity]
             return pdict
@@ -904,11 +901,14 @@ class UBXMessage:
     @property
     def identity(self) -> str:
         """
-        Returns identity in plain text form.
+        Returns message identity in plain text form.
+
+        If the message is unrecognised, the message is parsed
+        to a nominal payload definition UBX-NOMINAL and
+        the term 'NOMINAL' is appended to the identity.
 
         :return: message identity e.g. 'CFG-MSG'
         :rtype: str
-        :raises: UBXMessageError
 
         """
 
@@ -919,20 +919,18 @@ class UBXMessage:
                 umsg_name = ubt.UBX_MSGIDS[
                     self._ubxClass + self._ubxID + self._payload[0:1]
                 ]
-            # undocumented u-blox DBG, TRK & TUN messages,
-            # parsed to a nominal UBX-DEBUG definition
-            elif self._ubxClass in [b"\x03", b"\x08", b"\x0c"]:
-                umsg_name = (
-                    f"{ubt.UBX_CLASSES[self._ubxClass]}-"
-                    + f"{int.from_bytes(self._ubxClass, 'little'):02x}"
-                    + f"{int.from_bytes(self._ubxID, 'little'):02x}"
-                )
             else:
                 umsg_name = ubt.UBX_MSGIDS[self._ubxClass + self._ubxID]
         except KeyError as err:
-            raise ube.UBXMessageError(
-                f"Undefined message class {self._ubxClass}, id {self._ubxID}"
-            ) from err
+            # unrecognised u-blox message, parsed to UBX-NOMINAL definition
+            if self._ubxClass in ubt.UBX_CLASSES:  # known class
+                cls = ubt.UBX_CLASSES[self._ubxClass]
+            else:  # unknown class
+                cls = "UNKNOWN"
+            umsg_name = (
+                f"{cls}-{int.from_bytes(self._ubxClass, 'little'):02x}"
+                + f"{int.from_bytes(self._ubxID, 'little'):02x}-NOMINAL"
+            )
         return umsg_name
 
     @property

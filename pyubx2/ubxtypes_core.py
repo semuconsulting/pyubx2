@@ -503,7 +503,7 @@ UBX_MSGIDS = {
     b"\xf6\x0c": "SPARTN-1-2",  # Galileo high-precision atmosphere correction (HPAC) (Input)
     b"\xf6\x13": "SPARTN-2-0",  # Geographic area definition (GAD) (Input)
     # ***************************************************************
-    # UNKNOWN Message types (not publicly documented by u-blox)
+    # NMEA-NAV2 Message types (not publicly documented by u-blox)
     # Used to poll message rates via CFG-MSG; not parsed by pyubx2
     # ***************************************************************
     b"\xf7\x00": "NMEA-NAV2-00",  #

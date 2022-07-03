@@ -3592,8 +3592,9 @@ UBX_PAYLOADS_GET = {
         "reserved1": U3,
     },
     # ********************************************************************
-    # UBX u-center debug message - nominal definition
-    "UBX-DEBUG": {
+    # UBX nominal payload definition, used as fallback where no documented
+    # payload definition is available.
+    "UBX-NOMINAL": {
         "group": (
             "None",
             {
@@ -3640,10 +3641,10 @@ _UBX_PAYLOADS_GET_NAV2 = {
     "NAV2-VELECEF": UBX_PAYLOADS_GET["NAV-VELECEF"],
     "NAV2-VELNED": UBX_PAYLOADS_GET["NAV-VELNED"],
     # a few other debug message types which reuse nominal definitions...
-    "MON-0a05": UBX_PAYLOADS_GET["UBX-DEBUG"],
-    "MON-0a11": UBX_PAYLOADS_GET["UBX-DEBUG"],
-    "MON-0a26": UBX_PAYLOADS_GET["UBX-DEBUG"],
-    "SEC-2700": UBX_PAYLOADS_GET["UBX-DEBUG"],
+    "MON-0a05": UBX_PAYLOADS_GET["UBX-NOMINAL"],
+    "MON-0a11": UBX_PAYLOADS_GET["UBX-NOMINAL"],
+    "MON-0a26": UBX_PAYLOADS_GET["UBX-NOMINAL"],
+    "SEC-2700": UBX_PAYLOADS_GET["UBX-NOMINAL"],
 }
 
 # Update main dictionary with NAV2 definitions

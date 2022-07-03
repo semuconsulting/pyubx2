@@ -362,12 +362,6 @@ class ExceptionTest(unittest.TestCase):
         msg = UBXReader.parse(res.serialize(), msgmode=SET)
         self.assertEqual(str(msg), EXPECTED_RESULT)
 
-    def testIdentity(self):  # test for invalid message identity
-        EXPECTED_ERROR = "Undefined message class b'U', id b'f'"
-        with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
-            msg = UBXReader.parse(b"\xb5b\x55\x66\x00\x00\xbb\x86")
-            msg.identity()
-
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']

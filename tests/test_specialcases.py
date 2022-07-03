@@ -366,6 +366,16 @@ class SpecialTest(unittest.TestCase):
         msg = UBXMessage("CFG", "CFG-MSG", GET, msgClass=0x77, msgID=0x88, rateUART1=4)
         self.assertEqual(str(msg), EXPECTED_RESULT)
 
+    def testUnknownClassID(self):  # test for unknown class and id
+        EXPECTED_RESULT = "<UBX(UNKNOWN-5566-NOMINAL, data_01=b'3', data_02=b'D')>"
+        msg = UBXReader.parse(b"\xb5b\x55\x66\x02\x00\x33\x44\x34\xae")
+        self.assertEqual(str(msg), EXPECTED_RESULT)
+
+    def testUnknownID(self):  # test for known class, unknown id
+        EXPECTED_RESULT = "<UBX(DBG-0c66-NOMINAL, data_01=b'3', data_02=b'D')>"
+        msg = UBXReader.parse(b"\xb5b\x0c\x66\x02\x00\x33\x44\xeb\xf8")
+        self.assertEqual(str(msg), EXPECTED_RESULT)
+
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
