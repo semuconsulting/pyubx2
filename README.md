@@ -188,6 +188,8 @@ e.g. the `NAV-POSLLH` message has the following attributes:
 
 Attributes within repeating groups are parsed with a two-digit suffix (svid_01, svid_02, etc.). The `payload` attribute always contains the raw payload as bytes.
 
+If the input message class / id is unrecognised (i.e. not publicly documented by u-blox), `pyubx2` will parse the message to a nominal payload definition and append the term 'NOMINAL' to the message identity.
+
 ---
 ## <a name="generating">Generating</a>
 

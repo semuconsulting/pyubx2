@@ -295,9 +295,6 @@ UBX_MSGIDS = {
     b"\x0a\x2f": "MON-SPT",
     b"\x0a\x39": "MON-SYS",
     b"\x0a\x08": "MON-TXBUF",
-    b"\x0a\x05": "MON-0a05",  # enabled by u-center debug mode but undocumented
-    b"\x0a\x11": "MON-0a11",  # as above
-    b"\x0a\x26": "MON-0a26",  # as above
     b"\x0a\x04": "MON-VER",
     # ***************************************************************
     # Navigation messages
@@ -400,7 +397,6 @@ UBX_MSGIDS = {
     # ***************************************************************
     # Security messages
     # ***************************************************************
-    b"\x27\x00": "SEC-2700",  # enabled by u-center debug mode but undocumented
     b"\x27\x09": "SEC-SIG",
     b"\x27\x10": "SEC-SIGLOG",
     b"\x27\x01": "SEC-SIGN",
@@ -503,7 +499,7 @@ UBX_MSGIDS = {
     b"\xf6\x0c": "SPARTN-1-2",  # Galileo high-precision atmosphere correction (HPAC) (Input)
     b"\xf6\x13": "SPARTN-2-0",  # Geographic area definition (GAD) (Input)
     # ***************************************************************
-    # NMEA-NAV2 Message types (not publicly documented by u-blox)
+    # NMEA-NAV2 Message types
     # Used to poll message rates via CFG-MSG; not parsed by pyubx2
     # ***************************************************************
     b"\xf7\x00": "NMEA-NAV2-00",  #
