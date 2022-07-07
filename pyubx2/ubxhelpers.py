@@ -18,6 +18,40 @@ import pyubx2.ubxtypes_configdb as ubcdb
 import pyubx2.exceptions as ube
 
 
+def att2idx(att: str) -> int:
+    """
+    Get integer index corresponding to grouped attribute.
+
+    e.g. svid_06 -> 6; gnssId_103 -> 103
+
+    :param str att: grouped attribute name e.g. svid_01
+    :return: index as integer, or 0 if not grouped
+    :rtype: int
+    """
+
+    try:
+        return int(att[att.rindex("_") - len(att) + 1 :])
+    except ValueError:
+        return 0
+
+
+def att2name(att: str) -> str:
+    """
+    Get name of grouped attribute.
+
+    e.g. svid_06 -> svid; gnssId_103 -> gnssId
+
+    :param str att: grouped attribute name e.g. svid_01
+    :return: name without index e.g. DF406
+    :rtype: str
+    """
+
+    try:
+        return att[: att.rindex("_")]
+    except ValueError:
+        return att
+
+
 def calc_checksum(content: bytes) -> bytes:
     """
     Calculate checksum using 8-bit Fletcher's algorithm.

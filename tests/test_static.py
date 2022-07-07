@@ -33,6 +33,8 @@ from pyubx2.ubxhelpers import (
     cfgname2key,
     protocol,
     hextable,
+    att2idx,
+    att2name,
 )
 
 
@@ -242,6 +244,22 @@ class StaticTest(unittest.TestCase):
         EXPECTED_RESULT = "000: 2447 4e47 4c4c 2c35 3332 372e 3034 3331  | b'$GNGLL,5327.0431' |\n016: 392c 532c 3030 3231 342e 3431 3339 362c  | b'9,S,00214.41396,' |\n032: 452c 3232 3332 3332 2e30 302c 412c 412a  | b'E,223232.00,A,A*' |\n048: 3638 0d0a                                | b'68\\r\\n' |\n"
         res = hextable(b"$GNGLL,5327.04319,S,00214.41396,E,223232.00,A,A*68\r\n", 8)
         self.assertEqual(res, EXPECTED_RESULT)
+
+    def testatt2idx(self):  # test att2idx
+        EXPECTED_RESULT = [4, 16, 101, 0]
+        atts = ["svid_04", "gnssId_16", "cno_101", "gmsLon"]
+        for i, att in enumerate(atts):
+            res = att2idx(att)
+            # print(res)
+            self.assertEqual(res, EXPECTED_RESULT[i])
+
+    def testatt2name(self):  # test att2name
+        EXPECTED_RESULT = ["svid", "gnssId", "cno", "gmsLon"]
+        atts = ["svid_04", "gnssId_16", "cno_101", "gmsLon"]
+        for i, att in enumerate(atts):
+            res = att2name(att)
+            # print(res)
+            self.assertEqual(res, EXPECTED_RESULT[i])
 
 
 if __name__ == "__main__":

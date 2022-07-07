@@ -44,6 +44,7 @@ class UBXReader:
         :param int msgmode: (kwarg) 0=GET, 1=SET, 2=POLL (0)
         :param bool parsebitfield: (kwarg) 1 = parse bitfields, 0 = leave as bytes (1)
         :param bool scaling: (kwarg) 1 = apply scale factors, 0 = do not apply (1)
+        :param bool labelmsm: (kwarg) whether to label RTCM3 MSM NSAT and NCELL attributes (1)
         :param int bufsize: (kwarg) socket recv buffer size (1024)
         :raises: UBXStreamError (if mode is invalid)
 
@@ -61,6 +62,7 @@ class UBXReader:
         self._validate = int(kwargs.get("validate", ubt.VALCKSUM))
         self._parsebf = int(kwargs.get("parsebitfield", True))
         self._scaling = int(kwargs.get("scaling", True))
+        self._labelmsm = int(kwargs.get("labelmsm", True))
         self._msgmode = int(kwargs.get("msgmode", 0))
 
         if self._msgmode not in (0, 1, 2):
@@ -233,6 +235,8 @@ class UBXReader:
             parsed_data = RTCMReader.parse(
                 raw_data,
                 validate=self._validate,
+                scaling=self._scaling,
+                labelmsm=self._labelmsm,
             )
         else:
             parsed_data = None
