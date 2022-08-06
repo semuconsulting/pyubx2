@@ -23,7 +23,6 @@ setuptools.setup(
     install_requires=[
         "pynmeagps>=1.0.15",
         "pyrtcm>=0.2.8",
-        "pyserial>=3.4",
     ],
     license="BSD 3-Clause 'Modified' License",
     keywords="pyubx2 GNSS GPS GLONASS UBX NMEA GIS u-blox",
