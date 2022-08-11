@@ -22,7 +22,7 @@ setuptools.setup(
     packages=setuptools.find_packages(exclude=["tests", "examples", "docs"]),
     install_requires=[
         "pynmeagps>=1.0.15",
-        "pyrtcm>=0.2.8",
+        "pyrtcm>=0.2.9",
     ],
     license="BSD 3-Clause 'Modified' License",
     keywords="pyubx2 GNSS GPS GLONASS UBX NMEA GIS u-blox",
