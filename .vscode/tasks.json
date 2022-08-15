@@ -127,7 +127,8 @@
                 "docs",
                 // "${config:modulename}"
                 ".",
-                "tests"
+                "tests",
+                "setup.py"
             ],
             "problemMatcher": []
         },
