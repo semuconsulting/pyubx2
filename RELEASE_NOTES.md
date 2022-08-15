@@ -1,5 +1,11 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.2.17
+
+ENHANCEMENTS:
+
+1. Handling of legacy CFG-TP5 POLL message enhanced to support alternate payload formats (one with tpIdx parameter, the other without). To specify tpIdx value, use `payload` keyword e.g. `msg = UBXMessage('CFG', 'CFG-TP5', POLL, payload=b'\x01')`.
+
 ### RELEASE 1.2.16
 
 ENHANCEMENTS:
