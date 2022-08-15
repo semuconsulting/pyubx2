@@ -505,7 +505,11 @@ class UBXMessage:
 
         try:
             if self._mode == ubt.POLL:
-                pdict = ubp.UBX_PAYLOADS_POLL[self.identity]
+                # CFG-TP5 POLL
+                if self._ubxClass == b"\x06" and self._ubxID == b"\x31":
+                    pdict = self._get_cfgtp5_version(**kwargs)
+                else:
+                    pdict = ubp.UBX_PAYLOADS_POLL[self.identity]
             elif self._mode == ubt.SET:
                 # MGA SET
                 if self._ubxClass == b"\x13" and self._ubxID != b"\x80":
@@ -550,6 +554,27 @@ class UBXMessage:
             raise KeyError(
                 f"{err} - Check 'msgmode' keyword argument is appropriate for message category"
             )
+
+    def _get_cfgtp5_version(self, **kwargs) -> dict:
+        """
+        Select appropriate CFG-TP5 POLL payload definition by checking
+        length of payload.
+
+        :param kwargs: optional payload key/value pairs
+        :return: dictionary representing payload definition
+        :rtype: dict
+
+        """
+
+        if "payload" in kwargs:
+            lp = len(kwargs["payload"])
+        else:
+            lp = 0
+        if lp == 1:
+            pdict = ubp.UBX_PAYLOADS_POLL["CFG-TP5-TPX"]
+        else:
+            pdict = ubp.UBX_PAYLOADS_POLL["CFG-TP5"]
+        return pdict
 
     def _get_mga_version(self, mode: int, **kwargs) -> dict:
         """
