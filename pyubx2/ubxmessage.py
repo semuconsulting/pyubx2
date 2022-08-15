@@ -563,7 +563,6 @@ class UBXMessage:
         :param kwargs: optional payload key/value pairs
         :return: dictionary representing payload definition
         :rtype: dict
-        :raises: UBXMessageError
 
         """
 
