@@ -326,6 +326,19 @@ class FillTest(unittest.TestCase):
         res2 = UBXMessage("NAV", "NAV-SBAS", GET, payload=res1.payload)
         self.assertEqual(str(res1), str(res2))
 
+    def testCFG_TP5(self):  # test CFG-TP5 constructor
+        res1 = UBXMessage("CFG", "CFG-TP5", POLL)
+        res2 = "<UBX(CFG-TP5)>"
+        self.assertEqual(str(res1), res2)
+
+    def testCFG_TP5_TPX(self):  # test CFG-TP5-TPX constructor
+        res1 = UBXMessage("CFG", "CFG-TP5", POLL, payload=b"\x01")
+        res2 = "<UBX(CFG-TP5, tpIdx=1)>"
+        self.assertEqual(str(res1), res2)
+        res1 = UBXMessage("CFG", "CFG-TP5", POLL, payload=b"\x00")
+        res2 = "<UBX(CFG-TP5, tpIdx=0)>"
+        self.assertEqual(str(res1), res2)
+
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']

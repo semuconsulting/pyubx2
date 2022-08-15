@@ -90,8 +90,8 @@ UBX_PAYLOADS_POLL = {
     "CFG-TMODE2": {},
     "CFG-TMODE3": {},
     "CFG-TP": {},
-    "CFG-TP5": {},
-    "CFG-TP5-TPX": {"tIdx": U1},
+    "CFG-TP5": {},  # used if no payload keyword specified
+    "CFG-TP5-TPX": {"tpIdx": U1},  # used with payload keyword
     "CFG-TXSLOT": {},
     "CFG-USB": {},
     "CFG-VALGET": {
