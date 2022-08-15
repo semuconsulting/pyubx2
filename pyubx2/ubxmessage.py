@@ -558,7 +558,7 @@ class UBXMessage:
     def _get_cfgtp5_version(self, **kwargs) -> dict:
         """
         Select appropriate CFG-TP5 POLL payload definition by checking
-        length of payload.
+        presence of tpIdx or payload argument.
 
         :param kwargs: optional payload key/value pairs
         :return: dictionary representing payload definition
@@ -566,10 +566,11 @@ class UBXMessage:
 
         """
 
+        lp = 0
         if "payload" in kwargs:
             lp = len(kwargs["payload"])
-        else:
-            lp = 0
+        elif "tpIdx" in kwargs:
+            lp = 1
         if lp == 1:
             pdict = ubp.UBX_PAYLOADS_POLL["CFG-TP5-TPX"]
         else:

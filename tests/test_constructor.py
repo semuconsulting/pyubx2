@@ -338,6 +338,12 @@ class FillTest(unittest.TestCase):
         res1 = UBXMessage("CFG", "CFG-TP5", POLL, payload=b"\x00")
         res2 = "<UBX(CFG-TP5, tpIdx=0)>"
         self.assertEqual(str(res1), res2)
+        res1 = UBXMessage("CFG", "CFG-TP5", POLL, tpIdx=0)
+        res2 = "<UBX(CFG-TP5, tpIdx=0)>"
+        self.assertEqual(str(res1), res2)
+        res1 = UBXMessage("CFG", "CFG-TP5", POLL, tpIdx=1)
+        res2 = "<UBX(CFG-TP5, tpIdx=1)>"
+        self.assertEqual(str(res1), res2)
 
 
 if __name__ == "__main__":
