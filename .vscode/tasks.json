@@ -125,10 +125,7 @@
                 "-f", 
                 "-o",
                 "docs",
-                // "${config:modulename}"
-                ".",
-                "tests",
-                "setup.py"
+                "${config:modulename}"
             ],
             "problemMatcher": []
         },
