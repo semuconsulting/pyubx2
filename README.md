@@ -449,6 +449,8 @@ semuadmin@semuconsulting.com
 
 ![License](https://img.shields.io/github/license/semuconsulting/pyubx2.svg)
 
-`pyubx2` is maintained entirely by volunteers. If you find it useful, a small donation would be greatly appreciated!
+`pyubx2` is maintained entirely by unpaid volunteers. It receives no funding from advertising or corporate sponsorship. If you find the library useful, a small donation would be greatly appreciated!
 
-[![Donations](https://www.paypalobjects.com/en_GB/i/btn/btn_donate_LG.gif)](https://www.paypal.com/donate/?hosted_button_id=4TG5HGBNAM7YJ)
+[![Donations](https://www.paypalobjects.com/en_GB/i/btn/btn_donate_LG.gif)](https://www.paypal.com/donate/?business=UL24WUA4XHNRY&no_recurring=0&item_name=The+SEMU+GNSS+Python+libraries+are+maintained+entirely+by+unpaid+volunteers.+All+donations+are+greatly+appreciated.&currency_code=GBP)
+
+
