@@ -1146,12 +1146,9 @@ UBX_PAYLOADS_GET = {
         ),
         "refTp": U1,
         "reserved1": U1,
-        "group": (  # repeating group * 3
-            3,
-            {
-                "end": U4,
-            },
-        ),
+        "end_01": U4,
+        "end_02": U4,
+        "end_03": U4,
     },
     "CFG-USB": {
         "vendorID": U2,
