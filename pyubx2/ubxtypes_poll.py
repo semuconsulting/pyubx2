@@ -64,6 +64,7 @@ UBX_PAYLOADS_POLL = {
     "CFG-FXN": {},
     "CFG-GEOFENCE": {},
     "CFG-GNSS": {},
+    "CFG-HNR": {},
     "CFG-INF": {"protocolID": U1},
     "CFG-ITFM": {},
     "CFG-LOGFILTER": {},
