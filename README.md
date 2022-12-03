@@ -18,15 +18,14 @@ pyubx2
 
 `pyubx2` is an original Python 3 parser for the UBX &copy; protocol. UBX is a proprietary binary protocol implemented on u-blox &trade; GNSS/GPS receiver modules.
 
-The `pyubx2` homepage is located at [https://github.com/semuconsulting/pyubx2](https://github.com/semuconsulting/pyubx2).
-
-This is an independent project and we have no affiliation whatsoever with u-blox.
-
-**FYI** `pyubx2` utilises the following companion libraries, which handle standard NMEA 0183 &copy; and RTCM3 &copy; GNSS/GPS messages.
+**FYI** `pyubx2` is also capable of parsing NMEA 0183 &copy; and RTCM3 &copy; GNSS/GPS messages via the following inbuilt companion libraries:
 
 - [pynmeagps](http://github.com/semuconsulting/pynmeagps)
 - [pyrtcm](http://github.com/semuconsulting/pyrtcm)
 
+The `pyubx2` homepage is located at [https://github.com/semuconsulting/pyubx2](https://github.com/semuconsulting/pyubx2).
+
+This is an independent project and we have no affiliation whatsoever with u-blox.
 
 ## <a name="currentstatus">Current Status</a>
 
