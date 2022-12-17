@@ -1,5 +1,15 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.2.18
+
+CHANGES:
+
+1. Min pyrtcm version updated to v1.0.0.
+2. Min pynmeagps version updated to v1.0.17.
+3. shields.io build status badge URL updated.
+
+No other functional changes.
+
 ### RELEASE 1.2.17
 
 ENHANCEMENTS:
