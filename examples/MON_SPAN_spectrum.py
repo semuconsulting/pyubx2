@@ -1,8 +1,10 @@
 """
-MON_SPAN_spectrum.py
+mon_span_spectrum.py
 
-Simple illustration of how to plot MON-SPAN message contents
-as a spectrum analysis using pyubx2 and matplotlib.
+Simple illustration of how to plot MON-SPAN spectrum data
+as a spectrum analysis chart using pyubx2 and matplotlib.
+
+The mon_span.ubx file contains a single raw MON-SPAN message.
 
 Created on 19 Nov 2020
 
@@ -24,7 +26,6 @@ def plot_spectrum(msg: UBXMessage):
     """
 
     # get MON-SPAN message attributes
-    # convert frequencies to GHz
     # use _02, _03, etc. for subsequent rfBlocks...
     spectrum = msg.spectrum_01
     span = msg.span_01
@@ -55,7 +56,7 @@ def plot_spectrum(msg: UBXMessage):
 if __name__ == "__main__":
 
     # read binary UBX data stream containing one or more MON-SPAN messages
-    with open("receiver.ubx", "rb") as stream:
+    with open("mon_span.ubx", "rb") as stream:
 
         ubr = UBXReader(stream)
         for (raw_data, parsed_data) in ubr.iterate():
