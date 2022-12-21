@@ -40,6 +40,7 @@ def plot_spectrum(msg: UBXMessage):
     y_axis = y_axis / pga  # adjust by receiver gain
 
     # create plot
+    plt.grid(visible=True, which="major", axis="both")
     plt.plot(x_axis, y_axis)
 
     # add title
