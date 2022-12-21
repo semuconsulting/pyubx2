@@ -18,15 +18,16 @@ import numpy as np
 from pyubx2 import UBXReader, UBXMessage
 
 
-def plot_spectrum(msg: UBXMessage):
+def plot_spectrum(msg: UBXMessage, style: str = "default"):
     """
     Plot frequency spectrum from MON-SPAN message
 
     :param UBXMessage msg: MON-SPAN message
+    :param str style: plot style ("default")
     """
 
-    # get MON-SPAN message attributes
-    # use _02, _03, etc. for subsequent rfBlocks...
+    # get MON-SPAN message attributes for first rfBlock
+    # (use _02, _03, etc. for subsequent rfBlocks)
     spectrum = msg.spectrum_01
     span = msg.span_01
     res = msg.res_01
@@ -37,18 +38,20 @@ def plot_spectrum(msg: UBXMessage):
     x_axis = np.arange(center - span / 2, center + span / 2, res)
     x_axis = x_axis / 1e9  # plot as GHz
     y_axis = np.array(spectrum)
-    y_axis = y_axis / pga  # adjust by receiver gain
+    y_axis = y_axis - pga  # adjust by receiver gain
 
     # create plot
-    plt.grid(visible=True, which="major", axis="both")
+    plt.style.use(style)
     plt.plot(x_axis, y_axis)
 
     # add title
     plt.title("MON-SPAN Spectrum Analysis")
 
-    # add axes labels
+    # add axes labels and grid
     plt.xlabel("GHz")
-    plt.ylabel(f"dB / pga (pga = {pga} dB)")
+    plt.ylabel(f"dB - pga (pga = {pga} dB)")
+    plt.ylim(bottom=0)
+    plt.grid(visible=True, which="major", axis="both")
 
     # display plot
     plt.show()
