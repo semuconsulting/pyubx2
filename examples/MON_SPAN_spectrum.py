@@ -4,7 +4,10 @@ mon_span_spectrum.py
 Simple illustration of how to plot MON-SPAN spectrum data
 as a spectrum analysis chart using pyubx2 and matplotlib.
 
-The mon_span.ubx file contains a single raw MON-SPAN message.
+Each MON-SPAN message can contain multiple RF Blocks.
+
+The example mon_span.ubx file contains a single raw
+MON-SPAN message.
 
 Created on 19 Nov 2020
 
@@ -18,42 +21,50 @@ import numpy as np
 from pyubx2 import UBXReader, UBXMessage
 
 
-def plot_spectrum(msg: UBXMessage, style: str = "default"):
+def plot_spectrum(msg: UBXMessage):
     """
     Plot frequency spectrum from MON-SPAN message
 
     :param UBXMessage msg: MON-SPAN message
-    :param str style: plot style ("default")
     """
 
-    # get MON-SPAN message attributes for first rfBlock
-    # (use _02, _03, etc. for subsequent rfBlocks)
-    spectrum = msg.spectrum_01
-    span = msg.span_01
-    res = msg.res_01
-    center = msg.center_01
-    pga = msg.pga_01
+    # set up subplot for each RF block
+    numrf = msg.numRfBlocks
+    fig, sbp = plt.subplots(
+        1,
+        numrf,
+        figsize=(numrf * 5, 4),
+        squeeze=False,
+    )
 
-    # data coordinates
-    x_axis = np.arange(center - span / 2, center + span / 2, res)
-    x_axis = x_axis / 1e9  # plot as GHz
-    y_axis = np.array(spectrum)
-    y_axis = y_axis - pga  # adjust by receiver gain
+    # plot each RF block
+    for i in range(numrf):
 
-    # create plot
-    plt.style.use(style)
-    plt.plot(x_axis, y_axis)
+        # get MON-SPAN message attributes for this RF block
+        idx = f"_{i + 1:02}"
+        spectrum = getattr(msg, "spectrum" + idx)
+        span = getattr(msg, "span" + idx)
+        res = getattr(msg, "res" + idx)
+        center = getattr(msg, "center" + idx)
+        pga = getattr(msg, "pga" + idx)
 
-    # add title
-    plt.title("MON-SPAN Spectrum Analysis")
+        # set data coordinates
+        x_axis = np.arange(center - span / 2, center + span / 2, res)
+        x_axis = x_axis / 1e9  # plot as GHz
+        y_axis = np.array(spectrum)
+        y_axis = y_axis - pga  # adjust by receiver gain
 
-    # add axes labels and grid
-    plt.xlabel("GHz")
-    plt.ylabel(f"dB - pga (pga = {pga} dB)")
-    plt.ylim(bottom=0)
-    plt.grid(visible=True, which="major", axis="both")
+        # create subplot
+        sbp[0][i].plot(x_axis, y_axis)
+        sbp[0][i].set_title(f"RF Block {i + 1}")
+        sbp[0][i].set_xlabel("GHz")
+        sbp[0][i].set_ylabel(f"dB - pga (pga = {pga} dB)")
+        sbp[0][i].set_ylim(bottom=0)
+        sbp[0][i].grid(visible=True, which="major", axis="both")
 
     # display plot
+    fig.suptitle("MON-SPAN Spectrum Analysis")
+    plt.tight_layout()
     plt.show()
 
 
