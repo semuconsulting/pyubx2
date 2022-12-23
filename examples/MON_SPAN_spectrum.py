@@ -6,8 +6,7 @@ as a spectrum analysis chart using pyubx2 and matplotlib.
 
 Each MON-SPAN message can contain multiple RF Blocks.
 
-The example mon_span.ubx file contains a single raw
-MON-SPAN message.
+The sample mon_span.ubx file contains a single raw MON-SPAN message.
 
 Created on 19 Nov 2020
 
@@ -28,43 +27,34 @@ def plot_spectrum(msg: UBXMessage):
     :param UBXMessage msg: MON-SPAN message
     """
 
-    # set up subplot for each RF block
+    # MON-SPAN message can contain multiple RF blocks
     numrf = msg.numRfBlocks
-    fig, sbp = plt.subplots(
-        1,
-        numrf,
-        figsize=(numrf * 5, 4),
-        squeeze=False,
-    )
 
     # plot each RF block
-    for i in range(numrf):
+    for i in range(1, numrf + 1):
 
         # get MON-SPAN message attributes for this RF block
-        idx = f"_{i + 1:02}"
-        spectrum = getattr(msg, "spectrum" + idx)
-        span = getattr(msg, "span" + idx)
+        idx = f"_{i:02}"
+        spec = getattr(msg, "spectrum" + idx)
+        spn = getattr(msg, "span" + idx)
         res = getattr(msg, "res" + idx)
-        center = getattr(msg, "center" + idx)
+        ctr = getattr(msg, "center" + idx)
         pga = getattr(msg, "pga" + idx)
 
         # set data coordinates
-        x_axis = np.arange(center - span / 2, center + span / 2, res)
-        x_axis = x_axis / 1e9  # plot as GHz
-        y_axis = np.array(spectrum)
-        y_axis = y_axis - pga  # adjust by receiver gain
+        x_axis = np.arange(ctr - spn / 2, ctr + spn / 2, res) / 1e9  # plot as GHz
+        y_axis = np.array(spec) - pga  # adjust by receiver gain
 
-        # create subplot
-        sbp[0][i].plot(x_axis, y_axis)
-        sbp[0][i].set_title(f"RF Block {i + 1}")
-        sbp[0][i].set_xlabel("GHz")
-        sbp[0][i].set_ylabel(f"dB - pga (pga = {pga} dB)")
-        sbp[0][i].set_ylim(bottom=0)
-        sbp[0][i].grid(visible=True, which="major", axis="both")
+        # create plot
+        plt.plot(x_axis, y_axis, label=f"RF {i}")
 
     # display plot
-    fig.suptitle("MON-SPAN Spectrum Analysis")
-    plt.tight_layout()
+    plt.title("MON-SPAN Spectrum Analysis")
+    plt.legend(fontsize="small")
+    plt.xlabel("GHz")
+    plt.ylabel("dB")
+    plt.ylim(bottom=0)
+    plt.grid()
     plt.show()
 
 

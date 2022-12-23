@@ -373,6 +373,7 @@ The following command line examples can be found in the `\examples` folder:
 1. `ubxserver.py` in the \examples\webserver folder illustrates a simple HTTP web server wrapper around `pyubx2.UBXreader`; it presents data from selected UBX messages as a web page http://localhost:8080 or a RESTful API http://localhost:8080/gps.
 1. `benchmark.py` provides a simple performance benchmarking tool for the `pyubx2` parser.
 1. `gnssserver.py` implements a simple but fully-functional command-line TCP Socket Server or NTRIP server, broadcasting GNSS data from the receiver to any connected TCP socket client.
+1. `mon_span_spectrum.py` illustrates how to use `pyubx2` and `matplotlib` to plot a spectrum analysis graph from a UBX MON-SPAN message.
 
 ---
 ## <a name="extensibility">Extensibility</a>
