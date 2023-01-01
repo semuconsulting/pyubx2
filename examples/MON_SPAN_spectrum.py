@@ -6,7 +6,8 @@ as a spectrum analysis chart using pyubx2 and matplotlib.
 
 Each MON-SPAN message can contain multiple RF Blocks.
 
-The sample mon_span.ubx file contains a single raw MON-SPAN message.
+The sample mon_span.ubx file contains a multiple MON-SPAN
+messages, each of which has two frequency blocks (L1 & L2).
 
 Created on 19 Nov 2020
 
@@ -15,9 +16,16 @@ Created on 19 Nov 2020
 :license: BSD 3-Clause
 """
 
+from random import randrange
 import matplotlib.pyplot as plt
 import numpy as np
 from pyubx2 import UBXReader, UBXMessage
+
+RF_SIGS = {
+    "L1": 1.57542,
+    "L2": 1.22760,
+    "L5": 1.17645,
+}
 
 
 def plot_spectrum(msg: UBXMessage):
@@ -31,6 +39,7 @@ def plot_spectrum(msg: UBXMessage):
     numrf = msg.numRfBlocks
 
     # plot each RF block
+    maxdb = 0
     for i in range(1, numrf + 1):
 
         # get MON-SPAN message attributes for this RF block
@@ -43,10 +52,17 @@ def plot_spectrum(msg: UBXMessage):
 
         # set data coordinates
         x_axis = np.arange(ctr - spn / 2, ctr + spn / 2, res) / 1e9  # plot as GHz
-        y_axis = np.array(spec) - pga  # adjust by receiver gain
+        y_axis = np.array(spec)  # - pga  # adjust by receiver gain
+        maxdb = max(maxdb, np.max(y_axis))
 
         # create plot
         plt.plot(x_axis, y_axis, label=f"RF {i}")
+
+    for nam, frq in RF_SIGS.items():
+        x_axis = np.array([frq, frq])
+        y_axis = np.array([0, maxdb])
+        # create plot
+        plt.plot(x_axis, y_axis, label=f"{nam}", linestyle="dotted")
 
     # display plot
     plt.title("MON-SPAN Spectrum Analysis")
