@@ -191,9 +191,8 @@ The `payload` attribute always contains the raw payload as bytes. Attributes wit
 ```
 svids = [] # list of svid values from repeating group
 size = msg.numSV # size of repeating group
-for i in range(1, size + 1):
-    idx = f"_{i:02}"
-    svid = getattr(msg, "svid" + idx)
+for i in range(size):
+    svid = getattr(msg, f"svid_{i+1:02}")
     svids.append(svid)
 ```
 
