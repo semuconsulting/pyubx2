@@ -470,31 +470,31 @@ def hextable(raw: bytes, cols: int = 8) -> str:
     return hextbl
 
 
-def latlon2dms(latlon: tuple) -> tuple:
+def latlon2dms(lat: float, lon: float) -> tuple:
     """
     Converts decimal lat/lon tuple to degrees minutes seconds.
 
-    :param tuple latlon: tuple of (lat, lon) as floats
+    :param float lat: lat
+    :param float lon: lon
     :return: (lat,lon) in d.m.s. format
     :rtype: tuple
     """
 
-    lat, lon = latlon
     lat = deg2dms(lat, "LA")
     lon = deg2dms(lon, "LN")
     return lat, lon
 
 
-def latlon2dmm(latlon: tuple) -> tuple:
+def latlon2dmm(lat: float, lon: float) -> tuple:
     """
     Converts decimal lat/lon tuple to degrees decimal minutes.
 
-    :param tuple latlon: tuple of (lat, lon) as floats
+    :param float lat: lat
+    :param float lon: lon
     :return: (lat,lon) in d.mm.m format
     :rtype: tuple
     """
 
-    lat, lon = latlon
     lat = deg2dmm(lat, "LA")
     lon = deg2dmm(lon, "LN")
     return lat, lon

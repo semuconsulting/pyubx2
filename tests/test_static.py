@@ -281,15 +281,15 @@ class StaticTest(unittest.TestCase):
         self.assertEqual(res, "")
 
     def testlatlon2dms(self):
-        res = latlon2dms((53.346, -2.5463))
+        res = latlon2dms(53.346, -2.5463)
         self.assertEqual(res, ("53°20′45.6″N", "2°32′46.68″W"))
 
     def testlatlon2dmm(self):
-        res = latlon2dmm((53.346, -2.5463))
+        res = latlon2dmm(53.346, -2.5463)
         self.assertEqual(res, ("53°20.76′N", "2°32.778′W"))
 
     def testlatlon2dmm(self):
-        res = latlon2dmm((53.346, -2.5463))
+        res = latlon2dmm(53.346, -2.5463)
         self.assertEqual(res, ("53°20.76′N", "2°32.778′W"))
 
     def testecef2llh(self):
