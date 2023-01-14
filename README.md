@@ -9,6 +9,7 @@ pyubx2
 [Generating](#generating) |
 [Serializing](#serializing) |
 [Configuration Interface](#configinterface) |
+[Utilities](#utilities) |
 [Examples](#examples) |
 [Extensibility](#extensibility) |
 [Troubleshooting](#troubleshoot) |
@@ -18,7 +19,7 @@ pyubx2
 
 `pyubx2` is an original Python 3 parser for the UBX &copy; protocol. UBX is a proprietary binary protocol implemented on u-blox &trade; GNSS/GPS receiver modules.
 
-**FYI** `pyubx2` is also capable of parsing NMEA 0183 &copy; and RTCM3 &copy; GNSS/GPS messages via the following inbuilt companion libraries:
+`pyubx2` is also capable of parsing NMEA 0183 &copy; and RTCM3 &copy; GNSS/GPS messages via the following inbuilt companion libraries:
 
 - [pynmeagps](http://github.com/semuconsulting/pynmeagps)
 - [pyrtcm](http://github.com/semuconsulting/pyrtcm)
@@ -184,7 +185,7 @@ e.g. the `NAV-POSLLH` message has the following attributes:
 37.844
 ```
 
-The `payload` attribute always contains the raw payload as bytes. Attributes within repeating groups are parsed with a two-digit suffix (svid_01, svid_02, etc.). 
+The `payload` attribute always contains the raw payload as bytes. Attributes within repeating groups are parsed with a two-digit suffix (svid_01, svid_02, etc.).
 
 **Tip:** To iterate through a repeating group of attributes (*e.g., svid*), the following construct can be used:
 
@@ -368,6 +369,19 @@ Wild card queries can be performed by setting bits 0..15 of the keyID to `0xffff
 ```
 
 ---
+## <a name="utilities">Utility Methods</a>
+ 
+ `pyubx2` provides the following utility methods:
+
+ - `latlon2dms` - converts decimal lat/lon to degrees, minutes, decimal seconds format e.g. "53°20′45.6″N", "2°32′46.68″W"
+ - `latlon2dmm` - converts decimal lat/lon to degrees, decimal minutes format e.g. "53°20.76′N", "2°32.778′W"
+ - `ecef2lla` - converts ECEF (X, Y, Z) coordinates to geodetic (lat, lon, alt) coordinates
+ - `lla2ecef` - converts geodetic (lat, lon, alt) coordinates to ECEF (X, Y, Z) coordinates
+ - `haversine` - finds spherical distance in metres between two sets of (lat, lon) coordinates
+
+See [Sphinx documentation](https://www.semuconsulting.com/pyubx2/pyubx2.html#module-pyubx2.ubxhelpers) for details.
+
+---
 ## <a name="examples">Examples</a>
 
 The following command line examples can be found in the `\examples` folder:
@@ -447,8 +461,7 @@ gnssdump -h
 ---
 ## <a name="gui">Graphical Client</a>
 
-A python/tkinter graphical GPS client which supports both NMEA and UBX protocols (via pynmeagps and pyubx2 
-respectively) is available at: 
+A python/tkinter graphical GPS client which supports NMEA, UBX and RTCM3 protocols (via pynmeagps, pyubx2 and pyrtcm respectively) is available at: 
 
 [https://github.com/semuconsulting/PyGPSClient](https://github.com/semuconsulting/PyGPSClient)
 

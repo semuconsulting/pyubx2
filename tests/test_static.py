@@ -35,6 +35,13 @@ from pyubx2.ubxhelpers import (
     hextable,
     att2idx,
     att2name,
+    deg2dms,
+    deg2dmm,
+    latlon2dms,
+    latlon2dmm,
+    ecef2lla,
+    lla2ecef,
+    haversine,
 )
 
 
@@ -260,6 +267,85 @@ class StaticTest(unittest.TestCase):
             res = att2name(att)
             # print(res)
             self.assertEqual(res, EXPECTED_RESULT[i])
+
+    def testdeg2dms(self):
+        res = deg2dms(53.346, "LA")
+        self.assertEqual(res, ("53°20′45.6″N"))
+        res = deg2dms("xxx", "LA")
+        self.assertEqual(res, "")
+
+    def testdeg2dmm(self):
+        res = deg2dmm(-2.5463, "LN")
+        self.assertEqual(res, ("2°32.778′W"))
+        res = deg2dmm("xxx", "LN")
+        self.assertEqual(res, "")
+
+    def testlatlon2dms(self):
+        res = latlon2dms((53.346, -2.5463))
+        self.assertEqual(res, ("53°20′45.6″N", "2°32′46.68″W"))
+
+    def testlatlon2dmm(self):
+        res = latlon2dmm((53.346, -2.5463))
+        self.assertEqual(res, ("53°20.76′N", "2°32.778′W"))
+
+    def testlatlon2dmm(self):
+        res = latlon2dmm((53.346, -2.5463))
+        self.assertEqual(res, ("53°20.76′N", "2°32.778′W"))
+
+    def testecef2lla(self):
+        vals = [
+            (3822566.3113, -144427.5123, 5086857.1208),
+            (3980570.0700029507, 0.0, 4966833.391498124),
+            (10000, 10000, 10000),
+        ]
+        res = [
+            (53.24168283407126, -2.1637695489854565, 214.97854665775156),
+            (51.477928, 0, 0),
+            (0, 0, -1.0e7),
+        ]
+        for i, val in enumerate(vals):
+            lat, lon, alt = ecef2lla(val[0], val[1], val[2])
+            self.assertAlmostEqual(lat, res[i][0], 7)
+            self.assertAlmostEqual(lon, res[i][1], 7)
+            self.assertAlmostEqual(alt, res[i][2], 7)
+
+    def testlla2ecef(self):
+        vals = [
+            (53.24168283407126, -2.1637695489854565, 214.97854665775156),
+            (51.477928, 0, 0),
+        ]
+        res = [
+            (3822566.3113, -144427.5123, 5086857.1208),
+            (3980570.0700029507, 0.0, 4966833.391498124),
+        ]
+        for i, val in enumerate(vals):
+            x, y, z = lla2ecef(val[0], val[1], val[2])
+            self.assertAlmostEqual(x, res[i][0], 7)
+            self.assertAlmostEqual(y, res[i][1], 7)
+            self.assertAlmostEqual(z, res[i][2], 7)
+
+    def testlla2eceftab(self):  # test conversion there and back
+        vals = [
+            (53.24, -2.16, 214.98),
+            (-7.48, 67.87, 43.12),
+            (-34.51, -56.09, 1745.98),
+            (90, 90, -435184.65),
+            (0, 0, 0),
+        ]
+        for i, val in enumerate(vals):
+            x, y, z = lla2ecef(val[0], val[1], val[2])
+            lat, lon, alt = ecef2lla(x, y, z)
+            self.assertAlmostEqual(lat, val[0], 2)
+            self.assertAlmostEqual(lon, val[1], 2)
+            self.assertAlmostEqual(alt, val[2], 2)
+
+    def testhaversine(self):
+        res = haversine(51.23, -2.41, 34.205, 56.34)
+        self.assertAlmostEqual(res, 5010721.853179245, 4)
+        res = haversine(-12.645, 34.867, 145.1745, -56.27846)
+        self.assertAlmostEqual(res, 10715370.876703888, 4)
+        res = haversine(53.45, -2.14, 53.451, -2.141)
+        self.assertAlmostEqual(res, 129.56369376761418, 4)
 
 
 if __name__ == "__main__":
