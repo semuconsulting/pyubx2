@@ -551,9 +551,9 @@ def deg2dmm(degrees: float, att: str) -> str:
         return ""
 
 
-def ecef2lla(x: float, y: float, z: float) -> tuple:
+def ecef2llh(x: float, y: float, z: float) -> tuple:
     """
-    Convert ECEF coordinates to geodetic (LLA) using Olson 1996 algorithm and WGS84 datum.
+    Convert ECEF coordinates to geodetic (LLH) using Olson 1996 algorithm and WGS84 datum.
 
     Olson, D. K. (1996). Converting Earth-Centered, Earth-Fixed Coordinates to
     Geodetic Coordinates. IEEE Transactions on Aerospace and Electronic Systems,
@@ -562,7 +562,7 @@ def ecef2lla(x: float, y: float, z: float) -> tuple:
     :param float x: X coordinate
     :param float y: Y coordinate
     :param float z: Z coordinate
-    :return: tuple of (lat, lon, alt) as floats in m
+    :return: tuple of (lat, lon, ellipsoidal height) as floats in m
     :rtype: tuple
     """
 
@@ -584,10 +584,7 @@ def ecef2lla(x: float, y: float, z: float) -> tuple:
     # algorithm inaccurate near Earth's core
     # so nominal value returned
     if r < 100000.0:
-        lat = 0.0
-        lon = 0.0
-        alt = -1.0e7
-        return lat, lon, alt
+        return 0.0, 0.0, -1.0e7
 
     lon = atan2(y, x)
     s2 = z2 / r2
@@ -613,20 +610,20 @@ def ecef2lla(x: float, y: float, z: float) -> tuple:
     m = c * v - s * u
     p = m / (rf / g + f)
     lat = lat + p
-    alt = f + m * p / 2.0
+    height = f + m * p / 2.0
     if z < 0.0:
         lat = -lat
 
-    return lat * 180 / pi, lon * 180 / pi, alt
+    return lat * 180 / pi, lon * 180 / pi, height
 
 
-def lla2ecef(lat: float, lon: float, alt: float) -> tuple:
+def llh2ecef(lat: float, lon: float, height: float) -> tuple:
     """
-    Convert geodetic coordinates (LLA) to ECEF using WGS84 datum.
+    Convert geodetic coordinates (LLH) to ECEF using WGS84 datum.
 
     :param float lat: lat in degrees
     :param float lon: lon on degrees
-    :param float alt: altitude in metres
+    :param float height: ellipsoidal height in metres
     :return: tuple of ECEF (X, Y, Z) as floats
     :rtype: tuple
     """
@@ -640,9 +637,9 @@ def lla2ecef(lat: float, lon: float, alt: float) -> tuple:
     b2 = a2 * (1 - e2)
 
     N = a / sqrt(1 - e2 * sin(lat) ** 2)
-    x = (N + alt) * cos(lat) * cos(lon)
-    y = (N + alt) * cos(lat) * sin(lon)
-    z = ((b2 / a2) * N + alt) * sin(lat)
+    x = (N + height) * cos(lat) * cos(lon)
+    y = (N + height) * cos(lat) * sin(lon)
+    z = ((b2 / a2) * N + height) * sin(lat)
 
     return x, y, z
 
