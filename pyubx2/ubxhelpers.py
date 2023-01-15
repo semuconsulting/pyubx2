@@ -567,13 +567,14 @@ def ecef2llh(
     :param float y: Y coordinate
     :param float z: Z coordinate
     :param float a: semi-major axis (6378137.0 for WGS84)
-    :param float f: flattening (1 / 298.257223563 for WGS84)
+    :param float f: flattening (298.257223563 for WGS84)
     :return: tuple of (lat, lon, ellipsoidal height in m) as floats
     :rtype: tuple
     """
     # pylint: disable=too-many-locals
 
     # commented default values are for WGS84 spheroid
+    f = 1 / f
     e2 = f * (2 - f)  # 6.6943799901377997e-3
     a1 = a * e2  # 4.2697672707157535e4
     a2 = a1 * a1  # 1.8230912546075455e9
@@ -639,13 +640,14 @@ def llh2ecef(
     :param float lon: lon on degrees
     :param float height: ellipsoidal height in metres
     :param float a: semi-major axis (6378137.0 for WGS84)
-    :param float f: flattening (1 / 298.257223563 for WGS84)
+    :param float f: flattening (298.257223563 for WGS84)
     :return: tuple of ECEF (X, Y, Z) as floats
     :rtype: tuple
     """
 
     lat, lon = [c * pi / 180 for c in (lat, lon)]
 
+    f = 1 / f
     e2 = f * (2 - f)
     a2 = a**2
     b2 = a2 * (1 - e2)
