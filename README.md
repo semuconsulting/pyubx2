@@ -377,7 +377,7 @@ Wild card queries can be performed by setting bits 0..15 of the keyID to `0xffff
  - `latlon2dmm` - converts decimal lat/lon to degrees, decimal minutes format e.g. "53°20.76′N", "2°32.778′W"
  - `ecef2llh` - converts ECEF (X, Y, Z) coordinates to geodetic (lat, lon, ellipsoidal height) coordinates
  - `llh2ecef` - converts geodetic (lat, lon, ellipsoidal height) coordinates to ECEF (X, Y, Z) coordinates
- - `haversine` - finds spherical distance in metres between two sets of (lat, lon) coordinates
+ - `haversine` - finds spherical distance in km between two sets of (lat, lon) coordinates
 
 See [Sphinx documentation](https://www.semuconsulting.com/pyubx2/pyubx2.html#module-pyubx2.ubxhelpers) for details.
 

@@ -553,7 +553,7 @@ def deg2dmm(degrees: float, att: str) -> str:
 
 def ecef2llh(x: float, y: float, z: float) -> tuple:
     """
-    Convert ECEF coordinates to geodetic (LLH) using Olson 1996 algorithm and WGS84 datum.
+    Convert ECEF coordinates to geodetic (LLH) using Olson algorithm and WGS84 datum.
 
     Olson, D. K. (1996). Converting Earth-Centered, Earth-Fixed Coordinates to
     Geodetic Coordinates. IEEE Transactions on Aerospace and Electronic Systems,
@@ -562,9 +562,10 @@ def ecef2llh(x: float, y: float, z: float) -> tuple:
     :param float x: X coordinate
     :param float y: Y coordinate
     :param float z: Z coordinate
-    :return: tuple of (lat, lon, ellipsoidal height) as floats in m
+    :return: tuple of (lat, lon, ellipsoidal height in m) as floats
     :rtype: tuple
     """
+    # pylint: disable=too-many-locals
 
     a = EARTH_RADIUS  # semi-major radius of Earth
     e2 = ECTY_SQUARED  # eccentricity squared
@@ -614,7 +615,8 @@ def ecef2llh(x: float, y: float, z: float) -> tuple:
     if z < 0.0:
         lat = -lat
 
-    return lat * 180 / pi, lon * 180 / pi, height
+    lat, lon = [c * 180 / pi for c in (lat, lon)]
+    return lat, lon, height
 
 
 def llh2ecef(lat: float, lon: float, height: float) -> tuple:
@@ -628,8 +630,7 @@ def llh2ecef(lat: float, lon: float, height: float) -> tuple:
     :rtype: tuple
     """
 
-    lat = lat * pi / 180
-    lon = lon * pi / 180
+    lat, lon = [c * pi / 180 for c in (lat, lon)]
 
     a = EARTH_RADIUS  # semi-major radius of Earth
     e2 = ECTY_SQUARED  # eccentricity squared
@@ -645,24 +646,27 @@ def llh2ecef(lat: float, lon: float, height: float) -> tuple:
 
 
 def haversine(
-    lat1: float, lon1: float, lat2: float, lon2: float, rds: int = EARTH_RADIUS
+    lat1: float,
+    lon1: float,
+    lat2: float,
+    lon2: float,
+    radius: int = EARTH_RADIUS / 1000,
 ) -> float:
     """
-    Calculate spherical distance between two coordinates using haversine formula.
+    Calculate spherical distance in km between two coordinates using haversine formula.
 
     :param float lat1: lat1
     :param float lon1: lon1
     :param float lat2: lat2
     :param float lon2: lon2
-    :param float rds: earth radius in m (6378137.0)
-    :return: spherical distance in m
+    :param float radius: radius in km (Earth = 6378.137 km)
+    :return: spherical distance in km
     :rtype: float
     """
 
-    coordinates = lat1, lon1, lat2, lon2
-    phi1, lambda1, phi2, lambda2 = [c * pi / 180 for c in coordinates]
-    dist = rds * acos(
+    phi1, lambda1, phi2, lambda2 = [c * pi / 180 for c in (lat1, lon1, lat2, lon2)]
+    dist = radius * acos(
         cos(phi2 - phi1) - cos(phi1) * cos(phi2) * (1 - cos(lambda2 - lambda1))
     )
 
-    return dist
+    return round(dist, 3)

@@ -341,11 +341,11 @@ class StaticTest(unittest.TestCase):
 
     def testhaversine(self):
         res = haversine(51.23, -2.41, 34.205, 56.34)
-        self.assertAlmostEqual(res, 5010721.853179245, 4)
+        self.assertAlmostEqual(res, 5010.722, 3)
         res = haversine(-12.645, 34.867, 145.1745, -56.27846)
-        self.assertAlmostEqual(res, 10715370.876703888, 4)
+        self.assertAlmostEqual(res, 10715.371, 3)
         res = haversine(53.45, -2.14, 53.451, -2.141)
-        self.assertAlmostEqual(res, 129.56369376761418, 4)
+        self.assertAlmostEqual(res, 0.1296, 3)
 
 
 if __name__ == "__main__":
