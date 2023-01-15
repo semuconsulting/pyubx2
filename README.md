@@ -398,6 +398,7 @@ The following command line examples can be found in the `\examples` folder:
 1. `benchmark.py` provides a simple performance benchmarking tool for the `pyubx2` parser.
 1. `gnssserver.py` implements a simple but fully-functional command-line TCP Socket Server or NTRIP server, broadcasting GNSS data from the receiver to any connected TCP socket client.
 1. `mon_span_spectrum.py` illustrates how to use `pyubx2` and `matplotlib` to plot a spectrum analysis graph from a UBX MON-SPAN message.
+1. `utilities.py` illustrates how to use various `pyubx2` utility methods.
 
 ---
 ## <a name="extensibility">Extensibility</a>

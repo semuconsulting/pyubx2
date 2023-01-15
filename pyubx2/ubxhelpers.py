@@ -15,11 +15,9 @@ from datetime import datetime, timedelta
 from math import sqrt, sin, cos, atan2, asin, acos, pi
 from pyubx2.ubxtypes_core import GNSSLIST, UBX_HDR, NMEA_HDR
 import pyubx2.ubxtypes_core as ubt
+from pyubx2.ubxtypes_core import WGS84_SMAJ_AXIS, WGS84_FLATTENING
 import pyubx2.ubxtypes_configdb as ubcdb
 import pyubx2.exceptions as ube
-
-EARTH_RADIUS = 6378137.0
-ECTY_SQUARED = 6.6943799901377997e-3
 
 
 def att2idx(att: str) -> int:
@@ -551,9 +549,15 @@ def deg2dmm(degrees: float, att: str) -> str:
         return ""
 
 
-def ecef2llh(x: float, y: float, z: float) -> tuple:
+def ecef2llh(
+    x: float,
+    y: float,
+    z: float,
+    a: float = WGS84_SMAJ_AXIS,
+    f: float = WGS84_FLATTENING,
+) -> tuple:
     """
-    Convert ECEF coordinates to geodetic (LLH) using Olson algorithm and WGS84 datum.
+    Convert ECEF coordinates to geodetic (LLH) using Olson algorithm.
 
     Olson, D. K. (1996). Converting Earth-Centered, Earth-Fixed Coordinates to
     Geodetic Coordinates. IEEE Transactions on Aerospace and Electronic Systems,
@@ -562,19 +566,21 @@ def ecef2llh(x: float, y: float, z: float) -> tuple:
     :param float x: X coordinate
     :param float y: Y coordinate
     :param float z: Z coordinate
+    :param float a: semi-major axis (6378137.0 for WGS84)
+    :param float f: flattening (1 / 298.257223563 for WGS84)
     :return: tuple of (lat, lon, ellipsoidal height in m) as floats
     :rtype: tuple
     """
     # pylint: disable=too-many-locals
 
-    a = EARTH_RADIUS  # semi-major radius of Earth
-    e2 = ECTY_SQUARED  # eccentricity squared
-    a1 = 4.2697672707157535e4
-    a2 = 1.8230912546075455e9
-    a3 = 1.4291722289812413e2
-    a4 = 4.5577281365188637e9
-    a5 = 4.2840589930055659e4
-    a6 = 9.9330562000986220e-1
+    # commented default values are for WGS84 spheroid
+    e2 = f * (2 - f)  # 6.6943799901377997e-3
+    a1 = a * e2  # 4.2697672707157535e4
+    a2 = a1 * a1  # 1.8230912546075455e9
+    a3 = a1 * e2 / 2  # 1.8230912546075455e9
+    a4 = 2.5 * a2  # 4.5577281365188637e9
+    a5 = a1 + a3  # 4.2840589930055659e4
+    a6 = 1 - e2  # 9.9330562000986220e-1
     zp = abs(z)
     w2 = x * x + y * y
     w = sqrt(w2)
@@ -619,21 +625,28 @@ def ecef2llh(x: float, y: float, z: float) -> tuple:
     return lat, lon, height
 
 
-def llh2ecef(lat: float, lon: float, height: float) -> tuple:
+def llh2ecef(
+    lat: float,
+    lon: float,
+    height: float,
+    a: float = WGS84_SMAJ_AXIS,
+    f: float = WGS84_FLATTENING,
+) -> tuple:
     """
-    Convert geodetic coordinates (LLH) to ECEF using WGS84 datum.
+    Convert geodetic coordinates (LLH) to ECEF.
 
     :param float lat: lat in degrees
     :param float lon: lon on degrees
     :param float height: ellipsoidal height in metres
+    :param float a: semi-major axis (6378137.0 for WGS84)
+    :param float f: flattening (1 / 298.257223563 for WGS84)
     :return: tuple of ECEF (X, Y, Z) as floats
     :rtype: tuple
     """
 
     lat, lon = [c * pi / 180 for c in (lat, lon)]
 
-    a = EARTH_RADIUS  # semi-major radius of Earth
-    e2 = ECTY_SQUARED  # eccentricity squared
+    e2 = f * (2 - f)
     a2 = a**2
     b2 = a2 * (1 - e2)
 
@@ -650,7 +663,7 @@ def haversine(
     lon1: float,
     lat2: float,
     lon2: float,
-    radius: int = EARTH_RADIUS / 1000,
+    radius: int = WGS84_SMAJ_AXIS / 1000,
 ) -> float:
     """
     Calculate spherical distance in km between two coordinates using haversine formula.

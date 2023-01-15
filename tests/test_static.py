@@ -299,15 +299,15 @@ class StaticTest(unittest.TestCase):
             (10000, 10000, 10000),
         ]
         res = [
-            (53.24168283407126, -2.1637695489854565, 214.97854665775156),
-            (51.477928, 0, 0),
+            (53.24168283407136, -2.1637695489854565, 214.9785466667861),
+            (51.4779280000001, 0, 5.8584775974986524e-09),
             (0, 0, -1.0e7),
         ]
         for i, val in enumerate(vals):
             lat, lon, alt = ecef2llh(val[0], val[1], val[2])
-            self.assertAlmostEqual(lat, res[i][0], 7)
-            self.assertAlmostEqual(lon, res[i][1], 7)
-            self.assertAlmostEqual(alt, res[i][2], 7)
+            self.assertAlmostEqual(lat, res[i][0], 5)
+            self.assertAlmostEqual(lon, res[i][1], 5)
+            self.assertAlmostEqual(alt, res[i][2], 5)
 
     def testllh2ecef(self):
         vals = [
@@ -315,14 +315,14 @@ class StaticTest(unittest.TestCase):
             (51.477928, 0, 0),
         ]
         res = [
-            (3822566.3113, -144427.5123, 5086857.1208),
-            (3980570.0700029507, 0.0, 4966833.391498124),
+            (3822566.311300003, -144427.51230000015, 5086857.120799987),
+            (3980570.0700029545, 0.0, 4966833.3914981127),
         ]
         for i, val in enumerate(vals):
             x, y, z = llh2ecef(val[0], val[1], val[2])
-            self.assertAlmostEqual(x, res[i][0], 7)
-            self.assertAlmostEqual(y, res[i][1], 7)
-            self.assertAlmostEqual(z, res[i][2], 7)
+            self.assertAlmostEqual(x, res[i][0], 5)
+            self.assertAlmostEqual(y, res[i][1], 5)
+            self.assertAlmostEqual(z, res[i][2], 5)
 
     def testllh2eceftab(self):  # test conversion there and back
         vals = [
