@@ -1,5 +1,18 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.2.9
+
+ENHANCEMENTS:
+
+1. New utility methods added to `ubxhelpers.py`:
+
+- `latlon2dms()` - converts decimal lat/lon to degrees, minutes, decimal seconds format e.g. "53°20′45.6″N", "2°32′46.68″W"
+- `latlon2dmm()` - converts decimal lat/lon to degrees, decimal minutes format e.g. "53°20.76′N", "2°32.778′W"
+- `ecef2llh()` - converts ECEF (X, Y, Z) coordinates to geodetic (lat, lon, height) coordinates
+- `llh2ecef()` - converts geodetic (lat, lon, helght) coordinates to ECEF (X, Y, Z) coordinates
+- `haversine()` - finds spherical distance in km between two sets of (lat, lon) coordinates
+
+
 ### RELEASE 1.2.18
 
 CHANGES:
