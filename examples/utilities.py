@@ -45,6 +45,10 @@ print(f"\nConvert geodetic {lat}, {lon}, {height} back to ECEF ...")
 x, y, z = llh2ecef(lat, lon, height)
 print(f"ECEF X: {x}, Y: {y}, Z: {z}")
 
+
+# Refer to DATUMS.py for list of common international datums with
+# semi-major axis and flattening values and delta_x,y,z
+
 print(
     f"\nConvert ECEF X: {X}, Y: {Y}, Z: {Z} to geodetic using alternate GRS80 datum ..."
 )
