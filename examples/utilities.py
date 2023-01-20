@@ -10,10 +10,10 @@ Created on 14 Jan 2023
 :license: BSD 3-Clause
 """
 
-from pyubx2 import latlon2dms, latlon2dmm, ecef2llh, llh2ecef, haversine
-from DATUMS import DATUMS  # assumes this is in same folder
+from pyubx2 import latlon2dms, latlon2dmm, llh2iso6709, ecef2llh, llh2ecef, haversine
+from datums import DATUMS  # assumes this is in same folder
 
-LAT1, LON1 = 53.24, -2.16
+LAT1, LON1, ALT1 = 53.24, -2.16, 42.45
 LAT2, LON2 = 53.32, -2.08
 
 print(f"\nConvert {LAT1}, {LON1} to degrees, minutes, seconds ...")
@@ -23,6 +23,10 @@ print(f"D.M.S = {lat}, {lon}")
 print(f"\nConvert {LAT2}, {LON2} to degrees, minutes ...")
 lat, lon = latlon2dmm(LAT2, LON2)
 print(f"D.MM = {lat}, {lon}")
+
+print(f"\nConvert {LAT1}, {LON1}, {ALT1}m to ISO6709 format ...")
+iso6709 = llh2iso6709(LAT1, LON1, ALT1)
+print(f"ISO6709 = {iso6709}")
 
 print(
     f"\nFind spherical distance between {LAT1}, {LON1} and",
