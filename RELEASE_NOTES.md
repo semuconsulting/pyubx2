@@ -2,6 +2,10 @@
 
 ### RELEASE 1.2.20
 
+FIXES:
+
+1. Add sigId attribute to RXM-RAWX message definition (Fixes #97)
+
 CHANGES:
 
 1. Internal updates for compatibility with pynmeagps>=1.0.18. No functional changes.
