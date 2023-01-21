@@ -24,6 +24,14 @@ from pyubx2.ubxtypes_get import *
 from pyubx2.ubxtypes_poll import *
 from pyubx2.ubxtypes_set import *
 from pyubx2.ubxhelpers import *
+from pynmeagps.nmeahelpers import (
+    latlon2dmm,
+    latlon2dms,
+    llh2iso6709,
+    ecef2llh,
+    llh2ecef,
+    haversine,
+)
 from pyubx2.ubxtypes_configdb import *
 
 version = __version__  # pylint: disable=invalid-name

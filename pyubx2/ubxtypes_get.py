@@ -3215,7 +3215,7 @@ UBX_PAYLOADS_GET = {
                 "doMes": R4,
                 "gnssId": U1,
                 "svId": U1,
-                "reserved2": U1,
+                "sigId": U1,
                 "freqId": U1,
                 "locktime": U2,
                 "cno": U1,

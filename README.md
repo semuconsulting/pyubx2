@@ -378,6 +378,7 @@ Wild card queries can be performed by setting bits 0..15 of the keyID to `0xffff
  - `ecef2llh` - converts ECEF (X, Y, Z) coordinates to geodetic (lat, lon, ellipsoidal height) coordinates
  - `llh2ecef` - converts geodetic (lat, lon, ellipsoidal height) coordinates to ECEF (X, Y, Z) coordinates
  - `haversine` - finds spherical distance in km between two sets of (lat, lon) coordinates
+ - `cel2cart` - converts celestial coordinates (elevation, azimuth) to cartesian coordinations (X,Y)
 
 See [Sphinx documentation](https://www.semuconsulting.com/pyubx2/pyubx2.html#module-pyubx2.ubxhelpers) for details.
 
