@@ -243,12 +243,12 @@ class ExceptionTest(unittest.TestCase):
 
     def testFill_RXMPMPGET(
         self,
-    ):  #  test RXM-PMP GET constructor without version or payload keyword
+    ):  #  test RXM-PMP SET constructor without version or payload keyword
         EXPECTED_ERROR = (
             "RXM-PMP message definitions must include version or payload keyword"
         )
         with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
-            UBXMessage("RXM", "RXM-PMP", GET, timeTag=0)
+            UBXMessage("RXM", "RXM-PMP", SET, timeTag=0)
 
     def testFill_AOPSTATUS(
         self,

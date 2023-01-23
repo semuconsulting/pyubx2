@@ -3116,66 +3116,6 @@ UBX_PAYLOADS_GET = {
             },
         ),
     },
-    "RXM-PMP-V0": {
-        "version": U1,  # 0x00
-        "reserved0": U3,
-        "timeTag": U4,
-        "uniqueWord1": U4,
-        "uniqueWord2": U4,
-        "serviceIdentifier": U2,
-        "spare": U1,
-        "uniqueWordBitErrors": U1,
-        "groupUserData": (
-            504,
-            {
-                "userData": U1,
-            },
-        ),  # repeating group * 504
-        "fecBits": U2,
-        "ebno": [U1, 0.125],
-        "reserved1": U1,
-    },
-    "RXM-PMP-V1": {
-        "version": U1,  # 0x01
-        "reserved0": U1,
-        "numBytesUserData": U2,
-        "timeTag": U4,
-        "uniqueWord1": U4,
-        "uniqueWord2": U4,
-        "serviceIdentifier": U2,
-        "spare": U1,
-        "uniqueWordBitErrors": U1,
-        "fecBits": U2,
-        "ebno": [U1, 0.125],
-        "reserved1": U1,
-        "groupUserData": (
-            "numBytesUserData",
-            {  # repeating group * numBytesUserData
-                "userData": U1,
-            },
-        ),
-    },
-    "RXM-QZSSL6": {
-        "version": U1,
-        "svId": U1,
-        "cno": [U2, 2**-8],
-        "timeTag": U4,
-        "groupDelay": U1,
-        "bitErrCorr": U1,
-        "chInfo": (
-            X2,
-            {
-                "reserved1": U8,
-                "chn": U2,
-                "msgName": U1,
-                "reserved2": U1,
-                "errStatus": U2,
-                "chName": U2,
-            },
-        ),
-        "reserved0": U2,
-        "msgBytes": A250,  # parsed as U1[250]
-    },
     "RXM-RAW": {
         "iTOW": I4,
         "week": I2,

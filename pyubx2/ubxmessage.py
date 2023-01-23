@@ -514,6 +514,9 @@ class UBXMessage:
                 # MGA SET
                 if self._ubxClass == b"\x13" and self._ubxID != b"\x80":
                     pdict = self._get_mga_version(ubt.SET, **kwargs)
+                # RXM-PMP SET
+                elif self._ubxClass == b"\x02" and self._ubxID == b"\x72":
+                    pdict = self._get_rxmpmp_version(**kwargs)
                 # RXM-PMREQ SET
                 elif self._ubxClass == b"\x02" and self._ubxID == b"\x41":
                     pdict = self._get_rxmpmreq_version(**kwargs)
@@ -529,9 +532,6 @@ class UBXMessage:
                 # MGA GET
                 if self._ubxClass == b"\x13" and self._ubxID != b"\x80":
                     pdict = self._get_mga_version(ubt.GET, **kwargs)
-                # RXM-PMP GET
-                elif self._ubxClass == b"\x02" and self._ubxID == b"\x72":
-                    pdict = self._get_rxmpmp_version(**kwargs)
                 # RXM-RLM GET
                 elif self._ubxClass == b"\x02" and self._ubxID == b"\x59":
                     pdict = self._get_rxmrlm_version(**kwargs)
@@ -653,14 +653,14 @@ class UBXMessage:
                 "RXM-PMP message definitions must include version or payload keyword"
             )
         if ver == b"\x00":
-            pdict = ubg.UBX_PAYLOADS_GET["RXM-PMP-V0"]
+            pdict = ubs.UBX_PAYLOADS_SET["RXM-PMP-V0"]
         else:
-            pdict = ubg.UBX_PAYLOADS_GET["RXM-PMP-V1"]
+            pdict = ubs.UBX_PAYLOADS_SET["RXM-PMP-V1"]
         return pdict
 
     def _get_rxmrlm_version(self, **kwargs) -> dict:
         """
-        Select appropriate RXM-PMP payload definition by checking
+        Select appropriate RXM-RLM payload definition by checking
         value of 'type' attribute (2nd byte of payload).
 
         :param kwargs: optional payload key/value pairs
