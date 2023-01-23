@@ -3317,6 +3317,26 @@ UBX_PAYLOADS_GET = {
         "reserved0": U2,
         "msgType": U2,
     },
+    "RXM-SPARTN-KEY": {
+        "version": U1,
+        "numKeys": U1,
+        "reserved0": U2,
+        "group1": (  # repeating group * numKeys
+            "numKeys",
+            {
+                "reserved1": U1,
+                "keyLengthBytes": U1,
+                "validFromWno": U2,
+                "validFromTow": U4,
+            },
+        ),
+        "group2": (  # repeating group * (numKeys * keyLengthBytes)
+            "None",
+            {
+                "key": U1,
+            },
+        ),
+    },
     "RXM-SVSI": {
         "iTOW": U4,
         "week": I2,

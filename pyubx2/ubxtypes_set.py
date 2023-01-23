@@ -925,6 +925,7 @@ UBX_PAYLOADS_SET = {
             },
         ),
     },
+    "RXM-SPARTN-KEY": UBX_GET["RXM-SPARTN-KEY"],
     # ********************************************************************
     # Timing Messages: i.e. Time Pulse Output, Time Mark Results.
     # Messages in the TIM class are used to output timing information from the receiver, like Time Pulse and Time
