@@ -1,5 +1,11 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.2.21
+
+ENHANCEMENTS:
+
+1. Add support for RXM-SPARTN-KEY GET/SET messages.
+
 ### RELEASE 1.2.20
 
 FIXES:
