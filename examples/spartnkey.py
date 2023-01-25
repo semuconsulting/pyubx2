@@ -44,17 +44,18 @@ tows = []
 print(
     "This utility accepts one or two SPARTN keys and their associated Valid From dates",
     "\nand formats a UBX RXM-SPARTN-KEY message which can be sent to a compatible",
-    "\nreceiver e.g. XED-F9P.\n",
+    "\nreceiver e.g. ZED-F9P.\n",
 )
 print("How many SPARTN keys do you want to upload (1 or 2)? (2): ", end="")
 val = input() or "2"
 numkeys = int(val)
 for i in range(numkeys):
     LBL = "second" if i + 1 == 2 else "first"
-    print(f"Enter {LBL} key as string (normally 16 chars): ", end="")
-    val = input() or "dummyspartnkey01"
-    keylens.append(val2bytes(len(val), U1))
-    keys.append(bytes(val, "utf-8"))
+    print(f"Enter {LBL} key as a hexadecimal string (normally 32 chars): ", end="")
+    val = input() or "0102030405060708090a0b0c0d0e0f10"
+    key = bytes.fromhex(val)
+    keylens.append(val2bytes(len(key), U1))
+    keys.append(key)
     print(f"Enter {LBL} valid from date in format YYYYMMDD (Today): ", end="")
     val = input() or ""
     dat = (
