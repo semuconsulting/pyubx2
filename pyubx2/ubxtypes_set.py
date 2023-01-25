@@ -893,45 +893,8 @@ UBX_PAYLOADS_SET = {
     # Receiver Manager Messages: i.e. Satellite Status, RTC Status.
     # Messages in the RXM class are used to output status and result data from the Receiver Manager. The output
     # rate is not bound to the navigation/measurement rate and messages can also be generated on events.
-    "RXM-PMP-V0": {
-        "version": U1,  # 0x00
-        "reserved0": U3,
-        "timeTag": U4,
-        "uniqueWord1": U4,
-        "uniqueWord2": U4,
-        "serviceIdentifier": U2,
-        "spare": U1,
-        "uniqueWordBitErrors": U1,
-        "groupUserData": (
-            504,
-            {
-                "userData": U1,
-            },
-        ),  # repeating group * 504
-        "fecBits": U2,
-        "ebno": [U1, 0.125],
-        "reserved1": U1,
-    },
-    "RXM-PMP-V1": {
-        "version": U1,  # 0x01
-        "reserved0": U1,
-        "numBytesUserData": U2,
-        "timeTag": U4,
-        "uniqueWord1": U4,
-        "uniqueWord2": U4,
-        "serviceIdentifier": U2,
-        "spare": U1,
-        "uniqueWordBitErrors": U1,
-        "fecBits": U2,
-        "ebno": [U1, 0.125],
-        "reserved1": U1,
-        "groupUserData": (
-            "numBytesUserData",
-            {  # repeating group * numBytesUserData
-                "userData": U1,
-            },
-        ),
-    },
+    "RXM-PMP-V0": UBX_GET["RXM-PMP-V0"],
+    "RXM-PMP-V1": UBX_GET["RXM-PMP-V1"],
     "RXM-PMREQ-S": {
         "duration": U4,
         "flags": (
@@ -966,27 +929,7 @@ UBX_PAYLOADS_SET = {
             },
         ),
     },
-    "RXM-QZSSL6": {
-        "version": U1,
-        "svId": U1,
-        "cno": [U2, 2**-8],
-        "timeTag": U4,
-        "groupDelay": U1,
-        "bitErrCorr": U1,
-        "chInfo": (
-            X2,
-            {
-                "reserved1": U8,
-                "chn": U2,
-                "msgName": U1,
-                "reserved2": U1,
-                "errStatus": U2,
-                "chName": U2,
-            },
-        ),
-        "reserved0": U2,
-        "msgBytes": A250,  # parsed as U1[250]
-    },
+    "RXM-QZSSL6": UBX_GET["RXM-QZSSL6"],
     "RXM-SPARTN-KEY": UBX_GET["RXM-SPARTN-KEY"],
     # ********************************************************************
     # Timing Messages: i.e. Time Pulse Output, Time Mark Results.
