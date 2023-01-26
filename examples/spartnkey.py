@@ -1,15 +1,23 @@
+# pylint: disable=anomalous-backslash-in-string
 """
 spartnkey.py
 
 Example script illustrating how to format current and next
-SPARTN keys (e.g. from u-blox PointPerfect service) as a
-UBX RXM-SPARTN-KEY message and upload this to a ZED-F9P receiver.
+SPARTN keys (e.g. from u-blox/Thingstream PointPerfect service)
+as a UBX RXM-SPARTN-KEY message and upload this to a ZED-F9P receiver.
 
-You can find the current and next keys in Thingstream here:
+This will need to be done after every power cycle or reset.
+
+Assuming you have a Location Service subscription, you can find
+the current and next keys in Thingstream here:
 
 https://thingstream.io/
 Location Services \ Location Things \ Thing Details \ Credentials
 L-Band + IP Dynamic Keys
+
+NB: This script requires the key Valid From date, NOT the Expiry
+date. Keys are generally valid for 4 weeks, so:
+Valid From = Expiry - 4 weeks.
 
 Created on 23 Jan 2023
 
@@ -24,6 +32,8 @@ from serial import Serial, SerialException
 from pyubx2 import UBXMessage, UBXReader, SET, U1, U2, U4, val2bytes
 
 GPSEPOCH0 = datetime(1980, 1, 6)
+RESERVED0 = b"\x00\x00"
+RESERVED1 = b"\x00"
 
 
 def get_gpswnotow(dat: datetime) -> tuple:
@@ -32,9 +42,9 @@ def get_gpswnotow(dat: datetime) -> tuple:
     GPS Epoch 0 = 6th Jan 1980
     """
 
-    wno = int((dat - GPSEPOCH0).days / 7)
-    tow = ((dat.weekday() + 1) % 7) * 86400
-    return wno, tow
+    weekno = int((dat - GPSEPOCH0).days / 7)
+    timeofweek = ((dat.weekday() + 1) % 7) * 86400
+    return weekno, timeofweek
 
 
 keys = []
@@ -56,21 +66,20 @@ for i in range(numkeys):
     key = bytes.fromhex(val)
     keylens.append(val2bytes(len(key), U1))
     keys.append(key)
-    print(f"Enter {LBL} valid from date in format YYYYMMDD (Today): ", end="")
+    print(f"Enter {LBL} Valid From date in format YYYYMMDD (Today): ", end="")
     val = input() or ""
-    dat = (
+    from_date = (
         datetime.now()
         if val == ""
         else datetime(int(val[0:4]), int(val[4:6]), int(val[6:8]))
     )
-    wno, tow = get_gpswnotow(dat)
+    wno, tow = get_gpswnotow(from_date)
     wnos.append(val2bytes(wno, U2))
     tows.append(val2bytes(tow, U4))
 
 version = val2bytes(1, U1)
 numKeys = val2bytes(numkeys, U1)
-RESERVED0 = b"\x00\x00"
-RESERVED1 = b"\x00"
+
 
 payload = version + numKeys + RESERVED0
 for i in range(numkeys):
@@ -80,17 +89,15 @@ for i in range(numkeys):
 
 print("\nFormatting UBX RXM-SPARTN-KEY message...\n")
 msg = UBXMessage("RXM", "RXM-SPARTN-KEY", SET, payload=payload)
-print(msg)
-print("\n")
-print(msg.serialize())
+print(f"{msg}\n\n{msg.serialize()}")
 msg1 = UBXReader.parse(msg.serialize())
-CHECKED = str(msg) == str(msg1)
-print(f"\nCheck message formatted correctly: {'PASS' if CHECKED else 'FAIL'}")
+PASS = str(msg) == str(msg1)
+print(f"\nCheck message formatted correctly: {'PASS' if PASS else 'FAIL'}")
 
-if not CHECKED:
+if not PASS:
     sys.exit()
 
-print("Do you want to send this message to the receiver? (y/n) ", end="")
+print("Do you want to send this message to the receiver (y/n)? (n)", end="")
 val = input() or "n"
 
 if val == "y":
