@@ -1,2 +1,2 @@
 pynmeagps>=1.0.18
-pyrtcm>=1.0.1
+pyrtcm>=1.0.2
