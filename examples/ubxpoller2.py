@@ -5,6 +5,8 @@ This example illustrates a permutation of 'pseudo-concurrent'
 threaded read and write UBX message processing using
 queues to pass messages between threads.
 
+Press CRTL-C to terminate.
+
 NB: Since Python implements a Global Interpreter Lock (GIL),
 threads are not truly concurrent. True concurrency could be
 achieved using multiprocessing (i.e. separate interpreter
@@ -23,7 +25,7 @@ Created on 07 Aug 2021
 
 from sys import platform
 from threading import Thread, Event, Lock
-from multiprocessing import Queue
+from queue import Queue
 from time import sleep
 from serial import Serial
 from pyubx2 import UBXReader, UBXMessage, POLL, UBX_PROTOCOL
@@ -43,7 +45,6 @@ def read_data(
     # pylint: disable=unused-variable, broad-except
 
     while not stop.is_set():
-
         if stream.in_waiting:
             try:
                 lock.acquire()
@@ -62,12 +63,12 @@ def write_data(stream: object, queue: Queue, lock: Lock, stop: Event):
     """
 
     while not stop.is_set():
-
         if queue.empty() is False:
-            lock.acquire()
             message = queue.get()
-            lock.release()
+            lock.acquire()
             stream.write(message.serialize())
+            lock.release()
+            queue.task_done()
 
 
 def display_data(queue: Queue, stop: Event):
@@ -77,26 +78,24 @@ def display_data(queue: Queue, stop: Event):
     # pylint: disable=unused-variable,
 
     while not stop.is_set():
-
         if queue.empty() is False:
             (raw, parsed) = queue.get()
             print(parsed)
+            queue.task_done()
 
 
 if __name__ == "__main__":
-
     # set port, baudrate and timeout to suit your device configuration
     if platform == "win32":  # Windows
         port = "COM13"
     elif platform == "darwin":  # MacOS
-        port = "/dev/tty.usbmodem14101"
+        port = "/dev/tty.usbmodem101"
     else:  # Linux
         port = "/dev/ttyACM1"
     baudrate = 9600
     timeout = 0.1
 
     with Serial(port, baudrate, timeout=timeout) as serial_stream:
-
         ubxreader = UBXReader(serial_stream, protfilter=UBX_PROTOCOL)
 
         serial_lock = Lock()
@@ -140,12 +139,11 @@ if __name__ == "__main__":
         while not stop_event.is_set():
             try:
                 # poll the receiver port configuration using CFG-PRT
-                print("\nPolling port configuration CFG-PRT...\n")
+                print(f"\nPolling port configuration CFG-PRT...\n")
                 for prt in (0, 1, 2, 3, 4):  # I2C, UART1, UART2, USB, SPI
                     msg = UBXMessage("CFG", "CFG-PRT", POLL, portID=prt)
                     send_queue.put(msg)
-                    sleep(1)
-                sleep(5)
+                sleep(1)
 
             except KeyboardInterrupt:  # capture Ctrl-C
                 print("\n\nTerminated by user.")
