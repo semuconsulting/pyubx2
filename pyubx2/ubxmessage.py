@@ -96,7 +96,6 @@ class UBXMessage:
         index = []  # array of (nested) group indices
 
         try:
-
             if len(kwargs) == 0:  # if no kwargs, assume null payload
                 self._payload = None
             else:

@@ -404,7 +404,6 @@ def cfgkey2name(keyID: int) -> tuple:
     """
 
     try:
-
         val = None
         for key, val in ubcdb.UBX_CONFIG_DATABASE.items():
             (kid, typ) = val
