@@ -531,6 +531,9 @@ class UBXMessage:
                 # MGA GET
                 if self._ubxClass == b"\x13" and self._ubxID != b"\x80":
                     pdict = self._get_mga_version(ubt.GET, **kwargs)
+                # RXM-PMP GET
+                elif self._ubxClass == b"\x02" and self._ubxID == b"\x72":
+                    pdict = self._get_rxmpmp_version(**kwargs)
                 # RXM-RLM GET
                 elif self._ubxClass == b"\x02" and self._ubxID == b"\x59":
                     pdict = self._get_rxmrlm_version(**kwargs)
