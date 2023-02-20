@@ -114,7 +114,7 @@ class FillTest(unittest.TestCase):
     def testFill_CFGGNSS_NOBITFIELD(
         self,
     ):  #  test CFG-GNSS SET with parsebitfield = False
-        EXPECTED_RESULT = "<UBX(CFG-GNSS, msgVer=0, numTrkChHw=2, numTrkChUse=4, numConfigBlocks=2, gnssId_01=GPS, resTrkCh_01=4, maxTrkCh_01=32, reserved0_01=0, flags_01=b'\\x01\\x00\\x04\\x00', gnssId_02=GLONASS, resTrkCh_02=3, maxTrkCh_02=24, reserved0_02=0, flags_02=b'\\x00\\x00@\\x00')>"
+        EXPECTED_RESULT = "<UBX(CFG-GNSS, msgVer=0, numTrkChHw=2, numTrkChUse=4, numConfigBlocks=2, gnssId_01=GPS, resTrkCh_01=4, maxTrkCh_01=32, reserved0_01=0, flags_01=b'\\x01\\x00\\x04\\x00', gnssId_02=GLONASS, resTrkCh_02=3, maxTrkCh_02=24, reserved0_02=0, flags_02=b'\\x00\\x00\\x40\\x00')>"
         EXPECTED_RESULT2 = "<UBX(CFG-GNSS, msgVer=0, numTrkChHw=2, numTrkChUse=4, numConfigBlocks=2, gnssId_01=GPS, resTrkCh_01=4, maxTrkCh_01=32, reserved0_01=0, enable_01=1, sigCfMask_01=4, gnssId_02=GLONASS, resTrkCh_02=3, maxTrkCh_02=24, reserved0_02=0, enable_02=0, sigCfMask_02=64)>"
         res = UBXMessage(
             "CFG",

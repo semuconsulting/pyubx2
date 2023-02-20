@@ -1,5 +1,12 @@
 # pyubx2 Release Notes
 
+
+### RELEASE 1.2.22rc0
+
+ENHANCEMENTS:
+
+1. `__str__` method enhanced to escape all byte values for clarity e.g. will now return b'\x61\x62\x63' rather than b'abc'
+
 ### RELEASE 1.2.21
 
 ENHANCEMENTS:
