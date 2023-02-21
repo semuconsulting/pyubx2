@@ -128,14 +128,14 @@ Example - File input (using iterator). This will only output UBX data:
 ...
 ```
 
-Example - Socket input (using enhanced iterator). This will output UBX, NMEA and RTCM3 data:
+Example - Socket input (using iterator). This will output UBX, NMEA and RTCM3 data:
 ```python
 >>> import socket
 >>> from pyubx2 import UBXReader
 >>> stream = socket.socket(socket.AF_INET, socket.SOCK_STREAM):
 >>> stream.connect(("localhost", 50007))
 >>> ubr = UBXReader(stream, protfilter=7)
->>> for (raw_data, parsed_data) in ubr.iterate(): print(parsed_data)
+>>> for (raw_data, parsed_data) in ubr: print(parsed_data)
 ...
 ```
 

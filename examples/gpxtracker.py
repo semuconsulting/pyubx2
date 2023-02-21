@@ -82,12 +82,7 @@ class UBXTracker:
 
         self.write_gpx_hdr()
 
-        for (
-            _,
-            msg,
-        ) in (
-            self._ubxreader.iterate()
-        ):  # invokes iterator method with exception handling wrapper
+        for _, msg in self._ubxreader:
             try:
                 if msg.identity == "NAV-PVT":
                     time = (
@@ -202,7 +197,6 @@ class UBXTracker:
 
 
 if __name__ == "__main__":
-
     print("UBX datalog to GPX file converter\n")
     infilep = input("Enter input UBX datalog file: ").strip('"')
     outdirp = input("Enter output directory: ").strip('"')

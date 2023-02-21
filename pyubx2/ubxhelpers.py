@@ -493,4 +493,4 @@ def escapeall(val: bytes) -> str:
     :rtype: str
     """
 
-    return "b'{}'".format("".join("\\x{:02x}".format(b) for b in val))
+    return "b'{}'".format("".join(f"\\x{b:02x}" for b in val))

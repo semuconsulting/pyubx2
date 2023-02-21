@@ -85,6 +85,23 @@ class StreamTest(unittest.TestCase):
         self.streamBADNMEAEOF.close()
         self.streamDEBUG.close()
 
+    def catchio(self):
+        """
+        Capture stdout as string.
+        """
+
+        self._saved_stdout = sys.stdout
+        self._strout = os.StringIO()
+        sys.stdout = self._strout
+
+    def restoreio(self) -> str:
+        """
+        Return captured output and restore stdout.
+        """
+
+        sys.stdout = self._saved_stdout
+        return self._strout.getvalue().strip()
+
     def testNAVLOG(
         self,
     ):  # test stream of UBX NAV messages
@@ -402,10 +419,10 @@ class StreamTest(unittest.TestCase):
         stream = open(os.path.join(dirname, "pygpsdata-MIXED-RTCM3.log"), "rb")
         i = 0
         raw = 0
-        ubr = UBXReader(stream, protfilter=7, labelmsm=0)
+        ubr = UBXReader(stream, protfilter=7, labelmsm=0, quitonerror=ubt.ERR_RAISE)
         # stdout_saved = sys.stdout
         # sys.stdout = open("output.txt", "w")
-        for raw, parsed in ubr.iterate(quitonerror=ubt.ERR_RAISE):
+        for raw, parsed in ubr:
             if raw is not None:
                 self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
                 # print(parsed)
@@ -425,8 +442,8 @@ class StreamTest(unittest.TestCase):
         stream = open(os.path.join(dirname, "pygpsdata-MIXED-RTCM3.log"), "rb")
         i = 0
         raw = 0
-        ubr = UBXReader(stream, protfilter=3)
-        for raw, parsed in ubr.iterate(quitonerror=ubt.ERR_RAISE):
+        ubr = UBXReader(stream, protfilter=3, quitonerror=ubt.ERR_RAISE)
+        for raw, parsed in ubr:
             if raw is not None:
                 self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
                 i += 1
@@ -440,9 +457,9 @@ class StreamTest(unittest.TestCase):
         stream = open(os.path.join(dirname, "pygpsdata-MIXED-RTCM3BADCRC.log"), "rb")
         i = 0
         raw = 0
-        ubr = UBXReader(stream, protfilter=7)
-        with self.assertRaisesRegex(RTCMParseError, EXPECTED_ERROR):
-            for raw, parsed in ubr.iterate(quitonerror=ubt.ERR_RAISE):
+        ubr = UBXReader(stream, protfilter=7, quitonerror=ubt.ERR_RAISE)
+        with self.assertRaisesRegex(UBXParseError, EXPECTED_ERROR):
+            for raw, parsed in ubr:
                 if raw is not None:
                     # print(parsed)
                     i += 1
@@ -465,7 +482,7 @@ class StreamTest(unittest.TestCase):
             self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
             i += 1
 
-    def testNMEAITERATE(self):  # UBXReader iterate() helper method
+    def testNMEAITERATE(self):  # UBXReader helper method
         EXPECTED_RESULTS = (
             "<UBX(MON-MSGPP, msg1_01=0, msg1_02=0, msg1_03=0, msg1_04=0, msg1_05=0, msg1_06=0, msg1_07=0, msg1_08=0, msg2_01=0, msg2_02=0, msg2_03=0, msg2_04=0, msg2_05=0, msg2_06=0, msg2_07=0, msg2_08=0, msg3_01=0, msg3_02=0, msg3_03=0, msg3_04=0, msg3_05=0, msg3_06=0, msg3_07=0, msg3_08=0, msg4_01=69, msg4_02=0, msg4_03=0, msg4_04=0, msg4_05=0, msg4_06=0, msg4_07=0, msg4_08=0, msg5_01=0, msg5_02=0, msg5_03=0, msg5_04=0, msg5_05=0, msg5_06=0, msg5_07=0, msg5_08=0, msg6_01=0, msg6_02=0, msg6_03=0, msg6_04=0, msg6_05=0, msg6_06=0, msg6_07=0, msg6_08=0, skipped_01=0, skipped_02=0, skipped_03=0, skipped_04=0, skipped_05=0, skipped_06=0)>",
             "<UBX(MON-TXBUF, pending_01=0, pending_02=0, pending_03=0, pending_04=0, pending_05=0, pending_06=0, usage_01=0, usage_02=2, usage_03=0, usage_04=0, usage_05=0, usage_06=0, peakUsage_01=0, peakUsage_02=12, peakUsage_03=0, peakUsage_04=25, peakUsage_05=0, peakUsage_06=0, tUsage=2, tPeakUsage=25, errors=b'\\x00', reserved0=0)>",
@@ -476,13 +493,13 @@ class StreamTest(unittest.TestCase):
         )
         i = 0
         ubr = UBXReader(self.streamITER, protfilter=3, parsebitfield=False)
-        for _, parsed in ubr.iterate():
+        for _, parsed in ubr:
             self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
             i += 1
 
     def testUBXITERATE_ERR1(
         self,
-    ):  # UBXReader iterate() helper method with bad checksum
+    ):  # UBXReader helper method with bad checksum
         dirname = os.path.dirname(__file__)
         stream = open(os.path.join(dirname, "pygpsdata-MIXED3BADCK.log"), "rb")
         EXPECTED_ERROR = "Message checksum b's\\x8e' invalid - should be b's\\x8d'"
@@ -493,17 +510,16 @@ class StreamTest(unittest.TestCase):
                 validate=VALCKSUM,
                 msgmode=0,
                 parsebitfield=True,
-            )
-            for raw, parsed in ubr.iterate(
                 quitonerror=ERR_RAISE,
-            ):
+            )
+            for raw, parsed in ubr:
                 pass
         self.assertTrue(EXPECTED_ERROR in str(context.exception))
         stream.close()
 
     def testUBXITERATE_ERR2(
         self,
-    ):  # UBXReader iterate() helper method ignoring bad checksum and passing error handler
+    ):  # UBXReader helper method ignoring bad checksum and passing error handler
         dirname = os.path.dirname(__file__)
         stream = open(os.path.join(dirname, "pygpsdata-MIXED3BADCK.log"), "rb")
         EXPECTED_RESULTS = (
@@ -519,22 +535,22 @@ class StreamTest(unittest.TestCase):
             validate=VALCKSUM,
             msgmode=0,
             parsebitfield=True,
+            quitonerror=ERR_LOG,
+            errorhandler=lambda e: print(f"I ignored the following error: {e}"),
         )
         res = ""
         i = 0
-        for raw, parsed in ubr.iterate(
-            quitonerror=ERR_LOG,
-            errorhandler=lambda e: print(f"I ignored the following error: {e}"),
-        ):
+        for raw, parsed in ubr:
+            if not isinstance(parsed, str):
+                print(parsed)
+                i += 1
             res = str(parsed)
-            print(parsed)
             # self.assertEqual(EXPECTED_RESULTS[i], res)
-            i += 1
         self.assertEqual(i, 4)
 
     def testUBXITERATE_ERR3(
         self,
-    ):  # UBXReader iterate() helper method ignoring bad checksum and continuing
+    ):  # UBXReader helper method ignoring bad checksum and continuing
         dirname = os.path.dirname(__file__)
         stream = open(os.path.join(dirname, "pygpsdata-MIXED3BADCK.log"), "rb")
         EXPECTED_RESULT = "<NMEA(GPGGA, time=08:02:48, lat=53.4507186667, NS=N, lon=-2.2402315, EW=W, quality=1, numSV=7, HDOP=1.63, alt=36.8, altUnit=M, sep=48.5, sepUnit=M, diffAge=, diffStation=)>"
@@ -544,18 +560,37 @@ class StreamTest(unittest.TestCase):
             validate=VALCKSUM,
             msgmode=0,
             parsebitfield=True,
+            quitonerror=ERR_LOG,
         )
         res = ""
-        for raw, parsed in ubr.iterate(
+        for raw, parsed in ubr:
+            res = str(parsed)
+        self.assertEqual(EXPECTED_RESULT, res)
+        stream.close()
+
+    def testUBXITERATE_ERR4(
+        self,
+    ):  # UBXReader helper method ignoring bad checksum and continuing
+        dirname = os.path.dirname(__file__)
+        stream = open(os.path.join(dirname, "pygpsdata-MIXED3BADCK.log"), "rb")
+        EXPECTED_RESULT = "<NMEA(GPGGA, time=08:02:48, lat=53.4507186667, NS=N, lon=-2.2402315, EW=W, quality=1, numSV=7, HDOP=1.63, alt=36.8, altUnit=M, sep=48.5, sepUnit=M, diffAge=, diffStation=)>"
+        ubr = UBXReader(
+            stream,
+            ubxonly=False,
+            validate=VALCKSUM,
+            msgmode=0,
+            parsebitfield=True,
             quitonerror=ERR_LOG,
-        ):
+        )
+        res = ""
+        for raw, parsed in ubr.iterate():
             res = str(parsed)
         self.assertEqual(EXPECTED_RESULT, res)
         stream.close()
 
     def testBADHDR_FAIL(self):  # invalid header in data with quitonerror = 2
         EXPECTED_ERROR = "Unknown protocol b'\\xb5w'"
-        with self.assertRaises(UBXStreamError) as context:
+        with self.assertRaises(UBXParseError) as context:
             i = 0
             ubxreader = UBXReader(self.streamBADHDR, quitonerror=ERR_RAISE)
             for _, _ in ubxreader:
