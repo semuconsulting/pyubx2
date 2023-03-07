@@ -1,5 +1,13 @@
 # pyubx2 Release Notes
 
+
+### RELEASE 1.2.22
+
+CHANGES:
+
+1. `__str__` method enhanced to escape all byte values for clarity e.g. will now return b'\x61\x62\x63' rather than b'abc'
+2. `UBXReader.iterate()` method deprecated - use the standard iterator instead e.g. `ubr = UBXReader(**wkargs): for (raw,parse) in ubr: ...`, passing any `quitonerror` or `errorhandler` kwargs to the UBXReader constructor.
+
 ### RELEASE 1.2.21
 
 ENHANCEMENTS:

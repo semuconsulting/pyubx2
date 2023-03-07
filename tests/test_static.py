@@ -36,6 +36,7 @@ from pyubx2.ubxhelpers import (
     att2idx,
     att2name,
     cel2cart,
+    escapeall,
 )
 
 
@@ -268,6 +269,14 @@ class StaticTest(unittest.TestCase):
         self.assertAlmostEqual(azim, 0.653290, 5)
         (elev, azim) = cel2cart("xxx", 128)
         self.assertEqual(elev, 0)
+
+    def testescapeall(self):
+        EXPECTED_RESULT = "b'\\x68\\x65\\x72\\x65\\x61\\x72\\x65\\x73\\x6f\\x6d\\x65\\x63\\x68\\x61\\x72\\x73'"
+        val = b"herearesomechars"
+        res = escapeall(val)
+        print(res)
+        self.assertEqual(res, EXPECTED_RESULT)
+
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']

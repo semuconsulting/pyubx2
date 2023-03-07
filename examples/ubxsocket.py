@@ -32,7 +32,7 @@ def read(stream: socket.socket):
         protfilter=7,
     )
     try:
-        for (_, parsed_data) in ubr.iterate():
+        for _, parsed_data in ubr:
             print(parsed_data)
             msgcount += 1
     except KeyboardInterrupt:
@@ -46,7 +46,6 @@ def read(stream: socket.socket):
 
 
 if __name__ == "__main__":
-
     SERVER = "localhost"
     PORT = 50007
 

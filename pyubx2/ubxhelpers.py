@@ -482,3 +482,15 @@ def cel2cart(elevation: float, azimuth: float) -> tuple:
     x = cos(azi) * cos(ele)
     y = sin(azi) * cos(ele)
     return (x, y)
+
+
+def escapeall(val: bytes) -> str:
+    """
+    Escape all byte characters e.g. b'\\\\x73' rather than b`s`
+
+    :param bytes val: bytes
+    :return: string of escaped bytes
+    :rtype: str
+    """
+
+    return "b'{}'".format("".join(f"\\x{b:02x}" for b in val))

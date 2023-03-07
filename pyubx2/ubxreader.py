@@ -39,6 +39,7 @@ class UBXReader:
 
         :param datastream stream: input data stream
         :param int quitonerror: (kwarg) 0 = ignore errors,  1 = log errors and continue, 2 = (re)raise errors (1)
+        :param int errorhandler: (kwarg) error handling object or function (None)
         :param int protfilter: (kwarg) protocol filter 1 = NMEA, 2 = UBX, 4 = RTCM3 (3)
         :param int validate: (kwarg) 0 = ignore invalid checksum, 1 = validate checksum (1)
         :param int msgmode: (kwarg) 0=GET, 1=SET, 2=POLL (0)
@@ -59,6 +60,7 @@ class UBXReader:
             kwargs.get("protfilter", ubt.NMEA_PROTOCOL | ubt.UBX_PROTOCOL)
         )
         self._quitonerror = int(kwargs.get("quitonerror", ubt.ERR_LOG))
+        self._errorhandler = kwargs.get("errorhandler", None)
         self._validate = int(kwargs.get("validate", ubt.VALCKSUM))
         self._parsebf = int(kwargs.get("parsebitfield", True))
         self._scaling = int(kwargs.get("scaling", True))
@@ -86,9 +88,9 @@ class UBXReader:
         """
 
         (raw_data, parsed_data) = self.read()
-        if raw_data is not None:
-            return (raw_data, parsed_data)
-        raise StopIteration
+        if raw_data is None and parsed_data is None:
+            raise StopIteration
+        return (raw_data, parsed_data)
 
     def read(self) -> tuple:
         """
@@ -146,13 +148,30 @@ class UBXReader:
                 # unrecognised protocol header
                 else:
                     if self._quitonerror == ubt.ERR_RAISE:
-                        raise ube.UBXStreamError(f"Unknown protocol {bytehdr}.")
+                        raise ube.UBXParseError(f"Unknown protocol {bytehdr}.")
                     if self._quitonerror == ubt.ERR_LOG:
                         return (bytehdr, f"<UNKNOWN PROTOCOL(header={bytehdr})>")
                     continue
 
         except EOFError:
             return (None, None)
+        except (
+            ube.UBXMessageError,
+            ube.UBXTypeError,
+            ube.UBXParseError,
+            ube.UBXStreamError,
+            nme.NMEAMessageError,
+            nme.NMEATypeError,
+            nme.NMEAParseError,
+            nme.NMEAStreamError,
+            rte.RTCMMessageError,
+            rte.RTCMParseError,
+            rte.RTCMStreamError,
+            rte.RTCMTypeError,
+        ) as err:
+            if self._quitonerror:
+                self._do_error(str(err))
+            parsed_data = str(err)
 
         return (raw_data, parsed_data)
 
@@ -259,49 +278,36 @@ class UBXReader:
 
     def iterate(self, **kwargs) -> tuple:
         """
+        DEPRECATED - WILL BE REMOVED IN VERSION >=1.2.23
+        USE STANDARD ITERATOR INSTEAD
         Invoke the iterator within an exception handling framework.
 
-        :param int quitonerror: (kwarg) 0 = ignore errors,  1 = log errors and continue, 2 = (re)raise errors (1)
-        :param object errorhandler: (kwarg) Optional error handler (None)
         :return: tuple of (raw_data as bytes, parsed_data as UBXMessage or NMEAMessage)
         :rtype: tuple
-        :raises: UBX/NMEA...Error (if quitonerror is set and stream is invalid)
-
         """
-
-        quitonerror = kwargs.get("quitonerror", self._quitonerror)
-        errorhandler = kwargs.get("errorhandler", None)
 
         while True:
             try:
                 yield next(self)  # invoke the iterator
             except StopIteration:
                 break
-            except (
-                ube.UBXMessageError,
-                ube.UBXTypeError,
-                ube.UBXParseError,
-                ube.UBXStreamError,
-                nme.NMEAMessageError,
-                nme.NMEATypeError,
-                nme.NMEAParseError,
-                nme.NMEAStreamError,
-                rte.RTCMMessageError,
-                rte.RTCMParseError,
-                rte.RTCMStreamError,
-                rte.RTCMTypeError,
-            ) as err:
-                # raise, log or ignore any error depending
-                # on the quitonerror setting
-                if quitonerror == ubt.ERR_RAISE:
-                    raise err
-                if quitonerror == ubt.ERR_LOG:
-                    # pass to error handler if there is one
-                    if errorhandler is None:
-                        print(err)
-                    else:
-                        errorhandler(err)
-                # continue
+
+    def _do_error(self, err: str):
+        """
+        Handle error.
+
+        :param str err: error message
+        :raises: UBXParseError if quitonerror = 2
+        """
+
+        if self._quitonerror == ubt.ERR_RAISE:
+            raise ube.UBXParseError(err)
+        if self._quitonerror == ubt.ERR_LOG:
+            # pass to error handler if there is one
+            if self._errorhandler is None:
+                print(err)
+            else:
+                self._errorhandler(err)
 
     @property
     def datastream(self) -> object:

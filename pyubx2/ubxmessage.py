@@ -27,6 +27,7 @@ from pyubx2.ubxhelpers import (
     nomval,
     cfgkey2name,
     cfgname2key,
+    escapeall,
 )
 
 
@@ -857,6 +858,9 @@ class UBXMessage:
         for i, att in enumerate(self.__dict__):
             if att[0] != "_":  # only show public attributes
                 val = self.__dict__[att]
+                # escape all byte chars
+                if isinstance(val, bytes) and att not in ("datumName",):
+                    val = escapeall(val)
                 if att[0:6] == "gnssId":  # attribute is a GNSS ID
                     val = gnss2str(val)  # get string representation e.g. 'GPS'
                 if att == "iTOW":  # attribute is a GPS Time of Week

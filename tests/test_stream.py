@@ -85,6 +85,23 @@ class StreamTest(unittest.TestCase):
         self.streamBADNMEAEOF.close()
         self.streamDEBUG.close()
 
+    def catchio(self):
+        """
+        Capture stdout as string.
+        """
+
+        self._saved_stdout = sys.stdout
+        self._strout = os.StringIO()
+        sys.stdout = self._strout
+
+    def restoreio(self) -> str:
+        """
+        Return captured output and restore stdout.
+        """
+
+        sys.stdout = self._saved_stdout
+        return self._strout.getvalue().strip()
+
     def testNAVLOG(
         self,
     ):  # test stream of UBX NAV messages
@@ -272,9 +289,9 @@ class StreamTest(unittest.TestCase):
             "<UBX(MON-RXBUF, pending_01=0, pending_02=0, pending_03=0, pending_04=0, pending_05=0, pending_06=0, usage_01=0, usage_02=0, usage_03=0, usage_04=0, usage_05=0, usage_06=0, peakUsage_01=0, peakUsage_02=0, peakUsage_03=0, peakUsage_04=4, peakUsage_05=0, peakUsage_06=0)>",
             "<UBX(MON-IO, rxBytes=0, txBytes=0, parityErrs=0, framingErrs=0, overrunErrs=0, breakCond=0, rxBusy=0, txBusy=0, reserved1=0)>",
             "<UBX(MON-COMMS, version=0, nPorts=2, mem=0, alloc=0, reserved0=0, protIds_01=0, protIds_02=1, protIds_03=5, protIds_04=255, portId_01=256, txPending_01=0, txBytes_01=18620, txUsage_01=0, txPeakUsage_01=12, rxPending_01=0, rxBytes_01=0, rxUsage_01=0, rxPeakUsage_01=0, overrunErrs_01=0, msgs_01_01=0, msgs_01_02=0, msgs_01_03=0, msgs_01_04=0, reserved1_01=0, skipped_01=0, portId_02=768, txPending_02=0, txBytes_02=13105, txUsage_02=0, txPeakUsage_02=24, rxPending_02=0, rxBytes_02=1937, rxUsage_02=0, rxPeakUsage_02=4, overrunErrs_02=0, msgs_02_01=123, msgs_02_02=0, msgs_02_03=0, msgs_02_04=0, reserved1_02=0, skipped_02=0)>",
-            "<UBX(MON-HW, pinSel=b'\\xc1\\x81\\x01\\x00', pinBank=b'\\x00\\x00\\x00\\x00', pinDir=b'\\x00\\x00\\x01\\x00', pinVal=b'\\xdb\\xe7\\x01\\x00', noisePerMS=92, agcCnt=1404, aStatus=2, aPower=1, rtcCalib=0, safeBoot=0, jammingState=0, xtalAbsent=0, reserved0=133, usedMask=b'\\xbe\\x7f\\x01\\x00', VP_01=b'\\xff', VP_02=b'\\x00', VP_03=b'\\x01', VP_04=b'\\x03', VP_05=b'\\x02', VP_06=b'\\x10', VP_07=b'\\xff', VP_08=b'\\x12', VP_09=b'\\x13', VP_10=b'\\x14', VP_11=b'\\x15', VP_12=b'\\x0e', VP_13=b'\\n', VP_14=b'\\x0b', VP_15=b'\\x0f', VP_16=b'\\xff', VP_17=b'5', jamInd=7, reserved1=31390, pinIrq=b'\\x00\\x00\\x00\\x00', pullH=b'\\xdb\\xfb\\x00\\x00', pullL=b'\\x00\\x00\\x00\\x00')>",
+            "<UBX(MON-HW, pinSel=b'\\xc1\\x81\\x01\\x00', pinBank=b'\\x00\\x00\\x00\\x00', pinDir=b'\\x00\\x00\\x01\\x00', pinVal=b'\\xdb\\xe7\\x01\\x00', noisePerMS=92, agcCnt=1404, aStatus=2, aPower=1, rtcCalib=0, safeBoot=0, jammingState=0, xtalAbsent=0, reserved0=133, usedMask=b'\\xbe\\x7f\\x01\\x00', VP_01=b'\\xff', VP_02=b'\\x00', VP_03=b'\\x01', VP_04=b'\\x03', VP_05=b'\\x02', VP_06=b'\\x10', VP_07=b'\\xff', VP_08=b'\\x12', VP_09=b'\\x13', VP_10=b'\\x14', VP_11=b'\\x15', VP_12=b'\\x0e', VP_13=b'\\x0a', VP_14=b'\\x0b', VP_15=b'\\x0f', VP_16=b'\\xff', VP_17=b'\\x35', jamInd=7, reserved1=31390, pinIrq=b'\\x00\\x00\\x00\\x00', pullH=b'\\xdb\\xfb\\x00\\x00', pullL=b'\\x00\\x00\\x00\\x00')>",
             "<UBX(MON-HW2, ofsI=26, magI=163, ofsQ=23, magQ=163, cfgSource=0, reserved0=0, lowLevCfg=4294967295, reserved1=18446744073709551615, postStatus=0, reserved2=0)>",
-            "<UBX(MON-HW3, version=0, nPins=17, rtcCalib=0, safeBoot=0, xtalAbsent=0, hwVersion=b'00190000\\x00\\x00', reserved0=8056321, pinId_01=0, periphPIO_01=1, pinBank_01=0, direction_01=0, pinValue_01=1, vpManager_01=0, pioIrq_01=0, pioPullHigh_01=1, pioPullLow_01=0, VP_01=255, reserved1_01=0, pinId_02=256, periphPIO_02=0, pinBank_02=0, direction_02=0, pinValue_02=1, vpManager_02=1, pioIrq_02=0, pioPullHigh_02=1, pioPullLow_02=0, VP_02=0, reserved1_02=0, pinId_03=512, periphPIO_03=0, pinBank_03=0, direction_03=0, pinValue_03=0, vpManager_03=1, pioIrq_03=0, pioPullHigh_03=0, pioPullLow_03=0, VP_03=1, reserved1_03=0, pinId_04=768, periphPIO_04=0, pinBank_04=0, direction_04=0, pinValue_04=1, vpManager_04=1, pioIrq_04=0, pioPullHigh_04=1, pioPullLow_04=0, VP_04=3, reserved1_04=0, pinId_05=1024, periphPIO_05=0, pinBank_05=0, direction_05=0, pinValue_05=1, vpManager_05=1, pioIrq_05=0, pioPullHigh_05=1, pioPullLow_05=0, VP_05=2, reserved1_05=0, pinId_06=1280, periphPIO_06=0, pinBank_06=0, direction_06=0, pinValue_06=0, vpManager_06=1, pioIrq_06=0, pioPullHigh_06=0, pioPullLow_06=0, VP_06=16, reserved1_06=0, pinId_07=1536, periphPIO_07=1, pinBank_07=0, direction_07=0, pinValue_07=1, vpManager_07=0, pioIrq_07=0, pioPullHigh_07=1, pioPullLow_07=0, VP_07=255, reserved1_07=0, pinId_08=1792, periphPIO_08=1, pinBank_08=0, direction_08=0, pinValue_08=1, vpManager_08=1, pioIrq_08=0, pioPullHigh_08=1, pioPullLow_08=0, VP_08=18, reserved1_08=0, pinId_09=2048, periphPIO_09=1, pinBank_09=0, direction_09=0, pinValue_09=1, vpManager_09=1, pioIrq_09=0, pioPullHigh_09=1, pioPullLow_09=0, VP_09=19, reserved1_09=0, pinId_10=2304, periphPIO_10=0, pinBank_10=0, direction_10=0, pinValue_10=1, vpManager_10=1, pioIrq_10=0, pioPullHigh_10=1, pioPullLow_10=0, VP_10=20, reserved1_10=0, pinId_11=2560, periphPIO_11=0, pinBank_11=0, direction_11=0, pinValue_11=1, vpManager_11=1, pioIrq_11=0, pioPullHigh_11=0, pioPullLow_11=0, VP_11=21, reserved1_11=0, pinId_12=2816, periphPIO_12=0, pinBank_12=0, direction_12=0, pinValue_12=0, vpManager_12=1, pioIrq_12=0, pioPullHigh_12=1, pioPullLow_12=0, VP_12=14, reserved1_12=0, pinId_13=3072, periphPIO_13=0, pinBank_13=0, direction_13=0, pinValue_13=0, vpManager_13=1, pioIrq_13=0, pioPullHigh_13=1, pioPullLow_13=0, VP_13=10, reserved1_13=0, pinId_14=3328, periphPIO_14=0, pinBank_14=0, direction_14=0, pinValue_14=1, vpManager_14=1, pioIrq_14=0, pioPullHigh_14=1, pioPullLow_14=0, VP_14=11, reserved1_14=0, pinId_15=3584, periphPIO_15=0, pinBank_15=0, direction_15=0, pinValue_15=1, vpManager_15=1, pioIrq_15=0, pioPullHigh_15=1, pioPullLow_15=0, VP_15=15, reserved1_15=0, pinId_16=3840, periphPIO_16=1, pinBank_16=0, direction_16=0, pinValue_16=1, vpManager_16=0, pioIrq_16=0, pioPullHigh_16=1, pioPullLow_16=0, VP_16=255, reserved1_16=0, pinId_17=4096, periphPIO_17=1, pinBank_17=0, direction_17=1, pinValue_17=1, vpManager_17=1, pioIrq_17=0, pioPullHigh_17=0, pioPullLow_17=0, VP_17=53, reserved1_17=0)>",
+            "<UBX(MON-HW3, version=0, nPins=17, rtcCalib=0, safeBoot=0, xtalAbsent=0, hwVersion=b'\\x30\\x30\\x31\\x39\\x30\\x30\\x30\\x30\\x00\\x00', reserved0=8056321, pinId_01=0, periphPIO_01=1, pinBank_01=0, direction_01=0, pinValue_01=1, vpManager_01=0, pioIrq_01=0, pioPullHigh_01=1, pioPullLow_01=0, VP_01=255, reserved1_01=0, pinId_02=256, periphPIO_02=0, pinBank_02=0, direction_02=0, pinValue_02=1, vpManager_02=1, pioIrq_02=0, pioPullHigh_02=1, pioPullLow_02=0, VP_02=0, reserved1_02=0, pinId_03=512, periphPIO_03=0, pinBank_03=0, direction_03=0, pinValue_03=0, vpManager_03=1, pioIrq_03=0, pioPullHigh_03=0, pioPullLow_03=0, VP_03=1, reserved1_03=0, pinId_04=768, periphPIO_04=0, pinBank_04=0, direction_04=0, pinValue_04=1, vpManager_04=1, pioIrq_04=0, pioPullHigh_04=1, pioPullLow_04=0, VP_04=3, reserved1_04=0, pinId_05=1024, periphPIO_05=0, pinBank_05=0, direction_05=0, pinValue_05=1, vpManager_05=1, pioIrq_05=0, pioPullHigh_05=1, pioPullLow_05=0, VP_05=2, reserved1_05=0, pinId_06=1280, periphPIO_06=0, pinBank_06=0, direction_06=0, pinValue_06=0, vpManager_06=1, pioIrq_06=0, pioPullHigh_06=0, pioPullLow_06=0, VP_06=16, reserved1_06=0, pinId_07=1536, periphPIO_07=1, pinBank_07=0, direction_07=0, pinValue_07=1, vpManager_07=0, pioIrq_07=0, pioPullHigh_07=1, pioPullLow_07=0, VP_07=255, reserved1_07=0, pinId_08=1792, periphPIO_08=1, pinBank_08=0, direction_08=0, pinValue_08=1, vpManager_08=1, pioIrq_08=0, pioPullHigh_08=1, pioPullLow_08=0, VP_08=18, reserved1_08=0, pinId_09=2048, periphPIO_09=1, pinBank_09=0, direction_09=0, pinValue_09=1, vpManager_09=1, pioIrq_09=0, pioPullHigh_09=1, pioPullLow_09=0, VP_09=19, reserved1_09=0, pinId_10=2304, periphPIO_10=0, pinBank_10=0, direction_10=0, pinValue_10=1, vpManager_10=1, pioIrq_10=0, pioPullHigh_10=1, pioPullLow_10=0, VP_10=20, reserved1_10=0, pinId_11=2560, periphPIO_11=0, pinBank_11=0, direction_11=0, pinValue_11=1, vpManager_11=1, pioIrq_11=0, pioPullHigh_11=0, pioPullLow_11=0, VP_11=21, reserved1_11=0, pinId_12=2816, periphPIO_12=0, pinBank_12=0, direction_12=0, pinValue_12=0, vpManager_12=1, pioIrq_12=0, pioPullHigh_12=1, pioPullLow_12=0, VP_12=14, reserved1_12=0, pinId_13=3072, periphPIO_13=0, pinBank_13=0, direction_13=0, pinValue_13=0, vpManager_13=1, pioIrq_13=0, pioPullHigh_13=1, pioPullLow_13=0, VP_13=10, reserved1_13=0, pinId_14=3328, periphPIO_14=0, pinBank_14=0, direction_14=0, pinValue_14=1, vpManager_14=1, pioIrq_14=0, pioPullHigh_14=1, pioPullLow_14=0, VP_14=11, reserved1_14=0, pinId_15=3584, periphPIO_15=0, pinBank_15=0, direction_15=0, pinValue_15=1, vpManager_15=1, pioIrq_15=0, pioPullHigh_15=1, pioPullLow_15=0, VP_15=15, reserved1_15=0, pinId_16=3840, periphPIO_16=1, pinBank_16=0, direction_16=0, pinValue_16=1, vpManager_16=0, pioIrq_16=0, pioPullHigh_16=1, pioPullLow_16=0, VP_16=255, reserved1_16=0, pinId_17=4096, periphPIO_17=1, pinBank_17=0, direction_17=1, pinValue_17=1, vpManager_17=1, pioIrq_17=0, pioPullHigh_17=0, pioPullLow_17=0, VP_17=53, reserved1_17=0)>",
             "<UBX(MON-RF, version=0, nBlocks=1, reserved0=0, blockId_01=0, jammingState_01=0, antStatus_01=2, antPower_01=1, postStatus_01=0, reserved1_01=0, noisePerMS_01=92, agcCnt_01=1404, jamInd_01=7, ofsI_01=26, magI_01=163, ofsQ_01=23, magQ_01=163, reserved2_01=0)>",
             "<UBX(MON-SPAN, version=0, numRfBlocks=1, reserved0=0, spectrum_01=[40, 40, 40, 39, 41, 41, 41, 42, 40, 41, 39, 40, 40, 39, 38, 41, 41, 42, 42, 42, 42, 42, 42, 43, 43, 44, 44, 42, 44, 43, 46, 42, 65, 45, 52, 58, 51, 51, 50, 57, 51, 59, 59, 49, 63, 62, 54, 53, 55, 63, 59, 62, 62, 70, 68, 72, 75, 79, 88, 84, 92, 98, 99, 102, 107, 109, 113, 122, 126, 128, 129, 133, 136, 137, 140, 143, 139, 140, 138, 139, 141, 140, 138, 139, 139, 141, 140, 141, 143, 144, 145, 146, 147, 149, 154, 154, 153, 155, 157, 159, 159, 161, 161, 162, 163, 162, 161, 159, 160, 157, 156, 154, 153, 153, 148, 148, 145, 145, 141, 142, 141, 139, 138, 137, 136, 136, 136, 138, 138, 137, 137, 136, 137, 136, 138, 139, 137, 138, 138, 138, 138, 137, 135, 137, 138, 136, 137, 139, 136, 137, 137, 138, 137, 137, 136, 135, 136, 136, 135, 136, 136, 136, 135, 135, 137, 137, 138, 138, 139, 140, 140, 141, 143, 140, 143, 144, 145, 145, 145, 147, 145, 145, 147, 145, 143, 144, 142, 142, 142, 138, 135, 134, 128, 125, 120, 117, 111, 105, 100, 97, 90, 85, 77, 73, 68, 63, 60, 56, 54, 54, 52, 52, 50, 51, 49, 48, 48, 46, 46, 46, 44, 47, 45, 45, 45, 44, 43, 45, 43, 42, 42, 41, 40, 42, 41, 41, 39, 40, 42, 41, 39, 41, 40, 41, 41, 40, 39, 40, 40, 39, 39, 40, 40, 40, 40, 39], span_01=128000000, res_01=500000, center_01=1583400000, pga_01=12, reserved1_01=0)>",
         )
@@ -312,7 +329,7 @@ class StreamTest(unittest.TestCase):
             "<UBX(CFG-RXM, reserved0=72, lpMode=0)>",
             "<UBX(CFG-SBAS, enabled=1, test=0, range=1, diffCorr=1, integrity=0, maxSBAS=0, PRN152=0, PRN153=0, PRN154=0, PRN155=0, PRN156=0, PRN157=0, PRN158=0, PRN120=0, PRN121=0, PRN122=0, PRN123=1, PRN124=0, PRN125=0, PRN126=0, PRN127=1, PRN128=1, PRN129=1, PRN130=0, PRN131=1, PRN132=0, PRN133=1, PRN134=0, PRN135=0, PRN136=1, PRN137=1, PRN138=1, PRN139=0, PRN140=0, PRN141=0, PRN142=0, PRN143=0, PRN144=0, PRN145=0, PRN146=0, PRN147=0, PRN148=0, PRN149=0, PRN150=0, PRN151=0)>",
             "<UBX(CFG-TP5, tpIdx=0, version=1, reserved0=0, antCableDelay=50, rfGroupDelay=0, freqPeriod=1000000, freqPeriodLock=1000000, pulseLenRatio=0, pulseLenRatioLock=100000, userConfigDelay=0, active=1, lockGnssFreq=1, lockedOtherSet=1, isFreq=0, isLength=1, alignToTow=1, polarity=1, gridUtcGnss=0, syncMode=0)>",
-            "<UBX(CFG-USB, vendorID=5446, productID=425, reserved0=0, reserved1=0, powerConsumption=0, reEnum=0, powerMode=1, vendorString=b'u-blox AG - www.u-blox.com\\x00\\x00\\x00\\x00\\x00\\x00', productString=b'u-blox GNSS receiver\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00', serialNumber=b'\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00')>",
+            "<UBX(CFG-USB, vendorID=5446, productID=425, reserved0=0, reserved1=0, powerConsumption=0, reEnum=0, powerMode=1, vendorString=b'\\x75\\x2d\\x62\\x6c\\x6f\\x78\\x20\\x41\\x47\\x20\\x2d\\x20\\x77\\x77\\x77\\x2e\\x75\\x2d\\x62\\x6c\\x6f\\x78\\x2e\\x63\\x6f\\x6d\\x00\\x00\\x00\\x00\\x00\\x00', productString=b'\\x75\\x2d\\x62\\x6c\\x6f\\x78\\x20\\x47\\x4e\\x53\\x53\\x20\\x72\\x65\\x63\\x65\\x69\\x76\\x65\\x72\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00', serialNumber=b'\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00')>",
         )
 
         i = 0
@@ -402,10 +419,10 @@ class StreamTest(unittest.TestCase):
         stream = open(os.path.join(dirname, "pygpsdata-MIXED-RTCM3.log"), "rb")
         i = 0
         raw = 0
-        ubr = UBXReader(stream, protfilter=7, labelmsm=0)
+        ubr = UBXReader(stream, protfilter=7, labelmsm=0, quitonerror=ubt.ERR_RAISE)
         # stdout_saved = sys.stdout
         # sys.stdout = open("output.txt", "w")
-        for (raw, parsed) in ubr.iterate(quitonerror=ubt.ERR_RAISE):
+        for raw, parsed in ubr:
             if raw is not None:
                 self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
                 # print(parsed)
@@ -425,8 +442,8 @@ class StreamTest(unittest.TestCase):
         stream = open(os.path.join(dirname, "pygpsdata-MIXED-RTCM3.log"), "rb")
         i = 0
         raw = 0
-        ubr = UBXReader(stream, protfilter=3)
-        for (raw, parsed) in ubr.iterate(quitonerror=ubt.ERR_RAISE):
+        ubr = UBXReader(stream, protfilter=3, quitonerror=ubt.ERR_RAISE)
+        for raw, parsed in ubr:
             if raw is not None:
                 self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
                 i += 1
@@ -440,9 +457,9 @@ class StreamTest(unittest.TestCase):
         stream = open(os.path.join(dirname, "pygpsdata-MIXED-RTCM3BADCRC.log"), "rb")
         i = 0
         raw = 0
-        ubr = UBXReader(stream, protfilter=7)
-        with self.assertRaisesRegex(RTCMParseError, EXPECTED_ERROR):
-            for (raw, parsed) in ubr.iterate(quitonerror=ubt.ERR_RAISE):
+        ubr = UBXReader(stream, protfilter=7, quitonerror=ubt.ERR_RAISE)
+        with self.assertRaisesRegex(UBXParseError, EXPECTED_ERROR):
+            for raw, parsed in ubr:
                 if raw is not None:
                     # print(parsed)
                     i += 1
@@ -456,33 +473,33 @@ class StreamTest(unittest.TestCase):
             "<UBX(MON-TXBUF, pending_01=0, pending_02=0, pending_03=0, pending_04=0, pending_05=0, pending_06=0, usage_01=0, usage_02=2, usage_03=0, usage_04=0, usage_05=0, usage_06=0, peakUsage_01=0, peakUsage_02=12, peakUsage_03=0, peakUsage_04=25, peakUsage_05=0, peakUsage_06=0, tUsage=2, tPeakUsage=25, errors=b'\\x00', reserved0=0)>",
             "<UBX(MON-RXBUF, pending_01=0, pending_02=0, pending_03=0, pending_04=0, pending_05=0, pending_06=0, usage_01=0, usage_02=0, usage_03=0, usage_04=0, usage_05=0, usage_06=0, peakUsage_01=0, peakUsage_02=0, peakUsage_03=0, peakUsage_04=2, peakUsage_05=0, peakUsage_06=0)>",
             "<UBX(MON-IO, rxBytes=0, txBytes=0, parityErrs=0, framingErrs=0, overrunErrs=0, breakCond=0, rxBusy=0, txBusy=0, reserved1=0)>",
-            "<UBX(MON-HW, pinSel=b'\\x00\\xf4\\x01\\x00', pinBank=b'\\x00\\x00\\x00\\x00', pinDir=b'\\x00\\x00\\x01\\x00', pinVal=b'\\xef\\xf7\\x00\\x00', noisePerMS=87, agcCnt=3042, aStatus=2, aPower=1, flags=b'\\x01', reserved0=132, usedMask=b'\\xff\\xeb\\x01\\x00', VP_01=b'\\n', VP_02=b'\\x0b', VP_03=b'\\x0c', VP_04=b'\\r', VP_05=b'\\x0e', VP_06=b'\\x0f', VP_07=b'\\x01', VP_08=b'\\x00', VP_09=b'\\x02', VP_10=b'\\x03', VP_11=b'\\xff', VP_12=b'\\x10', VP_13=b'\\xff', VP_14=b'\\x12', VP_15=b'\\x13', VP_16=b'6', VP_17=b'5', jamInd=5, reserved1=24303, pinIrq=b'\\x00\\x00\\x00\\x00', pullH=b'\\x80\\xf7\\x00\\x00', pullL=b'\\x00\\x00\\x00\\x00')>",
+            "<UBX(MON-HW, pinSel=b'\\x00\\xf4\\x01\\x00', pinBank=b'\\x00\\x00\\x00\\x00', pinDir=b'\\x00\\x00\\x01\\x00', pinVal=b'\\xef\\xf7\\x00\\x00', noisePerMS=87, agcCnt=3042, aStatus=2, aPower=1, flags=b'\\x01', reserved0=132, usedMask=b'\\xff\\xeb\\x01\\x00', VP_01=b'\\x0a', VP_02=b'\\x0b', VP_03=b'\\x0c', VP_04=b'\\x0d', VP_05=b'\\x0e', VP_06=b'\\x0f', VP_07=b'\\x01', VP_08=b'\\x00', VP_09=b'\\x02', VP_10=b'\\x03', VP_11=b'\\xff', VP_12=b'\\x10', VP_13=b'\\xff', VP_14=b'\\x12', VP_15=b'\\x13', VP_16=b'\\x36', VP_17=b'\\x35', jamInd=5, reserved1=24303, pinIrq=b'\\x00\\x00\\x00\\x00', pullH=b'\\x80\\xf7\\x00\\x00', pullL=b'\\x00\\x00\\x00\\x00')>",
             "<UBX(MON-HW2, ofsI=4, magI=110, ofsQ=5, magQ=112, cfgSource=111, reserved0=1800, lowLevCfg=4294967295, reserved1=18446744073709551615, postStatus=0, reserved2=0)>",
         )
         i = 0
         ubxreader = UBXReader(self.streamITER, ubxonly=False, parsebitfield=False)
-        for (_, parsed) in ubxreader:
+        for _, parsed in ubxreader:
             self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
             i += 1
 
-    def testNMEAITERATE(self):  # UBXReader iterate() helper method
+    def testNMEAITERATE(self):  # UBXReader helper method
         EXPECTED_RESULTS = (
             "<UBX(MON-MSGPP, msg1_01=0, msg1_02=0, msg1_03=0, msg1_04=0, msg1_05=0, msg1_06=0, msg1_07=0, msg1_08=0, msg2_01=0, msg2_02=0, msg2_03=0, msg2_04=0, msg2_05=0, msg2_06=0, msg2_07=0, msg2_08=0, msg3_01=0, msg3_02=0, msg3_03=0, msg3_04=0, msg3_05=0, msg3_06=0, msg3_07=0, msg3_08=0, msg4_01=69, msg4_02=0, msg4_03=0, msg4_04=0, msg4_05=0, msg4_06=0, msg4_07=0, msg4_08=0, msg5_01=0, msg5_02=0, msg5_03=0, msg5_04=0, msg5_05=0, msg5_06=0, msg5_07=0, msg5_08=0, msg6_01=0, msg6_02=0, msg6_03=0, msg6_04=0, msg6_05=0, msg6_06=0, msg6_07=0, msg6_08=0, skipped_01=0, skipped_02=0, skipped_03=0, skipped_04=0, skipped_05=0, skipped_06=0)>",
             "<UBX(MON-TXBUF, pending_01=0, pending_02=0, pending_03=0, pending_04=0, pending_05=0, pending_06=0, usage_01=0, usage_02=2, usage_03=0, usage_04=0, usage_05=0, usage_06=0, peakUsage_01=0, peakUsage_02=12, peakUsage_03=0, peakUsage_04=25, peakUsage_05=0, peakUsage_06=0, tUsage=2, tPeakUsage=25, errors=b'\\x00', reserved0=0)>",
             "<UBX(MON-RXBUF, pending_01=0, pending_02=0, pending_03=0, pending_04=0, pending_05=0, pending_06=0, usage_01=0, usage_02=0, usage_03=0, usage_04=0, usage_05=0, usage_06=0, peakUsage_01=0, peakUsage_02=0, peakUsage_03=0, peakUsage_04=2, peakUsage_05=0, peakUsage_06=0)>",
             "<UBX(MON-IO, rxBytes=0, txBytes=0, parityErrs=0, framingErrs=0, overrunErrs=0, breakCond=0, rxBusy=0, txBusy=0, reserved1=0)>",
-            "<UBX(MON-HW, pinSel=b'\\x00\\xf4\\x01\\x00', pinBank=b'\\x00\\x00\\x00\\x00', pinDir=b'\\x00\\x00\\x01\\x00', pinVal=b'\\xef\\xf7\\x00\\x00', noisePerMS=87, agcCnt=3042, aStatus=2, aPower=1, flags=b'\\x01', reserved0=132, usedMask=b'\\xff\\xeb\\x01\\x00', VP_01=b'\\n', VP_02=b'\\x0b', VP_03=b'\\x0c', VP_04=b'\\r', VP_05=b'\\x0e', VP_06=b'\\x0f', VP_07=b'\\x01', VP_08=b'\\x00', VP_09=b'\\x02', VP_10=b'\\x03', VP_11=b'\\xff', VP_12=b'\\x10', VP_13=b'\\xff', VP_14=b'\\x12', VP_15=b'\\x13', VP_16=b'6', VP_17=b'5', jamInd=5, reserved1=24303, pinIrq=b'\\x00\\x00\\x00\\x00', pullH=b'\\x80\\xf7\\x00\\x00', pullL=b'\\x00\\x00\\x00\\x00')>",
+            "<UBX(MON-HW, pinSel=b'\\x00\\xf4\\x01\\x00', pinBank=b'\\x00\\x00\\x00\\x00', pinDir=b'\\x00\\x00\\x01\\x00', pinVal=b'\\xef\\xf7\\x00\\x00', noisePerMS=87, agcCnt=3042, aStatus=2, aPower=1, flags=b'\\x01', reserved0=132, usedMask=b'\\xff\\xeb\\x01\\x00', VP_01=b'\\x0a', VP_02=b'\\x0b', VP_03=b'\\x0c', VP_04=b'\\x0d', VP_05=b'\\x0e', VP_06=b'\\x0f', VP_07=b'\\x01', VP_08=b'\\x00', VP_09=b'\\x02', VP_10=b'\\x03', VP_11=b'\\xff', VP_12=b'\\x10', VP_13=b'\\xff', VP_14=b'\\x12', VP_15=b'\\x13', VP_16=b'\\x36', VP_17=b'\\x35', jamInd=5, reserved1=24303, pinIrq=b'\\x00\\x00\\x00\\x00', pullH=b'\\x80\\xf7\\x00\\x00', pullL=b'\\x00\\x00\\x00\\x00')>",
             "<UBX(MON-HW2, ofsI=4, magI=110, ofsQ=5, magQ=112, cfgSource=111, reserved0=1800, lowLevCfg=4294967295, reserved1=18446744073709551615, postStatus=0, reserved2=0)>",
         )
         i = 0
         ubr = UBXReader(self.streamITER, protfilter=3, parsebitfield=False)
-        for (_, parsed) in ubr.iterate():
+        for _, parsed in ubr:
             self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
             i += 1
 
     def testUBXITERATE_ERR1(
         self,
-    ):  # UBXReader iterate() helper method with bad checksum
+    ):  # UBXReader helper method with bad checksum
         dirname = os.path.dirname(__file__)
         stream = open(os.path.join(dirname, "pygpsdata-MIXED3BADCK.log"), "rb")
         EXPECTED_ERROR = "Message checksum b's\\x8e' invalid - should be b's\\x8d'"
@@ -493,17 +510,16 @@ class StreamTest(unittest.TestCase):
                 validate=VALCKSUM,
                 msgmode=0,
                 parsebitfield=True,
-            )
-            for (raw, parsed) in ubr.iterate(
                 quitonerror=ERR_RAISE,
-            ):
+            )
+            for raw, parsed in ubr:
                 pass
         self.assertTrue(EXPECTED_ERROR in str(context.exception))
         stream.close()
 
     def testUBXITERATE_ERR2(
         self,
-    ):  # UBXReader iterate() helper method ignoring bad checksum and passing error handler
+    ):  # UBXReader helper method ignoring bad checksum and passing error handler
         dirname = os.path.dirname(__file__)
         stream = open(os.path.join(dirname, "pygpsdata-MIXED3BADCK.log"), "rb")
         EXPECTED_RESULTS = (
@@ -519,22 +535,22 @@ class StreamTest(unittest.TestCase):
             validate=VALCKSUM,
             msgmode=0,
             parsebitfield=True,
+            quitonerror=ERR_LOG,
+            errorhandler=lambda e: print(f"I ignored the following error: {e}"),
         )
         res = ""
         i = 0
-        for (raw, parsed) in ubr.iterate(
-            quitonerror=ERR_LOG,
-            errorhandler=lambda e: print(f"I ignored the following error: {e}"),
-        ):
+        for raw, parsed in ubr:
+            if not isinstance(parsed, str):
+                print(parsed)
+                i += 1
             res = str(parsed)
-            print(parsed)
             # self.assertEqual(EXPECTED_RESULTS[i], res)
-            i += 1
         self.assertEqual(i, 4)
 
     def testUBXITERATE_ERR3(
         self,
-    ):  # UBXReader iterate() helper method ignoring bad checksum and continuing
+    ):  # UBXReader helper method ignoring bad checksum and continuing
         dirname = os.path.dirname(__file__)
         stream = open(os.path.join(dirname, "pygpsdata-MIXED3BADCK.log"), "rb")
         EXPECTED_RESULT = "<NMEA(GPGGA, time=08:02:48, lat=53.4507186667, NS=N, lon=-2.2402315, EW=W, quality=1, numSV=7, HDOP=1.63, alt=36.8, altUnit=M, sep=48.5, sepUnit=M, diffAge=, diffStation=)>"
@@ -544,35 +560,54 @@ class StreamTest(unittest.TestCase):
             validate=VALCKSUM,
             msgmode=0,
             parsebitfield=True,
+            quitonerror=ERR_LOG,
         )
         res = ""
-        for (raw, parsed) in ubr.iterate(
+        for raw, parsed in ubr:
+            res = str(parsed)
+        self.assertEqual(EXPECTED_RESULT, res)
+        stream.close()
+
+    def testUBXITERATE_ERR4(
+        self,
+    ):  # UBXReader helper method ignoring bad checksum and continuing
+        dirname = os.path.dirname(__file__)
+        stream = open(os.path.join(dirname, "pygpsdata-MIXED3BADCK.log"), "rb")
+        EXPECTED_RESULT = "<NMEA(GPGGA, time=08:02:48, lat=53.4507186667, NS=N, lon=-2.2402315, EW=W, quality=1, numSV=7, HDOP=1.63, alt=36.8, altUnit=M, sep=48.5, sepUnit=M, diffAge=, diffStation=)>"
+        ubr = UBXReader(
+            stream,
+            ubxonly=False,
+            validate=VALCKSUM,
+            msgmode=0,
+            parsebitfield=True,
             quitonerror=ERR_LOG,
-        ):
+        )
+        res = ""
+        for raw, parsed in ubr.iterate():
             res = str(parsed)
         self.assertEqual(EXPECTED_RESULT, res)
         stream.close()
 
     def testBADHDR_FAIL(self):  # invalid header in data with quitonerror = 2
         EXPECTED_ERROR = "Unknown protocol b'\\xb5w'"
-        with self.assertRaises(UBXStreamError) as context:
+        with self.assertRaises(UBXParseError) as context:
             i = 0
             ubxreader = UBXReader(self.streamBADHDR, quitonerror=ERR_RAISE)
-            for (_, _) in ubxreader:
+            for _, _ in ubxreader:
                 i += 1
         self.assertTrue(EXPECTED_ERROR in str(context.exception))
 
     def testBADHDR_LOG(self):  # invalid header in data with quitonerror = 1
         i = 0
         ubxreader = UBXReader(self.streamBADHDR, quitonerror=ERR_LOG)
-        for (raw, parsed) in ubxreader:
+        for raw, parsed in ubxreader:
             i += 1
         self.assertEqual(parsed, "<UNKNOWN PROTOCOL(header=b'\\xb5w')>")
 
     def testBADHDR_IGNORE(self):  # invalid header in data with quitonerror = 0
         i = 0
         ubxreader = UBXReader(self.streamBADHDR, quitonerror=ERR_IGNORE)
-        for (raw, parsed) in ubxreader:
+        for raw, parsed in ubxreader:
             i += 1
         self.assertEqual(i, 2)
 
@@ -616,7 +651,7 @@ class StreamTest(unittest.TestCase):
         self,
     ):  # test stream of UBX DEBUG messages
         EXPECTED_RESULTS1 = "<UBX(CFG-VALGET, version=1, layer=0, position=0, CFG_0x10010001=b'\\x00', CFG_0x10010101=b'\\x00', CFG_0x10040009=b'\\x00', CFG_TP_TP1_ENA=1, CFG_TP_SYNC_GNSS_TP1=1, CFG_TP_USE_LOCKED_TP1=1, CFG_TP_ALIGN_TO_TOW_TP1=1, CFG_TP_POL_TP1=1, CFG_0x10110012=b'\\x00', CFG_NAVSPG_INIFIX3D=0, CFG_0x10110014=b'\\x01', CFG_0x10110015=b'\\x01', CFG_0x10110016=b'\\x01', CFG_0x10110018=b'\\x01', CFG_0x1011001b=b'\\x00', CFG_NAVSPG_ACKAIDING=0, CFG_0x10110046=b'\\x01', CFG_0x10110052=b'\\x00', CFG_0x10110053=b'\\x00', CFG_NAVSPG_USE_USRDAT=0, CFG_0x10110081=b'\\x00', CFG_0x10110082=b'\\x00', CFG_0x10110083=b'\\x00', CFG_NAVSPG_PL_ENA=1, CFG_0x10140051=b'\\x00', CFG_0x10140052=b'\\x00', CFG_0x10140053=b'\\x00', CFG_0x10140061=b'\\x01', CFG_NAV2_OUT_ENABLED=0, CFG_NAV2_SBAS_USE_INTEGRITY=0, CFG_0x10210005=b'\\x00', CFG_ODO_USE_ODO=0, CFG_ODO_USE_COG=0, CFG_ODO_OUTLPVEL=0, CFG_ODO_OUTLPCOG=0, CFG_GEOFENCE_USE_PIO=0, CFG_GEOFENCE_USE_FENCE1=0, CFG_GEOFENCE_USE_FENCE2=0, CFG_GEOFENCE_USE_FENCE3=0, CFG_GEOFENCE_USE_FENCE4=0, CFG_0x10250001=b'\\x01', CFG_SIGNAL_GPS_L1CA_ENA=1, CFG_SIGNAL_GPS_L2C_ENA=1, CFG_SIGNAL_SBAS_L1CA_ENA=1, CFG_SIGNAL_GAL_E1_ENA=1, CFG_SIGNAL_GAL_E5B_ENA=1, CFG_SIGNAL_BDS_B1_ENA=1, CFG_SIGNAL_BDS_B2_ENA=1, CFG_SIGNAL_QZSS_L1CA_ENA=1, CFG_SIGNAL_QZSS_L1S_ENA=0, CFG_SIGNAL_QZSS_L2C_ENA=1, CFG_SIGNAL_GLO_L1_ENA=1, CFG_SIGNAL_GLO_L2_ENA=1, CFG_SIGNAL_GPS_ENA=1, CFG_SIGNAL_SBAS_ENA=1, CFG_SIGNAL_GAL_ENA=1, CFG_SIGNAL_BDS_ENA=1, CFG_SIGNAL_QZSS_ENA=1, CFG_SIGNAL_GLO_ENA=1, CFG_0x10310027=b'\\x01', CFG_0x10330001=b'\\x00', CFG_0x10330002=b'\\x00', CFG_0x10330003=b'\\x00', CFG_0x10330011=b'\\x00')>"
-        EXPECTED_RESULTS2 = "<UBX(DBG-0c4b-NOMINAL, data_01=b'\\x00', data_02=b'\\x00', data_03=b'd', data_04=b'\\x00', data_05=b'&', data_06=b'\\x00', data_07=b'\\x01', data_08=b'\\x00', data_09=b'3', data_10=b'\\x10', data_11=b'\\x00', data_12=b'\\x02', data_13=b'\\x00', data_14=b'3', data_15=b'\\x10', data_16=b'\\x00', data_17=b'\\x03', data_18=b'\\x00', data_19=b'3', data_20=b'\\x10', data_21=b'\\x00', data_22=b'\\x11', data_23=b'\\x00', data_24=b'3', data_25=b'\\x10', data_26=b'\\x00', data_27=b'!', data_28=b'\\x00', data_29=b'3', data_30=b'\\x10', data_31=b'\\x01', data_32=b'\\x01', data_33=b'\\x00', data_34=b'4', data_35=b'\\x10', data_36=b'\\x00', data_37=b'\\x02', data_38=b'\\x00', data_39=b'4', data_40=b'\\x10', data_41=b'\\x00', data_42=b'\\x03', data_43=b'\\x00', data_44=b'4', data_45=b'\\x10', data_46=b'\\x01', data_47=b'\\x04', data_48=b'\\x00', data_49=b'4', data_50=b'\\x10', data_51=b'\\x00', data_52=b'\\x11', data_53=b'\\x00', data_54=b'4', data_55=b'\\x10', data_56=b'\\x00', data_57=b'\\x14', data_58=b'\\x00', data_59=b'4', data_60=b'\\x10', data_61=b'\\x00', data_62=b'\\x01', data_63=b'\\x00', data_64=b'5', data_65=b'\\x10', data_66=b'\\x00', data_67=b'\\x02', data_68=b'\\x00', data_69=b'5', data_70=b'\\x10', data_71=b'\\x00', data_72=b'\\x03', data_73=b'\\x00', data_74=b'5', data_75=b'\\x10', data_76=b'\\x00', data_77=b'\\x04', data_78=b'\\x00', data_79=b'5', data_80=b'\\x10', data_81=b'\\x00', data_82=b'\\x02', data_83=b'\\x00', data_84=b'6', data_85=b'\\x10', data_86=b'\\x00', data_87=b'\\x03', data_88=b'\\x00', data_89=b'6', data_90=b'\\x10', data_91=b'\\x01', data_92=b'\\x04', data_93=b'\\x00', data_94=b'6', data_95=b'\\x10', data_96=b'\\x01', data_97=b'\\x05', data_98=b'\\x00', data_99=b'6', data_100=b'\\x10', data_101=b'\\x00', data_102=b'\\x07', data_103=b'\\x00', data_104=b'6', data_105=b'\\x10', data_106=b'\\x00')>"
+        EXPECTED_RESULTS2 = "<UBX(DBG-0c4b-NOMINAL, data_01=b'\\x00', data_02=b'\\x00', data_03=b'\\x64', data_04=b'\\x00', data_05=b'\\x26', data_06=b'\\x00', data_07=b'\\x01', data_08=b'\\x00', data_09=b'\\x33', data_10=b'\\x10', data_11=b'\\x00', data_12=b'\\x02', data_13=b'\\x00', data_14=b'\\x33', data_15=b'\\x10', data_16=b'\\x00', data_17=b'\\x03', data_18=b'\\x00', data_19=b'\\x33', data_20=b'\\x10', data_21=b'\\x00', data_22=b'\\x11', data_23=b'\\x00', data_24=b'\\x33', data_25=b'\\x10', data_26=b'\\x00', data_27=b'\\x21', data_28=b'\\x00', data_29=b'\\x33', data_30=b'\\x10', data_31=b'\\x01', data_32=b'\\x01', data_33=b'\\x00', data_34=b'\\x34', data_35=b'\\x10', data_36=b'\\x00', data_37=b'\\x02', data_38=b'\\x00', data_39=b'\\x34', data_40=b'\\x10', data_41=b'\\x00', data_42=b'\\x03', data_43=b'\\x00', data_44=b'\\x34', data_45=b'\\x10', data_46=b'\\x01', data_47=b'\\x04', data_48=b'\\x00', data_49=b'\\x34', data_50=b'\\x10', data_51=b'\\x00', data_52=b'\\x11', data_53=b'\\x00', data_54=b'\\x34', data_55=b'\\x10', data_56=b'\\x00', data_57=b'\\x14', data_58=b'\\x00', data_59=b'\\x34', data_60=b'\\x10', data_61=b'\\x00', data_62=b'\\x01', data_63=b'\\x00', data_64=b'\\x35', data_65=b'\\x10', data_66=b'\\x00', data_67=b'\\x02', data_68=b'\\x00', data_69=b'\\x35', data_70=b'\\x10', data_71=b'\\x00', data_72=b'\\x03', data_73=b'\\x00', data_74=b'\\x35', data_75=b'\\x10', data_76=b'\\x00', data_77=b'\\x04', data_78=b'\\x00', data_79=b'\\x35', data_80=b'\\x10', data_81=b'\\x00', data_82=b'\\x02', data_83=b'\\x00', data_84=b'\\x36', data_85=b'\\x10', data_86=b'\\x00', data_87=b'\\x03', data_88=b'\\x00', data_89=b'\\x36', data_90=b'\\x10', data_91=b'\\x01', data_92=b'\\x04', data_93=b'\\x00', data_94=b'\\x36', data_95=b'\\x10', data_96=b'\\x01', data_97=b'\\x05', data_98=b'\\x00', data_99=b'\\x36', data_100=b'\\x10', data_101=b'\\x00', data_102=b'\\x07', data_103=b'\\x00', data_104=b'\\x36', data_105=b'\\x10', data_106=b'\\x00')>"
         i = 0
         raw = 0
         ubxreader = UBXReader(self.streamDEBUG)

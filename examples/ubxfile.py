@@ -35,10 +35,9 @@ def read(stream, errorhandler, protfilter, quitonerror, validate, msgmode):
         validate=validate,
         msgmode=msgmode,
         parsebitfield=True,
+        errorhandler=errorhandler,
     )
-    for (_, parsed_data) in ubr.iterate(
-        quitonerror=quitonerror, errorhandler=errorhandler
-    ):
+    for _, parsed_data in ubr:
         print(parsed_data)
         msgcount += 1
 
@@ -46,7 +45,6 @@ def read(stream, errorhandler, protfilter, quitonerror, validate, msgmode):
 
 
 if __name__ == "__main__":
-
     YES = ("Y", "y", "YES,", "yes", "True")
     NO = ("N", "n", "NO,", "no", "False")
 

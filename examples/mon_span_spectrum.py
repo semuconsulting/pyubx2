@@ -43,7 +43,6 @@ def plot_spectrum(msg: UBXMessage):
     minhz = 999 * 1e9
     maxhz = 0
     for i in range(1, numrf + 1):
-
         # get MON-SPAN message attributes for this RF block
         idx = f"_{i:02}"
         spec = getattr(msg, "spectrum" + idx)
@@ -80,11 +79,9 @@ def plot_spectrum(msg: UBXMessage):
 
 
 if __name__ == "__main__":
-
     # read binary UBX data stream containing one or more MON-SPAN messages
     with open("mon_span.ubx", "rb") as stream:
-
         ubr = UBXReader(stream)
-        for (raw_data, parsed_data) in ubr.iterate():
+        for raw_data, parsed_data in ubr:
             if parsed_data.identity == "MON-SPAN":
                 plot_spectrum(parsed_data)
