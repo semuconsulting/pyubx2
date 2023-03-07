@@ -1,7 +1,7 @@
 # pyubx2 Release Notes
 
 
-### RELEASE 1.2.22rc0
+### RELEASE 1.2.22
 
 CHANGES:
 
