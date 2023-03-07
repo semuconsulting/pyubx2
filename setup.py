@@ -21,7 +21,7 @@ setuptools.setup(
     url="https://github.com/semuconsulting/pyubx2",
     packages=setuptools.find_packages(exclude=["tests", "examples", "docs"]),
     install_requires=[
-        "pynmeagps>=1.0.19",
+        "pynmeagps>=1.0.20",
         "pyrtcm>=1.0.5",
     ],
     license="BSD 3-Clause 'Modified' License",
