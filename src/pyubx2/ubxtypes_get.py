@@ -36,7 +36,6 @@ from pyubx2.ubxtypes_core import (
     U8,
     U9,
     U10,
-    U11,
     U12,
     U16,
     U20,

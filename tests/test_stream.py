@@ -13,6 +13,9 @@ import sys
 import os
 import unittest
 
+ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
+sys.path.append(os.path.join(ROOT, "src"))
+
 from pyrtcm.exceptions import RTCMParseError
 from pyubx2 import (
     UBXReader,

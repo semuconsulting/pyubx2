@@ -13,7 +13,6 @@ Information sourced from u-blox Interface Specifications © 2013-2021, u-blox AG
 # pylint: disable=too-many-lines, line-too-long
 
 from pyubx2.ubxtypes_core import (
-    A250,
     I1,
     I2,
     I4,
@@ -26,7 +25,6 @@ from pyubx2.ubxtypes_core import (
     U5,
     U6,
     U7,
-    U8,
     U11,
     U12,
     U40,

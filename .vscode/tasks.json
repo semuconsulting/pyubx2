@@ -1,9 +1,8 @@
 {
     // See https://go.microsoft.com/fwlink/?LinkId=733558
     // for the documentation about the tasks.json format
-
-    // These Python project tasks assume you have installed
-    // and configured: black, coverage, pytest, Sphinx and wheel
+    // These Python project tasks assume you have installed and configured: 
+    // build, wheel, black, pylint, unittest, coverage, Sphinx, sphinx-rtd-theme
     "version": "2.0.0",
     "tasks": [
         {
@@ -47,7 +46,7 @@
             "args": [
                 "-m",
                 "black",
-                "${config:modulename}"
+                "src/${config:modulename}"
             ],
             "problemMatcher": []
         },
@@ -59,7 +58,7 @@
                 "-m",
                 "pylint",
                 "-E",
-                "${config:modulename}"
+                "src/${config:modulename}"
             ],
             "problemMatcher": []
         },
@@ -80,9 +79,10 @@
             "type": "process",
             "command": "${config:python.defaultInterpreterPath}",
             "args": [
-                "${workspaceFolder}/setup.py",
-                "sdist",
-                "bdist_wheel"
+                "-m",
+                "build",
+                ".",
+                "--wheel",
             ],
             "problemMatcher": []
         },
@@ -91,7 +91,8 @@
             "type": "process",
             "command": "${config:python.defaultInterpreterPath}",
             "args": [
-                "${workspaceFolder}/tests/testsuite.py"
+                "-m",
+                "unittest"
             ],
             "problemMatcher": []
         },
@@ -105,7 +106,7 @@
                 "run",
                 "--source=${config:modulename}",
                 "-m",
-                "pytest"
+                "unittest",
             ],
             "problemMatcher": []
         },
@@ -119,7 +120,9 @@
                 "html"
             ],
             "dependsOrder": "sequence",
-            "dependsOn": ["Coverage"],
+            "dependsOn": [
+                "Coverage"
+            ],
             "problemMatcher": []
         },
         {
@@ -127,10 +130,10 @@
             "type": "process",
             "command": "sphinx-apidoc",
             "args": [
-                "-f", 
+                "-f",
                 "-o",
                 "docs",
-                "${config:modulename}"
+                "src/${config:modulename}"
             ],
             "problemMatcher": []
         },
@@ -148,7 +151,9 @@
                 "cwd": "${workspaceFolder}/docs"
             },
             "dependsOrder": "sequence",
-            "dependsOn": ["Sphinx"],
+            "dependsOn": [
+                "Sphinx"
+            ],
             "problemMatcher": []
         },
         {
@@ -162,7 +167,9 @@
                 "s3://www.semuconsulting.com/${config:modulename}/"
             ],
             "dependsOrder": "sequence",
-            "dependsOn": ["Sphinx HTML"],
+            "dependsOn": [
+                "Sphinx HTML"
+            ],
             "problemMatcher": []
         },
         {
@@ -173,19 +180,20 @@
                 "-m",
                 "pip",
                 "install",
-                "${workspaceFolder}/dist/${config:distname}-${config:moduleversion}.tar.gz",
+                "${workspaceFolder}/dist/${config:distname}-${config:moduleversion}-py3-none-any.whl",
                 "--user",
                 "--force-reinstall"
             ],
             "dependsOrder": "sequence",
             "dependsOn": [
-                "Clean", 
-                "Format", 
+                "Clean",
+                "Format",
                 "PylintError",
-                "Build", 
-                "Test", 
-                "Coverage Report", 
-                "Sphinx HTML"],
+                "Build",
+                //"Test",
+                "Coverage Report",
+                "Sphinx HTML"
+            ],
             "problemMatcher": []
         },
         {
