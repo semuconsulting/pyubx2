@@ -1,0 +1,2 @@
+[run]
+omit=tests/*,examples/*,*/lib/python/site-packages/pyrtcm/*,*/lib/python/site-packages/pynmeagps/*
