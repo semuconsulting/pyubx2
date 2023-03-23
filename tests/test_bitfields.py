@@ -9,7 +9,12 @@ Created on 16 Oct 2021
 """
 # pylint: disable=line-too-long, invalid-name, missing-docstring, no-member
 
+import os
+import sys
 import unittest
+
+ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
+sys.path.append(os.path.join(ROOT, "src"))
 
 from pyubx2 import UBXMessage, UBXReader, GET
 

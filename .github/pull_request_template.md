@@ -8,7 +8,7 @@ Fixes # (issue)
 
 ## Testing
 
-Please test all changes, however trivial, against the supplied unittest suite `tests/test_*.py` e.g. by executing the `tests/testsuite.py` module or using your IDE's native Python unittest integration facilities. Please describe any test cases you have amended or added to this suite to maintain >= 99% code coverage.
+Please test all changes, however trivial, against the supplied unittest suite `tests/test_*.py`. Please describe any test cases you have amended or added to this suite to maintain >= 99% code coverage.
 
 If you're adding new UBX message definitions for Generation 9+ devices, please check for any corresponding configuration database updates (`ubxtypes_configdb.py`).
 
@@ -17,7 +17,8 @@ If you're adding new UBX message definitions for Generation 9+ devices, please c
 
 ## Checklist:
 
-- [ ] My code follows the style guidelines of this project (see `CONTRIBUTING.MD`).
+- [ ] I agree to abide by the code of conduct (see [CODE_OF_CONDUCT.md](https://github.com/semuconsulting/pyubx2/blob/master/CODE_OF_CONDUCT.md)).
+- [ ] My code follows the style guidelines of this project (see [CONTRIBUTING.MD](https://github.com/semuconsulting/pyubx2/blob/master/CONTRIBUTING.md)).
 - [ ] I have performed a self-review of my own code.
 - [ ] (*if appropriate*) I have cited my u-blox documentation source(s).
 - [ ] I have commented my code, particularly in hard-to-understand areas.

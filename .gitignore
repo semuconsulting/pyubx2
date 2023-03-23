@@ -13,7 +13,7 @@ Pipfile*.*
 /references
 /pyubx2_*
 /pyubx2-*
-/pyubx2.egg*
+src/pyubx2.egg*
 /__pycache__
 /.dbeaver
 /pyubx2/__pycache__

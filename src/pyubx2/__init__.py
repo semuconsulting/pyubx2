@@ -6,8 +6,15 @@ Created on 27 Sep 2020
 :license: BSD 3-Clause
 """
 
+from pynmeagps.nmeahelpers import (
+    latlon2dmm,
+    latlon2dms,
+    llh2iso6709,
+    ecef2llh,
+    llh2ecef,
+    haversine,
+)
 from pyubx2._version import __version__
-
 from pyubx2.exceptions import (
     UBXMessageError,
     UBXParseError,
@@ -24,14 +31,6 @@ from pyubx2.ubxtypes_get import *
 from pyubx2.ubxtypes_poll import *
 from pyubx2.ubxtypes_set import *
 from pyubx2.ubxhelpers import *
-from pynmeagps.nmeahelpers import (
-    latlon2dmm,
-    latlon2dms,
-    llh2iso6709,
-    ecef2llh,
-    llh2ecef,
-    haversine,
-)
 from pyubx2.ubxtypes_configdb import *
 
 version = __version__  # pylint: disable=invalid-name
