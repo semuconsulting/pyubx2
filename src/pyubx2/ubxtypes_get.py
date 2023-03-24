@@ -3323,7 +3323,7 @@ UBX_PAYLOADS_GET = {
         "group1": (  # repeating group * numKeys
             "numKeys",
             {
-                "reserved1": U1,
+                "encryptAlgorithm": U1,  # according to UBX-22008160-R02
                 "keyLengthBytes": U1,
                 "validFromWno": U2,
                 "validFromTow": U4,
