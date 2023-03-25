@@ -22,6 +22,7 @@ If you're adding or amending UBX payload definitions or configuration database k
 * Code should be documented in accordance with [Sphinx](https://www.sphinx-doc.org/en/master/) docstring conventions.
 * Code should formatted using [black](https://pypi.org/project/black/) (>= 20.8).
 * We use and recommend [pylint](https://pypi.org/project/pylint/) (>=2.6.0) for code analysis.
+* Commits should be [signed](https://docs.github.com/en/authentication/managing-commit-signature-verification/signing-commits).
 
 ## Testing
 

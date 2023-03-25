@@ -27,4 +27,5 @@ If you're adding new UBX message definitions for Generation 9+ devices, please c
 - [ ] I have tested my code against the full `tests/test_*.py` unittest suite.
 - [ ] My changes generate no new warnings.
 - [ ] Any dependent changes have been merged and published in downstream modules.
+- [ ] I have [signed](https://docs.github.com/en/authentication/managing-commit-signature-verification/signing-commits) my commits.
 - [ ] I understand and acknowledge that the code will be published under a BSD 3-Clause license.
