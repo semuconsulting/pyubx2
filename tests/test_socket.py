@@ -9,15 +9,10 @@ Created on 11 May 2022
 :author: semuadmin
 """
 
-import os
-import sys
 import unittest
 from socket import socket
-
-ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
-sys.path.append(os.path.join(ROOT, "src"))
-
 from pyubx2 import UBXReader
+
 
 class DummySocket(socket):
     """

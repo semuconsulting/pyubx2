@@ -10,18 +10,11 @@ Created on 3 Oct 2020
 # pylint: disable=line-too-long, invalid-name, missing-docstring, no-member
 
 import os
-import sys
 import unittest
 import unittest
-
-ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
-sys.path.append(os.path.join(ROOT, "src"))
 
 from pyubx2 import UBXMessage, UBXReader, UBX_CLASSES, POLL
 import pyubx2.ubxtypes_core as ubt
-import pyubx2.ubxtypes_get as ubg
-import pyubx2.ubxtypes_set as ubs
-import pyubx2.ubxtypes_poll as ubp
 from pyubx2.ubxhelpers import (
     calc_checksum,
     isvalid_checksum,

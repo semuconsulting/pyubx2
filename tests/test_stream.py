@@ -13,10 +13,6 @@ import sys
 import os
 import unittest
 
-ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
-sys.path.append(os.path.join(ROOT, "src"))
-
-from pyrtcm.exceptions import RTCMParseError
 from pyubx2 import (
     UBXReader,
     VALCKSUM,
@@ -26,7 +22,7 @@ from pyubx2 import (
     ERR_LOG,
     ERR_IGNORE,
 )
-from pyubx2.exceptions import UBXStreamError, UBXParseError
+from pyubx2.exceptions import UBXParseError
 import pyubx2.ubxtypes_core as ubt
 
 

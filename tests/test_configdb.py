@@ -9,12 +9,7 @@ Created on 19 Apr 2021
 @author: semuadmin
 """
 
-import os
-import sys
 import unittest
-
-ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
-sys.path.append(os.path.join(ROOT, "src"))
 
 from pyubx2 import UBXMessage, SET, POLL
 from pyubx2.ubxtypes_configdb import UBX_CONFIG_DATABASE
@@ -29,7 +24,7 @@ class ConfigTest(unittest.TestCase):
         pass
 
     def testConfigDB(self):  # sanity check against baselined configdb definitions
-        for (keyname, keytuple) in UBX_CONFIG_DATABASE.items():
+        for keyname, keytuple in UBX_CONFIG_DATABASE.items():
             keyid, _ = keytuple
             try:
                 keytuple2 = UBX_CONFIG_DATABASE_BASELINE[keyname]
