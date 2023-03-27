@@ -429,16 +429,8 @@ disable=raw-checker-failed,
         suppressed-message,
         useless-suppression,
         deprecated-pragma,
-        use-symbolic-message-instead,
-        # added options for tkinter GUI...
-        too-many-instance-attributes,
-        too-many-branches,
-        too-many-statements,
-        unused-private-member,
-        too-few-public-methods,
-        too-many-public-methods,
-        too-many-locals,
-        invalid-name
+        use-symbolic-message-instead
+
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
