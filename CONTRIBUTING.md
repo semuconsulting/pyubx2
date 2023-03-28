@@ -28,9 +28,9 @@ If you're adding or amending UBX payload definitions or configuration database k
 
 While we endeavour to test on as wide a variety of u-blox devices as possible, as a volunteer project we only have a limited number of devices available. We particularly welcome testing contributions relating to specialised devices (e.g. high precision HP, real-time kinematics RTK, automotive dead-reckoning ADR, etc.).
 
-We use python's native unittest framework for local unit testing, complemented by the GitHub Actions automated build and testing workflow. We endeavour to have 100% code coverage.
+We use python's native pytest framework for local unit testing, complemented by the GitHub Actions automated build and testing workflow. We endeavour to have 100% code coverage.
 
-Please write unittest examples for new code you create and add them to the `/tests` folder following the naming convention `test_*.py`.
+Please write pytest examples for new code you create and add them to the `/tests` folder following the naming convention `test_*.py`.
 
 We test on the following platforms using a variety of u-blox devices including NEO-M7, NEO-M8, NEO-M9, NEO-M10s and ZED-F9P:
 * Windows 11
