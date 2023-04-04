@@ -1,5 +1,12 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.2.23
+
+CHANGES:
+
+1. Minimum dependency version updated for pynmeagps and pyrtcm
+1. Minor updates to VSCode task and GitHub actions workflows for pyproject.toml build framework
+1. No other functional changes
 
 ### RELEASE 1.2.22
 

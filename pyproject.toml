@@ -11,7 +11,7 @@ maintainers = [
   {name = "semuadmin", email = "semuadmin@semuconsulting.com"}
 ]
 description = "UBX protocol parser and generator"
-version = "1.2.22"
+version = "1.2.23"
 license = {file = "LICENSE"}
 readme = "README.md"
 requires-python = ">=3.7"
@@ -73,7 +73,7 @@ disable = """
 
 [tool.pytest.ini_options]
 minversion = "7.0"
-addopts = "--cov --cov-report html --cov-report term-missing --cov-fail-under 95"
+addopts = "--cov --cov-report term-missing --cov-fail-under 95"
 pythonpath = ["src"]
 
 [tool.coverage.run]
