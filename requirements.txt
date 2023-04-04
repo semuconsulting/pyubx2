@@ -1,2 +1,2 @@
-pynmeagps>=1.0.20
+pynmeagps>=1.0.21
 pyrtcm>=1.0.8

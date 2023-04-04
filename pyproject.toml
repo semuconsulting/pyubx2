@@ -16,7 +16,6 @@ license = {file = "LICENSE"}
 readme = "README.md"
 requires-python = ">=3.7"
 classifiers = [
-    "License :: OSI Approved ::BSD License",
     "Operating System :: OS Independent",
     "Development Status :: 5 - Production/Stable",
     "Environment :: MacOS X",
@@ -39,7 +38,7 @@ classifiers = [
     ]
 
 dependencies = [
-    "pynmeagps >= 1.0.20",
+    "pynmeagps >= 1.0.21",
     "pyrtcm >= 1.0.8",
 ]
 
