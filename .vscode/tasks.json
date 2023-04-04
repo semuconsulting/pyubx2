@@ -114,7 +114,13 @@
             "command": "${config:python.defaultInterpreterPath}",
             "args": [
                 "-m",
-                "pytest"
+                "pytest",
+                "--cov-report",
+                "html",
+                "--cov-fail-under",
+                "95",
+                "--cov=${config:distname}",
+                "tests/",
             ],
             "problemMatcher": []
         },

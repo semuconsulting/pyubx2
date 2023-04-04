@@ -6,5 +6,5 @@
     "editor.formatOnSave": true,
     "modulename": "${workspaceFolderBasename}",
     "distname": "${workspaceFolderBasename}",
-    "moduleversion": "1.2.22"
+    "moduleversion": "1.2.23"
 }
