@@ -15,16 +15,27 @@
                 "pip",
                 "install",
                 "--upgrade",
-                "setuptools",
-                "build",
-                "wheel",
-                "pylint",
-                "pytest",
-                "pytest-cov",
-                "black",
-                "Sphinx",
-                "sphinx-rtd-theme",
+                "--upgrade",
+                "-r",
+                "${workspaceFolder}/requirements_build.txt",
             ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Install Dependencies",
+            "type": "process",
+            "command": "${config:python.defaultInterpreterPath}",
+            "args": [
+                "-m",
+                "pip",
+                "install",
+                "--upgrade",
+                "-r",
+                "${workspaceFolder}/requirements.txt",
+            ],
+            "options": {
+                "cwd": "src"
+            },
             "problemMatcher": []
         },
         {
@@ -68,18 +79,6 @@
             "args": [
                 "-m",
                 "black",
-                "src/${config:modulename}"
-            ],
-            "problemMatcher": []
-        },
-        {
-            "label": "PylintError",
-            "type": "process",
-            "command": "${config:python.defaultInterpreterPath}",
-            "args": [
-                "-m",
-                "pylint",
-                "-E",
                 "src/${config:modulename}"
             ],
             "problemMatcher": []
@@ -130,6 +129,13 @@
             "type": "process",
             "command": "sphinx-apidoc",
             "args": [
+                "--doc-project=${config:modulename}",
+                "--doc-author=semuadmin",
+                "--doc-version=${config:moduleversion}",
+                "--doc-release=${config:moduleversion}",
+                "--ext-autodoc",
+                "--ext-viewcode",
+                "--templatedir=docs",
                 "-f",
                 "-o",
                 "docs",
@@ -187,9 +193,10 @@
             "dependsOrder": "sequence",
             "dependsOn": [
                 "Clean",
+                "Update Toolchain",
+                "Update Dependencies",
                 "Format",
-                "PylintError",
-                "PyLint",
+                "Pylint",
                 "Test",
                 "Build",
                 "Sphinx HTML"

@@ -13,9 +13,7 @@
 import os
 import sys
 
-# document local package rather than installed one
-ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
-sys.path.append(os.path.join(ROOT, "src"))
+sys.path.insert(0, os.path.abspath("../src"))
 
 from pyubx2 import version as VERSION
 
