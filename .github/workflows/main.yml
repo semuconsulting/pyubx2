@@ -18,9 +18,9 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install build dependencies
+      - name: Install deploy dependencies
         run: |
-          pip install .[build]
+          pip install .[deploy]
       - name: Install test dependencies
         run: |
           pip install .[test]
