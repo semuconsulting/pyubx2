@@ -21,7 +21,7 @@ jobs:
       - name: Install build dependencies
         run: |
           pip install .[build]
-      - name: Install build dependencies
+      - name: Install test dependencies
         run: |
           pip install .[test]
       - name: Install code dependencies
