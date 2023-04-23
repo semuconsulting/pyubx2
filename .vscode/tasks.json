@@ -104,7 +104,6 @@
                 "pyproject.toml",
                 "-r",
                 "."
-                //"src/${config:modulename}"
             ],
             "problemMatcher": []
         },
