@@ -20,10 +20,13 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install build dependencies
         run: |
-          if [ -f requirements_build.txt ]; then pip install -r requirements_build.txt; fi
+          pip install .[build]
+      - name: Install build dependencies
+        run: |
+          pip install .[test]
       - name: Install code dependencies
         run: |
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install .
       - name: Lint with pylint
         run: |
           pylint -E src/pyubx2

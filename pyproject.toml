@@ -49,19 +49,21 @@ repository = "https://github.com/semuconsulting/pyubx2"
 changelog = "https://github.com/semuconsulting/pyubx2/blob/master/RELEASE_NOTES.md"
 
 [project.optional-dependencies]
+build = [
+    "build >= 0.10",
+    "pip >= 23.0",
+    "setuptools >= 66.0",
+    "wheel >= 0.40"
+]
 test = [
     "bandit >= 1.7",
     "black >= 23.1",
-    "build >= 0.10",
-    "pip >= 23.0",
     "pylint >= 2.17",
     "pytest >= 7.2",
     "pytest-cov >= 4.0",
-    "setuptools >= 66.0",
     "Sphinx >= 5.3",
     "sphinx-rtd-theme >= 1.2.0",
-    "wheel >= 0.40"
-    ]
+]
 
 [tool.bandit]
 exclude_dirs = ["docs", "examples", "tests"]
