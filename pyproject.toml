@@ -43,7 +43,7 @@ dependencies = [
 ]
 
 [project.urls]
-homepage = "https://www.semuconsulting.com/pygpsclientgui/"
+homepage = "https://www.semuconsulting.com/pyubx2/"
 documentation = "https://www.semuconsulting.com/pyubx2/"
 repository = "https://github.com/semuconsulting/pyubx2"
 changelog = "https://github.com/semuconsulting/pyubx2/blob/master/RELEASE_NOTES.md"
