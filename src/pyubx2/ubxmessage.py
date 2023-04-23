@@ -555,8 +555,8 @@ class UBXMessage:
             return pdict
         except KeyError as err:
             raise KeyError(
-                f"{err} - Check 'msgmode' keyword argument is appropriate for message category"
-            )
+                f"{err} - Check 'msgmode' keyword argument is appropriate for data stream"
+            ) from err
 
     def _get_cfgtp5_version(self, **kwargs) -> dict:
         """
@@ -953,7 +953,7 @@ class UBXMessage:
                 ]
             else:
                 umsg_name = ubt.UBX_MSGIDS[self._ubxClass + self._ubxID]
-        except KeyError as err:
+        except KeyError:
             # unrecognised u-blox message, parsed to UBX-NOMINAL definition
             if self._ubxClass in ubt.UBX_CLASSES:  # known class
                 cls = ubt.UBX_CLASSES[self._ubxClass]

@@ -581,7 +581,7 @@ class StreamTest(unittest.TestCase):
             quitonerror=ERR_LOG,
         )
         res = ""
-        for raw, parsed in ubr.iterate():
+        for raw, parsed in ubr:
             res = str(parsed)
         self.assertEqual(EXPECTED_RESULT, res)
         stream.close()
