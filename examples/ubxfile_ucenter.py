@@ -12,7 +12,7 @@ parsing a u-center *.ubx recording containing mixed message modes
 The supplied "2023-4-17_82912_serial-COM3.ubx" file contains
 951 GET messages, 27 SET messages and 70 POLL messages. 
 
-Created on 23 Apr 2023
+Created on 22 Apr 2023
 
 @author: semuadmin
 """
