@@ -59,7 +59,7 @@ test = [
 ]
 
 [tool.bandit]
-exclude_dirs = ["tests", "examples"]
+exclude_dirs = ["docs", "examples", "tests"]
 skips = []
 
 [tool.pylint]
