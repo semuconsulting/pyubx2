@@ -13,6 +13,7 @@ from pynmeagps.nmeahelpers import (
     ecef2llh,
     llh2ecef,
     haversine,
+    bearing,
 )
 from pyubx2._version import __version__
 from pyubx2.exceptions import (

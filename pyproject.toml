@@ -58,6 +58,10 @@ test = [
     "sphinx-rtd-theme >= 1.2.0",
 ]
 
+[tool.bandit]
+exclude_dirs = ["tests", "examples"]
+skips = []
+
 [tool.pylint]
 jobs = 0
 reports = "y"

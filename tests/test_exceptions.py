@@ -22,6 +22,7 @@ from pyubx2 import (
     SET,
     POLL,
     VALCKSUM,
+    ERR_RAISE,
 )
 from pyubx2.ubxhelpers import (
     cfgkey2name,
@@ -328,7 +329,7 @@ class ExceptionTest(unittest.TestCase):
     def testParseMode2(self):  # test parser with incorrect mode for input message
         EXPECTED_ERROR = "Unknown message type clsid (.*), msgid (.*), mode GET"
         with self.assertRaisesRegex(UBXParseError, EXPECTED_ERROR):
-            UBXReader.parse(self.mga_ini, validate=VALCKSUM)
+            UBXReader.parse(self.mga_ini, validate=VALCKSUM, quitonerror=ERR_RAISE)
 
     def testStreamMode(self):  # test invalid stream message mode
         EXPECTED_ERROR = "Invalid stream mode 3 - must be 0, 1 or 2"
@@ -348,7 +349,7 @@ class ExceptionTest(unittest.TestCase):
     def testWRONGMSGMODE(self):  # test parse of SET message with GET msgmode
         EXPECTED_ERROR = (
             "Unknown message type clsid (.*), msgid (.*), mode GET\n"
-            + "Check 'msgmode' keyword argument is appropriate for message category"
+            + "Check 'msgmode' keyword argument is appropriate for data stream"
         )
         EXPECTED_RESULT = "<UBX(CFG-VALSET, version=0, ram=1, bbr=1, flash=0, action=0, reserved0=0, cfgData_01=1, cfgData_02=0, cfgData_03=82, cfgData_04=64, cfgData_05=128, cfgData_06=37, cfgData_07=0, cfgData_08=0)>"
         res = UBXMessage(
@@ -358,7 +359,7 @@ class ExceptionTest(unittest.TestCase):
             payload=b"\x00\x03\x00\x00\x01\x00\x52\x40\x80\x25\x00\x00",
         )
         with self.assertRaisesRegex(UBXParseError, EXPECTED_ERROR):
-            msg = UBXReader.parse(res.serialize())
+            msg = UBXReader.parse(res.serialize(), quitonerror=ERR_RAISE)
         msg = UBXReader.parse(res.serialize(), msgmode=SET)
         self.assertEqual(str(msg), EXPECTED_RESULT)
 

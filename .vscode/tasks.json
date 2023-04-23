@@ -96,6 +96,21 @@
             "problemMatcher": []
         },
         {
+            "label": "Security",
+            "type": "process",
+            "command": "${config:python.defaultInterpreterPath}",
+            "args": [
+                "-m",
+                "bandit",
+                "-c",
+                "pyproject.toml",
+                "-r",
+                "."
+                //"src/${config:modulename}"
+            ],
+            "problemMatcher": []
+        },
+        {
             "label": "Build",
             "type": "process",
             "command": "${config:python.defaultInterpreterPath}",
@@ -195,6 +210,7 @@
                 "Clean",
                 "Update Toolchain",
                 "Update Dependencies",
+                "Security",
                 "Format",
                 "Pylint",
                 "Test",

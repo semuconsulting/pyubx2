@@ -1,6 +1,7 @@
 setuptools>=66.0
 build>=0.10
 wheel>=0.40
+bandit >= 1.7
 black >= 23.1
 pylint >= 2.17
 pytest >= 7.2

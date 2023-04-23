@@ -1,5 +1,16 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.2.24
+
+ENHANCEMENTS:
+
+1. 'quitonerror' kwarg added to `UBXReader.parse()`. This is useful e.g. when parsing *.ubx recordings from u-center containing a mixture of GET, SET and POLL message modes (i.e. diagnostic and configuration data in addition to navigation messages). Setting quitonerror to ERR_IGNORE (0) allows you to scan the file for a particular msgmode (e.g. GET) while ignoring other modes.
+1. example `ubxfile_ucenter.py` added to illustrate use of quitonerror and msgmode kwargs when iterating *.ubx files.
+
+CHANGES:
+
+1. Bandit code security vulnerability task added to VSCode and GHA workflows
+
 ### RELEASE 1.2.23
 
 CHANGES:

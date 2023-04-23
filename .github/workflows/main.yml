@@ -28,7 +28,10 @@ jobs:
       #    - name: Test with pytest
       #      run: |
       #        python tests/testsuite.py
-      - name: Generate coverage report
+      - name: Security vulnerability analysis with bandit
+        run: |
+          python bandit -c pyproject.toml -r .
+      - name: Generate test overage report
         run: |
           pytest --cov=pyubx2 --cov-report=xml
       - name: "Upload coverage to Codecov"
