@@ -70,7 +70,7 @@ line-length = 88
 target-version = ['py37']
 
 [tool.bandit]
-exclude_dirs = ["docs", "examples", "tests"]
+exclude_dirs = ["docs", "examples", "references", "tests"]
 skips = []
 
 [tool.pylint]
