@@ -29,13 +29,13 @@ jobs:
           pip install .
       - name: Lint with pylint
         run: |
-          pylint -E src/pyubx2
+          pylint -E src
       - name: Security vulnerability analysis with bandit
         run: |
           bandit -c pyproject.toml -r .
-      - name: Generate test overage report
+      - name: Generate test coverage report
         run: |
-          pytest --cov=pyubx2 --cov-report=xml
+          pytest
       - name: "Upload coverage to Codecov"
         uses: codecov/codecov-action@v3
         with:

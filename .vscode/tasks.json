@@ -84,7 +84,7 @@
             "args": [
                 "-m",
                 "black",
-                "src/${config:modulename}"
+                "src"
             ],
             "problemMatcher": []
         },
@@ -95,8 +95,7 @@
             "args": [
                 "-m",
                 "pylint",
-                "--reports=y",
-                "src/${config:modulename}"
+                "src"
             ],
             "problemMatcher": []
         },
@@ -133,13 +132,7 @@
             "command": "${config:python.defaultInterpreterPath}",
             "args": [
                 "-m",
-                "pytest",
-                "--cov-report",
-                "html",
-                "--cov-fail-under",
-                "95",
-                "--cov=${config:distname}",
-                "tests/",
+                "pytest"
             ],
             "problemMatcher": []
         },
@@ -182,14 +175,15 @@
             "problemMatcher": []
         },
         {
-            "label": "Sphinx Deploy to S3",
+            "label": "Sphinx Deploy to S3", // needs AWS credentials
             "type": "process",
             "command": "aws",
             "args": [
                 "s3",
                 "cp",
                 "${workspaceFolder}/docs/_build/html",
-                "s3://www.semuconsulting.com/${config:modulename}/"
+                "s3://www.semuconsulting.com/${config:modulename}/",
+                "--recursive"
             ],
             "dependsOrder": "sequence",
             "dependsOn": [
