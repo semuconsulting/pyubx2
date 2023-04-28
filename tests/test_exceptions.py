@@ -351,7 +351,6 @@ class ExceptionTest(unittest.TestCase):
             "Unknown message type clsid (.*), msgid (.*), mode GET\n"
             + "Check 'msgmode' keyword argument is appropriate for data stream"
         )
-        # EXPECTED_RESULT = "<UBX(CFG-VALSET, version=0, ram=1, bbr=1, flash=0, action=0, reserved0=0, cfgData_01=1, cfgData_02=0, cfgData_03=82, cfgData_04=64, cfgData_05=128, cfgData_06=37, cfgData_07=0, cfgData_08=0)>"
         EXPECTED_RESULT = "<UBX(CFG-VALSET, version=0, ram=1, bbr=1, flash=0, action=0, reserved0=0, CFG_UART1_BAUDRATE=9600)>"
         res = UBXMessage(
             "CFG",
