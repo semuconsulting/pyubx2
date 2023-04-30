@@ -14,22 +14,7 @@ Information sourced from u-blox Interface Specifications © 2013-2021, u-blox AG
 """
 # pylint: disable=too-many-lines
 
-from pyubx2.ubxtypes_core import (
-    E1,
-    E2,
-    I1,
-    I2,
-    I4,
-    L,
-    R4,
-    R8,
-    U1,
-    U2,
-    U4,
-    U8,
-    X1,
-    X8,
-)
+from pyubx2.ubxtypes_core import E1, E2, I1, I2, I4, R4, R8, U1, U2, U4, U8, X1, X8, L
 
 # memory layer designators for CFG_VALSET & CFG_VALDEL
 SET_LAYER_RAM = 1

@@ -7,31 +7,32 @@ Created on 27 Sep 2020
 """
 
 from pynmeagps.nmeahelpers import (
+    bearing,
+    ecef2llh,
+    haversine,
     latlon2dmm,
     latlon2dms,
-    llh2iso6709,
-    ecef2llh,
     llh2ecef,
-    haversine,
-    bearing,
+    llh2iso6709,
 )
+
 from pyubx2._version import __version__
 from pyubx2.exceptions import (
+    GNSSStreamError,
+    ParameterError,
     UBXMessageError,
     UBXParseError,
-    UBXTypeError,
     UBXStreamError,
-    ParameterError,
-    GNSSStreamError,
+    UBXTypeError,
 )
+from pyubx2.socket_stream import SocketStream
+from pyubx2.ubxhelpers import *
 from pyubx2.ubxmessage import UBXMessage
 from pyubx2.ubxreader import UBXReader
-from pyubx2.socket_stream import SocketStream
+from pyubx2.ubxtypes_configdb import *
 from pyubx2.ubxtypes_core import *
 from pyubx2.ubxtypes_get import *
 from pyubx2.ubxtypes_poll import *
 from pyubx2.ubxtypes_set import *
-from pyubx2.ubxhelpers import *
-from pyubx2.ubxtypes_configdb import *
 
 version = __version__  # pylint: disable=invalid-name

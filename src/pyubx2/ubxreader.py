@@ -19,30 +19,32 @@ Created on 2 Oct 2020
 """
 
 from socket import socket
-from pyrtcm import RTCMReader
+
+import pynmeagps.exceptions as nme
 import pyrtcm.exceptions as rte
 from pynmeagps import NMEAReader
-import pynmeagps.exceptions as nme
-from pyubx2.socket_stream import SocketStream
-from pyubx2.ubxmessage import UBXMessage
-from pyubx2.ubxhelpers import calc_checksum, val2bytes, bytes2val
-from pyubx2.ubxtypes_core import (
-    U2,
-    GET,
-    VALCKSUM,
-    UBX_HDR,
-    NMEA_HDR,
-    UBX_PROTOCOL,
-    NMEA_PROTOCOL,
-    RTCM3_PROTOCOL,
-    ERR_LOG,
-    ERR_RAISE,
-)
+from pyrtcm import RTCMReader
+
 from pyubx2.exceptions import (
     UBXMessageError,
-    UBXTypeError,
     UBXParseError,
     UBXStreamError,
+    UBXTypeError,
+)
+from pyubx2.socket_stream import SocketStream
+from pyubx2.ubxhelpers import bytes2val, calc_checksum, val2bytes
+from pyubx2.ubxmessage import UBXMessage
+from pyubx2.ubxtypes_core import (
+    ERR_LOG,
+    ERR_RAISE,
+    GET,
+    NMEA_HDR,
+    NMEA_PROTOCOL,
+    RTCM3_PROTOCOL,
+    U2,
+    UBX_HDR,
+    UBX_PROTOCOL,
+    VALCKSUM,
 )
 
 

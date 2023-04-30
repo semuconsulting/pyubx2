@@ -26,6 +26,14 @@ from pyubx2.ubxtypes_core import (
     I4,
     R4,
     R8,
+    SCAL1,
+    SCAL2,
+    SCAL3,
+    SCAL4,
+    SCAL5,
+    SCAL6,
+    SCAL7,
+    SCAL9,
     U1,
     U2,
     U3,
@@ -48,16 +56,7 @@ from pyubx2.ubxtypes_core import (
     X2,
     X4,
     X24,
-    SCAL9,
-    SCAL7,
-    SCAL6,
-    SCAL5,
-    SCAL4,
-    SCAL3,
-    SCAL2,
-    SCAL1,
 )
-
 
 UBX_PAYLOADS_GET = {
     "ACK-ACK": {"clsID": U1, "msgID": U1},

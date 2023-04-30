@@ -10,24 +10,25 @@ Created on 26 Sep 2020
 # pylint: disable=invalid-name
 
 import struct
+
 import pyubx2.exceptions as ube
 import pyubx2.ubxtypes_core as ubt
 import pyubx2.ubxtypes_get as ubg
-import pyubx2.ubxtypes_set as ubs
 import pyubx2.ubxtypes_poll as ubp
+import pyubx2.ubxtypes_set as ubs
 from pyubx2.ubxhelpers import (
-    calc_checksum,
     attsiz,
-    itow2utc,
-    gnss2str,
-    msgclass2bytes,
-    msgstr2bytes,
-    val2bytes,
     bytes2val,
-    nomval,
+    calc_checksum,
     cfgkey2name,
     cfgname2key,
     escapeall,
+    gnss2str,
+    itow2utc,
+    msgclass2bytes,
+    msgstr2bytes,
+    nomval,
+    val2bytes,
 )
 
 
