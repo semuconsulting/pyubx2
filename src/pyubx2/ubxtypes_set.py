@@ -18,6 +18,9 @@ from pyubx2.ubxtypes_core import (
     I4,
     R4,
     R8,
+    SCAL1,
+    SCAL2,
+    SCAL7,
     U1,
     U2,
     U3,
@@ -33,11 +36,7 @@ from pyubx2.ubxtypes_core import (
     X2,
     X4,
     X24,
-    SCAL1,
-    SCAL2,
-    SCAL7,
 )
-
 from pyubx2.ubxtypes_get import UBX_PAYLOADS_GET as UBX_GET
 
 UBX_PAYLOADS_SET = {

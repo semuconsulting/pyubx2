@@ -1,5 +1,20 @@
 # pyubx2 Release Notes
 
+### RELEASE CANDIDATE 1.2.25
+
+ENHANCEMENTS:
+
+1. CFG-VALSET parsing enhanced to match CFG-VALGET as key value pairs rather than a simple array of bytes:
+
+Before:
+```
+<UBX(CFG-VALSET, version=0, ram=1, bbr=1, flash=0, action=0, reserved0=0, cfgData_01=1, cfgData_02=0, cfgData_03=82, cfgData_04=64, cfgData_05=128, ...>
+```
+After:
+```
+<UBX(CFG-VALSET, version=0, ram=1, bbr=1, flash=0, action=0, reserved0=0, CFG_UART1_BAUDRATE=9600)>
+```
+
 ### RELEASE 1.2.24
 
 ENHANCEMENTS:

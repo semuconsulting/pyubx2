@@ -10,24 +10,25 @@ Created on 26 Sep 2020
 # pylint: disable=invalid-name
 
 import struct
+
 import pyubx2.exceptions as ube
 import pyubx2.ubxtypes_core as ubt
 import pyubx2.ubxtypes_get as ubg
-import pyubx2.ubxtypes_set as ubs
 import pyubx2.ubxtypes_poll as ubp
+import pyubx2.ubxtypes_set as ubs
 from pyubx2.ubxhelpers import (
-    calc_checksum,
     attsiz,
-    itow2utc,
-    gnss2str,
-    msgclass2bytes,
-    msgstr2bytes,
-    val2bytes,
     bytes2val,
-    nomval,
+    calc_checksum,
     cfgkey2name,
     cfgname2key,
     escapeall,
+    gnss2str,
+    itow2utc,
+    msgclass2bytes,
+    msgstr2bytes,
+    nomval,
+    val2bytes,
 )
 
 
@@ -186,12 +187,11 @@ class UBXMessage:
 
         index.append(0)  # add a (nested) group index
         numr, attd = att  # number of repeats, attribute dictionary
-        # if CFG-VALGET message, use dedicated method to
+        # if CFG-VALGET or CFG-VALSET message, use dedicated method to
         # parse as configuration key value pairs
-        if (
-            self._ubxClass == b"\x06"
-            and self._ubxID == b"\x8b"
-            and self._mode == ubt.GET
+        if self._ubxClass == b"\x06" and (
+            (self._ubxID == b"\x8b" and self._mode == ubt.GET)
+            or (self._ubxID == b"\x8a" and self._mode == ubt.SET)
         ):
             self._set_attribute_cfgval(offset, **kwargs)
         else:
@@ -443,7 +443,7 @@ class UBXMessage:
 
     def _set_attribute_cfgval(self, offset: int, **kwargs):
         """
-        Parse CFG-VALGET payload to set of configuration
+        Parse CFG-VALGET / CFG-VALSET payload to set of configuration
         key value pairs.
 
         :param int offset: payload offset

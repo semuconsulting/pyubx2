@@ -12,11 +12,12 @@ Created on 15 Dec 2020
 
 import struct
 from datetime import datetime, timedelta
-from math import sin, cos, pi
-from pyubx2.ubxtypes_core import GNSSLIST, UBX_HDR, NMEA_HDR
-import pyubx2.ubxtypes_core as ubt
-import pyubx2.ubxtypes_configdb as ubcdb
+from math import cos, pi, sin
+
 import pyubx2.exceptions as ube
+import pyubx2.ubxtypes_configdb as ubcdb
+import pyubx2.ubxtypes_core as ubt
+from pyubx2.ubxtypes_core import GNSSLIST, NMEA_HDR, UBX_HDR
 
 
 def att2idx(att: str) -> int:
