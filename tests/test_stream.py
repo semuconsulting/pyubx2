@@ -173,6 +173,18 @@ class StreamTest(unittest.TestCase):
                 self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
                 i += 1
 
+    def testHNRLOG_NoParsing(
+        self,
+    ):  # test stream of UBX HNR messages
+        i = 0
+        raw = 0
+        ubxreader = UBXReader(self.streamHNR)
+        while raw is not None:
+            (raw, parsed) = ubxreader.read(parsing=False)
+            if raw is not None:
+                i += 1
+                self.assertEqual(i, 13)
+
     def testNAVHPPOS(
         self,
     ):  # test stream of UBX NAV-HPPOS* messages
@@ -193,6 +205,20 @@ class StreamTest(unittest.TestCase):
                 # print(parsed)
                 self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
                 i += 1
+
+    def testNAVHPPOS_NoParsing(
+        self,
+    ):  # test stream of UBX NAV-HPPOS* messages
+        i = 0
+        raw = 0
+        ubxreader = UBXReader(self.streamNAVHPPOS)
+        while raw is not None:
+            (raw, parsed) = ubxreader.read(parsing=False)
+            # print(f"{i} = {parsed}")
+            if raw is not None:
+                # print(parsed)
+                i += 1
+                self.assertEqual(i, 4)
 
     def testRXMLOG(
         self,
