@@ -109,7 +109,7 @@ class UBXReader:
             raise StopIteration
         return (raw_data, parsed_data)
 
-    def read(self) -> tuple:
+    def read(self, parsing=True) -> tuple:
         """
         Read a single NMEA, UBX or RTCM3 message from the stream buffer
         and return both raw and parsed data.
@@ -117,15 +117,14 @@ class UBXReader:
         'protfilter' determines which protocols are parsed.
         'quitonerror' determines whether to raise, log or ignore parsing errors.
 
+        :param bool parsing: a boolean flag to determine if the stream needs to be parsed
         :return: tuple of (raw_data as bytes, parsed_data as UBXMessage, NMEAMessage or RTCMMessage)
         :rtype: tuple
         :raises: UBXStreamError (if unrecognised protocol in data stream)
         """
 
-        parsing = True
-
         try:
-            while parsing:  # loop until end of valid message or EOF
+            while True:  # loop until end of valid message or EOF
                 raw_data = None
                 parsed_data = None
                 byte1 = self._read_bytes(1)  # read the first byte
@@ -136,30 +135,30 @@ class UBXReader:
                 bytehdr = byte1 + byte2
                 # if it's a UBX message (b'\xb5\x62')
                 if bytehdr == UBX_HDR:
-                    (raw_data, parsed_data) = self._parse_ubx(bytehdr)
+                    (raw_data, parsed_data) = self._parse_ubx(bytehdr, parsing)
                     # if protocol filter passes UBX, return message,
                     # otherwise discard and continue
-                    if self._protfilter & UBX_PROTOCOL:
-                        parsing = False
+                    if self._protfilter == UBX_PROTOCOL:
+                        break
                     else:
                         continue
                 # if it's an NMEA message ('$G' or '$P')
                 elif bytehdr in NMEA_HDR:
-                    (raw_data, parsed_data) = self._parse_nmea(bytehdr)
+                    (raw_data, parsed_data) = self._parse_nmea(bytehdr, parsing)
                     # if protocol filter passes NMEA, return message,
                     # otherwise discard and continue
-                    if self._protfilter & NMEA_PROTOCOL:
-                        parsing = False
+                    if self._protfilter == NMEA_PROTOCOL:
+                        break
                     else:
                         continue
                 # if it's a RTCM3 message
                 # (byte1 = 0xd3; byte2 = 0b000000**)
                 elif byte1 == b"\xd3" and (byte2[0] & ~0x03) == 0:
-                    (raw_data, parsed_data) = self._parse_rtcm3(bytehdr)
+                    (raw_data, parsed_data) = self._parse_rtcm3(bytehdr, parsing)
                     # if protocol filter passes RTCM, return message,
                     # otherwise discard and continue
-                    if self._protfilter & RTCM3_PROTOCOL:
-                        parsing = False
+                    if self._protfilter == RTCM3_PROTOCOL:
+                        break
                     else:
                         continue
                 # unrecognised protocol header
@@ -192,11 +191,12 @@ class UBXReader:
 
         return (raw_data, parsed_data)
 
-    def _parse_ubx(self, hdr: bytes) -> tuple:
+    def _parse_ubx(self, hdr: bytes, parsing: bool) -> tuple:
         """
         Parse remainder of UBX message.
 
         :param bytes hdr: UBX header (b'\xb5\x62')
+        :param bool parsing: a boolean flag to determine if the stream needs to be parsed
         :return: tuple of (raw_data as bytes, parsed_data as UBXMessage or None)
         :rtype: tuple
         """
@@ -212,7 +212,7 @@ class UBXReader:
         cksum = byten[leni : leni + 2]
         raw_data = hdr + clsid + msgid + lenb + plb + cksum
         # only parse if we need to (filter passes UBX)
-        if self._protfilter & UBX_PROTOCOL:
+        if (self._protfilter == UBX_PROTOCOL) & parsing:
             parsed_data = self.parse(
                 raw_data,
                 validate=self._validate,
@@ -225,11 +225,12 @@ class UBXReader:
             parsed_data = None
         return (raw_data, parsed_data)
 
-    def _parse_nmea(self, hdr: bytes) -> tuple:
+    def _parse_nmea(self, hdr: bytes, parsing: bool) -> tuple:
         """
         Parse remainder of NMEA message (using pynmeagps library).
 
         :param bytes hdr: NMEA header ($G or $P)
+        :param bool parsing: a boolean flag to determine if the stream needs to be parsed
         :return: tuple of (raw_data as bytes, parsed_data as NMEAMessage or None)
         :rtype: tuple
         """
@@ -240,7 +241,7 @@ class UBXReader:
             raise EOFError()
         raw_data = hdr + byten
         # only parse if we need to (filter passes NMEA)
-        if self._protfilter & NMEA_PROTOCOL:
+        if (self._protfilter == NMEA_PROTOCOL) & parsing:
             # invoke pynmeagps parser
             parsed_data = NMEAReader.parse(
                 raw_data,
@@ -252,11 +253,12 @@ class UBXReader:
             parsed_data = None
         return (raw_data, parsed_data)
 
-    def _parse_rtcm3(self, hdr: bytes) -> tuple:
+    def _parse_rtcm3(self, hdr: bytes, parsing: bool) -> tuple:
         """
         Parse any RTCM3 data in the stream (using pyrtcm library).
 
         :param bytes hdr: first 2 bytes of RTCM3 header
+        :param bool parsing: a boolean flag to determine if the stream needs to be parsed
         :param bool validate: (kwarg) validate crc Y/N
         :return: tuple of (raw_data as bytes, parsed_stub as RTCMMessage)
         :rtype: tuple
@@ -268,7 +270,7 @@ class UBXReader:
         crc = self._read_bytes(3)
         raw_data = hdr + hdr3 + payload + crc
         # only parse if we need to (filter passes RTCM)
-        if self._protfilter & RTCM3_PROTOCOL:
+        if (self._protfilter == RTCM3_PROTOCOL) & parsing:
             # invoke pyrtcm parser
             parsed_data = RTCMReader.parse(
                 raw_data,
