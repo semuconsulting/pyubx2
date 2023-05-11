@@ -538,7 +538,7 @@ class StreamTest(unittest.TestCase):
             quitonerror=ERR_LOG,
             errorhandler=lambda e: print(f"I ignored the following error: {e}"),
         )
-        for raw, parsed in ubr:
+        for _, parsed in ubr:
             if not isinstance(parsed, str):
                 print(parsed)
         output = self.restoreio().split("\n")
