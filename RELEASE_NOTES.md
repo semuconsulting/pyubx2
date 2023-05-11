@@ -4,6 +4,8 @@
 
 ENHANCEMENTS:
 
+1. 9 additional configuration database keys added for NEO-F10T.
+
 
 ### RELEASE 1.2.25
 
