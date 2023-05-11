@@ -12,6 +12,7 @@ Created on 3 Oct 2020
 import sys
 import os
 import unittest
+from io import StringIO
 
 from pyubx2 import (
     UBXReader,
@@ -90,7 +91,7 @@ class StreamTest(unittest.TestCase):
         """
 
         self._saved_stdout = sys.stdout
-        self._strout = os.StringIO()
+        self._strout = StringIO()
         sys.stdout = self._strout
 
     def restoreio(self) -> str:
@@ -520,13 +521,14 @@ class StreamTest(unittest.TestCase):
     ):  # UBXReader helper method ignoring bad checksum and passing error handler
         dirname = os.path.dirname(__file__)
         stream = open(os.path.join(dirname, "pygpsdata-MIXED3BADCK.log"), "rb")
-        EXPECTED_RESULTS = (
+        EXPECTED_RESULTS = [
             "<UBX(NAV-PVT, iTOW=08:02:47, year=2022, month=1, day=18, hour=8, min=2, second=47, validDate=1, validTime=1, fullyResolved=1, validMag=0, tAcc=37, nano=-175377, fixType=3, gnssFixOk=1, difSoln=0, psmState=0, headVehValid=0, carrSoln=0, confirmedAvai=1, confirmedDate=1, confirmedTime=1, numSV=7, lon=-2.2402308, lat=53.4507167, height=85162, hMSL=36678, hAcc=8927, vAcc=7261, velN=-109, velE=-4, velD=7, gSpeed=109, headMot=0.0, sAcc=872, headAcc=103.82556, pDOP=2.44, invalidLlh=0, lastCorrectionAge=0, reserved0=793711598, headVeh=0.0, magDec=0.0, magAcc=0.0)>",
-            "<NMEA(GPGGA, time=08:02:47, lat=53.45071667, NS=N, lon=-2.24023083, EW=W, quality=1, numSV=7, HDOP=1.63, alt=36.7, altUnit=M, sep=48.5, sepUnit=M, diffAge=, diffStation=)>",
+            "<NMEA(GPGGA, time=08:02:47, lat=53.4507166667, NS=N, lon=-2.2402308333, EW=W, quality=1, numSV=7, HDOP=1.63, alt=36.7, altUnit=M, sep=48.5, sepUnit=M, diffAge=, diffStation=)>",
             "<NMEA(GPGSA, opMode=A, navMode=3, svid_01=2, svid_02=13, svid_03=20, svid_04=7, svid_05=5, svid_06=30, svid_07=9, svid_08=, svid_09=, svid_10=, svid_11=, svid_12=, PDOP=2.44, HDOP=1.63, VDOP=1.82)>",
             "I ignored the following error: Message checksum b's\\x8e' invalid - should be b's\\x8d'",
-            "<NMEA(GPGGA, time=08:02:48, lat=53.45071867, NS=N, lon=-2.2402315, EW=W, quality=1, numSV=7, HDOP=1.63, alt=36.8, altUnit=M, sep=48.5, sepUnit=M, diffAge=, diffStation=)>",
-        )
+            "<NMEA(GPGGA, time=08:02:48, lat=53.4507186667, NS=N, lon=-2.2402315, EW=W, quality=1, numSV=7, HDOP=1.63, alt=36.8, altUnit=M, sep=48.5, sepUnit=M, diffAge=, diffStation=)>",
+        ]
+        self.catchio()
         ubr = UBXReader(
             stream,
             protfilter=3,
@@ -536,15 +538,12 @@ class StreamTest(unittest.TestCase):
             quitonerror=ERR_LOG,
             errorhandler=lambda e: print(f"I ignored the following error: {e}"),
         )
-        res = ""
-        i = 0
         for raw, parsed in ubr:
             if not isinstance(parsed, str):
                 print(parsed)
-                i += 1
-            res = str(parsed)
-            # self.assertEqual(EXPECTED_RESULTS[i], res)
-        self.assertEqual(i, 4)
+        output = self.restoreio().split("\n")
+        print(output)
+        self.assertEqual(EXPECTED_RESULTS, output)
 
     def testUBXITERATE_ERR3(
         self,
