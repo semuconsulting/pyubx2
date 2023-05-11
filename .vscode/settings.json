@@ -1,15 +1,11 @@
 {
     "python.testing.pytestEnabled": true,
     "python.testing.unittestEnabled": false,
-    "python.formatting.provider": "none",
+    "python.formatting.provider": "black",
     "python.defaultInterpreterPath": "python3",
     "editor.formatOnSave": true,
     "modulename": "${workspaceFolderBasename}",
     "distname": "${workspaceFolderBasename}",
     "moduleversion": "1.2.25",
-    "sarif-viewer.connectToGithubCodeScanning": "off",
-    "[python]": {
-        "editor.defaultFormatter": "ms-python.black-formatter"
-    },
-    "python.analysis.typeCheckingMode": "basic"
+    "sarif-viewer.connectToGithubCodeScanning": "off"
 }
