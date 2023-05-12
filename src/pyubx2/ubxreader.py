@@ -66,6 +66,7 @@ class UBXReader:
         :param bool scaling: (kwarg) 1 = apply scale factors, 0 = do not apply (1)
         :param bool labelmsm: (kwarg) whether to label RTCM3 MSM NSAT and NCELL attributes (1)
         :param int bufsize: (kwarg) socket recv buffer size (1024)
+        :param bool parsing: a boolean flag to determine if the stream needs to be parsed
         :raises: UBXStreamError (if mode is invalid)
 
         """
@@ -119,7 +120,6 @@ class UBXReader:
         'protfilter' determines which protocols are parsed.
         'quitonerror' determines whether to raise, log or ignore parsing errors.
 
-        :param bool parsing: a boolean flag to determine if the stream needs to be parsed
         :return: tuple of (raw_data as bytes, parsed_data as UBXMessage, NMEAMessage or RTCMMessage)
         :rtype: tuple
         :raises: UBXStreamError (if unrecognised protocol in data stream)
@@ -200,7 +200,6 @@ class UBXReader:
         Parse remainder of UBX message.
 
         :param bytes hdr: UBX header (b'\xb5\x62')
-        :param bool parsing: a boolean flag to determine if the stream needs to be parsed
         :return: tuple of (raw_data as bytes, parsed_data as UBXMessage or None)
         :rtype: tuple
         """
@@ -234,7 +233,6 @@ class UBXReader:
         Parse remainder of NMEA message (using pynmeagps library).
 
         :param bytes hdr: NMEA header ($G or $P)
-        :param bool parsing: a boolean flag to determine if the stream needs to be parsed
         :return: tuple of (raw_data as bytes, parsed_data as NMEAMessage or None)
         :rtype: tuple
         """
@@ -262,7 +260,6 @@ class UBXReader:
         Parse any RTCM3 data in the stream (using pyrtcm library).
 
         :param bytes hdr: first 2 bytes of RTCM3 header
-        :param bool parsing: a boolean flag to determine if the stream needs to be parsed
         :param bool validate: (kwarg) validate crc Y/N
         :return: tuple of (raw_data as bytes, parsed_stub as RTCMMessage)
         :rtype: tuple
