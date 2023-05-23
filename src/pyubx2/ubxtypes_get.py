@@ -3294,12 +3294,12 @@ UBX_PAYLOADS_GET = {
     "RXM-SFRBX": {
         "gnssId": U1,
         "svId": U1,
-        "reserved0": U1,
+        "sigId": U1,
         "freqId": U1,
         "numWords": U1,
         "chn": U1,
         "version": U1,
-        "reserved1": U1,
+        "reserved0": U1,
         "navdata": ("numWords", {"dwrd": U4}),  # repeating group * numWords
     },
     "RXM-SPARTN": {
