@@ -5,7 +5,7 @@
 ENHANCEMENTS:
 
 1. 9 additional configuration database keys added for NEO-F10T.
-
+2. sigID added to RXM-SFRBX message definition - thanks to @agagniere for contribution.
 
 ### RELEASE 1.2.25
 
