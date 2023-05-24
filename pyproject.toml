@@ -11,7 +11,7 @@ maintainers = [
   {name = "semuadmin", email = "semuadmin@semuconsulting.com"}
 ]
 description = "UBX protocol parser and generator"
-version = "1.2.25"
+version = "1.2.26"
 license = {file = "LICENSE"}
 readme = "README.md"
 requires-python = ">=3.7"

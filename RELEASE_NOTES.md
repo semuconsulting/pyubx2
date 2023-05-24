@@ -1,5 +1,13 @@
 # pyubx2 Release Notes
 
+### RELEASE CANDIDATE 1.2.26
+
+ENHANCEMENTS:
+
+1. Add 'parsing' keyword argument option - True = as-is behaviour; False = no parsing; simply output individual binary messages - - thanks to @gabrielecoppi for contribution.
+1. sigID added to RXM-SFRBX message definition - thanks to @agagniere for contribution.
+1. 9 additional configuration database keys added for NEO-F10T.
+
 ### RELEASE 1.2.25
 
 ENHANCEMENTS:
