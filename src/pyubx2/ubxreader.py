@@ -66,7 +66,7 @@ class UBXReader:
         :param bool scaling: (kwarg) 1 = apply scale factors, 0 = do not apply (1)
         :param bool labelmsm: (kwarg) whether to label RTCM3 MSM NSAT and NCELL attributes (1)
         :param int bufsize: (kwarg) socket recv buffer size (1024)
-        :param bool parsing: a boolean flag to determine if the stream needs to be parsed
+        :param bool parsing: (kwarg) True = parse data, False = do not parse data (output binary messages only) (True)
         :raises: UBXStreamError (if mode is invalid)
 
         """
