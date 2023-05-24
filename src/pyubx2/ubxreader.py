@@ -66,6 +66,7 @@ class UBXReader:
         :param bool scaling: (kwarg) 1 = apply scale factors, 0 = do not apply (1)
         :param bool labelmsm: (kwarg) whether to label RTCM3 MSM NSAT and NCELL attributes (1)
         :param int bufsize: (kwarg) socket recv buffer size (1024)
+        :param bool parsing: a boolean flag to determine if the stream needs to be parsed
         :raises: UBXStreamError (if mode is invalid)
 
         """
@@ -83,6 +84,8 @@ class UBXReader:
         self._scaling = int(kwargs.get("scaling", True))
         self._labelmsm = int(kwargs.get("labelmsm", True))
         self._msgmode = int(kwargs.get("msgmode", GET))
+
+        self._parsing = kwargs.get("parsing", True)
 
         if self._msgmode not in (0, 1, 2):
             raise UBXStreamError(
@@ -122,10 +125,10 @@ class UBXReader:
         :raises: UBXStreamError (if unrecognised protocol in data stream)
         """
 
-        parsing = True
+        flag = True
 
         try:
-            while parsing:  # loop until end of valid message or EOF
+            while flag:  # loop until end of valid message or EOF
                 raw_data = None
                 parsed_data = None
                 byte1 = self._read_bytes(1)  # read the first byte
@@ -140,7 +143,7 @@ class UBXReader:
                     # if protocol filter passes UBX, return message,
                     # otherwise discard and continue
                     if self._protfilter & UBX_PROTOCOL:
-                        parsing = False
+                        flag = False
                     else:
                         continue
                 # if it's an NMEA message ('$G' or '$P')
@@ -149,7 +152,7 @@ class UBXReader:
                     # if protocol filter passes NMEA, return message,
                     # otherwise discard and continue
                     if self._protfilter & NMEA_PROTOCOL:
-                        parsing = False
+                        flag = False
                     else:
                         continue
                 # if it's a RTCM3 message
@@ -159,7 +162,7 @@ class UBXReader:
                     # if protocol filter passes RTCM, return message,
                     # otherwise discard and continue
                     if self._protfilter & RTCM3_PROTOCOL:
-                        parsing = False
+                        flag = False
                     else:
                         continue
                 # unrecognised protocol header
@@ -212,7 +215,7 @@ class UBXReader:
         cksum = byten[leni : leni + 2]
         raw_data = hdr + clsid + msgid + lenb + plb + cksum
         # only parse if we need to (filter passes UBX)
-        if self._protfilter & UBX_PROTOCOL:
+        if (self._protfilter & UBX_PROTOCOL) and self._parsing:
             parsed_data = self.parse(
                 raw_data,
                 validate=self._validate,
@@ -240,7 +243,7 @@ class UBXReader:
             raise EOFError()
         raw_data = hdr + byten
         # only parse if we need to (filter passes NMEA)
-        if self._protfilter & NMEA_PROTOCOL:
+        if (self._protfilter & NMEA_PROTOCOL) and self._parsing:
             # invoke pynmeagps parser
             parsed_data = NMEAReader.parse(
                 raw_data,
@@ -268,7 +271,7 @@ class UBXReader:
         crc = self._read_bytes(3)
         raw_data = hdr + hdr3 + payload + crc
         # only parse if we need to (filter passes RTCM)
-        if self._protfilter & RTCM3_PROTOCOL:
+        if (self._protfilter & RTCM3_PROTOCOL) and self._parsing:
             # invoke pyrtcm parser
             parsed_data = RTCMReader.parse(
                 raw_data,
