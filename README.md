@@ -50,7 +50,7 @@ Contributions welcome - please refer to [CONTRIBUTING.MD](https://github.com/sem
 ---
 ## <a name="installation">Installation</a>
 
-`pyubx2` is compatible with Python >=3.7. In the following, `python3` & `pip` refer to the Python 3 executables. You may need to type `python` or `pip3`, depending on your particular environment.
+`pyubx2` is compatible with Python >=3.8. In the following, `python3` & `pip` refer to the Python 3 executables. You may need to type `python` or `pip3`, depending on your particular environment.
 
 ![Python version](https://img.shields.io/pypi/pyversions/pyubx2.svg?style=flat)
 [![PyPI version](https://img.shields.io/pypi/v/pyubx2.svg?style=flat)](https://pypi.org/project/pyubx2/)
@@ -371,16 +371,17 @@ Wild card queries can be performed by setting bits 0..15 of the keyID to `0xffff
 ---
 ## <a name="utilities">Utility Methods</a>
  
- `pyubx2` provides the following utility methods:
+ `pyubx2` provides the following utility methods (via the `pynmeagps` library):
 
  - `latlon2dms` - converts decimal lat/lon to degrees, minutes, decimal seconds format e.g. "53°20′45.6″N", "2°32′46.68″W"
  - `latlon2dmm` - converts decimal lat/lon to degrees, decimal minutes format e.g. "53°20.76′N", "2°32.778′W"
  - `ecef2llh` - converts ECEF (X, Y, Z) coordinates to geodetic (lat, lon, ellipsoidal height) coordinates
  - `llh2ecef` - converts geodetic (lat, lon, ellipsoidal height) coordinates to ECEF (X, Y, Z) coordinates
  - `haversine` - finds spherical distance in km between two sets of (lat, lon) coordinates
+ - `bearing` - finds bearing in degrees between two sets of (lat, lon) coordinates
  - `cel2cart` - converts celestial coordinates (elevation, azimuth) to cartesian coordinations (X,Y)
 
-See [Sphinx documentation](https://www.semuconsulting.com/pyubx2/pyubx2.html#module-pyubx2.ubxhelpers) for details.
+See [Sphinx documentation](https://www.semuconsulting.com/pynmeagps/pynmeagps.html#module-pynmeagps.ubxhelpers) for details.
 
 ---
 ## <a name="examples">Examples</a>
