@@ -1,5 +1,11 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.2.27
+
+CHANGES:
+
+1. Python 3.7 removed from workflows (now end of life)
+
 ### RELEASE 1.2.26
 
 ENHANCEMENTS:
