@@ -389,7 +389,7 @@ See [Sphinx documentation](https://www.semuconsulting.com/pynmeagps/pynmeagps.ht
 The following command line examples can be found in the `\examples` folder:
 
 1. `ubxoptions.py` illustrates the various options available for parsing and constructing UBX messages.
-1. `ubxpoller.py` illustrates how to implement a simple threaded configuration polling utility for UBX messages. 
+1. `ubxpoller.py` illustrates how to read, write and display UBX messages 'concurrently' using threads and queues. This represents a useful generic pattern for many end user applications.
 1. `ubxsetrates.py` illustrates how to use legacy configuration messages (CFG-MSG) to set navigation message rates.
 1. `ubxconfigdb.py` illustrates how to invoke the Generation 9 configuration database interface via CFG-VALSET, CF-VALDEL and CFG-VALGET messages.
 1. `ubxfactoryreset.py` illustrates how to send a factory reset (CFG-CFG) command.
