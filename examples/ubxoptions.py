@@ -1,32 +1,35 @@
 """
 ubxoptions.py
 
-Series of worked examples illustrating the various options available for parsing and constructing UBX messages.
-The example used here is a CFG-GNSS (GNSS Configuration) message.
+Series of worked examples illustrating the various options available for
+parsing and constructing UBX messages. The example used here is a CFG-GNSS
+(GNSS Configuration) message.
 
 The examples may be run without connecting a receiver.
  
-The CFG-GNSS message contains configuration settings for one or more GNSS constellations and augmentation systems 
-handled by the receiver (in this particular example the IMES setting is omitted):
-"""
-GPS = 0
-SBAS = 1
-Galileo = 2
-BeiDou = 3
-IMES = 4
-QZSS = 5
-GLONASS = 6
-"""
-For each constellation, a bitfield property 'flags' (X4) contains two bit flags 'enable' (U1) and 'sigCfMask' (U8).
+The CFG-GNSS message contains configuration settings for one or more GNSS
+constellations and augmentation systems  handled by the receiver (in this
+particular example the IMES setting is omitted). For each constellation,
+a bitfield property 'flags' (X4) contains two bit flags 'enable' (U1) and
+'sigCfMask' (U8).
 
-The CFG-GNSS message serves as both a command input (SET) message, and an output (GET) message in response to a CFG-GNSS POLL.
+The CFG-GNSS message serves as both a command input (SET) message, and an
+output (GET) message in response to a CFG-GNSS POLL.
 
 Created on 29 Sep 2021
 @author: semuadmin
 """
 
-from serial import Serial
-from pyubx2 import UBXReader, UBXMessage, GET, SET, POLL, VALCKSUM
+# from serial import Serial
+from pyubx2 import GET, SET, VALCKSUM, UBXMessage, UBXReader
+
+GPS = 0
+SBAS = 1
+GALILEO = 2
+BEIDOU = 3
+IMES = 4
+QZSS = 5
+GLONASS = 6
 
 # This is the raw CFG-GNSS UBX message, as output by a u-blox M9N receiver.
 CFG_GNSS = b"\xb5b\x06>4\x00\x00**\x06\x00\x08\x10\x00\x01\x00\x01\x00\x01\x03\x03\x00\x01\x00\x01\x00\x02\x08\x0c\x00\x01\x00\x01\x00\x03\x02\x05\x00\x01\x00\x01\x00\x05\x03\x04\x00\x01\x00\x05\x00\x06\x08\x0c\x00\x01\x00\x01\x00G\xde"
@@ -92,12 +95,12 @@ msg4 = UBXMessage(
     maxTrkCh_02=3,
     enable_02=1,
     sigCfMask_02=1,
-    gnssId_03=Galileo,
+    gnssId_03=GALILEO,
     resTrkCh_03=8,
     maxTrkCh_03=12,
     enable_03=1,
     sigCfMask_03=1,
-    gnssId_04=BeiDou,
+    gnssId_04=BEIDOU,
     resTrkCh_04=2,
     maxTrkCh_04=5,
     enable_04=1,

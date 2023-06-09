@@ -1,14 +1,18 @@
 """
-ubxpoller2.py
+ubxpoller.py
 
-This example illustrates a permutation of 'pseudo-concurrent'
-threaded read and write UBX message processing using
-queues to pass messages between threads.
+This example illustrates how to read, write and display UBX messages
+concurrently using threads and queues.
+
+It implements three threads which run concurrently:
+1) a read thread which continously reads UBX data from the receiver
+2) a write thread which sends UBX commands or polls to the receiver
+3) a display thread which displays parsed UBX data at the terminal
 
 Press CRTL-C to terminate.
 
 NB: Since Python implements a Global Interpreter Lock (GIL),
-threads are not truly concurrent. True concurrency could be
+threads are not strictly concurrent. True concurrency could be
 achieved using multiprocessing (i.e. separate interpreter
 processes rather than threads) but this is non-trivial in
 this context as serial streams cannot be shared between
@@ -23,12 +27,12 @@ Created on 07 Aug 2021
 """
 # pylint: disable=invalid-name
 
-from sys import platform
-from threading import Thread, Event, Lock
 from queue import Queue
+from sys import platform
+from threading import Event, Lock, Thread
 from time import sleep
 from serial import Serial
-from pyubx2 import UBXReader, UBXMessage, POLL, UBX_PROTOCOL
+from pyubx2 import POLL, UBX_PROTOCOL, UBXMessage, UBXReader
 
 
 def read_data(
@@ -89,7 +93,7 @@ if __name__ == "__main__":
     if platform == "win32":  # Windows
         port = "COM13"
     elif platform == "darwin":  # MacOS
-        port = "/dev/tty.usbmodem101"
+        port = "/dev/tty.usbmodem2101"
     else:  # Linux
         port = "/dev/ttyACM1"
     baudrate = 9600
@@ -139,7 +143,7 @@ if __name__ == "__main__":
         while not stop_event.is_set():
             try:
                 # poll the receiver port configuration using CFG-PRT
-                print(f"\nPolling port configuration CFG-PRT...\n")
+                print("\nPolling port configuration CFG-PRT...\n")
                 for prt in (0, 1, 2, 3, 4):  # I2C, UART1, UART2, USB, SPI
                     msg = UBXMessage("CFG", "CFG-PRT", POLL, portID=prt)
                     send_queue.put(msg)

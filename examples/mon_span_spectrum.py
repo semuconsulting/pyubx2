@@ -19,7 +19,7 @@ Created on 19 Nov 2020
 
 import matplotlib.pyplot as plt
 import numpy as np
-from pyubx2 import UBXReader, UBXMessage
+from pyubx2 import UBXMessage, UBXReader
 
 RF_SIGS = {
     "L1": 1.57542,

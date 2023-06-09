@@ -1,12 +1,9 @@
 """
 ubxsetrates.py
 
-This example illustrates a simple implementation of a
-'pseudo-concurrent' threaded UBXMessage message rate
-configuration utility.
-
-(NB: Since Python implements a Global Interpreter Lock (GIL),
-threads are not truly concurrent.)
+This example illustrates how to send UBX commands to a receiver
+(in this case a series of CFG-MSG commands) while simultaneously
+reading acknowledgements from the receiver.
 
 It connects to the receiver's serial port and sets up a
 UBXReader read thread. With the read thread running
@@ -32,17 +29,12 @@ Created on 2 Oct 2020
 """
 # pylint: disable=invalid-name
 
-from sys import platform
 from io import BufferedReader
-from threading import Thread, Lock
+from sys import platform
+from threading import Lock, Thread
 from time import sleep
 from serial import Serial
-from pyubx2 import (
-    UBXMessage,
-    UBXReader,
-    UBX_MSGIDS,
-    SET,
-)
+from pyubx2 import SET, UBX_MSGIDS, UBXMessage, UBXReader
 
 # initialise global variables
 reading = False
@@ -88,12 +80,11 @@ def send_message(stream, lock, message):
 
 
 if __name__ == "__main__":
-
     # set port, baudrate and timeout to suit your device configuration
     if platform == "win32":  # Windows
         port = "COM13"
     elif platform == "darwin":  # MacOS
-        port = "/dev/tty.usbmodem14101"
+        port = "/dev/tty.usbmodem2101"
     else:  # Linux
         port = "/dev/ttyACM1"
     baudrate = 9600
@@ -101,7 +92,6 @@ if __name__ == "__main__":
     RATE = 4  # set to 0 to disable NAV messages on USB and UART1 ports
 
     with Serial(port, baudrate, timeout=timeout) as serial:
-
         # create UBXReader instance, reading only UBX messages
         ubr = UBXReader(BufferedReader(serial), protfilter=2)
 
@@ -113,7 +103,7 @@ if __name__ == "__main__":
         # set the UART1 and USB message rate for each UBX-NAV message
         # via a CFG-MSG command
         print("\nSending CFG-MSG message rate configuration messages...\n")
-        for (msgid, msgname) in UBX_MSGIDS.items():
+        for msgid, msgname in UBX_MSGIDS.items():
             if msgid[0] == 0x01:  # NAV
                 msg = UBXMessage(
                     "CFG",

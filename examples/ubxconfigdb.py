@@ -1,13 +1,10 @@
 """
 ubxconfigdb.py
 
-This example illustrates a simple implementation of a
-'pseudo-concurrent' threaded UBXMessage configuration
-database utility using the newer CFG-VALGET, CFG-VALSET
-and CFG-VALDEL configuration database message types.
-
-(NB: Since Python implements a Global Interpreter Lock (GIL),
-threads are not truly concurrent.)
+This example illustrates how to send UBX commands to a receiver
+(in this case a series of CFG-VALSET & CFG-VALDEL configuration
+database commands) while simultaneously reading CFG-VALGET responses
+and  acknowledgements from the receiver.
 
 You can use any of the configuration database keys defined in
 UBX_CONFIG_DATABASE. NB: These will only work on Generation 9+
@@ -84,12 +81,11 @@ def send_message(stream, lock, message):
 
 
 if __name__ == "__main__":
-
     # set port, baudrate and timeout to suit your device configuration
     if platform == "win32":  # Windows
         port = "COM13"
     elif platform == "darwin":  # MacOS
-        port = "/dev/tty.usbmodem14101"
+        port = "/dev/tty.usbmodem2101"
     else:  # Linux
         port = "/dev/ttyACM1"
     baudrate = 9600
@@ -104,7 +100,6 @@ if __name__ == "__main__":
     CONFIG_VAL2 = 1
 
     with Serial(port, baudrate, timeout=timeout) as serial:
-
         # create UBXReader instance, reading only UBX messages
         ubr = UBXReader(BufferedReader(serial), protfilter=2)
 

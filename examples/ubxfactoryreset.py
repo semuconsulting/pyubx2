@@ -1,11 +1,9 @@
 """
 ubxfactoryreset.py
 
-This example illustrates a simple implementation of a
-'pseudo-concurrent'threaded UBXMessage factory reset utility.
-
-(NB: Since Python implements a Global Interpreter Lock (GIL),
-threads are not truly concurrent.)
+This example illustrates how to send a UBX command to a receiver
+(in this case a series of CFG-CFG factory reset command) while
+simultaneously reading acknowledgements from the receiver.
 
 It connects to the receiver's serial port and sets up a
 UBXReader read thread. With the read thread running
@@ -74,19 +72,17 @@ def send_message(stream, lock, message):
 
 
 if __name__ == "__main__":
-
     # set port, baudrate and timeout to suit your device configuration
     if platform == "win32":  # Windows
         port = "COM13"
     elif platform == "darwin":  # MacOS
-        port = "/dev/tty.usbmodem141301"
+        port = "/dev/tty.usbmodem2101"
     else:  # Linux
         port = "/dev/ttyACM1"
     baudrate = 9600
     timeout = 0.1
 
     with Serial(port, baudrate, timeout=timeout) as serial:
-
         # create UBXReader instance, reading only UBX messages
         ubr = UBXReader(BufferedReader(serial), protfilter=2)
 

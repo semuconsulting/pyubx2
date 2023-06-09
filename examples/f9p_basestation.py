@@ -144,9 +144,8 @@ def config_fixed(acc_limit: int, lat: float, lon: float, height: float) -> UBXMe
 
 
 if __name__ == "__main__":
-
     # Amend as required...
-    PORT = "/dev/tty.usbmodem141101"
+    PORT = "/dev/tty.usbmodem2101"
     PORT_TYPE = "USB"  # choose from "USB", "UART1", "UART2"
     BAUD = 38400
     TIMEOUT = 5
@@ -165,7 +164,6 @@ if __name__ == "__main__":
 
     print(f"Configuring receiver on {PORT} @ {BAUD:,} baud.\n")
     with Serial(PORT, BAUD, timeout=TIMEOUT) as stream:
-
         # configure RTCM3 outputs
         msg = config_rtcm(PORT_TYPE)
         send_msg(stream, msg)
