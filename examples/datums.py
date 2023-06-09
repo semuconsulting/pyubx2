@@ -13,6 +13,7 @@ Created on 16 Jan 2023
 
 :author: semuadmin
 """
+# pylint: disable=too-many-lines
 
 DATUMS = {
     "Adindan": {
@@ -878,14 +879,6 @@ DATUMS = {
         "dx": 0,
         "dy": 0,
         "dz": 0,
-    },
-    "South_American_1969_mean": {
-        "epd": "South_American_1969",
-        "a": 6378114,
-        "f": 298.250000043564,
-        "dx": -57,
-        "dy": 1,
-        "dz": -41,
     },
     "South_American_1969_mean": {
         "epd": "South_American_1969",
