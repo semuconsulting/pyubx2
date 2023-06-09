@@ -397,10 +397,9 @@ The following command line examples can be found in the `\examples` folder:
 1. `ubxsocket.py` illustrates how to implement a TCP Socket reader for UBX messages using `UBXReader` iterator functionality. Can be used in conjunction with the `tcpserver_threaded.py` socket server test harness.
 1. `gpxtracker.py` illustrates a simple tool to convert a binary UBX data dump to a `*.gpx` track file.
 1. `ubxserver.py` in the \examples\webserver folder illustrates a simple HTTP web server wrapper around `pyubx2.UBXreader`; it presents data from selected UBX messages as a web page http://localhost:8080 or a RESTful API http://localhost:8080/gps.
-1. `benchmark.py` provides a simple performance benchmarking tool for the `pyubx2` parser.
-1. `gnssserver.py` implements a simple but fully-functional command-line TCP Socket Server or NTRIP server, broadcasting GNSS data from the receiver to any connected TCP socket client.
 1. `mon_span_spectrum.py` illustrates how to use `pyubx2` and `matplotlib` to plot a spectrum analysis graph from a UBX MON-SPAN message.
 1. `utilities.py` illustrates how to use various `pyubx2` utility methods.
+1. `benchmark.py` provides a simple performance benchmarking tool for the `pyubx2` parser.
 
 ---
 ## <a name="extensibility">Extensibility</a>

@@ -208,7 +208,6 @@ class UBXServer:
 
 
 if __name__ == "__main__":
-
     ADDRESS = "localhost"
     TCPPORT = 8080
 
@@ -216,7 +215,7 @@ if __name__ == "__main__":
     if platform == "win32":  # Windows
         prt = "COM13"
     elif platform == "darwin":  # MacOS
-        prt = "/dev/tty.usbmodem14101"
+        prt = "/dev/tty.usbmodem2101"
     else:  # Linux
         prt = "/dev/ttyACM1"
     baud = 9600
