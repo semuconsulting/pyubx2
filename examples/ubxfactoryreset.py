@@ -2,7 +2,7 @@
 ubxfactoryreset.py
 
 This example illustrates how to send a UBX command to a receiver
-(in this case a series of CFG-CFG factory reset command) while
+(in this case a CFG-CFG factory reset command) while
 simultaneously reading acknowledgements from the receiver.
 
 It connects to the receiver's serial port and sets up a
@@ -12,7 +12,7 @@ in the background, it sends a factory reset command CFG-CFG.
 The read thread picks up any acknowledgement and outputs
 it to the terminal.
 
-NB: THIS CLEARS THE CURRENT CONFIGURATIONS IN ALL MEMORY
+NB: THIS RESETS THE CURRENT CONFIGURATIONS IN ALL MEMORY
 LAYERS (BBR, Flash and EEPROM) - USE WITH CAUTION!!
 
 Created on 2 Oct 2020

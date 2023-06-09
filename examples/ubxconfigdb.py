@@ -1,14 +1,15 @@
 """
 ubxconfigdb.py
 
-This example illustrates how to send UBX commands to a receiver
-(in this case a series of CFG-VALSET & CFG-VALDEL configuration
-database commands) while simultaneously reading CFG-VALGET responses
-and  acknowledgements from the receiver.
+This example illustrates how to send UBX configuration database 
+commands (CFG-VALSET & CFG-VALDEL) to a receiver while simultaneously
+reading CFG-VALGET responses and  acknowledgements from the receiver.
 
 You can use any of the configuration database keys defined in
-UBX_CONFIG_DATABASE. NB: These will only work on Generation 9+
-devices running UBX protocol 23.01 or later (e.g. NEO-M9N).
+UBX_CONFIG_DATABASE. 
+
+NB: These will only work on Generation 9+ devices running UBX protocol
+23.01 or later (e.g. NEO-M9N or ZED-F9P).
 
 It connects to the receiver's serial port and sets up a
 UBXReader read thread. With the read thread running
