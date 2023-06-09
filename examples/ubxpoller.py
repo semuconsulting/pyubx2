@@ -2,17 +2,20 @@
 ubxpoller.py
 
 This example illustrates how to read, write and display UBX messages
-concurrently using threads and queues.
+concurrently using threads and queues. This represents a useful
+generic pattern for many end user applications.
 
 It implements three threads which run concurrently:
-1) a read thread which continously reads UBX data from the receiver
-2) a write thread which sends UBX commands or polls to the receiver
-3) a display thread which displays parsed UBX data at the terminal
+1) a read thread which continuously reads UBX data from the receiver.
+2) a write thread which sends UBX commands or polls to the receiver.
+3) a display thread which displays parsed UBX data at the terminal.
+UBX data is passed between threads using queues.
 
-Press CRTL-C to terminate.
+Press CTRL-C to terminate.
 
-NB: Since Python implements a Global Interpreter Lock (GIL),
-threads are not strictly concurrent. True concurrency could be
+FYI: Since Python implements a Global Interpreter Lock (GIL),
+threads are not strictly concurrent, though this is of minor
+practical consequence here. True concurrency could be
 achieved using multiprocessing (i.e. separate interpreter
 processes rather than threads) but this is non-trivial in
 this context as serial streams cannot be shared between
@@ -43,6 +46,7 @@ def read_data(
     stop: Event,
 ):
     """
+    THREADED
     Read and parse incoming UBX data and place
     raw and parsed data on queue
     """
@@ -63,6 +67,7 @@ def read_data(
 
 def write_data(stream: object, queue: Queue, lock: Lock, stop: Event):
     """
+    THREADED
     Read queue and send UBX message to device
     """
 
@@ -77,6 +82,7 @@ def write_data(stream: object, queue: Queue, lock: Lock, stop: Event):
 
 def display_data(queue: Queue, stop: Event):
     """
+    THREADED
     Get UBX data from queue and display.
     """
     # pylint: disable=unused-variable,
@@ -134,7 +140,7 @@ if __name__ == "__main__":
             ),
         )
 
-        print("\nStarting handler processes. Press Ctrl-C to terminate...")
+        print("\nStarting handler threads. Press Ctrl-C to terminate...")
         read_thread.start()
         write_thread.start()
         display_thread.start()
@@ -142,6 +148,7 @@ if __name__ == "__main__":
         # loop until user presses Ctrl-C
         while not stop_event.is_set():
             try:
+                # DO STUFF IN THE BACKGROUND...
                 # poll the receiver port configuration using CFG-PRT
                 print("\nPolling port configuration CFG-PRT...\n")
                 for prt in (0, 1, 2, 3, 4):  # I2C, UART1, UART2, USB, SPI
