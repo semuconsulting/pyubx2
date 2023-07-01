@@ -96,7 +96,7 @@ class UBXMessage:
 
         offset = 0  # payload offset in bytes
         index = []  # array of (nested) group indices
-
+        key = None
         try:
             if len(kwargs) == 0:  # if no kwargs, assume null payload
                 self._payload = None

@@ -24,6 +24,7 @@ import pynmeagps.exceptions as nme
 import pyrtcm.exceptions as rte
 from pynmeagps import NMEAReader
 from pyrtcm import RTCMReader
+import time
 
 from pyubx2.exceptions import (
     UBXMessageError,
@@ -67,6 +68,7 @@ class UBXReader:
         :param bool labelmsm: (kwarg) whether to label RTCM3 MSM NSAT and NCELL attributes (1)
         :param int bufsize: (kwarg) socket recv buffer size (1024)
         :param bool parsing: (kwarg) True = parse data, False = do not parse data (output binary messages only) (True)
+        :param float timeout: socket receive timeout
         :raises: UBXStreamError (if mode is invalid)
 
         """
@@ -84,6 +86,7 @@ class UBXReader:
         self._scaling = int(kwargs.get("scaling", True))
         self._labelmsm = int(kwargs.get("labelmsm", True))
         self._msgmode = int(kwargs.get("msgmode", GET))
+        self._timeout = float(kwargs.get("timeout", None))
 
         self._parsing = kwargs.get("parsing", True)
 
@@ -293,6 +296,19 @@ class UBXReader:
         :rtype: bytes
         :raises: EOFError if stream ends prematurely
         """
+        if self._timeout is not None:
+            t1 = time.time()
+            data = bytes()
+            while len(data) < size:
+                b = self._stream.read(size-len(data))
+                if len(b) > 0:
+                    data += b
+                    continue
+                if time.time() >= t1 + self._timeout:
+                    raise EOFError()
+            if len(data) < size:  # EOF
+                raise EOFError()
+            return data
 
         data = self._stream.read(size)
         if len(data) < size:  # EOF
