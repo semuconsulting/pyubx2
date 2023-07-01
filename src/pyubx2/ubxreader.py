@@ -141,7 +141,7 @@ class UBXReader:
                 byte2 = self._read_bytes(1)
                 bytehdr = byte1 + byte2
                 # if it's a UBX message (b'\xb5\x62')
-                if bytehdr == UBX_HDR:
+                if bytehdr == UBX_HDR and self._protfilter & UBX_PROTOCOL:
                     (raw_data, parsed_data) = self._parse_ubx(bytehdr)
                     # if protocol filter passes UBX, return message,
                     # otherwise discard and continue
@@ -150,7 +150,7 @@ class UBXReader:
                     else:
                         continue
                 # if it's an NMEA message ('$G' or '$P')
-                elif bytehdr in NMEA_HDR:
+                elif bytehdr in NMEA_HDR and self._protfilter & NMEA_PROTOCOL:
                     (raw_data, parsed_data) = self._parse_nmea(bytehdr)
                     # if protocol filter passes NMEA, return message,
                     # otherwise discard and continue
@@ -160,7 +160,7 @@ class UBXReader:
                         continue
                 # if it's a RTCM3 message
                 # (byte1 = 0xd3; byte2 = 0b000000**)
-                elif byte1 == b"\xd3" and (byte2[0] & ~0x03) == 0:
+                elif byte1 == b"\xd3" and (byte2[0] & ~0x03) == 0 and self._protfilter & RTCM3_PROTOCOL:
                     (raw_data, parsed_data) = self._parse_rtcm3(bytehdr)
                     # if protocol filter passes RTCM, return message,
                     # otherwise discard and continue
