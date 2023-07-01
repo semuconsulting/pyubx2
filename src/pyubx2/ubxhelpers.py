@@ -296,7 +296,7 @@ def bytes2val(valb: bytes, att: str) -> object:
     elif atttyp(att) == "A":  # array of unsigned integers
         atts = attsiz(att)
         val = []
-        for i in range(atts):
+        for i in range(min(atts,len(valb))):
             val.append(valb[i])
     elif atttyp(att) == "I":  # signed integer
         val = int.from_bytes(valb, "little", signed=True)

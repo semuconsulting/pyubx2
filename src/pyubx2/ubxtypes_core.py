@@ -418,6 +418,12 @@ UBX_MSGIDS = {
     # Firmware update messages
     # ***************************************************************
     b"\x09\x14": "UPD-SOS",
+    b"\x09\x25": "UPD-UPD1",
+    b"\x09\x07": "UPD-TOBL",
+    b"\x09\x0c": "UPD-WRITE",
+    b"\x09\x0b": "UPD-SECERASE",
+    b"\x09\x0d": "UPD-FWINFO",
+    b"\x09\x16": "UPD-CHIPERASE",
     # ***************************************************************
     # NMEA Standard message types
     # Used to poll message rates via CFG-MSG; not parsed by pyubx2

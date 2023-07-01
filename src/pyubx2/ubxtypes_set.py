@@ -960,4 +960,9 @@ UBX_PAYLOADS_SET = {
         "cmd": U1,  # 0x00 to create backup in flash, 0x01 to clear backup
         "reserved0": U3,
     },
+    "UPD-WRITE": {
+        "address" : I4,
+        "size": I4,
+        "data": "A512",
+    },
 }

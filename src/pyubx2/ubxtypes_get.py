@@ -3606,6 +3606,27 @@ UBX_PAYLOADS_GET = {
         "response": U1,
         "reserved1": U3,
     },
+    "UPD-UPD1": {
+        "x1": "A12",
+    },
+    "UPD-UPD2": {},
+    "UPD-CHIPERASE": {},
+    "UPD-WRITE": {
+        "address" : I4,
+        "size": I4,
+        "data": "A512",
+    },
+    "UPD-ERASE": {
+        "address" : I4,
+    },
+    "UPD-FWINFO": {
+        "version" : I1,
+        "region": I1,
+        "address": I4,
+        "len": I4,
+        "ck1": I4,
+        "ck2": I4,
+    },
     # ********************************************************************
     # UBX nominal payload definition, used as fallback where no documented
     # payload definition is available.
