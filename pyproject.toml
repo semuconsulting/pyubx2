@@ -37,7 +37,7 @@ classifiers = [
     ]
 
 dependencies = [
-    "pynmeagps >= 1.0.24",
+    "pynmeagps >= 1.0.25",
     "pyrtcm >= 1.0.9",
 ]
 
