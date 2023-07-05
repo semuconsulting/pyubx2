@@ -9,7 +9,7 @@ NB: Attribute names must be unique within each message class/id
 
 Created on 27 Sep 2020
 
-Information sourced from u-blox Interface Specifications © 2013-2021, u-blox AG
+Information sourced from public domain u-blox Interface Specifications © 2013-2021, u-blox AG
 
 :author: semuadmin
 """

@@ -6,7 +6,7 @@ THESE ARE THE PAYLOAD DEFINITIONS FOR _GET_ MESSAGES _FROM_ THE RECEIVER
 
 Created on 27 Sep 2020
 
-Information sourced from u-blox Interface Specifications © 2013-2021, u-blox AG
+Information sourced from public domain u-blox Interface Specifications © 2013-2021, u-blox AG
 
 :author: semuadmin
 """
