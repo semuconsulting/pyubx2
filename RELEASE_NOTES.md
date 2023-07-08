@@ -1,5 +1,11 @@
 # pyubx2 Release Notes
 
+### RELEASE CANDIDATE 1.2.28
+
+ENHANCEMENTS:
+
+1. Add write capability to socket_stream wrapper, allowing clients to write to UBXReader socket stream (`UBXReader.datastream`) as well as read from it.
+
 ### RELEASE 1.2.27
 
 CHANGES:

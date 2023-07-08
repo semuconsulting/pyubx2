@@ -11,12 +11,12 @@ Created on 11 May 2022
 
 import unittest
 from socket import socket
-from pyubx2 import UBXReader
+from pyubx2 import UBXReader, UBXMessage, POLL
 
 
 class DummySocket(socket):
     """
-    Dummy socket class which simulates recv() method
+    Dummy socket class which simulates recv() and send() methods
     and TimeoutError.
     """
 
@@ -50,6 +50,11 @@ class DummySocket(socket):
         buff = self._buffer[:num]
         self._buffer = self._buffer[num:]
         return buff
+
+    def send(self, data: bytes):
+        if self._timeout:
+            raise TimeoutError
+        return None
 
 
 class SocketTest(unittest.TestCase):
@@ -90,6 +95,13 @@ class SocketTest(unittest.TestCase):
                 if i >= 12:
                     break
         self.assertEqual(i, 12)
+
+    def testSocketSend(self):
+        stream = DummySocket()
+        ubr = UBXReader(stream, bufsize=1024, protfilter=7)
+        msg = UBXMessage("CFG", "CFG-PRT", POLL)
+        res = ubr.datastream.write(msg.serialize())
+        self.assertEqual(res, None)
 
     def testSocketIter(self):  # test for extended stream
         raw = None

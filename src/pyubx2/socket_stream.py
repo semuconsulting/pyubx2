@@ -101,3 +101,14 @@ class SocketStream:
                 break
 
         return line
+
+    def write(self, data: bytes, **kwargs):
+        """
+        Write bytes to socket.
+
+        :param bytes data: data
+        :return: None if successful
+        :rtype: Nonetype
+        """
+
+        return self._socket.send(data, **kwargs)

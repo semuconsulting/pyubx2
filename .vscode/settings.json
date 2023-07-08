@@ -1,11 +1,11 @@
 {
-    "python.testing.pytestEnabled": true,
-    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": false,
+    "python.testing.unittestEnabled": true,
     "python.formatting.provider": "black",
     "python.defaultInterpreterPath": "python3",
     "editor.formatOnSave": true,
     "modulename": "${workspaceFolderBasename}",
     "distname": "${workspaceFolderBasename}",
-    "moduleversion": "1.2.27",
+    "moduleversion": "1.2.28",
     "sarif-viewer.connectToGithubCodeScanning": "off"
 }
