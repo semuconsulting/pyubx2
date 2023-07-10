@@ -259,7 +259,6 @@ class UBXReader:
             parsed_data = NMEAReader.parse(
                 raw_data,
                 validate=self._validate,
-                quitonerror=self._quitonerror,
                 msgmode=self._msgmode,
             )
         else:
