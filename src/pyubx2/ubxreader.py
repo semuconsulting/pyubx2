@@ -56,30 +56,30 @@ class UBXReader:
     def __init__(
         self,
         datastream,
-        quitonerror=ERR_LOG,
-        protfilter=NMEA_PROTOCOL | UBX_PROTOCOL,
-        validate=VALCKSUM,
-        msgmode=GET,
-        parsebitfield=True,
-        scaling=True,
-        labelmsm=True,
-        bufsize=4096,
-        parsing=True,
-        errorhandler=None,
+        msgmode: int = GET,
+        validate: int = VALCKSUM,
+        protfilter: int = NMEA_PROTOCOL | UBX_PROTOCOL,
+        quitonerror: int = ERR_LOG,
+        parsebitfield: bool = True,
+        scaling: bool = True,
+        labelmsm: bool = True,
+        bufsize: int = 4096,
+        parsing: bool = True,
+        errorhandler: object = None,
     ):
         """Constructor.
 
         :param datastream stream: input data stream
-        :param int quitonerror: 0 = ignore errors,  1 = log continue, 2 = (re)raise (1)
-        :param int errorhandler: error handling object or function (None)
-        :param int protfilter: protocol filter 1 = NMEA, 2 = UBX, 4 = RTCM3 (3)
-        :param int validate: 0 = ignore invalid checksum, 1 = validate checksum (1)
         :param int msgmode: 0=GET, 1=SET, 2=POLL (0)
+        :param int validate: 0 = ignore invalid checksum, 1 = validate checksum (1)
+        :param int protfilter: protocol filter 1 = NMEA, 2 = UBX, 4 = RTCM3 (3)
+        :param int quitonerror: 0 = ignore errors,  1 = log continue, 2 = (re)raise (1)
         :param bool parsebitfield: 1 = parse bitfields, 0 = leave as bytes (1)
         :param bool scaling: 1 = apply scale factors, 0 = do not apply (1)
         :param bool labelmsm: whether to label RTCM3 MSM NSAT and NCELL attributes (1)
         :param int bufsize: socket recv buffer size (1024)
         :param bool parsing: True = parse data, False = don't parse data (output raw only) (True)
+        :param int errorhandler: error handling object or function (None)
         :raises: UBXStreamError (if mode is invalid)
         """
         # pylint: disable=too-many-arguments
@@ -339,11 +339,11 @@ class UBXReader:
     @staticmethod
     def parse(
         message: bytes,
-        quitonerror=ERR_LOG,
-        validate=VALCKSUM,
-        msgmode=GET,
-        parsebitfield=True,
-        scaling=True,
+        msgmode: int = GET,
+        validate: int = VALCKSUM,
+        quitonerror: int = ERR_LOG,
+        parsebitfield: bool = True,
+        scaling: bool = True,
     ) -> object:
         """
         Parse UBX byte stream to UBXMessage object.

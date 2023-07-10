@@ -36,7 +36,13 @@ class UBXMessage:
     """UBX Message Class."""
 
     def __init__(
-        self, ubxClass, ubxID, msgmode: int, parsebitfield=True, scaling=True, **kwargs
+        self,
+        ubxClass,
+        ubxID,
+        msgmode: int,
+        parsebitfield: bool = True,
+        scaling: bool = True,
+        **kwargs,
     ):
         """Constructor.
 
