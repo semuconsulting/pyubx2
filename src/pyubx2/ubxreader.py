@@ -276,7 +276,6 @@ class UBXReader:
             parsed_data = RTCMReader.parse(
                 raw_data,
                 validate=self._validate,
-                quitonerror=self._quitonerror,
                 scaling=self._scaling,
                 labelmsm=self._labelmsm,
             )

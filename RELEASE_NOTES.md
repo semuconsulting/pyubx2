@@ -6,6 +6,10 @@ ENHANCEMENTS:
 
 1. Add write capability to socket_stream wrapper, allowing clients to write to UBXReader socket stream (`UBXReader.datastream`) as well as read from it.
 
+FIXES:
+
+1. Remove redundant quitonerror keyword argument from RTCMReader._parse_rtcm3()
+
 ### RELEASE 1.2.27
 
 CHANGES:
