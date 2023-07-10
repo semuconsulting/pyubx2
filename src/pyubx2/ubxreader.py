@@ -53,39 +53,50 @@ class UBXReader:
     UBXReader class.
     """
 
-    def __init__(self, datastream, **kwargs):
+    def __init__(
+        self,
+        datastream,
+        quitonerror=ERR_LOG,
+        protfilter=NMEA_PROTOCOL | UBX_PROTOCOL,
+        validate=VALCKSUM,
+        msgmode=GET,
+        parsebitfield=True,
+        scaling=True,
+        labelmsm=True,
+        bufsize=4096,
+        parsing=True,
+        errorhandler=None,
+    ):
         """Constructor.
 
         :param datastream stream: input data stream
-        :param int quitonerror: (kwarg) 0 = ignore errors,  1 = log continue, 2 = (re)raise (1)
-        :param int errorhandler: (kwarg) error handling object or function (None)
-        :param int protfilter: (kwarg) protocol filter 1 = NMEA, 2 = UBX, 4 = RTCM3 (3)
-        :param int validate: (kwarg) 0 = ignore invalid checksum, 1 = validate checksum (1)
-        :param int msgmode: (kwarg) 0=GET, 1=SET, 2=POLL (0)
-        :param bool parsebitfield: (kwarg) 1 = parse bitfields, 0 = leave as bytes (1)
-        :param bool scaling: (kwarg) 1 = apply scale factors, 0 = do not apply (1)
-        :param bool labelmsm: (kwarg) whether to label RTCM3 MSM NSAT and NCELL attributes (1)
-        :param int bufsize: (kwarg) socket recv buffer size (1024)
-        :param bool parsing: (kwarg) True = parse data, False = do not parse data (output binary messages only) (True)
+        :param int quitonerror: 0 = ignore errors,  1 = log continue, 2 = (re)raise (1)
+        :param int errorhandler: error handling object or function (None)
+        :param int protfilter: protocol filter 1 = NMEA, 2 = UBX, 4 = RTCM3 (3)
+        :param int validate: 0 = ignore invalid checksum, 1 = validate checksum (1)
+        :param int msgmode: 0=GET, 1=SET, 2=POLL (0)
+        :param bool parsebitfield: 1 = parse bitfields, 0 = leave as bytes (1)
+        :param bool scaling: 1 = apply scale factors, 0 = do not apply (1)
+        :param bool labelmsm: whether to label RTCM3 MSM NSAT and NCELL attributes (1)
+        :param int bufsize: socket recv buffer size (1024)
+        :param bool parsing: True = parse data, False = don't parse data (output raw only) (True)
         :raises: UBXStreamError (if mode is invalid)
-
         """
+        # pylint: disable=too-many-arguments
 
-        bufsize = int(kwargs.get("bufsize", 4096))
         if isinstance(datastream, socket):
             self._stream = SocketStream(datastream, bufsize=bufsize)
         else:
             self._stream = datastream
-        self._protfilter = int(kwargs.get("protfilter", NMEA_PROTOCOL | UBX_PROTOCOL))
-        self._quitonerror = int(kwargs.get("quitonerror", ERR_LOG))
-        self._errorhandler = kwargs.get("errorhandler", None)
-        self._validate = int(kwargs.get("validate", VALCKSUM))
-        self._parsebf = int(kwargs.get("parsebitfield", True))
-        self._scaling = int(kwargs.get("scaling", True))
-        self._labelmsm = int(kwargs.get("labelmsm", True))
-        self._msgmode = int(kwargs.get("msgmode", GET))
-
-        self._parsing = kwargs.get("parsing", True)
+        self._protfilter = protfilter
+        self._quitonerror = quitonerror
+        self._errorhandler = errorhandler
+        self._validate = validate
+        self._parsebf = parsebitfield
+        self._scaling = scaling
+        self._labelmsm = labelmsm
+        self._msgmode = msgmode
+        self._parsing = parsing
 
         if self._msgmode not in (0, 1, 2):
             raise UBXStreamError(
@@ -327,7 +338,14 @@ class UBXReader:
         return self._stream
 
     @staticmethod
-    def parse(message: bytes, **kwargs) -> object:
+    def parse(
+        message: bytes,
+        quitonerror=ERR_LOG,
+        validate=VALCKSUM,
+        msgmode=GET,
+        parsebitfield=True,
+        scaling=True,
+    ) -> object:
         """
         Parse UBX byte stream to UBXMessage object.
 
@@ -335,22 +353,16 @@ class UBXReader:
         (the UBXMessage constructor can calculate and assign its own values anyway).
 
         :param bytes message: binary message to parse
-        :param int quitonerror: (kwarg) 0 = ignore errors,  1 = log continue, 2 = (re)raise (1)
-        :param int validate: (kwarg) validate cksum (VALCKSUM (1)=True (default), VALNONE (0)=False)
-        :param int msgmode: (kwarg) message mode (0=GET (default), 1=SET, 2=POLL)
-        :param bool parsebitfield: (kwarg) 1 = parse bitfields, 0 = leave as bytes (1)
-        :param bool scaling: (kwarg) 1 = apply scale factors, 0 = do not apply (1)
+        :param int quitonerror: 0 = ignore errors,  1 = log continue, 2 = (re)raise (1)
+        :param int validate: validate cksum (VALCKSUM (1)=True (default), VALNONE (0)=False)
+        :param int msgmode: message mode (0=GET (default), 1=SET, 2=POLL)
+        :param bool parsebitfield: 1 = parse bitfields, 0 = leave as bytes (1)
+        :param bool scaling: 1 = apply scale factors, 0 = do not apply (1)
         :return: UBXMessage object
         :rtype: UBXMessage
         :raises: UBXParseError (if data stream contains invalid data or unknown message type)
-
         """
-
-        quitonerror = int(kwargs.get("quitonerror", ERR_LOG))
-        msgmode = kwargs.get("msgmode", GET)
-        validate = kwargs.get("validate", VALCKSUM)
-        parsebf = kwargs.get("parsebitfield", True)
-        scaling = kwargs.get("scaling", True)
+        # pylint: disable=too-many-arguments
 
         if msgmode not in (0, 1, 2):
             raise UBXParseError(f"Invalid message mode {msgmode} - must be 0, 1 or 2")
@@ -395,7 +407,7 @@ class UBXReader:
                 msgid,
                 msgmode,
                 payload=payload,
-                parsebitfield=parsebf,
+                parsebitfield=parsebitfield,
                 scaling=scaling,
             )
         except KeyError as err:

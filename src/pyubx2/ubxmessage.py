@@ -35,7 +35,9 @@ from pyubx2.ubxhelpers import (
 class UBXMessage:
     """UBX Message Class."""
 
-    def __init__(self, ubxClass, ubxID, msgmode: int, **kwargs):
+    def __init__(
+        self, ubxClass, ubxID, msgmode: int, parsebitfield=True, scaling=True, **kwargs
+    ):
         """Constructor.
 
         If no keyword parms are passed, the payload is taken to be empty.
@@ -49,11 +51,10 @@ class UBXMessage:
         :param object msgClass: message class as str, int or byte
         :param object msgID: message ID as str, int or byte
         :param int msgmode: message mode (0=GET, 1=SET, 2=POLL)
-        :param bool parsebitfield: (kwarg) parse bitfields ('X' type attributes) Y/N
-        :param bool scaling: (kwarg) apply scale factors Y/N
-        :param kwargs: optional payload key/value pairs
+        :param bool parsebitfield: parse bitfields ('X' type attributes) Y/N
+        :param bool scaling: apply scale factors Y/N
+        :param kwargs: optional payload keyword arguments
         :raises: UBXMessageError
-
         """
 
         # object is mutable during initialisation only
@@ -63,8 +64,8 @@ class UBXMessage:
         self._length = b""
         self._checksum = b""
 
-        self._parsebf = kwargs.get("parsebitfield", True)  # parsing bitfields Y/N?
-        self._scaling = kwargs.get("scaling", True)  # apply scale factors Y/N?
+        self._parsebf = parsebitfield  # parsing bitfields Y/N?
+        self._scaling = scaling  # apply scale factors Y/N?
 
         if msgmode not in (0, 1, 2):
             raise ube.UBXMessageError(f"Invalid msgmode {msgmode} - must be 0, 1 or 2.")

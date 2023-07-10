@@ -90,7 +90,7 @@ class StreamTest(unittest.TestCase):
             b'$GNRMC,084159.00,A,3203.94995,N,03446.42914,E,0.000,,080222,,,D,V*1F\r\n'
         )
         i = 0
-        ubxreader = UBXReader(self.stream, parsing=False, protfilter=7, ubxonly=False, parsebitfield=False)
+        ubxreader = UBXReader(self.stream, parsing=False, protfilter=7, parsebitfield=False)
         for raw, parsed in ubxreader:
             if raw is not None:
                 # print(f'"{parsed}",')

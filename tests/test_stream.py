@@ -476,7 +476,7 @@ class StreamTest(unittest.TestCase):
             "<UBX(MON-HW2, ofsI=4, magI=110, ofsQ=5, magQ=112, cfgSource=111, reserved0=1800, lowLevCfg=4294967295, reserved1=18446744073709551615, postStatus=0, reserved2=0)>",
         )
         i = 0
-        ubxreader = UBXReader(self.streamITER, ubxonly=False, parsebitfield=False)
+        ubxreader = UBXReader(self.streamITER, parsebitfield=False)
         for _, parsed in ubxreader:
             self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
             i += 1
@@ -553,7 +553,6 @@ class StreamTest(unittest.TestCase):
         EXPECTED_RESULT = "<NMEA(GPGGA, time=08:02:48, lat=53.4507186667, NS=N, lon=-2.2402315, EW=W, quality=1, numSV=7, HDOP=1.63, alt=36.8, altUnit=M, sep=48.5, sepUnit=M, diffAge=, diffStation=)>"
         ubr = UBXReader(
             stream,
-            ubxonly=False,
             validate=VALCKSUM,
             msgmode=0,
             parsebitfield=True,
@@ -573,7 +572,6 @@ class StreamTest(unittest.TestCase):
         EXPECTED_RESULT = "<NMEA(GPGGA, time=08:02:48, lat=53.4507186667, NS=N, lon=-2.2402315, EW=W, quality=1, numSV=7, HDOP=1.63, alt=36.8, altUnit=M, sep=48.5, sepUnit=M, diffAge=, diffStation=)>"
         ubr = UBXReader(
             stream,
-            ubxonly=False,
             validate=VALCKSUM,
             msgmode=0,
             parsebitfield=True,
