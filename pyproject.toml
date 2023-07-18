@@ -38,8 +38,8 @@ classifiers = [
     ]
 
 dependencies = [
-    "pynmeagps >= 1.0.26",
-    "pyrtcm >= 1.0.10",
+    "pynmeagps >= 1.0.27",
+    "pyrtcm >= 1.0.11",
 ]
 
 [project.urls]

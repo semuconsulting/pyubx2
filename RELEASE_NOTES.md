@@ -6,6 +6,7 @@ ENHANCEMENTS:
 
 1. Add write capability to socket_stream wrapper, allowing clients to write to UBXReader socket stream (`UBXReader.datastream`) as well as read from it.
 1. Update constructor arguments and docstrings to clarify API (no functional changes).
+1. Min pynmeagps and pyrtcm version dependency updated to 1.0.27 and 1.0.11 respectively.
 
 FIXES:
 
