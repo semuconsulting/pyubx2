@@ -6,6 +6,6 @@
     "editor.formatOnSave": true,
     "modulename": "${workspaceFolderBasename}",
     "distname": "${workspaceFolderBasename}",
-    "moduleversion": "1.2.28",
+    "moduleversion": "1.2.29",
     "sarif-viewer.connectToGithubCodeScanning": "off"
 }

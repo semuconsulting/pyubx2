@@ -30,6 +30,7 @@ GNSSLIST = {
     4: "IMES",
     5: "QZSS",
     6: "GLONASS",
+    7: "NAVIC",
 }
 
 # scaling factor constants

@@ -171,9 +171,10 @@ class StaticTest(unittest.TestCase):
             4: "IMES",
             5: "QZSS",
             6: "GLONASS",
-            7: "7",
+            7: "NAVIC",
+            8: "8",
         }
-        for i in range(0, 8):
+        for i in range(0, 9):
             res = gnss2str(i)
             self.assertEqual(res, GNSS[i])
 
