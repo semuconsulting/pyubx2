@@ -4,15 +4,11 @@ build-backend = "setuptools.build_meta:__legacy__"
 
 [project]
 name = "pyubx2"
-authors = [
-    {name = "semuadmin", email = "semuadmin@semuconsulting.com"},
-]
-maintainers = [
-  {name = "semuadmin", email = "semuadmin@semuconsulting.com"}
-]
+authors = [{ name = "semuadmin", email = "semuadmin@semuconsulting.com" }]
+maintainers = [{ name = "semuadmin", email = "semuadmin@semuconsulting.com" }]
 description = "UBX protocol parser and generator"
 version = "1.2.29"
-license = {file = "LICENSE"}
+license = { file = "LICENSE" }
 readme = "README.md"
 requires-python = ">=3.8"
 classifiers = [
@@ -35,12 +31,9 @@ classifiers = [
     "Topic :: Utilities",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Scientific/Engineering :: GIS",
-    ]
-
-dependencies = [
-    "pynmeagps >= 1.0.27",
-    "pyrtcm >= 1.0.11",
 ]
+
+dependencies = ["pynmeagps >= 1.0.28", "pyrtcm >= 1.0.11"]
 
 [project.urls]
 homepage = "https://www.semuconsulting.com/pyubx2/"
@@ -49,12 +42,7 @@ repository = "https://github.com/semuconsulting/pyubx2"
 changelog = "https://github.com/semuconsulting/pyubx2/blob/master/RELEASE_NOTES.md"
 
 [project.optional-dependencies]
-deploy = [
-    "build",
-    "pip",
-    "setuptools >= 66.0",
-    "wheel"
-]
+deploy = ["build", "pip", "setuptools >= 66.0", "wheel"]
 test = [
     "bandit",
     "black",
