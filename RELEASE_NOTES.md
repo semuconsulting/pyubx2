@@ -1,10 +1,10 @@
 # pyubx2 Release Notes
 
-### RELEASE CANDIDATE 1.2.29
+### RELEASE 1.2.29
 
 ENHANCMENTS:
 
-1. Minor enhancement to convert gnssId '7' to "NAVIC" in __str__() method. 
+1. Add 'NAVIC' to list of gnssId enumerations - cosmetic only, no functional change.
 
 ### RELEASE 1.2.28
 
