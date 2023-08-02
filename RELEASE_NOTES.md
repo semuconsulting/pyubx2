@@ -2,7 +2,7 @@
 
 ### RELEASE 1.2.29
 
-ENHANCMENTS:
+ENHANCEMENTS:
 
 1. Add 'NAVIC' to list of gnssId enumerations - cosmetic only, no functional change.
 
