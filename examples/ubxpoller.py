@@ -6,9 +6,10 @@ This example illustrates how to read, write and display UBX messages
 generic pattern for many end user applications.
 
 It implements two threads which run concurrently:
-1) a read/send thread which continuously reads UBX data from the
+1) an I/O thread which continuously reads UBX data from the
 receiver and sends any queued outbound command or poll messages.
-2) a display thread which displays parsed UBX data at the terminal.
+2) a process thread which processes parsed UBX data - in this example
+it simply prints the parsed data to the terminal.
 UBX data is passed between threads using queues.
 
 Press CTRL-C to terminate.
@@ -38,7 +39,7 @@ from serial import Serial
 from pyubx2 import POLL, UBX_PROTOCOL, UBXMessage, UBXReader, UBX_PAYLOADS_POLL
 
 
-def read_send_data(
+def io_data(
     stream: object,
     ubr: UBXReader,
     readqueue: Queue,
@@ -73,7 +74,7 @@ def read_send_data(
                 continue
 
 
-def display_data(queue: Queue, stop: Event):
+def process_data(queue: Queue, stop: Event):
     """
     THREADED
     Get UBX data from queue and display.
@@ -91,7 +92,7 @@ if __name__ == "__main__":
     if platform == "win32":  # Windows
         port = "COM13"
     elif platform == "darwin":  # MacOS
-        port = "/dev/tty.usbmodem1101"
+        port = "/dev/tty.usbmodem101"
     else:  # Linux
         port = "/dev/ttyACM1"
     baudrate = 38400
@@ -108,7 +109,7 @@ if __name__ == "__main__":
         stop_event = Event()
 
         read_thread = Thread(
-            target=read_send_data,
+            target=io_data,
             args=(
                 serial_stream,
                 ubxreader,
@@ -118,7 +119,7 @@ if __name__ == "__main__":
             ),
         )
         display_thread = Thread(
-            target=display_data,
+            target=process_data,
             args=(
                 read_queue,
                 stop_event,
