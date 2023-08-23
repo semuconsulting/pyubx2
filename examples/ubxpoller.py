@@ -108,7 +108,7 @@ if __name__ == "__main__":
         send_queue = Queue()
         stop_event = Event()
 
-        read_thread = Thread(
+        io_thread = Thread(
             target=io_data,
             args=(
                 serial_stream,
@@ -118,7 +118,7 @@ if __name__ == "__main__":
                 stop_event,
             ),
         )
-        display_thread = Thread(
+        process_thread = Thread(
             target=process_data,
             args=(
                 read_queue,
@@ -127,8 +127,8 @@ if __name__ == "__main__":
         )
 
         print("\nStarting handler threads. Press Ctrl-C to terminate...")
-        read_thread.start()
-        display_thread.start()
+        io_thread.start()
+        process_thread.start()
 
         # loop until user presses Ctrl-C
         while not stop_event.is_set():
@@ -153,6 +153,6 @@ if __name__ == "__main__":
                 stop_event.set()
 
         print("\nStop signal set. Waiting for threads to complete...")
-        read_thread.join()
-        display_thread.join()
+        io_thread.join()
+        process_thread.join()
         print("\nProcessing complete")
