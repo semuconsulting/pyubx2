@@ -20,7 +20,7 @@ src/pyubx2.egg*
 /tests/__pycache__
 *.pyc
 /examples/ubxsandpit.py
-/examples/temp*.py
+/examples/temp*.*
 /.pytest_cache/
 pylint_report.txt
 venv
