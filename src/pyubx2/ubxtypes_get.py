@@ -1809,7 +1809,7 @@ UBX_PAYLOADS_GET = {
                 "flags": (
                     X1,
                     {
-                        "jammingState": U1,
+                        "jammingState": U2,
                     },
                 ),
                 "antStatus": U1,
