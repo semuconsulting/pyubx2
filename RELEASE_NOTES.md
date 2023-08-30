@@ -1,5 +1,15 @@
 # pyubx2 Release Notes
 
+### RELEASE CANDIDATE 1.2.30
+
+ENHANCEMENTS:
+
+1. Added `ubxtypes_enums.py` containing a series of reference lookup dictionaries for various UBX attributes.
+
+FIXES:
+
+1. Fix MON-RF payload definition [#122](https://github.com/semuconsulting/pyubx2/issues/122). Thanks to @dcrowe for contribution.
+
 ### RELEASE 1.2.29
 
 ENHANCEMENTS:

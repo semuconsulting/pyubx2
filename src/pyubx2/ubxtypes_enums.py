@@ -316,7 +316,7 @@ SBASMODE = {
     3: "Enabled test mode",
 }
 SBASSYS = {
-    1: "Unknown",
+    -1: "Unknown",
     0: "WAAS",
     1: "EGNOS",
     2: "MSAS",
