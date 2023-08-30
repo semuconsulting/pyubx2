@@ -330,7 +330,6 @@ SBASINTEGRITYUSED = {
 }
 
 # UBX-NAV-SIG
-# key is (gnssId, sigId)
 CORRSOURCE = {
     0: "none",
     1: "SBAS",
@@ -349,6 +348,7 @@ IONOMODEL = {
     3: "Klobuchar BeiDou",
     4: "Dual Frequency",
 }
+# key is (gnssId, sigId)
 SIGID = {
     (0, 0): "GPS L1C/A",
     (0, 3): "GPS L2 CL",
