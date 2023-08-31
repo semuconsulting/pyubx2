@@ -1809,7 +1809,7 @@ UBX_PAYLOADS_GET = {
                 "flags": (
                     X1,
                     {
-                        "jammingState": U1,
+                        "jammingState": U2,
                     },
                 ),
                 "antStatus": U1,
@@ -1818,7 +1818,7 @@ UBX_PAYLOADS_GET = {
                 "reserved1": U4,
                 "noisePerMS": U2,
                 "agcCnt": U2,
-                "jamInd": U1,
+                "jamInd": U1,  # aka cwSuppression
                 "ofsI": I1,
                 "magI": U1,
                 "ofsQ": I1,
