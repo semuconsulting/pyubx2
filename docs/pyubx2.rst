@@ -60,10 +60,10 @@ pyubx2.ubxtypes\_core module
    :undoc-members:
    :show-inheritance:
 
-pyubx2.ubxtypes\_enums module
------------------------------
+pyubx2.ubxtypes\_decodes module
+-------------------------------
 
-.. automodule:: pyubx2.ubxtypes_enums
+.. automodule:: pyubx2.ubxtypes_decodes
    :members:
    :undoc-members:
    :show-inheritance:

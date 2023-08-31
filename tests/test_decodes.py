@@ -11,7 +11,7 @@ Created on 3 Oct 2020
 import os
 import unittest
 
-from pyubx2.ubxtypes_enums import *
+from pyubx2.ubxtypes_decodes import *
 
 
 class StaticTest(unittest.TestCase):

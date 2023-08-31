@@ -1,5 +1,5 @@
 """
-UBX Protocol enumerations and lookups
+UBX Protocol attribute value decode constants.
 
 Created on 26 Aug 2023
 

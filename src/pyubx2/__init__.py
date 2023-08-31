@@ -31,7 +31,7 @@ from pyubx2.ubxmessage import UBXMessage
 from pyubx2.ubxreader import UBXReader
 from pyubx2.ubxtypes_configdb import *
 from pyubx2.ubxtypes_core import *
-from pyubx2.ubxtypes_enums import *
+from pyubx2.ubxtypes_decodes import *
 from pyubx2.ubxtypes_get import *
 from pyubx2.ubxtypes_poll import *
 from pyubx2.ubxtypes_set import *
