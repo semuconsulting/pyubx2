@@ -1,10 +1,10 @@
 # pyubx2 Release Notes
 
-### RELEASE CANDIDATE 1.2.30
+### RELEASE 1.2.30
 
 ENHANCEMENTS:
 
-1. Added `ubxtypes_enums.py` containing a series of reference lookup dictionaries for various UBX attributes.
+1. Added `ubxtypes_decodes.py` containing a series of reference lookup dictionaries for various UBX attributes.
 
 FIXES:
 
