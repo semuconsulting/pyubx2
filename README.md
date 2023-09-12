@@ -74,6 +74,12 @@ source env/bin/activate (or env\Scripts\activate on Windows)
 deactivate
 ```
 
+For [Conda](https://docs.conda.io/en/latest/) users, `pyubx2` is also available from [conda forge](https://github.com/conda-forge/pyubx2-feedstock):
+
+```shell
+conda install -c conda-forge pyubx2
+```
+
 ---
 ## <a name="msgcat">UBX Message Categories - GET, SET, POLL</a>
 
