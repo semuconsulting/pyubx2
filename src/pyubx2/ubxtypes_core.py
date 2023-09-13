@@ -209,6 +209,7 @@ UBX_MSGIDS = {
     b"\x10\x15": "ESF-INS",
     b"\x10\x02": "ESF-MEAS",
     b"\x10\x03": "ESF-RAW",
+    b"\x10\x13": "ESF-RESETALG",  # referenced but not defined in specs
     b"\x10\x10": "ESF-STATUS",
     # ***************************************************************
     # High Rate Navigation messages
