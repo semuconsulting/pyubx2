@@ -1,5 +1,15 @@
 # pyubx2 Release Notes
 
+### RELEASE CANDIDATE 1.2.31
+
+ENHANCEMENTS:
+
+1. ESF payload definitions updated for firmware HPS 1.30.
+
+FIXES:
+
+1. Fix thrashing in SocketStream if connection closed.
+
 ### RELEASE 1.2.30
 
 ENHANCEMENTS:

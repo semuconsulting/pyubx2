@@ -337,6 +337,7 @@ UBX_PAYLOADS_SET = {
             },
         ),
     },
+    "ESF-RESETALG": {},
     # ********************************************************************
     # Logging Messages: i.e. Log creation, deletion, info and retrieval.
     # Messages in the LOG class are used to configure and report status information of the logging feature.

@@ -1192,7 +1192,7 @@ UBX_PAYLOADS_GET = {
                 "angleError": U1,
             },
         ),
-        "reserved1": U1,
+        "reserved0": U1,
         "yaw": [U4, SCAL2],
         "pitch": [I2, SCAL2],
         "roll": [I2, SCAL2],
@@ -1228,7 +1228,7 @@ UBX_PAYLOADS_GET = {
                 "zAccelValid": U1,
             },
         ),
-        "reserved1": U4,
+        "reserved0": U4,
         "iTOW": U4,
         "xAngRate": [I4, SCAL3],
         "yAngRate": [I4, SCAL3],
@@ -1277,7 +1277,21 @@ UBX_PAYLOADS_GET = {
     "ESF-STATUS": {
         "iTOW": U4,
         "version": U1,
-        "reserved0": U7,
+        "initStatus1": (
+            X1,
+            {
+                "wtInitStatus": U2,
+                "mntAlgStatus": U3,
+                "insInitStatus": U3,
+            },
+        ),
+        "initStatus2": (
+            X1,
+            {
+                "imuInitStatus": U2,
+            },
+        ),
+        "reserved0": U5,
         "fusionMode": U1,
         "reserved1": U2,
         "numSens": U1,
