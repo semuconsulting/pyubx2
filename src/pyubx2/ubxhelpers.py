@@ -14,10 +14,12 @@ import struct
 from datetime import datetime, timedelta
 from math import cos, pi, sin
 
+from pynmeagps.nmeatypes_core import NMEA_HDR
+
 import pyubx2.exceptions as ube
 import pyubx2.ubxtypes_configdb as ubcdb
 import pyubx2.ubxtypes_core as ubt
-from pyubx2.ubxtypes_core import GNSSLIST, NMEA_HDR, UBX_HDR
+from pyubx2.ubxtypes_core import GNSSLIST, UBX_HDR
 
 
 def att2idx(att: str) -> int:

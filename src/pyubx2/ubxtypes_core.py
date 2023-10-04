@@ -9,7 +9,6 @@ Information sourced from public domain u-blox Interface Specifications © 2013-2
 """
 
 UBX_HDR = b"\xb5\x62"
-NMEA_HDR = [b"\x24\x47", b"\x24\x50"]
 GET = 0
 SET = 1
 POLL = 2
