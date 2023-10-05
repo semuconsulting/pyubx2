@@ -7,7 +7,7 @@ name = "pyubx2"
 authors = [{ name = "semuadmin", email = "semuadmin@semuconsulting.com" }]
 maintainers = [{ name = "semuadmin", email = "semuadmin@semuconsulting.com" }]
 description = "UBX protocol parser and generator"
-version = "1.2.31"
+version = "1.2.32"
 license = { file = "LICENSE" }
 readme = "README.md"
 requires-python = ">=3.8"
@@ -33,7 +33,7 @@ classifiers = [
     "Topic :: Scientific/Engineering :: GIS",
 ]
 
-dependencies = ["pynmeagps >= 1.0.28", "pyrtcm >= 1.0.12"]
+dependencies = ["pynmeagps >= 1.0.29", "pyrtcm >= 1.0.13"]
 
 [project.urls]
 homepage = "https://www.semuconsulting.com/pyubx2/"

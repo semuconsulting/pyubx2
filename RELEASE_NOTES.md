@@ -1,6 +1,12 @@
 # pyubx2 Release Notes
 
-### RELEASE CANDIDATE 1.2.31
+### RELEASE CANDIDATE 1.2.32
+
+ENHANCEMENTS: 
+
+1. Cater for legacy "BD" (Beidou) NMEA Talker ID.
+
+### RELEASE 1.2.31
 
 ENHANCEMENTS:
 
