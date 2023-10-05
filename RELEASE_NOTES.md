@@ -1,6 +1,6 @@
 # pyubx2 Release Notes
 
-### RELEASE CANDIDATE 1.2.32
+### RELEASE 1.2.32
 
 ENHANCEMENTS: 
 
