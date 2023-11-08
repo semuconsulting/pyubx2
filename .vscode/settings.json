@@ -3,6 +3,9 @@
     "python.testing.unittestEnabled": true,
     "python.defaultInterpreterPath": "python3",
     "editor.formatOnSave": true,
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    },
     "modulename": "${workspaceFolderBasename}",
     "distname": "${workspaceFolderBasename}",
     "moduleversion": "1.2.32",
