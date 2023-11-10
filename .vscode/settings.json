@@ -8,5 +8,5 @@
     },
     "modulename": "${workspaceFolderBasename}",
     "distname": "${workspaceFolderBasename}",
-    "moduleversion": "1.2.32",
+    "moduleversion": "1.2.33",
 }
