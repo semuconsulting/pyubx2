@@ -1,5 +1,11 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.2.33
+
+ENHANCEMENTS: 
+
+1. Add legacy `TpNotLocked` bit flag to TIM-TP definition
+
 ### RELEASE 1.2.32
 
 ENHANCEMENTS: 
