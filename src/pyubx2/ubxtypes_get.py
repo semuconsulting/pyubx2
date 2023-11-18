@@ -3579,6 +3579,7 @@ UBX_PAYLOADS_GET = {
                 "utc": U1,
                 "raim": U2,
                 "qErrInvalid": U1,
+                "TpNotLocked": U1,  # deprecated bit flag
             },
         ),
         "refinfo": (
