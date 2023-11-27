@@ -77,6 +77,7 @@ deactivate
 For [Conda](https://docs.conda.io/en/latest/) users, `pyubx2` is also available from [conda forge](https://github.com/conda-forge/pyubx2-feedstock):
 
 [![Anaconda-Server Badge](https://anaconda.org/conda-forge/pyubx2/badges/version.svg)](https://anaconda.org/conda-forge/pyubx2)
+[![Anaconda-Server Badge](https://anaconda.org/conda-forge/pyubx2/badges/downloads.svg)](https://anaconda.org/conda-forge/pypyubx2)
 
 ```shell
 conda install -c conda-forge pyubx2
