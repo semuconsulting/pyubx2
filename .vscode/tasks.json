@@ -5,32 +5,6 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Install Deploy Dependencies",
-            "type": "process",
-            "command": "${config:python.defaultInterpreterPath}",
-            "args": [
-                "-m",
-                "pip",
-                "install",
-                "--upgrade",
-                ".[deploy]"
-            ],
-            "problemMatcher": []
-        },
-        {
-            "label": "Install Test Dependencies",
-            "type": "process",
-            "command": "${config:python.defaultInterpreterPath}",
-            "args": [
-                "-m",
-                "pip",
-                "install",
-                "--upgrade",
-                ".[test]"
-            ],
-            "problemMatcher": []
-        },
-        {
             "label": "Install Dependencies",
             "type": "process",
             "command": "${config:python.defaultInterpreterPath}",
@@ -219,9 +193,6 @@
             "dependsOrder": "sequence",
             "dependsOn": [
                 "Clean",
-                "Install Deploy Dependencies",
-                "Install Test Dependencies",
-                "Install Dependencies",
                 "Security",
                 "Sort Imports",
                 "Format",
