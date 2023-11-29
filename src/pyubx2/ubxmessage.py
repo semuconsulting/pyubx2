@@ -556,7 +556,7 @@ class UBXMessage:
                     pdict = self._get_relposned_version(**kwargs)
                 # Unknown GET message, parsed to nominal definition
                 elif self.identity[-7:] == "NOMINAL":
-                    pdict = ubg.UBX_PAYLOADS_GET["UBX-NOMINAL"]
+                    pdict = {}
                 else:
                     pdict = ubg.UBX_PAYLOADS_GET[self.identity]
             return pdict
@@ -860,6 +860,8 @@ class UBXMessage:
         umsg_name = self.identity
         if self.payload is None:
             return f"<UBX({umsg_name})>"
+        if self.identity[-7:] == "NOMINAL":
+            return f"<UBX({umsg_name}, payload={escapeall(self._payload)})>"
 
         stg = f"<UBX({umsg_name}, "
         for i, att in enumerate(self.__dict__):

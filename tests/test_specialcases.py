@@ -280,8 +280,8 @@ class SpecialTest(unittest.TestCase):
         res = UBXMessage.config_set(ubxcdb.SET_LAYER_RAM, ubxcdb.TXN_NONE, cfgData)
         self.assertEqual(
             str(res),
-            "<UBX(CFG-VALSET, version=0, ram=1, bbr=0, flash=0, action=0, reserved0=0, CFG_UART1_BAUDRATE=9600)>"
-            )
+            "<UBX(CFG-VALSET, version=0, ram=1, bbr=0, flash=0, action=0, reserved0=0, CFG_UART1_BAUDRATE=9600)>",
+        )
 
     def testConfigSet2(
         self,
@@ -290,8 +290,8 @@ class SpecialTest(unittest.TestCase):
         res = UBXMessage.config_set(ubxcdb.SET_LAYER_BBR, ubxcdb.TXN_START, cfgData)
         self.assertEqual(
             str(res),
-            "<UBX(CFG-VALSET, version=1, ram=0, bbr=1, flash=0, action=1, reserved0=0, CFG_UART1_BAUDRATE=9600, CFG_UART2_BAUDRATE=115200)>"
-            )
+            "<UBX(CFG-VALSET, version=1, ram=0, bbr=1, flash=0, action=1, reserved0=0, CFG_UART1_BAUDRATE=9600, CFG_UART2_BAUDRATE=115200)>",
+        )
 
     def testConfigDel(self):  # test creation of CFG-VALSET message with single key
         keys = [
@@ -368,15 +368,15 @@ class SpecialTest(unittest.TestCase):
         self.assertEqual(str(msg), EXPECTED_RESULT)
 
     def testUnknownClassID(self):  # test for unknown class and id
-        EXPECTED_RESULT = (
-            "<UBX(UNKNOWN-5566-NOMINAL, data_01=b'\\x33', data_02=b'\\x44')>"
-        )
+        EXPECTED_RESULT = "<UBX(UNKNOWN-5566-NOMINAL, payload=b'\\x33\\x44')>"
         msg = UBXReader.parse(b"\xb5b\x55\x66\x02\x00\x33\x44\x34\xae")
+        # print(msg)
         self.assertEqual(str(msg), EXPECTED_RESULT)
 
     def testUnknownID(self):  # test for known class, unknown id
-        EXPECTED_RESULT = "<UBX(DBG-0c66-NOMINAL, data_01=b'\\x33', data_02=b'\\x44')>"
-        msg = UBXReader.parse(b"\xb5b\x0c\x66\x02\x00\x33\x44\xeb\xf8")
+        EXPECTED_RESULT = "<UBX(DBG-0c66-NOMINAL, payload=b'\\x55\\x66')>"
+        msg = UBXReader.parse(b"\xb5b\x0c\x66\x02\x00\x55\x66\x2f\x5e")
+        # print(msg)
         self.assertEqual(str(msg), EXPECTED_RESULT)
 
 

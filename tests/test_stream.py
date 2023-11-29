@@ -544,7 +544,7 @@ class StreamTest(unittest.TestCase):
             if not isinstance(parsed, str):
                 print(parsed)
         output = self.restoreio().split("\n")
-        print(output)
+        # print(output)
         self.assertEqual(EXPECTED_RESULTS, output)
 
     def testUBXITERATE_ERR3(
@@ -647,8 +647,10 @@ class StreamTest(unittest.TestCase):
     def testDEBUG(
         self,
     ):  # test stream of UBX DEBUG messages
-        EXPECTED_RESULTS1 = "<UBX(CFG-VALGET, version=1, layer=0, position=0, CFG_0x10010001=b'\\x00', CFG_0x10010101=b'\\x00', CFG_0x10040009=b'\\x00', CFG_TP_TP1_ENA=1, CFG_TP_SYNC_GNSS_TP1=1, CFG_TP_USE_LOCKED_TP1=1, CFG_TP_ALIGN_TO_TOW_TP1=1, CFG_TP_POL_TP1=1, CFG_0x10110012=b'\\x00', CFG_NAVSPG_INIFIX3D=0, CFG_0x10110014=b'\\x01', CFG_0x10110015=b'\\x01', CFG_0x10110016=b'\\x01', CFG_0x10110018=b'\\x01', CFG_0x1011001b=b'\\x00', CFG_NAVSPG_ACKAIDING=0, CFG_0x10110046=b'\\x01', CFG_0x10110052=b'\\x00', CFG_0x10110053=b'\\x00', CFG_NAVSPG_USE_USRDAT=0, CFG_0x10110081=b'\\x00', CFG_0x10110082=b'\\x00', CFG_0x10110083=b'\\x00', CFG_NAVSPG_PL_ENA=1, CFG_0x10140051=b'\\x00', CFG_0x10140052=b'\\x00', CFG_0x10140053=b'\\x00', CFG_0x10140061=b'\\x01', CFG_NAV2_OUT_ENABLED=0, CFG_NAV2_SBAS_USE_INTEGRITY=0, CFG_0x10210005=b'\\x00', CFG_ODO_USE_ODO=0, CFG_ODO_USE_COG=0, CFG_ODO_OUTLPVEL=0, CFG_ODO_OUTLPCOG=0, CFG_GEOFENCE_USE_PIO=0, CFG_GEOFENCE_USE_FENCE1=0, CFG_GEOFENCE_USE_FENCE2=0, CFG_GEOFENCE_USE_FENCE3=0, CFG_GEOFENCE_USE_FENCE4=0, CFG_0x10250001=b'\\x01', CFG_SIGNAL_GPS_L1CA_ENA=1, CFG_SIGNAL_GPS_L2C_ENA=1, CFG_SIGNAL_SBAS_L1CA_ENA=1, CFG_SIGNAL_GAL_E1_ENA=1, CFG_SIGNAL_GAL_E5B_ENA=1, CFG_SIGNAL_BDS_B1_ENA=1, CFG_SIGNAL_BDS_B2_ENA=1, CFG_SIGNAL_QZSS_L1CA_ENA=1, CFG_SIGNAL_QZSS_L1S_ENA=0, CFG_SIGNAL_QZSS_L2C_ENA=1, CFG_SIGNAL_GLO_L1_ENA=1, CFG_SIGNAL_GLO_L2_ENA=1, CFG_SIGNAL_GPS_ENA=1, CFG_SIGNAL_SBAS_ENA=1, CFG_SIGNAL_GAL_ENA=1, CFG_SIGNAL_BDS_ENA=1, CFG_SIGNAL_QZSS_ENA=1, CFG_SIGNAL_GLO_ENA=1, CFG_0x10310027=b'\\x01', CFG_0x10330001=b'\\x00', CFG_0x10330002=b'\\x00', CFG_0x10330003=b'\\x00', CFG_0x10330011=b'\\x00')>"
-        EXPECTED_RESULTS2 = "<UBX(DBG-0c4b-NOMINAL, data_01=b'\\x00', data_02=b'\\x00', data_03=b'\\x64', data_04=b'\\x00', data_05=b'\\x26', data_06=b'\\x00', data_07=b'\\x01', data_08=b'\\x00', data_09=b'\\x33', data_10=b'\\x10', data_11=b'\\x00', data_12=b'\\x02', data_13=b'\\x00', data_14=b'\\x33', data_15=b'\\x10', data_16=b'\\x00', data_17=b'\\x03', data_18=b'\\x00', data_19=b'\\x33', data_20=b'\\x10', data_21=b'\\x00', data_22=b'\\x11', data_23=b'\\x00', data_24=b'\\x33', data_25=b'\\x10', data_26=b'\\x00', data_27=b'\\x21', data_28=b'\\x00', data_29=b'\\x33', data_30=b'\\x10', data_31=b'\\x01', data_32=b'\\x01', data_33=b'\\x00', data_34=b'\\x34', data_35=b'\\x10', data_36=b'\\x00', data_37=b'\\x02', data_38=b'\\x00', data_39=b'\\x34', data_40=b'\\x10', data_41=b'\\x00', data_42=b'\\x03', data_43=b'\\x00', data_44=b'\\x34', data_45=b'\\x10', data_46=b'\\x01', data_47=b'\\x04', data_48=b'\\x00', data_49=b'\\x34', data_50=b'\\x10', data_51=b'\\x00', data_52=b'\\x11', data_53=b'\\x00', data_54=b'\\x34', data_55=b'\\x10', data_56=b'\\x00', data_57=b'\\x14', data_58=b'\\x00', data_59=b'\\x34', data_60=b'\\x10', data_61=b'\\x00', data_62=b'\\x01', data_63=b'\\x00', data_64=b'\\x35', data_65=b'\\x10', data_66=b'\\x00', data_67=b'\\x02', data_68=b'\\x00', data_69=b'\\x35', data_70=b'\\x10', data_71=b'\\x00', data_72=b'\\x03', data_73=b'\\x00', data_74=b'\\x35', data_75=b'\\x10', data_76=b'\\x00', data_77=b'\\x04', data_78=b'\\x00', data_79=b'\\x35', data_80=b'\\x10', data_81=b'\\x00', data_82=b'\\x02', data_83=b'\\x00', data_84=b'\\x36', data_85=b'\\x10', data_86=b'\\x00', data_87=b'\\x03', data_88=b'\\x00', data_89=b'\\x36', data_90=b'\\x10', data_91=b'\\x01', data_92=b'\\x04', data_93=b'\\x00', data_94=b'\\x36', data_95=b'\\x10', data_96=b'\\x01', data_97=b'\\x05', data_98=b'\\x00', data_99=b'\\x36', data_100=b'\\x10', data_101=b'\\x00', data_102=b'\\x07', data_103=b'\\x00', data_104=b'\\x36', data_105=b'\\x10', data_106=b'\\x00')>"
+        EXPECTED_RESULTS = [
+            "<UBX(CFG-VALGET, version=1, layer=0, position=0, CFG_0x10010001=b'\\x00', CFG_0x10010101=b'\\x00', CFG_0x10040009=b'\\x00', CFG_TP_TP1_ENA=1, CFG_TP_SYNC_GNSS_TP1=1, CFG_TP_USE_LOCKED_TP1=1, CFG_TP_ALIGN_TO_TOW_TP1=1, CFG_TP_POL_TP1=1, CFG_0x10110012=b'\\x00', CFG_NAVSPG_INIFIX3D=0, CFG_0x10110014=b'\\x01', CFG_0x10110015=b'\\x01', CFG_0x10110016=b'\\x01', CFG_0x10110018=b'\\x01', CFG_0x1011001b=b'\\x00', CFG_NAVSPG_ACKAIDING=0, CFG_0x10110046=b'\\x01', CFG_0x10110052=b'\\x00', CFG_0x10110053=b'\\x00', CFG_NAVSPG_USE_USRDAT=0, CFG_0x10110081=b'\\x00', CFG_0x10110082=b'\\x00', CFG_0x10110083=b'\\x00', CFG_NAVSPG_PL_ENA=1, CFG_0x10140051=b'\\x00', CFG_0x10140052=b'\\x00', CFG_0x10140053=b'\\x00', CFG_0x10140061=b'\\x01', CFG_NAV2_OUT_ENABLED=0, CFG_NAV2_SBAS_USE_INTEGRITY=0, CFG_0x10210005=b'\\x00', CFG_ODO_USE_ODO=0, CFG_ODO_USE_COG=0, CFG_ODO_OUTLPVEL=0, CFG_ODO_OUTLPCOG=0, CFG_GEOFENCE_USE_PIO=0, CFG_GEOFENCE_USE_FENCE1=0, CFG_GEOFENCE_USE_FENCE2=0, CFG_GEOFENCE_USE_FENCE3=0, CFG_GEOFENCE_USE_FENCE4=0, CFG_0x10250001=b'\\x01', CFG_SIGNAL_GPS_L1CA_ENA=1, CFG_SIGNAL_GPS_L2C_ENA=1, CFG_SIGNAL_SBAS_L1CA_ENA=1, CFG_SIGNAL_GAL_E1_ENA=1, CFG_SIGNAL_GAL_E5B_ENA=1, CFG_SIGNAL_BDS_B1_ENA=1, CFG_SIGNAL_BDS_B2_ENA=1, CFG_SIGNAL_QZSS_L1CA_ENA=1, CFG_SIGNAL_QZSS_L1S_ENA=0, CFG_SIGNAL_QZSS_L2C_ENA=1, CFG_SIGNAL_GLO_L1_ENA=1, CFG_SIGNAL_GLO_L2_ENA=1, CFG_SIGNAL_GPS_ENA=1, CFG_SIGNAL_SBAS_ENA=1, CFG_SIGNAL_GAL_ENA=1, CFG_SIGNAL_BDS_ENA=1, CFG_SIGNAL_QZSS_ENA=1, CFG_SIGNAL_GLO_ENA=1, CFG_0x10310027=b'\\x01', CFG_0x10330001=b'\\x00', CFG_0x10330002=b'\\x00', CFG_0x10330003=b'\\x00', CFG_0x10330011=b'\\x00')>",
+            "<UBX(DBG-0c4b-NOMINAL, payload=b'\\x00\\x00\\x64\\x00\\x26\\x00\\x01\\x00\\x33\\x10\\x00\\x02\\x00\\x33\\x10\\x00\\x03\\x00\\x33\\x10\\x00\\x11\\x00\\x33\\x10\\x00\\x21\\x00\\x33\\x10\\x01\\x01\\x00\\x34\\x10\\x00\\x02\\x00\\x34\\x10\\x00\\x03\\x00\\x34\\x10\\x01\\x04\\x00\\x34\\x10\\x00\\x11\\x00\\x34\\x10\\x00\\x14\\x00\\x34\\x10\\x00\\x01\\x00\\x35\\x10\\x00\\x02\\x00\\x35\\x10\\x00\\x03\\x00\\x35\\x10\\x00\\x04\\x00\\x35\\x10\\x00\\x02\\x00\\x36\\x10\\x00\\x03\\x00\\x36\\x10\\x01\\x04\\x00\\x36\\x10\\x01\\x05\\x00\\x36\\x10\\x00\\x07\\x00\\x36\\x10\\x00')>",
+        ]
         i = 0
         raw = 0
         ubxreader = UBXReader(self.streamDEBUG)
@@ -658,11 +660,11 @@ class StreamTest(unittest.TestCase):
             if raw is not None:
                 res = str(parsed)
                 if i == 5:
-                    res1 = res
+                    # print(res)
+                    self.assertEqual(res, EXPECTED_RESULTS[0])
                 if i == 188:
-                    res2 = res
-        self.assertEqual(res1, EXPECTED_RESULTS1)
-        self.assertEqual(res2, EXPECTED_RESULTS2)
+                    # print(res.replace("\\", "\\\\"))
+                    self.assertEqual(res, EXPECTED_RESULTS[1])
         self.assertEqual(i, 189)
 
 
