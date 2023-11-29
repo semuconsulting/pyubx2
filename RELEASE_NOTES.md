@@ -5,6 +5,7 @@
 ENHANCEMENTS
 
 1. Cater for NMEA streams with LF (b"\x0a") rather than CRLF (b"\x0d\x0a") message terminators.
+2. Update string representation of NOMINAL payload definitions to "<(IDENTITY-NOMINAL, payload="b\x99")>".
 
 ### RELEASE 1.2.33
 
