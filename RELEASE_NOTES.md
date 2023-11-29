@@ -2,6 +2,10 @@
 
 ### RELEASE CANDIDATE 1.2.34
 
+ENHANCEMENTS
+
+1. Cater for NMEA streams with LF (b"\x0a") rather than CRLF (b"\x0d\x0a") message terminators.
+
 ### RELEASE 1.2.33
 
 ENHANCEMENTS: 
