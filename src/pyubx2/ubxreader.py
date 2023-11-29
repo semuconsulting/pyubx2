@@ -248,9 +248,7 @@ class UBXReader:
         """
 
         # read the rest of the NMEA message from the buffer
-        byten = self._stream.readline()  # NMEA protocol is CRLF-terminated
-        if byten[-2:] != b"\x0d\x0a":
-            raise EOFError()
+        byten = self._read_line()  # NMEA protocol is CRLF-terminated
         raw_data = hdr + byten
         # only parse if we need to (filter passes NMEA)
         if (self._protfilter & NMEA_PROTOCOL) and self._parsing:
@@ -304,6 +302,20 @@ class UBXReader:
 
         data = self._stream.read(size)
         if len(data) < size:  # EOF
+            raise EOFError()
+        return data
+
+    def _read_line(self) -> bytes:
+        """
+        Read bytes until LF (0x0a) terminator.
+
+        :return: bytes
+        :rtype: bytes
+        :raises: EOFError if stream ends prematurely
+        """
+
+        data = self._stream.readline()  # NMEA protocol is CRLF-terminated
+        if data[-1:] != b"\x0a":
             raise EOFError()
         return data
 
