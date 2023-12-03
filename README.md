@@ -448,9 +448,7 @@ These are usually caused by inadequate user privileges or contention with anothe
 #### 3. `UnicodeDecode` errors.
 - If reading UBX data from a log file, check that the file.open() procedure is using the `rb` (read binary) setting e.g.
 `stream = open('ubxdatalog.log', 'rb')`.
-#### 4. Reading from NMEA log file returns no results.
-- If reading from a binary log file containing NMEA messages, ensure that the message terminator is `CRLF` (`\r\n` or `x0d0a`) rather than just `LF` (`\n` or `0x0a`). Some standard text editors may replace a `CRLF` with `LF` - use a dedicated hex editor instead.
-#### 5. Spurious `CFG-VALGET`, `DBG`, `TRK`, `TUN` and `SEC` data in *.ubx files recorded in u-center.
+#### 4. Spurious `CFG-VALGET`, `DBG`, `TRK`, `TUN` and `SEC` data in *.ubx files recorded in u-center.
 By default, u-center 21.09 records a series of configuration messages (CFG-VALGET) containing undocumented configuration database keys. In addition, clicking the 'debug' option results in a large number of undocumented DBG, TRK, TUN and SEC message classes. As of version v1.2.15, `pyubx2` is capable of parsing these undocumented message classes (to a nominal payload definition), but they are really only of relevance to u-blox technical support. If you are *not* intending to send the recordings to u-blox;
 - When recording GNSS output data in u-center, select 'No' when prompted to 'Add Receiver Configuration' to the recording, and avoid the 'debug' option.
 
