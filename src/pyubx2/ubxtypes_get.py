@@ -1221,7 +1221,7 @@ UBX_PAYLOADS_GET = {
             {
                 "version": U8,
                 "xAngRateValid": U1,
-                "AngRateValid": U1,
+                "yAngRateValid": U1,
                 "zAngRateValid": U1,
                 "xAccelValid": U1,
                 "yAccelValid": U1,
