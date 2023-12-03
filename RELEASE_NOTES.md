@@ -2,6 +2,9 @@
 
 ### RELEASE CANDIDATE 1.2.35
 
+FIXES:
+
+1. Fix typo in UBX-ESF-INS payload definition Fixes [#133](https://github.com/semuconsulting/pyubx2/issues/133)
 
 ### RELEASE 1.2.34
 
