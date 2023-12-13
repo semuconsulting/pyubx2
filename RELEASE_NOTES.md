@@ -1,8 +1,14 @@
 # pyubx2 Release Notes
 
-### RELEASE CANDIDATE 1.2.34
+### RELEASE CANDIDATE 1.2.35
 
-ENHANCEMENTS
+FIXES:
+
+1. Fix typo in UBX-ESF-INS payload definition Fixes [#133](https://github.com/semuconsulting/pyubx2/issues/133)
+
+### RELEASE 1.2.34
+
+ENHANCEMENTS:
 
 1. Cater for NMEA streams with LF (b"\x0a") rather than CRLF (b"\x0d\x0a") message terminators.
 2. Simplify string representation of NOMINAL (undocumented) payload definitions to "<UBX(IDENTITY-NOMINAL, payload="b\x99...")>".
