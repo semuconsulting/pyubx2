@@ -2479,10 +2479,10 @@ UBX_PAYLOADS_GET = {
         "reserved1": U1,
         "refStationID": U2,
         "iTOW": U4,
-        "relPosN": I4,
+        "relPosN": I4, # cm
         "relPosE": I4,
         "relPosD": I4,
-        "relPosHPN": [I1, SCAL1],
+        "relPosHPN": [I1, SCAL1], # mm, so total length in cm = relPosN + (relPosHPN / 10)
         "relPosHPE": [I1, SCAL1],
         "relPosHPD": [I1, SCAL1],
         "reserved2": U1,
@@ -2509,13 +2509,13 @@ UBX_PAYLOADS_GET = {
         "reserved0": U1,
         "refStationID": U2,
         "iTOW": U4,
-        "relPosN": I4,
+        "relPosN": I4, # cm
         "relPosE": I4,
         "relPosD": I4,
         "relPosLength": I4,
         "relPosHeading": [I4, SCAL5],
         "reserved1": U4,
-        "relPosHPN": [I1, SCAL1],
+        "relPosHPN": [I1, SCAL1], # mm, so total length in cm = relPosN + (relPosHPN / 10)
         "relPosHPE": [I1, SCAL1],
         "relPosHPD": [I1, SCAL1],
         "relPosHPLength": [I1, SCAL1],
