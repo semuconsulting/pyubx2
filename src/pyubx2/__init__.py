@@ -14,6 +14,7 @@ from pynmeagps.nmeahelpers import (
     latlon2dms,
     llh2ecef,
     llh2iso6709,
+    planar,
 )
 
 from pyubx2._version import __version__
