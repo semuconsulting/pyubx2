@@ -10,6 +10,7 @@ Information sourced from public domain u-blox Interface Specifications © 2013-2
 
 :author: semuadmin
 """
+
 # pylint: disable=too-many-lines, line-too-long
 
 from pyubx2.ubxtypes_core import (

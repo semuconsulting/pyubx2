@@ -8,4 +8,4 @@ Created on 2 Oct 2020
 :license: BSD 3-Clause
 """
 
-__version__ = "1.2.35"
+__version__ = "1.2.36"

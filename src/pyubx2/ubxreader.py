@@ -76,7 +76,7 @@ class UBXReader:
         :param bool parsebitfield: 1 = parse bitfields, 0 = leave as bytes (1)
         :param bool scaling: 1 = apply scale factors, 0 = do not apply (1)
         :param bool labelmsm: whether to label RTCM3 MSM NSAT and NCELL attributes (1)
-        :param int bufsize: socket recv buffer size (1024)
+        :param int bufsize: socket recv buffer size (4096)
         :param bool parsing: True = parse data, False = don't parse data (output raw only) (True)
         :param int errorhandler: error handling object or function (None)
         :raises: UBXStreamError (if mode is invalid)
@@ -156,7 +156,7 @@ class UBXReader:
                         flag = False
                     else:
                         continue
-                # if it's an NMEA message ('$G' or '$P')
+                # if it's an NMEA message (b'\x24\x..)
                 elif bytehdr in NMEA_HDR:
                     (raw_data, parsed_data) = self._parse_nmea(bytehdr)
                     # if protocol filter passes NMEA, return message,
@@ -209,7 +209,7 @@ class UBXReader:
         """
         Parse remainder of UBX message.
 
-        :param bytes hdr: UBX header (b'\xb5\x62')
+        :param bytes hdr: UBX header (b'\\xb5\\x62')
         :return: tuple of (raw_data as bytes, parsed_data as UBXMessage or None)
         :rtype: tuple
         """
@@ -242,7 +242,7 @@ class UBXReader:
         """
         Parse remainder of NMEA message (using pynmeagps library).
 
-        :param bytes hdr: NMEA header ($G or $P)
+        :param bytes hdr: NMEA header (b'\\x24\\x..')
         :return: tuple of (raw_data as bytes, parsed_data as NMEAMessage or None)
         :rtype: tuple
         """

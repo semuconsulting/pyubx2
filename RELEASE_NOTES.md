@@ -1,6 +1,15 @@
 # pyubx2 Release Notes
 
-### RELEASE CANDIDATE 1.2.35
+### RELEASE CANDIDATE 1.2.36
+
+CHANGES:
+
+1. Update min pynmeagps and pyrtcm versions.
+1. Update pyrtcm streaming test cases.
+1. Minor black formatting.
+1. Add planar helper method from pynmeagps.
+
+### RELEASE 1.2.35
 
 FIXES:
 

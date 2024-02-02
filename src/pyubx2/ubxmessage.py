@@ -7,6 +7,7 @@ Created on 26 Sep 2020
 :copyright: SEMU Consulting © 2020
 :license: BSD 3-Clause
 """
+
 # pylint: disable=invalid-name
 
 import struct

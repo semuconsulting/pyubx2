@@ -12,6 +12,7 @@ Information sourced from u-blox Interface Specifications © 2013-2021, u-blox AG
 
 :author: semuadmin
 """
+
 # pylint: disable=too-many-lines
 
 from pyubx2.ubxtypes_core import (
