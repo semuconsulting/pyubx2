@@ -26,64 +26,14 @@ from pyubx2 import (
 from pyubx2.exceptions import UBXParseError
 import pyubx2.ubxtypes_core as ubt
 
+DIRNAME = os.path.dirname(__file__)
 
 class StreamTest(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
-        dirname = os.path.dirname(__file__)
-        # self.testdump = open(os.path.join(dirname, "testdump.log"), "wb")
-        self.streamNAV = open(os.path.join(dirname, "pygpsdata-NAV.log"), "rb")
-        self.streamNAVHPPOS = open(
-            os.path.join(dirname, "pygpsdata-NAVHPPOS.log"), "rb"
-        )
-        self.streamHNR = open(os.path.join(dirname, "pygpsdata-HNR.log"), "rb")
-        self.streamRXM = open(os.path.join(dirname, "pygpsdata-RXM.log"), "rb")
-        self.streamESF = open(os.path.join(dirname, "pygpsdata-ESF.log"), "rb")
-        self.streamINF = open(os.path.join(dirname, "pygpsdata-INF.log"), "rb")
-        self.streamCFG = open(os.path.join(dirname, "pygpsdata-CFG.log"), "rb")
-        self.streamMON = open(os.path.join(dirname, "pygpsdata-MON.log"), "rb")
-        self.streamITER = open(os.path.join(dirname, "pygpsdata-ITER.log"), "rb")
-        self.streamMIX = open(os.path.join(dirname, "pygpsdata-MIXED3.log"), "rb")
-        self.streamDEBUG = open(
-            os.path.join(dirname, "ucenter-ZEDF9P-configdebug.log"), "rb"
-        )
-
-        # self.streamMIXRTCM3 = open(
-        #     os.path.join(dirname, "pygpsdata-MIXED-RTCM3.log"), "rb"
-        # )
-        self.streamMIXBADCK = open(
-            os.path.join(dirname, "pygpsdata-MIXED3BADCK.log"), "rb"
-        )
-        self.streamBADHDR = open(os.path.join(dirname, "pygpsdata-BADHDR.log"), "rb")
-        self.streamBADEOF1 = open(os.path.join(dirname, "pygpsdata-BADEOF1.log"), "rb")
-        self.streamBADEOF2 = open(os.path.join(dirname, "pygpsdata-BADEOF2.log"), "rb")
-        self.streamBADEOF3 = open(os.path.join(dirname, "pygpsdata-BADEOF3.log"), "rb")
-        self.streamBADCK2 = open(os.path.join(dirname, "pygpsdata-BADCK2.log"), "rb")
-        self.streamBADNMEAEOF = open(
-            os.path.join(dirname, "pygpsdata-BADNMEAEOF.log"), "rb"
-        )
 
     def tearDown(self):
-        # self.testdump.close()
-        self.streamNAV.close()
-        self.streamNAVHPPOS.close()
-        self.streamHNR.close()
-        self.streamRXM.close()
-        self.streamESF.close()
-        self.streamINF.close()
-        self.streamCFG.close()
-        self.streamMON.close()
-        self.streamITER.close()
-        self.streamMIX.close()
-        # self.streamMIXRTCM3.close()
-        self.streamMIXBADCK.close()
-        self.streamBADHDR.close()
-        self.streamBADEOF1.close()
-        self.streamBADEOF2.close()
-        self.streamBADEOF3.close()
-        self.streamBADCK2.close()
-        self.streamBADNMEAEOF.close()
-        self.streamDEBUG.close()
+        pass
 
     def catchio(self):
         """
@@ -136,12 +86,10 @@ class StreamTest(unittest.TestCase):
         )
 
         i = 0
-        raw = 0
-        ubxreader = UBXReader(self.streamNAV)
-        while raw is not None:
-            (raw, parsed) = ubxreader.read()
-            # print(f"{i} = {parsed}")
-            if raw is not None:
+        with open(os.path.join(DIRNAME, "pygpsdata-NAV.log"), "rb") as stream:
+            ubr = UBXReader(stream)
+            for raw, parsed in ubr:
+                # print(f"{i} = {parsed}")
                 self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
                 i += 1
 
@@ -165,12 +113,9 @@ class StreamTest(unittest.TestCase):
         )
 
         i = 0
-        raw = 0
-        ubxreader = UBXReader(self.streamHNR)
-        while raw is not None:
-            (raw, parsed) = ubxreader.read()
-            # print(f"{i} = {parsed}")
-            if raw is not None:
+        with open(os.path.join(DIRNAME, "pygpsdata-HNR.log"), "rb") as stream:
+            ubr = UBXReader(stream)
+            for raw, parsed in ubr:
                 self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
                 i += 1
 
@@ -185,12 +130,9 @@ class StreamTest(unittest.TestCase):
         )
 
         i = 0
-        raw = 0
-        ubxreader = UBXReader(self.streamNAVHPPOS)
-        while raw is not None:
-            (raw, parsed) = ubxreader.read()
-            # print(f"{i} = {parsed}")
-            if raw is not None:
+        with open(os.path.join(DIRNAME, "pygpsdata-NAVHPPOS.log"), "rb") as stream:
+            ubr = UBXReader(stream)
+            for raw, parsed in ubr:
                 # print(parsed)
                 self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
                 i += 1
@@ -206,12 +148,10 @@ class StreamTest(unittest.TestCase):
             "<UBX(RXM-SPARTN-KEY, version=1, numKeys=2, reserved0=0, encryptAlgorithm_01=0, keyLengthBytes_01=2, validFromWno_01=43, validFromTow_01=231234000, encryptAlgorithm_02=0, keyLengthBytes_02=3, validFromWno_02=43, validFromTow_02=242016000, key_01=12, key_02=0, key_03=41, key_04=9, key_05=0)>",
         )
         i = 0
-        raw = 0
-        ubxreader = UBXReader(self.streamRXM)
-        while raw is not None:
-            (raw, parsed) = ubxreader.read()
-            # print(f"{i} = {parsed}")
-            if raw is not None:
+        with open(os.path.join(DIRNAME, "pygpsdata-RXM.log"), "rb") as stream:
+            ubr = UBXReader(stream)
+            for raw, parsed in ubr:
+                # print(f"{i} = {parsed}")
                 # print(f'{parsed}",')
                 self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
                 i += 1
@@ -242,12 +182,10 @@ class StreamTest(unittest.TestCase):
         )
 
         i = 0
-        raw = 0
-        ubxreader = UBXReader(self.streamESF)
-        while raw is not None:
-            (raw, parsed) = ubxreader.read()
-            # print(f"{i} = {parsed}")
-            if raw is not None:
+        with open(os.path.join(DIRNAME, "pygpsdata-ESF.log"), "rb") as stream:
+            ubr = UBXReader(stream)
+            for raw, parsed in ubr:
+                # print(f"{i} = {parsed}")
                 self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
                 i += 1
 
@@ -270,12 +208,10 @@ class StreamTest(unittest.TestCase):
         )
 
         i = 0
-        raw = 0
-        ubxreader = UBXReader(self.streamINF)
-        while raw is not None:
-            (raw, parsed) = ubxreader.read()
-            # print(f"{i} = {parsed}")
-            if raw is not None:
+        with open(os.path.join(DIRNAME, "pygpsdata-INF.log"), "rb") as stream:
+            ubr = UBXReader(stream)
+            for raw, parsed in ubr:
+                # print(f"{i} = {parsed}")
                 self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
                 i += 1
 
@@ -297,11 +233,9 @@ class StreamTest(unittest.TestCase):
         )
 
         i = 0
-        raw = 0
-        ubxreader = UBXReader(self.streamMON)
-        while raw is not None:
-            (raw, parsed) = ubxreader.read()
-            if raw is not None:
+        with open(os.path.join(DIRNAME, "pygpsdata-MON.log"), "rb") as stream:
+            ubr = UBXReader(stream)
+            for raw, parsed in ubr:
                 # print(f'"{parsed}",')
                 self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
                 i += 1
@@ -334,17 +268,14 @@ class StreamTest(unittest.TestCase):
         )
 
         i = 0
-        raw = 0
-        ubxreader = UBXReader(self.streamCFG)
-        while raw is not None:
-            (raw, parsed) = ubxreader.read()
-            if raw is not None:
+        with open(os.path.join(DIRNAME, "pygpsdata-CFG.log"), "rb") as stream:
+            ubr = UBXReader(stream)
+            for raw, parsed in ubr:
+                # print(f'"{parsed}",')
                 self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
                 i += 1
 
     def testMIXED(self):  # TODO test mixed UBX/NMEA stream with no protfilter
-        dirname = os.path.dirname(__file__)
-        stream = open(os.path.join(dirname, "pygpsdata-MIXED3.log"), "rb")
         EXPECTED_RESULTS = (
             "<UBX(NAV-PVT, iTOW=08:02:47, year=2022, month=1, day=18, hour=8, min=2, second=47, validDate=1, validTime=1, fullyResolved=1, validMag=0, tAcc=37, nano=-175377, fixType=3, gnssFixOk=1, difSoln=0, psmState=0, headVehValid=0, carrSoln=0, confirmedAvai=1, confirmedDate=1, confirmedTime=1, numSV=7, lon=-2.2402308, lat=53.4507167, height=85162, hMSL=36678, hAcc=8927, vAcc=7261, velN=-109, velE=-4, velD=7, gSpeed=109, headMot=0.0, sAcc=872, headAcc=103.82556, pDOP=2.44, invalidLlh=0, lastCorrectionAge=0, reserved0=793711598, headVeh=0.0, magDec=0.0, magAcc=0.0)>",
             "<NMEA(GPGGA, time=08:02:47, lat=53.4507166667, NS=N, lon=-2.2402308333, EW=W, quality=1, numSV=7, HDOP=1.63, alt=36.7, altUnit=M, sep=48.5, sepUnit=M, diffAge=, diffStation=)>",
@@ -355,36 +286,26 @@ class StreamTest(unittest.TestCase):
             "<UBX(NAV-PVT, iTOW=08:02:49, year=2022, month=1, day=18, hour=8, min=2, second=49, validDate=1, validTime=1, fullyResolved=1, validMag=0, tAcc=38, nano=-175349, fixType=3, gnssFixOk=1, difSoln=0, psmState=0, headVehValid=0, carrSoln=0, confirmedAvai=1, confirmedDate=1, confirmedTime=1, numSV=7, lon=-2.2402319, lat=53.4507207, height=85325, hMSL=36841, hAcc=8930, vAcc=7363, velN=110, velE=-25, velD=1, gSpeed=113, headMot=0.0, sAcc=855, headAcc=103.8999, pDOP=2.44, invalidLlh=0, lastCorrectionAge=0, reserved0=793711598, headVeh=0.0, magDec=0.0, magAcc=0.0)>",
         )
         i = 0
-        raw = 0
-        ubxreader = UBXReader(stream)
-        while raw is not None:
-            (raw, parsed) = ubxreader.read()
-            if raw is not None:
+        with open(os.path.join(DIRNAME, "pygpsdata-MIXED3.log"), "rb") as stream:
+            ubr = UBXReader(stream)
+            for raw, parsed in ubr:
                 self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
                 i += 1
-        stream.close()
 
     def testMIXEDUBXFILT(self):  # TODO test mixed UBX/NMEA stream with UBX protfilter
-        dirname = os.path.dirname(__file__)
-        stream = open(os.path.join(dirname, "pygpsdata-MIXED3.log"), "rb")
         EXPECTED_RESULTS = (
             "<UBX(NAV-PVT, iTOW=08:02:47, year=2022, month=1, day=18, hour=8, min=2, second=47, validDate=1, validTime=1, fullyResolved=1, validMag=0, tAcc=37, nano=-175377, fixType=3, gnssFixOk=1, difSoln=0, psmState=0, headVehValid=0, carrSoln=0, confirmedAvai=1, confirmedDate=1, confirmedTime=1, numSV=7, lon=-2.2402308, lat=53.4507167, height=85162, hMSL=36678, hAcc=8927, vAcc=7261, velN=-109, velE=-4, velD=7, gSpeed=109, headMot=0.0, sAcc=872, headAcc=103.82556, pDOP=2.44, invalidLlh=0, lastCorrectionAge=0, reserved0=793711598, headVeh=0.0, magDec=0.0, magAcc=0.0)>",
             "<UBX(NAV-PVT, iTOW=08:02:48, year=2022, month=1, day=18, hour=8, min=2, second=48, validDate=1, validTime=1, fullyResolved=1, validMag=0, tAcc=37, nano=-175363, fixType=3, gnssFixOk=1, difSoln=0, psmState=0, headVehValid=0, carrSoln=0, confirmedAvai=1, confirmedDate=1, confirmedTime=1, numSV=7, lon=-2.2402314, lat=53.4507186, height=85266, hMSL=36782, hAcc=8931, vAcc=7312, velN=72, velE=-12, velD=10, gSpeed=73, headMot=0.0, sAcc=861, headAcc=103.86284, pDOP=2.44, invalidLlh=0, lastCorrectionAge=0, reserved0=793711598, headVeh=0.0, magDec=0.0, magAcc=0.0)>",
             "<UBX(NAV-PVT, iTOW=08:02:49, year=2022, month=1, day=18, hour=8, min=2, second=49, validDate=1, validTime=1, fullyResolved=1, validMag=0, tAcc=38, nano=-175349, fixType=3, gnssFixOk=1, difSoln=0, psmState=0, headVehValid=0, carrSoln=0, confirmedAvai=1, confirmedDate=1, confirmedTime=1, numSV=7, lon=-2.2402319, lat=53.4507207, height=85325, hMSL=36841, hAcc=8930, vAcc=7363, velN=110, velE=-25, velD=1, gSpeed=113, headMot=0.0, sAcc=855, headAcc=103.8999, pDOP=2.44, invalidLlh=0, lastCorrectionAge=0, reserved0=793711598, headVeh=0.0, magDec=0.0, magAcc=0.0)>",
         )
         i = 0
-        raw = 0
-        ubxreader = UBXReader(stream, protfilter=UBX_PROTOCOL)
-        while raw is not None:
-            (raw, parsed) = ubxreader.read()
-            if raw is not None:
+        with open(os.path.join(DIRNAME, "pygpsdata-MIXED3.log"), "rb") as stream:
+            ubr = UBXReader(stream, protfilter=UBX_PROTOCOL)
+            for raw, parsed in ubr:
                 self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
                 i += 1
-        stream.close()
 
     def testMIXEDNMEAFILT(self):  # TODO test mixed UBX/NMEA stream with NMEA protfilter
-        dirname = os.path.dirname(__file__)
-        stream = open(os.path.join(dirname, "pygpsdata-MIXED3.log"), "rb")
         EXPECTED_RESULTS = (
             "<NMEA(GPGGA, time=08:02:47, lat=53.4507166667, NS=N, lon=-2.2402308333, EW=W, quality=1, numSV=7, HDOP=1.63, alt=36.7, altUnit=M, sep=48.5, sepUnit=M, diffAge=, diffStation=)>",
             "<NMEA(GPGSA, opMode=A, navMode=3, svid_01=2, svid_02=13, svid_03=20, svid_04=7, svid_05=5, svid_06=30, svid_07=9, svid_08=, svid_09=, svid_10=, svid_11=, svid_12=, PDOP=2.44, HDOP=1.63, VDOP=1.82)>",
@@ -392,14 +313,11 @@ class StreamTest(unittest.TestCase):
             "<NMEA(GPGSA, opMode=A, navMode=3, svid_01=2, svid_02=13, svid_03=20, svid_04=7, svid_05=5, svid_06=30, svid_07=9, svid_08=, svid_09=, svid_10=, svid_11=, svid_12=, PDOP=2.44, HDOP=1.63, VDOP=1.82)>",
         )
         i = 0
-        raw = 0
-        ubxreader = UBXReader(stream, protfilter=NMEA_PROTOCOL)
-        while raw is not None:
-            (raw, parsed) = ubxreader.read()
-            if raw is not None:
+        with open(os.path.join(DIRNAME, "pygpsdata-MIXED3.log"), "rb") as stream:
+            ubr = UBXReader(stream, protfilter=NMEA_PROTOCOL)
+            for raw, parsed in ubr:
                 self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
                 i += 1
-        stream.close()
 
     def testMIXEDRTCM(
         self,
@@ -416,20 +334,16 @@ class StreamTest(unittest.TestCase):
             "<UBX(NAV-PVT, iTOW=08:41:59, year=2022, month=2, day=8, hour=8, min=41, second=59, validDate=1, validTime=1, fullyResolved=1, validMag=0, tAcc=21, nano=360400, fixType=5, gnssFixOk=1, difSoln=1, psmState=0, headVehValid=0, carrSoln=0, confirmedAvai=1, confirmedDate=1, confirmedTime=1, numSV=31, lon=34.773819, lat=32.0658325, height=72134, hMSL=54642, hAcc=685, vAcc=484, velN=0, velE=0, velD=0, gSpeed=0, headMot=290.13822, sAcc=10, headAcc=20.15693, pDOP=99.99, invalidLlh=0, lastCorrectionAge=0, reserved0=860200482, headVeh=0.0, magDec=0.0, magAcc=0.0)>",
             "<NMEA(GNRMC, time=08:41:59, status=A, lat=32.0658325, NS=N, lon=34.773819, EW=E, spd=0.0, cog=, date=2022-02-08, mv=, mvEW=, posMode=D, navStatus=V)>",
         )
-        dirname = os.path.dirname(__file__)
-        stream = open(os.path.join(dirname, "pygpsdata-MIXED-RTCM3.log"), "rb")
         i = 0
-        raw = 0
-        ubr = UBXReader(stream, protfilter=7, labelmsm=0, quitonerror=ubt.ERR_RAISE)
-        # stdout_saved = sys.stdout
-        # sys.stdout = open("output.txt", "w")
-        for raw, parsed in ubr:
-            if raw is not None:
+        with open(os.path.join(DIRNAME, "pygpsdata-MIXED-RTCM3.log"), "rb") as stream:
+            ubr = UBXReader(stream, protfilter=7, labelmsm=0, quitonerror=ubt.ERR_RAISE)
+            # stdout_saved = sys.stdout
+            # sys.stdout = open("output.txt", "w")
+            for raw, parsed in ubr:
                 # print(f'"{parsed}",')
                 self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
                 i += 1
-        stream.close()
-        # sys.stdout = stdout_saved
+            # sys.stdout = stdout_saved
 
     def testMIXEDRTCM2(
         self,
@@ -439,32 +353,24 @@ class StreamTest(unittest.TestCase):
             "<UBX(NAV-PVT, iTOW=08:41:59, year=2022, month=2, day=8, hour=8, min=41, second=59, validDate=1, validTime=1, fullyResolved=1, validMag=0, tAcc=21, nano=360400, fixType=5, gnssFixOk=1, difSoln=1, psmState=0, headVehValid=0, carrSoln=0, confirmedAvai=1, confirmedDate=1, confirmedTime=1, numSV=31, lon=34.773819, lat=32.0658325, height=72134, hMSL=54642, hAcc=685, vAcc=484, velN=0, velE=0, velD=0, gSpeed=0, headMot=290.13822, sAcc=10, headAcc=20.15693, pDOP=99.99, invalidLlh=0, lastCorrectionAge=0, reserved0=860200482, headVeh=0.0, magDec=0.0, magAcc=0.0)>",
             "<NMEA(GNRMC, time=08:41:59, status=A, lat=32.0658325, NS=N, lon=34.773819, EW=E, spd=0.0, cog=, date=2022-02-08, mv=, mvEW=, posMode=D, navStatus=V)>",
         )
-        dirname = os.path.dirname(__file__)
-        stream = open(os.path.join(dirname, "pygpsdata-MIXED-RTCM3.log"), "rb")
         i = 0
-        raw = 0
-        ubr = UBXReader(stream, protfilter=3, quitonerror=ubt.ERR_RAISE)
-        for raw, parsed in ubr:
-            if raw is not None:
+        with open(os.path.join(DIRNAME, "pygpsdata-MIXED-RTCM3.log"), "rb") as stream:
+            ubr = UBXReader(stream, protfilter=3, quitonerror=ubt.ERR_RAISE)
+            for raw, parsed in ubr:
                 self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
                 i += 1
-        stream.close()
 
     def testMIXEDRTCMBADCRC(
         self,
     ):  # test mixed stream of NMEA, UBX & RTCM messages with invalid RTCM CRC
         EXPECTED_ERROR = "RTCM3 message invalid - failed CRC: (.*)"
-        dirname = os.path.dirname(__file__)
-        stream = open(os.path.join(dirname, "pygpsdata-MIXED-RTCM3BADCRC.log"), "rb")
         i = 0
-        raw = 0
-        ubr = UBXReader(stream, protfilter=7, quitonerror=ubt.ERR_RAISE)
-        with self.assertRaisesRegex(UBXParseError, EXPECTED_ERROR):
-            for raw, parsed in ubr:
-                if raw is not None:
+        with open(os.path.join(DIRNAME, "pygpsdata-MIXED-RTCM3BADCRC.log"), "rb") as stream:
+            ubr = UBXReader(stream, protfilter=7, quitonerror=ubt.ERR_RAISE)
+            with self.assertRaisesRegex(UBXParseError, EXPECTED_ERROR):
+                for raw, parsed in ubr:
                     # print(parsed)
                     i += 1
-        stream.close()
 
     def testIterator(
         self,
@@ -478,10 +384,11 @@ class StreamTest(unittest.TestCase):
             "<UBX(MON-HW2, ofsI=4, magI=110, ofsQ=5, magQ=112, cfgSource=111, reserved0=1800, lowLevCfg=4294967295, reserved1=18446744073709551615, postStatus=0, reserved2=0)>",
         )
         i = 0
-        ubxreader = UBXReader(self.streamITER, parsebitfield=False)
-        for _, parsed in ubxreader:
-            self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
-            i += 1
+        with open(os.path.join(DIRNAME, "pygpsdata-ITER.log"), "rb") as stream:
+            ubr = UBXReader(stream, parsebitfield=False)
+            for _, parsed in ubr:
+                self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
+                i += 1
 
     def testNMEAITERATE(self):  # UBXReader helper method
         EXPECTED_RESULTS = (
@@ -493,36 +400,33 @@ class StreamTest(unittest.TestCase):
             "<UBX(MON-HW2, ofsI=4, magI=110, ofsQ=5, magQ=112, cfgSource=111, reserved0=1800, lowLevCfg=4294967295, reserved1=18446744073709551615, postStatus=0, reserved2=0)>",
         )
         i = 0
-        ubr = UBXReader(self.streamITER, protfilter=3, parsebitfield=False)
-        for _, parsed in ubr:
-            self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
-            i += 1
+        with open(os.path.join(DIRNAME, "pygpsdata-ITER.log"), "rb") as stream:
+            ubr = UBXReader(stream, protfilter=3, parsebitfield=False)
+            for _, parsed in ubr:
+                self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
+                i += 1
 
     def testUBXITERATE_ERR1(
         self,
     ):  # UBXReader helper method with bad checksum
-        dirname = os.path.dirname(__file__)
-        stream = open(os.path.join(dirname, "pygpsdata-MIXED3BADCK.log"), "rb")
         EXPECTED_ERROR = "Message checksum b's\\x8e' invalid - should be b's\\x8d'"
-        with self.assertRaises(UBXParseError) as context:
-            ubr = UBXReader(
-                stream,
-                protfilter=3,
-                validate=VALCKSUM,
-                msgmode=0,
-                parsebitfield=True,
-                quitonerror=ERR_RAISE,
-            )
-            for raw, parsed in ubr:
-                pass
-        self.assertTrue(EXPECTED_ERROR in str(context.exception))
-        stream.close()
+        with open(os.path.join(DIRNAME, "pygpsdata-MIXED3BADCK.log"), "rb") as stream:
+            with self.assertRaises(UBXParseError) as context:
+                ubr = UBXReader(
+                    stream,
+                    protfilter=3,
+                    validate=VALCKSUM,
+                    msgmode=0,
+                    parsebitfield=True,
+                    quitonerror=ERR_RAISE,
+                )
+                for raw, parsed in ubr:
+                    pass
+            self.assertTrue(EXPECTED_ERROR in str(context.exception))
 
     def testUBXITERATE_ERR2(
         self,
     ):  # UBXReader helper method ignoring bad checksum and passing error handler
-        dirname = os.path.dirname(__file__)
-        stream = open(os.path.join(dirname, "pygpsdata-MIXED3BADCK.log"), "rb")
         EXPECTED_RESULTS = [
             "<UBX(NAV-PVT, iTOW=08:02:47, year=2022, month=1, day=18, hour=8, min=2, second=47, validDate=1, validTime=1, fullyResolved=1, validMag=0, tAcc=37, nano=-175377, fixType=3, gnssFixOk=1, difSoln=0, psmState=0, headVehValid=0, carrSoln=0, confirmedAvai=1, confirmedDate=1, confirmedTime=1, numSV=7, lon=-2.2402308, lat=53.4507167, height=85162, hMSL=36678, hAcc=8927, vAcc=7261, velN=-109, velE=-4, velD=7, gSpeed=109, headMot=0.0, sAcc=872, headAcc=103.82556, pDOP=2.44, invalidLlh=0, lastCorrectionAge=0, reserved0=793711598, headVeh=0.0, magDec=0.0, magAcc=0.0)>",
             "<NMEA(GPGGA, time=08:02:47, lat=53.4507166667, NS=N, lon=-2.2402308333, EW=W, quality=1, numSV=7, HDOP=1.63, alt=36.7, altUnit=M, sep=48.5, sepUnit=M, diffAge=, diffStation=)>",
@@ -531,18 +435,19 @@ class StreamTest(unittest.TestCase):
             "<NMEA(GPGGA, time=08:02:48, lat=53.4507186667, NS=N, lon=-2.2402315, EW=W, quality=1, numSV=7, HDOP=1.63, alt=36.8, altUnit=M, sep=48.5, sepUnit=M, diffAge=, diffStation=)>",
         ]
         self.catchio()
-        ubr = UBXReader(
-            stream,
-            protfilter=3,
-            validate=VALCKSUM,
-            msgmode=0,
-            parsebitfield=True,
-            quitonerror=ERR_LOG,
-            errorhandler=lambda e: print(f"I ignored the following error: {e}"),
-        )
-        for _, parsed in ubr:
-            if not isinstance(parsed, str):
-                print(parsed)
+        with open(os.path.join(DIRNAME, "pygpsdata-MIXED3BADCK.log"), "rb") as stream:
+            ubr = UBXReader(
+                stream,
+                protfilter=3,
+                validate=VALCKSUM,
+                msgmode=0,
+                parsebitfield=True,
+                quitonerror=ERR_LOG,
+                errorhandler=lambda e: print(f"I ignored the following error: {e}"),
+            )
+            for _, parsed in ubr:
+                if not isinstance(parsed, str):
+                    print(parsed)
         output = self.restoreio().split("\n")
         # print(output)
         self.assertEqual(EXPECTED_RESULTS, output)
@@ -550,99 +455,103 @@ class StreamTest(unittest.TestCase):
     def testUBXITERATE_ERR3(
         self,
     ):  # UBXReader helper method ignoring bad checksum and continuing
-        dirname = os.path.dirname(__file__)
-        stream = open(os.path.join(dirname, "pygpsdata-MIXED3BADCK.log"), "rb")
         EXPECTED_RESULT = "<NMEA(GPGGA, time=08:02:48, lat=53.4507186667, NS=N, lon=-2.2402315, EW=W, quality=1, numSV=7, HDOP=1.63, alt=36.8, altUnit=M, sep=48.5, sepUnit=M, diffAge=, diffStation=)>"
-        ubr = UBXReader(
-            stream,
-            validate=VALCKSUM,
-            msgmode=0,
-            parsebitfield=True,
-            quitonerror=ERR_LOG,
-        )
-        res = ""
-        for raw, parsed in ubr:
-            res = str(parsed)
-        self.assertEqual(EXPECTED_RESULT, res)
-        stream.close()
+        with open(os.path.join(DIRNAME, "pygpsdata-MIXED3BADCK.log"), "rb") as stream:
+            ubr = UBXReader(
+                stream,
+                validate=VALCKSUM,
+                msgmode=0,
+                parsebitfield=True,
+                quitonerror=ERR_LOG,
+            )
+            res = ""
+            for raw, parsed in ubr:
+                res = str(parsed)
+            self.assertEqual(EXPECTED_RESULT, res)
+
 
     def testUBXITERATE_ERR4(
         self,
     ):  # UBXReader helper method ignoring bad checksum and continuing
-        dirname = os.path.dirname(__file__)
-        stream = open(os.path.join(dirname, "pygpsdata-MIXED3BADCK.log"), "rb")
         EXPECTED_RESULT = "<NMEA(GPGGA, time=08:02:48, lat=53.4507186667, NS=N, lon=-2.2402315, EW=W, quality=1, numSV=7, HDOP=1.63, alt=36.8, altUnit=M, sep=48.5, sepUnit=M, diffAge=, diffStation=)>"
-        ubr = UBXReader(
-            stream,
-            validate=VALCKSUM,
-            msgmode=0,
-            parsebitfield=True,
-            quitonerror=ERR_LOG,
-        )
-        res = ""
-        for raw, parsed in ubr:
-            res = str(parsed)
-        self.assertEqual(EXPECTED_RESULT, res)
-        stream.close()
+        with open(os.path.join(DIRNAME, "pygpsdata-MIXED3BADCK.log"), "rb") as stream:
+            ubr = UBXReader(
+                stream,
+                validate=VALCKSUM,
+                msgmode=0,
+                parsebitfield=True,
+                quitonerror=ERR_LOG,
+            )
+            res = ""
+            for raw, parsed in ubr:
+                res = str(parsed)
+            self.assertEqual(EXPECTED_RESULT, res)
 
     def testBADHDR_FAIL(self):  # invalid header in data with quitonerror = 2
         EXPECTED_ERROR = "Unknown protocol b'\\xb5w'"
         with self.assertRaises(UBXParseError) as context:
             i = 0
-            ubxreader = UBXReader(self.streamBADHDR, quitonerror=ERR_RAISE)
-            for _, _ in ubxreader:
-                i += 1
+            with open(os.path.join(DIRNAME, "pygpsdata-BADHDR.log"), "rb") as stream:
+                ubr = UBXReader(stream, quitonerror=ERR_RAISE)
+                for _, _ in ubr:
+                    i += 1
         self.assertTrue(EXPECTED_ERROR in str(context.exception))
 
     def testBADHDR_LOG(self):  # invalid header in data with quitonerror = 1
         i = 0
-        ubxreader = UBXReader(self.streamBADHDR, quitonerror=ERR_LOG)
-        for raw, parsed in ubxreader:
-            i += 1
-        self.assertEqual(parsed, "<UNKNOWN PROTOCOL(header=b'\\xb5w')>")
+        with open(os.path.join(DIRNAME, "pygpsdata-BADHDR.log"), "rb") as stream:
+            ubr = UBXReader(stream, quitonerror=ERR_LOG)
+            for raw, parsed in ubr:
+                i += 1
+            self.assertEqual(parsed, "<UNKNOWN PROTOCOL(header=b'\\xb5w')>")
 
     def testBADHDR_IGNORE(self):  # invalid header in data with quitonerror = 0
         i = 0
-        ubxreader = UBXReader(self.streamBADHDR, quitonerror=ERR_IGNORE)
-        for raw, parsed in ubxreader:
-            i += 1
-        self.assertEqual(i, 2)
+        with open(os.path.join(DIRNAME, "pygpsdata-BADHDR.log"), "rb") as stream:
+            ubr = UBXReader(stream, quitonerror=ERR_IGNORE)
+            for raw, parsed in ubr:
+                i += 1
+            self.assertEqual(i, 2)
 
     def testBADEOF1(self):  # premature EOF after header
         i = 0
         raw = 0
-        ubxreader = UBXReader(self.streamBADEOF1)
-        while raw is not None:
-            (raw, _) = ubxreader.read()
-            i += 1
-        self.assertEqual(i, 4)
+        with open(os.path.join(DIRNAME, "pygpsdata-BADEOF1.log"), "rb") as stream:
+            ubr = UBXReader(stream)
+            while raw is not None:
+                (raw, _) = ubr.read()
+                i += 1
+            self.assertEqual(i, 4)
 
     def testBADEOF2(self):  # premature EOF after message class and length
         i = 0
         raw = 0
-        ubxreader = UBXReader(self.streamBADEOF2)
-        while raw is not None:
-            (raw, _) = ubxreader.read()
-            i += 1
-        self.assertEqual(i, 3)
+        with open(os.path.join(DIRNAME, "pygpsdata-BADEOF2.log"), "rb") as stream:
+            ubr = UBXReader(stream)
+            while raw is not None:
+                (raw, _) = ubr.read()
+                i += 1
+            self.assertEqual(i, 3)
 
     def testBADEOF3(self):  # premature EOF after first byte of header
         i = 0
         raw = 0
-        ubxreader = UBXReader(self.streamBADEOF3)
-        while raw is not None:
-            (raw, _) = ubxreader.read()
-            i += 1
-        self.assertEqual(i, 3)
+        with open(os.path.join(DIRNAME, "pygpsdata-BADEOF3.log"), "rb") as stream:
+            ubr = UBXReader(stream)
+            while raw is not None:
+                (raw, _) = ubr.read()
+                i += 1
+            self.assertEqual(i, 3)
 
     def testBADNMEAEOF(self):  # premature EOF of NMEA stream
         i = 0
         raw = 0
-        ubxreader = UBXReader(self.streamBADNMEAEOF)
-        while raw is not None:
-            (raw, parsed) = ubxreader.read()
-            i += 1
-        self.assertEqual(i, 6)
+        with open(os.path.join(DIRNAME, "pygpsdata-BADNMEAEOF.log"), "rb") as stream:
+            ubr = UBXReader(stream)
+            while raw is not None:
+                (raw, parsed) = ubr.read()
+                i += 1
+            self.assertEqual(i, 6)
 
     def testDEBUG(
         self,
@@ -653,11 +562,10 @@ class StreamTest(unittest.TestCase):
         ]
         i = 0
         raw = 0
-        ubxreader = UBXReader(self.streamDEBUG)
-        while raw is not None:
-            i += 1
-            (raw, parsed) = ubxreader.read()
-            if raw is not None:
+        with open(os.path.join(DIRNAME, "ucenter-ZEDF9P-configdebug.log"), "rb") as stream:
+            ubr = UBXReader(stream)
+            for raw, parsed in ubr:
+                i += 1
                 res = str(parsed)
                 if i == 5:
                     # print(res)
@@ -665,7 +573,7 @@ class StreamTest(unittest.TestCase):
                 if i == 188:
                     # print(res.replace("\\", "\\\\"))
                     self.assertEqual(res, EXPECTED_RESULTS[1])
-        self.assertEqual(i, 189)
+            self.assertEqual(i, 188)
 
 
 if __name__ == "__main__":

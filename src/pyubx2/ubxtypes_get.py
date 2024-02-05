@@ -2149,20 +2149,16 @@ UBX_PAYLOADS_GET = {
             {"state": U1, "reserved1": U1},
         ),
     },
-    # NB: special handling for NAV-HPPOS* message types;
-    # private standard and high precision attributes are
-    # combined into a single public attribute in
-    # accordance with interface specification
     "NAV-HPPOSECEF": {
         "version": U1,
         "reserved0": U3,
         "iTOW": U4,
-        "_ecefX": I4,  # cm
-        "_ecefY": I4,  # cm
-        "_ecefZ": I4,  # cm
-        "_ecefXHp": [I1, SCAL1],  # mm
-        "_ecefYHp": [I1, SCAL1],  # mm
-        "_ecefZHp": [I1, SCAL1],  # mm
+        "ecefX": I4,  # cm
+        "ecefY": I4,  # cm
+        "ecefZ": I4,  # cm
+        "_HPecefX": [I1, SCAL2],  # added to ecefX
+        "_HPecefY": [I1, SCAL2],  # added to ecefY
+        "_HPecefZ": [I1, SCAL2],  # added to ecefZ
         "flags": (
             X1,
             {
@@ -2181,14 +2177,14 @@ UBX_PAYLOADS_GET = {
             },
         ),
         "iTOW": U4,
-        "_lon": [I4, SCAL7],
-        "_lat": [I4, SCAL7],
-        "_height": I4,  # mm
-        "_hMSL": I4,  # mm
-        "_lonHp": [I1, SCAL9],
-        "_latHp": [I1, SCAL9],
-        "_heightHp": [I1, SCAL1],  # mm
-        "_hMSLHp": [I1, SCAL1],  # mm
+        "lon": [I4, SCAL7],
+        "lat": [I4, SCAL7],
+        "height": I4,  # mm
+        "hMSL": I4,  # mm
+        "_HPlon": [I1, SCAL9],  # added to lon
+        "_HPlat": [I1, SCAL9],  # added to lat
+        "_HPheight": [I1, SCAL1],  # added to height
+        "_HPhMSL": [I1, SCAL1],  # added to hMSL
         "hAcc": [U4, SCAL1],
         "vAcc": [U4, SCAL1],
     },
@@ -2483,12 +2479,9 @@ UBX_PAYLOADS_GET = {
         "relPosN": I4,  # cm
         "relPosE": I4,
         "relPosD": I4,
-        "relPosHPN": [
-            I1,
-            SCAL1,
-        ],  # mm, so total length in cm = relPosN + (relPosHPN / 10)
-        "relPosHPE": [I1, SCAL1],
-        "relPosHPD": [I1, SCAL1],
+        "_HPrelPosN": [I1, SCAL2],  # added to relPosN
+        "_HPrelPosE": [I1, SCAL2],  # added to relPosE
+        "_HPrelPosD": [I1, SCAL2],  # added to relPosD
         "reserved2": U1,
         "accN": [U4, SCAL1],
         "accE": [U4, SCAL1],
@@ -2519,13 +2512,10 @@ UBX_PAYLOADS_GET = {
         "relPosLength": I4,
         "relPosHeading": [I4, SCAL5],
         "reserved1": U4,
-        "relPosHPN": [
-            I1,
-            SCAL1,
-        ],  # mm, so total length in cm = relPosN + (relPosHPN / 10)
-        "relPosHPE": [I1, SCAL1],
-        "relPosHPD": [I1, SCAL1],
-        "relPosHPLength": [I1, SCAL1],
+        "_HPrelPosN": [I1, SCAL2],  # added to relPosN
+        "_HPrelPosE": [I1, SCAL2],  # added to relPosE
+        "_HPrelPosD": [I1, SCAL2],  # added to relPosD
+        "_HPrelPosLength": [I1, SCAL2],  # added to relPosLength
         "accN": [U4, SCAL1],
         "accE": [U4, SCAL1],
         "accD": [U4, SCAL1],
