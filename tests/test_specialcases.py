@@ -165,8 +165,8 @@ class SpecialTest(unittest.TestCase):
         self.assertEqual(str(res), EXPECTED_RESULT)
 
     def testFill_RELPOSNED_v0(self):  # test NAV-RELPOSNED V0 constructor
-        EXPECTED_RESULT = "<UBX(NAV-RELPOSNED, version=0, reserved1=0, refStationID=0, iTOW=23:59:42, relPosN=1, relPosE=2, relPosD=3, relPosHPN=0, relPosHPE=0, relPosHPD=0, reserved2=0, accN=0, accE=0, accD=0, gnssFixOK=0, diffSoln=0, relPosValid=0, carrSoln=0, isMoving=0, refPosMiss=0, refObsMiss=0, relPosHeadingValid=0, relPosNormalized=0)>"
-        EXPECTED_RESULT2 = "<UBX(NAV-RELPOSNED, version=0, reserved1=0, refStationID=0, iTOW=23:59:42, relPosN=1, relPosE=2, relPosD=3, relPosHPN=0.0, relPosHPE=0.0, relPosHPD=0.0, reserved2=0, accN=0.0, accE=0.0, accD=0.0, gnssFixOK=0, diffSoln=0, relPosValid=0, carrSoln=0, isMoving=0, refPosMiss=0, refObsMiss=0, relPosHeadingValid=0, relPosNormalized=0)>"
+        EXPECTED_RESULT = "<UBX(NAV-RELPOSNED, version=0, reserved1=0, refStationID=0, iTOW=23:59:42, relPosN=1, relPosE=2, relPosD=3, reserved2=0, accN=0, accE=0, accD=0, gnssFixOK=0, diffSoln=0, relPosValid=0, carrSoln=0, isMoving=0, refPosMiss=0, refObsMiss=0, relPosHeadingValid=0, relPosNormalized=0)>"
+        EXPECTED_RESULT2 = "<UBX(NAV-RELPOSNED, version=0, reserved1=0, refStationID=0, iTOW=23:59:42, relPosN=1, relPosE=2, relPosD=3, reserved2=0, accN=0.0, accE=0.0, accD=0.0, gnssFixOK=0, diffSoln=0, relPosValid=0, carrSoln=0, isMoving=0, refPosMiss=0, refObsMiss=0, relPosHeadingValid=0, relPosNormalized=0)>"
         res = UBXMessage(
             "NAV",
             "NAV-RELPOSNED",
@@ -181,8 +181,8 @@ class SpecialTest(unittest.TestCase):
         # self.assertEqual(str(res2), EXPECTED_RESULT)
 
     def testFill_RELPOSNED_v1(self):  # test NAV-RELPOSNED V1 constructor
-        EXPECTED_RESULT = "<UBX(NAV-RELPOSNED, version=1, reserved0=0, refStationID=0, iTOW=23:59:42, relPosN=1, relPosE=2, relPosD=3, relPosLength=0, relPosHeading=0, reserved1=0, relPosHPN=0, relPosHPE=0, relPosHPD=0, relPosHPLength=0, accN=0, accE=0, accD=0, accLength=0, accHeading=0, reserved2=0, gnssFixOK=0, diffSoln=0, relPosValid=0, carrSoln=0, isMoving=0, refPosMiss=0, refObsMiss=0, relPosHeadingValid=0, relPosNormalized=0)>"
-        EXPECTED_RESULT2 = "<UBX(NAV-RELPOSNED, version=1, reserved0=0, refStationID=0, iTOW=23:59:42, relPosN=1, relPosE=2, relPosD=3, relPosLength=0, relPosHeading=0.0, reserved1=0, relPosHPN=0.0, relPosHPE=0.0, relPosHPD=0.0, relPosHPLength=0.0, accN=0.0, accE=0.0, accD=0.0, accLength=0.0, accHeading=0.0, reserved2=0, gnssFixOK=0, diffSoln=0, relPosValid=0, carrSoln=0, isMoving=0, refPosMiss=0, refObsMiss=0, relPosHeadingValid=0, relPosNormalized=0)>"
+        EXPECTED_RESULT = "<UBX(NAV-RELPOSNED, version=1, reserved0=0, refStationID=0, iTOW=23:59:42, relPosN=1, relPosE=2, relPosD=3, relPosLength=0, relPosHeading=0, reserved1=0, accN=0, accE=0, accD=0, accLength=0, accHeading=0, reserved2=0, gnssFixOK=0, diffSoln=0, relPosValid=0, carrSoln=0, isMoving=0, refPosMiss=0, refObsMiss=0, relPosHeadingValid=0, relPosNormalized=0)>"
+        EXPECTED_RESULT2 = "<UBX(NAV-RELPOSNED, version=1, reserved0=0, refStationID=0, iTOW=23:59:42, relPosN=1, relPosE=2, relPosD=3, relPosLength=0, relPosHeading=0.0, reserved1=0, accN=0.0, accE=0.0, accD=0.0, accLength=0.0, accHeading=0.0, reserved2=0, gnssFixOK=0, diffSoln=0, relPosValid=0, carrSoln=0, isMoving=0, refPosMiss=0, refObsMiss=0, relPosHeadingValid=0, relPosNormalized=0)>"
         res = UBXMessage(
             "NAV",
             "NAV-RELPOSNED",

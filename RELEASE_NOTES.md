@@ -1,6 +1,15 @@
 # pyubx2 Release Notes
 
-### RELEASE CANDIDATE 1.2.36
+### RELEASE CANDIDATE 1.2.37
+
+CHANGES:
+
+1. Streamline parsing of NAV messages with high precision attributes (NAV-HPPOSSEC, NAV-HPPOSLLH, NAV-RELPOSNED). High precision attributes will now be prefixed "_HP" in the payload definitions, and their scaled values will be automatically added to the corresponding standard precision attribute.
+1. Add new configuration database items for F10 SPG 6.0 and F9 L1L5 1.41 firmware:
+
+    "CFG_HW_ANT_ON_SHORT_US": (0x30a3003c, U2),
+
+### RELEASE 1.2.36
 
 CHANGES:
 

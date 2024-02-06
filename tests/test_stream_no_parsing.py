@@ -16,16 +16,14 @@ import unittest
 from pyubx2 import UBXReader
 import pyubx2.ubxtypes_core as ubt
 
+DIRNAME = os.path.dirname(__file__)
 
 class StreamTest(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
-        dirname = os.path.dirname(__file__)
-        # self.testdump = open(os.path.join(dirname, "testdump.log"), "wb")
-        self.stream = open(os.path.join(dirname, "pygpsdata-MIXED-RTCM3.log"), "rb")
+        
     def tearDown(self):
-        # self.testdump.close()
-        self.stream.close()
+        pass
 
     def catchio(self):
         """
@@ -63,16 +61,17 @@ class StreamTest(unittest.TestCase):
 
         i = 0
         raw = 0
-        ubr = UBXReader(self.stream, parsing=False, protfilter=7, labelmsm=0, quitonerror=ubt.ERR_RAISE)
-        # stdout_saved = sys.stdout
-        # sys.stdout = open("output.txt", "w")
-        while raw is not None:
-            (raw, parsed) = ubr.read()
-            if raw is not None:
-                self.assertEqual(raw, EXPECTED_RESULTS[i])
-                self.assertIsNone(parsed)
-                i += 1
-        # sys.stdout = stdout_saved
+        with open(os.path.join(DIRNAME, "pygpsdata-MIXED-RTCM3.log"), "rb") as stream:
+            ubr = UBXReader(stream, parsing=False, protfilter=7, labelmsm=0, quitonerror=ubt.ERR_RAISE)
+            # stdout_saved = sys.stdout
+            # sys.stdout = open("output.txt", "w")
+            while raw is not None:
+                (raw, parsed) = ubr.read()
+                if raw is not None:
+                    self.assertEqual(raw, EXPECTED_RESULTS[i])
+                    self.assertIsNone(parsed)
+                    i += 1
+            # sys.stdout = stdout_saved
 
     def testIterator(
         self,
@@ -90,13 +89,14 @@ class StreamTest(unittest.TestCase):
             b'$GNRMC,084159.00,A,3203.94995,N,03446.42914,E,0.000,,080222,,,D,V*1F\r\n'
         )
         i = 0
-        ubxreader = UBXReader(self.stream, parsing=False, protfilter=7, parsebitfield=False)
-        for raw, parsed in ubxreader:
-            if raw is not None:
-                # print(f'"{parsed}",')
-                self.assertEqual(raw, EXPECTED_RESULTS[i])
-                self.assertIsNone(parsed)
-                i += 1
+        with open(os.path.join(DIRNAME, "pygpsdata-MIXED-RTCM3.log"), "rb") as stream:
+            ubr = UBXReader(stream, parsing=False, protfilter=7, parsebitfield=False)
+            for raw, parsed in ubr:
+                if raw is not None:
+                    # print(f'"{parsed}",')
+                    self.assertEqual(raw, EXPECTED_RESULTS[i])
+                    self.assertIsNone(parsed)
+                    i += 1
 
 
 if __name__ == "__main__":
