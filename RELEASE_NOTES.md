@@ -4,7 +4,7 @@
 
 CHANGES:
 
-1. Streamline parsing of NAV messages with high precision attributes (NAV-HPPOSSEC, NAV-HPPOSLLH, NAV-RELPOSNED). High precision attributes will now be prefixed "_HP" in the payload definitions, and their scaled values will be automatically added to the corresponding standard precision attribute.
+1. Streamline parsing of NAV messages with high precision attributes (NAV-HPPOSSEC, NAV-HPPOSLLH, NAV-RELPOSNED). High precision attributes will now be prefixed "_HP" in the payload definitions, and their scaled values will be automatically added to the corresponding standard precision attribute. The high precision attribute will be omitted from the parsed message (so, for example, the parsed NAV-RELPOSNED message will no longer include both relPosN and relPosHPN values - relPosN will include the scaled relPosHPN value).
 1. Add new configuration database items for F10 SPG 6.0 and F9 L1L5 1.41 firmware:
 
     "CFG_HW_ANT_ON_SHORT_US": (0x30a3003c, U2),
