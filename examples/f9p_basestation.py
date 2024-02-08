@@ -51,8 +51,6 @@ def config_rtcm(port_type: str) -> UBXMessage:
         "1097",
         "1127",
         "1230",
-        "4072_0",
-        "4072_1",
     ):
         cfg = f"CFG_MSGOUT_RTCM_3X_TYPE{rtcm_type}_{port_type}"
         cfg_data.append([cfg, 1])
