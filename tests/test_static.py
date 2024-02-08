@@ -11,30 +11,30 @@ Created on 3 Oct 2020
 
 import os
 import unittest
-import unittest
 
-from pyubx2 import UBXMessage, UBXReader, UBX_CLASSES, POLL
 import pyubx2.ubxtypes_core as ubt
+from pyubx2 import POLL, UBX_CLASSES, UBXMessage, UBXReader
 from pyubx2.ubxhelpers import (
-    calc_checksum,
-    isvalid_checksum,
-    key_from_val,
-    get_bits,
-    itow2utc,
-    gnss2str,
-    dop2str,
-    gpsfix2str,
-    msgstr2bytes,
-    val2bytes,
-    bytes2val,
-    cfgkey2name,
-    cfgname2key,
-    protocol,
-    hextable,
     att2idx,
     att2name,
+    bytes2val,
+    calc_checksum,
     cel2cart,
+    cfgkey2name,
+    cfgname2key,
+    dop2str,
     escapeall,
+    get_bits,
+    gnss2str,
+    gpsfix2str,
+    hextable,
+    isvalid_checksum,
+    itow2utc,
+    key_from_val,
+    msgstr2bytes,
+    protocol,
+    val2bytes,
+    val2sphp,
 )
 
 
@@ -275,6 +275,14 @@ class StaticTest(unittest.TestCase):
         res = escapeall(val)
         print(res)
         self.assertEqual(res, EXPECTED_RESULT)
+
+    def testval2sphp(self):
+        res = val2sphp(100.123456789)
+        self.assertEqual(res, (1001234567,89))
+        res = val2sphp(-13.987654321)
+        self.assertEqual(res, (-139876543,-21))
+        res = val2sphp(5.9876543)
+        self.assertEqual(res, (59876543,0))
 
 
 if __name__ == "__main__":

@@ -1,6 +1,12 @@
 # pyubx2 Release Notes
 
-### RELEASE CANDIDATE 1.2.37
+### RELEASE CANDIDATE 1.2.38
+
+CHANGES:
+
+1. Add val2sphp helper method.
+
+### RELEASE 1.2.37
 
 CHANGES:
 

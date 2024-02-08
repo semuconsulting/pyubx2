@@ -13,7 +13,7 @@ Created on 15 Dec 2020
 
 import struct
 from datetime import datetime, timedelta
-from math import cos, pi, sin
+from math import cos, pi, sin, trunc
 
 from pynmeagps.nmeatypes_core import NMEA_HDR
 
@@ -498,3 +498,23 @@ def escapeall(val: bytes) -> str:
     """
 
     return "b'{}'".format("".join(f"\\x{b:02x}" for b in val))
+
+
+def val2sphp(val: float, scale: float = 1e-7) -> tuple:
+    """
+    Convert a float value into separate standard and high precisions components,
+    multiplied by a scaling factor to render them as integers, as required by some
+    CFG and NAV messages.
+
+    e.g. 48.123456789 becomes (481234567, 89)
+
+    :param float val: value as float
+    :param float scale: scaling factor e.g. 1e-7
+    :return: tuple of (standard precision, high precision)
+    :rtype: tuple
+    """
+
+    val = val / scale
+    val_sp = trunc(val)
+    val_hp = round((val - val_sp) * 100)
+    return val_sp, val_hp
