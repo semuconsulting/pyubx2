@@ -11,7 +11,7 @@ Created on 3 Oct 2020
 
 import os
 import unittest
-
+from datetime import datetime
 import pyubx2.ubxtypes_core as ubt
 from pyubx2 import POLL, UBX_CLASSES, UBXMessage, UBXReader
 from pyubx2.ubxhelpers import (
@@ -33,6 +33,7 @@ from pyubx2.ubxhelpers import (
     key_from_val,
     msgstr2bytes,
     protocol,
+    utc2itow,
     val2bytes,
     val2sphp,
 )
@@ -161,6 +162,11 @@ class StaticTest(unittest.TestCase):
     def testitow2utc(self):
         res = str(itow2utc(387092000))
         self.assertEqual(res, "11:31:14")
+
+    def testutc2itow(self):
+        dt = datetime(2024,2,8,11,31,14)
+        res = utc2itow(dt)
+        self.assertEqual(res, (2300, 387092000))
 
     def testgnss2str(self):
         GNSS = {

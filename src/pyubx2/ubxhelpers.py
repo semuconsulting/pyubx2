@@ -22,6 +22,10 @@ import pyubx2.ubxtypes_configdb as ubcdb
 import pyubx2.ubxtypes_core as ubt
 from pyubx2.ubxtypes_core import GNSSLIST, UBX_HDR
 
+EPOCH0 = datetime(1980, 1, 6)  # EPOCH start date
+LEAPOFFSET = 18  # leap year offset in seconds, valid as from 1/1/2017
+SIW = 604800  # seconds in week = 3600*24*7
+
 
 def att2idx(att: str) -> int:
     """
@@ -123,16 +127,31 @@ def attsiz(att: str) -> int:
 def itow2utc(itow: int) -> datetime.time:
     """
     Convert GPS Time Of Week to UTC time
-    (UTC = GPS - 18 seconds; correct as from 1/1/2017).
 
-    :param int itow: GPS Time Of Week
+    :param int itow: GPS Time Of Week in milliseconds
     :return: UTC time hh.mm.ss
     :rtype: datetime.time
 
     """
 
-    utc = datetime(1980, 1, 6) + timedelta(seconds=(itow / 1000) - 18)
+    utc = EPOCH0 + timedelta(seconds=(itow / 1000) - LEAPOFFSET)
     return utc.time()
+
+
+def utc2itow(utc: datetime) -> tuple:
+    """
+    Convert UTC datetime to GPS Week Number, Time Of Week
+
+    :param datetime utc: datetime
+    :return: GPS Week Number, Time of Week in milliseconds
+    :rtype: tuple
+
+    """
+
+    wno = int((utc - EPOCH0).total_seconds() / SIW)
+    sow = EPOCH0 + timedelta(seconds=wno * SIW)
+    itow = int(((utc - sow).total_seconds() + LEAPOFFSET) * 1000)
+    return wno, itow
 
 
 def gpsfix2str(fix: int) -> str:
