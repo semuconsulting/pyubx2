@@ -185,8 +185,8 @@ class StaticTest(unittest.TestCase):
             self.assertEqual(res, GNSS[i])
 
     def testgps2str(self):
-        fixs = ["NO FIX", "DR", "2D", "3D", "GPS + DR", "TIME ONLY"]
-        for i, fix in enumerate(range(0, 6)):
+        fixs = ["NO FIX", "DR", "2D", "3D", "GPS + DR", "TIME ONLY", "6"]
+        for i, fix in enumerate(range(0, 7)):
             res = gpsfix2str(fix)
             self.assertEqual(res, fixs[i])
 

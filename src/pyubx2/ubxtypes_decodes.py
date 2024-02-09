@@ -8,6 +8,17 @@ Information sourced from public domain u-blox Interface Specifications © 2013-2
 :author: semuadmin
 """
 
+GNSSLIST = {
+    0: "GPS",
+    1: "SBAS",
+    2: "Galileo",
+    3: "BeiDou",
+    4: "IMES",
+    5: "QZSS",
+    6: "GLONASS",
+    7: "NAVIC",
+}
+
 # UBX-CFG-DGNSS
 DGNSMODE = {
     2: "RTK float",
@@ -266,12 +277,12 @@ PLPOSFRAME = PLVELFRAME = {
 
 # UBX-NAV-PVT
 GPSFIX = FIXTYPE = {
-    0: "no fix",
-    1: "dead reckoning only",
-    2: "2D fix",
-    3: "3D fix",
-    4: "GPS + dead reckoning combined",
-    5: "Time only fix",
+    0: "NO FIX",
+    1: "DR",
+    2: "2D",
+    3: "3D",
+    4: "GPS + DR",
+    5: "TIME ONLY",
 }
 PSMSTATE = {
     0: "PSM is not active",
@@ -282,9 +293,9 @@ PSMSTATE = {
     5: "Inactive",
 }
 CARRSOLN = {
-    0: "no RTK",
-    1: "RTK float",
-    2: "RTK fixed",
+    0: "NO RTK",
+    1: "RTK FLOAT",
+    2: "RTK FIXED",
 }
 
 # UBX-NAV-SAT
@@ -331,7 +342,7 @@ SBASINTEGRITYUSED = {
 
 # UBX-NAV-SIG
 CORRSOURCE = {
-    0: "none",
+    0: "NONE",
     1: "SBAS",
     2: "BeiDou",
     3: "RTCM2",

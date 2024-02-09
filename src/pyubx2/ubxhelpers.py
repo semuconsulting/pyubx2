@@ -20,7 +20,8 @@ from pynmeagps.nmeatypes_core import NMEA_HDR
 import pyubx2.exceptions as ube
 import pyubx2.ubxtypes_configdb as ubcdb
 import pyubx2.ubxtypes_core as ubt
-from pyubx2.ubxtypes_core import GNSSLIST, UBX_HDR
+from pyubx2.ubxtypes_core import UBX_HDR
+from pyubx2.ubxtypes_decodes import FIXTYPE, GNSSLIST
 
 EPOCH0 = datetime(1980, 1, 6)  # EPOCH start date
 LEAPOFFSET = 18  # leap year offset in seconds, valid as from 1/1/2017
@@ -164,19 +165,10 @@ def gpsfix2str(fix: int) -> str:
 
     """
 
-    if fix == 5:
-        fixs = "TIME ONLY"
-    elif fix == 4:
-        fixs = "GPS + DR"
-    elif fix == 3:
-        fixs = "3D"
-    elif fix == 2:
-        fixs = "2D"
-    elif fix == 1:
-        fixs = "DR"
-    else:
-        fixs = "NO FIX"
-    return fixs
+    try:
+        return FIXTYPE[fix]
+    except KeyError:
+        return str(fix)
 
 
 def dop2str(dop: float) -> str:

@@ -21,17 +21,6 @@ ERR_RAISE = 2
 ERR_LOG = 1
 ERR_IGNORE = 0
 
-GNSSLIST = {
-    0: "GPS",
-    1: "SBAS",
-    2: "Galileo",
-    3: "BeiDou",
-    4: "IMES",
-    5: "QZSS",
-    6: "GLONASS",
-    7: "NAVIC",
-}
-
 # scaling factor constants
 SCAL9 = 1e-9  # 0.000000001
 SCAL8 = 1e-8  # 0.00000001
