@@ -95,7 +95,8 @@ conda install -c conda-forge pyubx2
 | POLL (0x02) | query input *to* the receiver            | `ubxtypes_poll.py` |
 
 If you're simply streaming and/or parsing the *output* of a UBX receiver, the mode is implicitly GET. If you want to create
-or parse an *input* (command or query) message, you must set the mode parameter to SET or POLL.
+or parse an *input* (command or query) message, you must set the mode parameter to SET or POLL. If the parser mode is set to
+0x03 (SETPOLL), `pyubx2` will automatically determine the applicable input mode (SET or POLL) based on the message payload.
 
 ---
 ## <a name="reading">Reading (Streaming)</a>

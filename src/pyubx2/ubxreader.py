@@ -9,7 +9,9 @@ Returns both the raw binary data (as bytes) and the parsed data
 
 'protfilter' governs which protocols (NMEA, UBX or RTCM3) are processed
 'quitonerror' governs how errors are handled
-'msgmode' indicates the type of UBX datastream (input GET, output SET, query POLL)
+'msgmode' indicates the type of UBX datastream (output GET, input SET, query POLL)
+
+If msgmode set to SETPOLL, input mode will be automatically detected by parser.
 
 Created on 2 Oct 2020
 
@@ -32,14 +34,17 @@ from pyubx2.exceptions import (
     UBXTypeError,
 )
 from pyubx2.socket_stream import SocketStream
-from pyubx2.ubxhelpers import bytes2val, calc_checksum, val2bytes
+from pyubx2.ubxhelpers import bytes2val, calc_checksum, getinputmode, val2bytes
 from pyubx2.ubxmessage import UBXMessage
 from pyubx2.ubxtypes_core import (
     ERR_LOG,
     ERR_RAISE,
     GET,
     NMEA_PROTOCOL,
+    POLL,
     RTCM3_PROTOCOL,
+    SET,
+    SETPOLL,
     U2,
     UBX_HDR,
     UBX_PROTOCOL,
@@ -69,7 +74,7 @@ class UBXReader:
         """Constructor.
 
         :param datastream stream: input data stream
-        :param int msgmode: 0=GET, 1=SET, 2=POLL (0)
+        :param int msgmode: 0=GET, 1=SET, 2=POLL, 3=SETPOLL (0)
         :param int validate: 0 = ignore invalid checksum, 1 = validate checksum (1)
         :param int protfilter: protocol filter 1 = NMEA, 2 = UBX, 4 = RTCM3 (3)
         :param int quitonerror: 0 = ignore errors,  1 = log continue, 2 = (re)raise (1)
@@ -97,9 +102,9 @@ class UBXReader:
         self._msgmode = msgmode
         self._parsing = parsing
 
-        if self._msgmode not in (0, 1, 2):
+        if self._msgmode not in (GET, SET, POLL, SETPOLL):
             raise UBXStreamError(
-                f"Invalid stream mode {self._msgmode} - must be 0, 1 or 2"
+                f"Invalid stream mode {self._msgmode} - must be 0, 1, 2 or 3"
             )
 
     def __iter__(self):
@@ -374,8 +379,10 @@ class UBXReader:
         """
         # pylint: disable=too-many-arguments
 
-        if msgmode not in (0, 1, 2):
-            raise UBXParseError(f"Invalid message mode {msgmode} - must be 0, 1 or 2")
+        if msgmode not in (GET, SET, POLL, SETPOLL):
+            raise UBXParseError(
+                f"Invalid message mode {msgmode} - must be 0, 1, 2 or 3"
+            )
 
         lenm = len(message)
         hdr = message[0:2]
@@ -410,6 +417,9 @@ class UBXReader:
                     (f"Message checksum {ckm}" f" invalid - should be {ckv}")
                 )
         try:
+            # if input message (SET or POLL), determine mode automatically
+            if msgmode == SETPOLL:
+                msgmode = getinputmode(message)  # returns SET or POLL
             if payload is None:
                 return UBXMessage(clsid, msgid, msgmode)
             return UBXMessage(

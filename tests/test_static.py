@@ -302,6 +302,8 @@ class StaticTest(unittest.TestCase):
         self.assertEqual(res, SET)
         res = getinputmode(UBXMessage("CFG","CFG-INF", POLL, protocolID=1).serialize())
         self.assertEqual(res, POLL)
+        res = getinputmode(UBXMessage("CFG","CFG-INF", SET, protocolID=1, infMsgMask_01=1,infMsgMask_02=1).serialize())
+        self.assertEqual(res, SET)
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']

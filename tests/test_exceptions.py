@@ -44,9 +44,9 @@ class ExceptionTest(unittest.TestCase):
         pass
 
     def testInvMode(self):  # test invalid mode
-        EXPECTED_ERROR = "Invalid msgmode 3 - must be 0, 1 or 2"
+        EXPECTED_ERROR = "Invalid msgmode 4 - must be 0, 1 or 2"
         with self.assertRaisesRegex(UBXMessageError, EXPECTED_ERROR):
-            UBXMessage("CFG", "CFG-MSG", 3, msgClass=240, msgID=5)
+            UBXMessage("CFG", "CFG-MSG", 4, msgClass=240, msgID=5)
 
     def testAckCkT(self):  # bad checksum
         EXPECTED_ERROR = "Message checksum (.*) invalid - should be (.*)"
@@ -320,10 +320,10 @@ class ExceptionTest(unittest.TestCase):
             UBXMessage("CFG", "CFG-VALGET", GET, version=0, layer=0)
 
     def testParseMode(self):  # test invalid parse message mode
-        EXPECTED_ERROR = "Invalid message mode 3 - must be 0, 1 or 2"
+        EXPECTED_ERROR = "Invalid message mode 4 - must be 0, 1, 2 or 3"
         with self.assertRaisesRegex(UBXParseError, EXPECTED_ERROR):
             UBXReader.parse(
-                b"\xb5b\x05\x01\x02\x00\x06\x01\x0f\x38", validate=VALCKSUM, msgmode=3
+                b"\xb5b\x05\x01\x02\x00\x06\x01\x0f\x38", validate=VALCKSUM, msgmode=4
             )
 
     def testParseMode2(self):  # test parser with incorrect mode for input message
@@ -332,9 +332,9 @@ class ExceptionTest(unittest.TestCase):
             UBXReader.parse(self.mga_ini, validate=VALCKSUM, quitonerror=ERR_RAISE)
 
     def testStreamMode(self):  # test invalid stream message mode
-        EXPECTED_ERROR = "Invalid stream mode 3 - must be 0, 1 or 2"
+        EXPECTED_ERROR = "Invalid stream mode 4 - must be 0, 1, 2 or 3"
         with self.assertRaisesRegex(UBXStreamError, EXPECTED_ERROR):
-            UBXReader(None, validate=VALCKSUM, msgmode=3)
+            UBXReader(None, validate=VALCKSUM, msgmode=4)
 
     def testVal2Bytes(self):  # test invalid attribute type
         EXPECTED_ERROR = "Unknown attribute type Z001"
