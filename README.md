@@ -117,7 +117,7 @@ The constructor accepts the following optional keyword arguments:
 * `quitonerror`: 0 = ignore errors, 1 = log errors and continue (default), 2 = (re)raise errors and terminate
 * `validate`: VALCKSUM (0x01) = validate checksum (default), VALNONE (0x00) = ignore invalid checksum or length
 * `parsebitfield`: 1 = parse bitfields ('X' type properties) as individual bit flags, where defined (default), 0 = leave bitfields as byte sequences
-* `msgmode`: 0 = GET (default), 1 = SET, 2 = POLL
+* `msgmode`: 0 = GET (default), 1 = SET, 2 = POLL, 3 = SETPOLL (automatically determine SET or POLL input mode)
 
 Example -  Serial input. This example will output both UBX and NMEA messages:
 ```python
@@ -160,7 +160,7 @@ The `parse()` method accepts the following optional keyword arguments:
 
 * `validate`: VALCKSUM (0x01) = validate checksum (default), VALNONE (0x00) = ignore invalid checksum or length
 * `parsebitfield`: 1 = parse bitfields as individual bit flags, where defined (default), 0 = leave bitfields as byte sequences
-* `msgmode`: 0 = GET (default), 1 = SET, 2 = POLL
+* `msgmode`: 0 = GET (default), 1 = SET, 2 = POLL, 3 = SETPOLL (automatically determine SET or POLL input mode)
 
 Example - output (GET) message:
 ```python
