@@ -13,7 +13,7 @@ import os
 import unittest
 from datetime import datetime
 import pyubx2.ubxtypes_core as ubt
-from pyubx2 import POLL, UBX_CLASSES, UBXMessage, UBXReader
+from pyubx2 import SET, POLL, UBX_CLASSES, UBXMessage, UBXReader
 from pyubx2.ubxhelpers import (
     att2idx,
     att2name,
@@ -25,6 +25,7 @@ from pyubx2.ubxhelpers import (
     dop2str,
     escapeall,
     get_bits,
+    getinputmode,
     gnss2str,
     gpsfix2str,
     hextable,
@@ -290,6 +291,17 @@ class StaticTest(unittest.TestCase):
         res = val2sphp(5.9876543)
         self.assertEqual(res, (59876543,0))
 
+    def testgetinputmode(self):
+        res = getinputmode(UBXMessage("CFG","CFG-ODO", POLL).serialize())
+        self.assertEqual(res, POLL)
+        res = getinputmode(UBXMessage.config_poll(0,0,["CFG_UART1_BAUDRATE", 0x40530001]).serialize())
+        self.assertEqual(res, POLL)
+        res = getinputmode(UBXMessage.config_set(0,0,[("CFG_UART1_BAUDRATE", 9600), (0x40530001, 115200)]).serialize())
+        self.assertEqual(res, SET)
+        res = getinputmode(UBXMessage.config_del(0,0,["CFG_UART1_BAUDRATE", 0x40530001]).serialize())
+        self.assertEqual(res, SET)
+        res = getinputmode(UBXMessage("CFG","CFG-INF", POLL, protocolID=1).serialize())
+        self.assertEqual(res, POLL)
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']

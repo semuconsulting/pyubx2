@@ -20,7 +20,7 @@ from pynmeagps.nmeatypes_core import NMEA_HDR
 import pyubx2.exceptions as ube
 import pyubx2.ubxtypes_configdb as ubcdb
 import pyubx2.ubxtypes_core as ubt
-from pyubx2.ubxtypes_core import UBX_HDR
+from pyubx2.ubxtypes_core import POLL, SET, UBX_HDR
 from pyubx2.ubxtypes_decodes import FIXTYPE, GNSSLIST
 
 EPOCH0 = datetime(1980, 1, 6)  # EPOCH start date
@@ -529,3 +529,30 @@ def val2sphp(val: float, scale: float = 1e-7) -> tuple:
     val_sp = trunc(val)
     val_hp = round((val - val_sp) * 100)
     return val_sp, val_hp
+
+
+def getinputmode(data: bytes) -> int:
+    """
+    Return input message mode (SET or POLL).
+
+    :param bytes data: raw UBX input message
+    :return: message mode (1 = SET, 2 = POLL)
+    :rtype: int
+    """
+
+    if (
+        len(data) == 8
+        or data[2:4] == b"\x06\x8b"  # CFG-VALGET
+        or (
+            data[2:4]
+            in (
+                b"\x06\x01",
+                b"\x06\x02",
+                b"\x06\x03",
+                b"\x06\x31",
+            )  # CFG-INF, CFG-MSG, CFG-PRT, CFG-TP5
+            and len(data) <= 10
+        )
+    ):
+        return POLL
+    return SET
