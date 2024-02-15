@@ -11,30 +11,32 @@ Created on 3 Oct 2020
 
 import os
 import unittest
-import unittest
-
-from pyubx2 import UBXMessage, UBXReader, UBX_CLASSES, POLL
+from datetime import datetime
 import pyubx2.ubxtypes_core as ubt
+from pyubx2 import SET, POLL, UBX_CLASSES, UBXMessage, UBXReader
 from pyubx2.ubxhelpers import (
-    calc_checksum,
-    isvalid_checksum,
-    key_from_val,
-    get_bits,
-    itow2utc,
-    gnss2str,
-    dop2str,
-    gpsfix2str,
-    msgstr2bytes,
-    val2bytes,
-    bytes2val,
-    cfgkey2name,
-    cfgname2key,
-    protocol,
-    hextable,
     att2idx,
     att2name,
+    bytes2val,
+    calc_checksum,
     cel2cart,
+    cfgkey2name,
+    cfgname2key,
+    dop2str,
     escapeall,
+    get_bits,
+    getinputmode,
+    gnss2str,
+    gpsfix2str,
+    hextable,
+    isvalid_checksum,
+    itow2utc,
+    key_from_val,
+    msgstr2bytes,
+    protocol,
+    utc2itow,
+    val2bytes,
+    val2sphp,
 )
 
 
@@ -162,6 +164,11 @@ class StaticTest(unittest.TestCase):
         res = str(itow2utc(387092000))
         self.assertEqual(res, "11:31:14")
 
+    def testutc2itow(self):
+        dt = datetime(2024,2,8,11,31,14)
+        res = utc2itow(dt)
+        self.assertEqual(res, (2300, 387092000))
+
     def testgnss2str(self):
         GNSS = {
             0: "GPS",
@@ -179,8 +186,8 @@ class StaticTest(unittest.TestCase):
             self.assertEqual(res, GNSS[i])
 
     def testgps2str(self):
-        fixs = ["NO FIX", "DR", "2D", "3D", "GPS + DR", "TIME ONLY"]
-        for i, fix in enumerate(range(0, 6)):
+        fixs = ["NO FIX", "DR", "2D", "3D", "GPS + DR", "TIME ONLY", "6"]
+        for i, fix in enumerate(range(0, 7)):
             res = gpsfix2str(fix)
             self.assertEqual(res, fixs[i])
 
@@ -276,6 +283,27 @@ class StaticTest(unittest.TestCase):
         print(res)
         self.assertEqual(res, EXPECTED_RESULT)
 
+    def testval2sphp(self):
+        res = val2sphp(100.123456789)
+        self.assertEqual(res, (1001234567,89))
+        res = val2sphp(-13.987654321)
+        self.assertEqual(res, (-139876543,-21))
+        res = val2sphp(5.9876543)
+        self.assertEqual(res, (59876543,0))
+
+    def testgetinputmode(self):
+        res = getinputmode(UBXMessage("CFG","CFG-ODO", POLL).serialize())
+        self.assertEqual(res, POLL)
+        res = getinputmode(UBXMessage.config_poll(0,0,["CFG_UART1_BAUDRATE", 0x40530001]).serialize())
+        self.assertEqual(res, POLL)
+        res = getinputmode(UBXMessage.config_set(0,0,[("CFG_UART1_BAUDRATE", 9600), (0x40530001, 115200)]).serialize())
+        self.assertEqual(res, SET)
+        res = getinputmode(UBXMessage.config_del(0,0,["CFG_UART1_BAUDRATE", 0x40530001]).serialize())
+        self.assertEqual(res, SET)
+        res = getinputmode(UBXMessage("CFG","CFG-INF", POLL, protocolID=1).serialize())
+        self.assertEqual(res, POLL)
+        res = getinputmode(UBXMessage("CFG","CFG-INF", SET, protocolID=1, infMsgMask_01=1,infMsgMask_02=1).serialize())
+        self.assertEqual(res, SET)
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']

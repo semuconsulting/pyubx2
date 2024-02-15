@@ -13,14 +13,19 @@ Created on 15 Dec 2020
 
 import struct
 from datetime import datetime, timedelta
-from math import cos, pi, sin
+from math import cos, pi, sin, trunc
 
 from pynmeagps.nmeatypes_core import NMEA_HDR
 
 import pyubx2.exceptions as ube
 import pyubx2.ubxtypes_configdb as ubcdb
 import pyubx2.ubxtypes_core as ubt
-from pyubx2.ubxtypes_core import GNSSLIST, UBX_HDR
+from pyubx2.ubxtypes_core import POLL, SET, UBX_HDR
+from pyubx2.ubxtypes_decodes import FIXTYPE, GNSSLIST
+
+EPOCH0 = datetime(1980, 1, 6)  # EPOCH start date
+LEAPOFFSET = 18  # leap year offset in seconds, valid as from 1/1/2017
+SIW = 604800  # seconds in week = 3600*24*7
 
 
 def att2idx(att: str) -> int:
@@ -123,16 +128,31 @@ def attsiz(att: str) -> int:
 def itow2utc(itow: int) -> datetime.time:
     """
     Convert GPS Time Of Week to UTC time
-    (UTC = GPS - 18 seconds; correct as from 1/1/2017).
 
-    :param int itow: GPS Time Of Week
+    :param int itow: GPS Time Of Week in milliseconds
     :return: UTC time hh.mm.ss
     :rtype: datetime.time
 
     """
 
-    utc = datetime(1980, 1, 6) + timedelta(seconds=(itow / 1000) - 18)
+    utc = EPOCH0 + timedelta(seconds=(itow / 1000) - LEAPOFFSET)
     return utc.time()
+
+
+def utc2itow(utc: datetime) -> tuple:
+    """
+    Convert UTC datetime to GPS Week Number, Time Of Week
+
+    :param datetime utc: datetime
+    :return: GPS Week Number, Time of Week in milliseconds
+    :rtype: tuple
+
+    """
+
+    wno = int((utc - EPOCH0).total_seconds() / SIW)
+    sow = EPOCH0 + timedelta(seconds=wno * SIW)
+    itow = int(((utc - sow).total_seconds() + LEAPOFFSET) * 1000)
+    return wno, itow
 
 
 def gpsfix2str(fix: int) -> str:
@@ -145,19 +165,10 @@ def gpsfix2str(fix: int) -> str:
 
     """
 
-    if fix == 5:
-        fixs = "TIME ONLY"
-    elif fix == 4:
-        fixs = "GPS + DR"
-    elif fix == 3:
-        fixs = "3D"
-    elif fix == 2:
-        fixs = "2D"
-    elif fix == 1:
-        fixs = "DR"
-    else:
-        fixs = "NO FIX"
-    return fixs
+    try:
+        return FIXTYPE[fix]
+    except KeyError:
+        return str(fix)
 
 
 def dop2str(dop: float) -> str:
@@ -498,3 +509,50 @@ def escapeall(val: bytes) -> str:
     """
 
     return "b'{}'".format("".join(f"\\x{b:02x}" for b in val))
+
+
+def val2sphp(val: float, scale: float = 1e-7) -> tuple:
+    """
+    Convert a float value into separate standard and high precisions components,
+    multiplied by a scaling factor to render them as integers, as required by some
+    CFG and NAV messages.
+
+    e.g. 48.123456789 becomes (481234567, 89)
+
+    :param float val: value as float
+    :param float scale: scaling factor e.g. 1e-7
+    :return: tuple of (standard precision, high precision)
+    :rtype: tuple
+    """
+
+    val = val / scale
+    val_sp = trunc(val)
+    val_hp = round((val - val_sp) * 100)
+    return val_sp, val_hp
+
+
+def getinputmode(data: bytes) -> int:
+    """
+    Return input message mode (SET or POLL).
+
+    :param bytes data: raw UBX input message
+    :return: message mode (1 = SET, 2 = POLL)
+    :rtype: int
+    """
+
+    if (
+        len(data) == 8
+        or data[2:4] == b"\x06\x8b"  # CFG-VALGET
+        or (
+            data[2:4]
+            in (
+                b"\x06\x01",
+                b"\x06\x02",
+                b"\x06\x03",
+                b"\x06\x31",
+            )  # CFG-INF, CFG-MSG, CFG-PRT, CFG-TP5
+            and len(data) <= 10
+        )
+    ):
+        return POLL
+    return SET

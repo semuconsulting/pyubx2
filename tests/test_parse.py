@@ -11,7 +11,7 @@ Created on 3 Oct 2020
 
 import unittest
 
-from pyubx2 import UBXMessage, UBXReader, VALCKSUM, VALNONE, SET
+from pyubx2 import UBXMessage, UBXReader, VALCKSUM, VALNONE, SET, SETPOLL
 
 
 class ParseTest(unittest.TestCase):
@@ -268,6 +268,20 @@ class ParseTest(unittest.TestCase):
         self.assertEqual(
             str(res),
             "<UBX(MGA-INI-POS-LLH, type=1, version=0, reserved0=513, lat=6.7305985, lon=6.7305985, alt=67305985, posAcc=67305985)>",
+        )
+
+    def testSETPOLL(self):  # test auto detection of SET or POLL mode
+        msg = UBXMessage.config_poll(0,0,["CFG_UART1_BAUDRATE", 0x40530001]).serialize()
+        res = UBXReader.parse(msg, msgmode=SETPOLL)
+        self.assertEqual(
+            str(res),
+            "<UBX(CFG-VALGET, version=0, layer=0, position=0, keys_01=1079115777, keys_02=1079181313)>",
+        )
+        msg = UBXMessage.config_set(0,0,[("CFG_UART1_BAUDRATE", 9600), (0x40530001, 38400)]).serialize()
+        res = UBXReader.parse(msg, msgmode=SETPOLL)
+        self.assertEqual(
+            str(res),
+            "<UBX(CFG-VALSET, version=0, ram=0, bbr=0, flash=0, action=0, reserved0=0, CFG_UART1_BAUDRATE=9600, CFG_UART2_BAUDRATE=38400)>",
         )
 
     def testESFSTATUS(self):  # test parser of ESF-STATUS message

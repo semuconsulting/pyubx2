@@ -74,8 +74,8 @@ class UBXMessage:
         self._parsebf = parsebitfield  # parsing bitfields Y/N?
         self._scaling = scaling  # apply scale factors Y/N?
 
-        if msgmode not in (0, 1, 2):
-            raise ube.UBXMessageError(f"Invalid msgmode {msgmode} - must be 0, 1 or 2.")
+        if msgmode not in (ubt.GET, ubt.SET, ubt.POLL):
+            raise ube.UBXMessageError(f"Invalid msgmode {msgmode} - must be 0, 1 or 2")
 
         # accommodate different formats of msgClass and msgID
         if isinstance(ubxClass, str) and isinstance(

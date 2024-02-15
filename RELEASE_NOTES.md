@@ -1,6 +1,14 @@
 # pyubx2 Release Notes
 
-### RELEASE CANDIDATE 1.2.37
+### RELEASE CANDIDATE 1.2.38
+
+CHANGES:
+
+1. Add val2sphp helper method to convert high precision (9dp) coordinate to separate standard and high precision components, as required by some CFG and NAV messages.
+1. Add utc2itow helper method to convert utc datetime to GPS week number and time of week.
+1. Add getinputmode helper to determinate mode of input UBX message (SET or POLL). Add new UBXReader msgmode of SETPOLL (0x03), which will automatically determine input mode.
+
+### RELEASE 1.2.37
 
 CHANGES:
 
