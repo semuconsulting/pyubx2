@@ -2,6 +2,9 @@
 
 ### RELEASE CANDIDATE 1.2.39
 
+FIXES:
+
+1. Fix incorrect UBX MGA-GPS-EPH payload definition Fixes [#141](https://github.com/semuconsulting/pyubx2/issues/141)
 
 ### RELEASE 1.2.38
 
