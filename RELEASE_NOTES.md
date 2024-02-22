@@ -1,6 +1,9 @@
 # pyubx2 Release Notes
 
-### RELEASE CANDIDATE 1.2.38
+### RELEASE CANDIDATE 1.2.39
+
+
+### RELEASE 1.2.38
 
 CHANGES:
 
