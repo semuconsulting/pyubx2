@@ -5,6 +5,7 @@ Created on 23 Nov 2020
 
 @author: semuadmin
 """
+
 # pylint: disable=line-too-long, invalid-name, missing-docstring, no-member
 
 import unittest
@@ -49,15 +50,15 @@ class AssistNowTest(unittest.TestCase):
 
     def testAssistNowEPH(self):
         EXPECTED_RESULTS = [
-            "<UBX(MGA-GPS-EPH, type=1, version=0, svId=1, reserved0=0, fitInterval=0, uraIndex=1, svHealth=0, tgd=5.122e-09, iodc=79, toc=214032, reserved1=31, af2=0.0, af1=-1.077e-09, af0=0.205942272674, crs=464.0, deltaN=2.3e-09, m0=0.424563548062, cuc=-4.6627596e-05, cus=1.192093e-06, e=0.090919908602, sqrtA=4564.252532958984, toe=659664, cic=1.5087426e-05, omega0=0.820318961516, cis=-4.3172389e-05, crc=-560.25, i0=0.157250403892, omega=-0.092528210487, omegaDot=6.3428708e-05, idot=-2.498e-09, reserved2=78315519)>",
-            "<UBX(MGA-GPS-EPH, type=1, version=0, svId=2, reserved0=0, fitInterval=0, uraIndex=0, svHealth=0, tgd=-1.7695e-08, iodc=66, toc=214032, reserved1=31, af2=0.0, af1=-1.193e-09, af0=-0.139783025254, crs=23.96875, deltaN=-2.212e-09, m0=0.433148048818, cuc=-4.2332336e-05, cus=1.508743e-06, e=0.490517039318, sqrtA=4191.50502204895, toe=659648, cic=1.5087426e-05, omega0=0.570320870262, cis=4.7497451e-05, crc=791.65625, i0=-0.334953069687, omega=0.321507974528, omegaDot=-0.000123454516, idot=-2.484e-09, reserved2=68616191)>",
-            "<UBX(MGA-GPS-EPH, type=1, version=0, svId=3, reserved0=0, fitInterval=0, uraIndex=0, svHealth=0, tgd=1.863e-09, iodc=20, toc=214032, reserved1=31, af2=0.0, af1=-2.561e-09, af0=-0.002922416199, crs=431.96875, deltaN=-3.697e-09, m0=0.513025187887, cuc=5.2100047e-05, cus=-2.902001e-06, e=0.389618253917, sqrtA=5117.375812530518, toe=659664, cic=1.5087426e-05, omega0=0.921850237064, cis=-3.514811e-06, crc=-134.9375, i0=-0.475503564347, omega=-0.850359832402, omegaDot=6.9150773e-05, idot=-2.593e-09, reserved2=4277731327)>",
-            "<UBX(MGA-GPS-EPH, type=1, version=0, svId=4, reserved0=0, fitInterval=0, uraIndex=0, svHealth=0, tgd=-4.191e-09, iodc=574, toc=214032, reserved1=31, af2=0.0, af1=-9.02e-10, af0=-0.040445805062, crs=255.96875, deltaN=-1.63e-09, m0=0.429373763036, cuc=-1.3738871e-05, cus=-2.108514e-06, e=0.166786856367, sqrtA=7563.125232696533, toe=659648, cic=1.5087426e-05, omega0=-0.60155615909, cis=-2.657995e-06, crc=-69.5625, i0=-0.030582666863, omega=0.993381048553, omegaDot=-0.000237895133, idot=-2.507e-09, reserved2=4269015039)>",
-            "<UBX(MGA-GPS-EPH, type=1, version=0, svId=5, reserved0=0, fitInterval=0, uraIndex=0, svHealth=0, tgd=-1.1176e-08, iodc=7, toc=214032, reserved1=31, af2=0.0, af1=-2.33e-10, af0=-0.00680840062, crs=-40.03125, deltaN=3.317e-09, m0=0.52358105313, cuc=8.679926e-06, cus=-2.30968e-06, e=0.113663049648, sqrtA=1232.501514434814, toe=659680, cic=1.5087426e-05, omega0=0.031226071529, cis=-5.2364543e-05, crc=97.03125, i0=-0.6395829916, omega=-0.420688559767, omegaDot=6.9157898e-05, idot=-2.684e-09, reserved2=4281204735)>",
+            "<UBX(MGA-GPS-EPH, type=1, version=0, svId=1, reserved0=0, fitInterval=0, uraIndex=1, svHealth=0, tgd=5.122e-09, iodc=79, toc=214032, reserved1=31, af2=0.0, af1=-1.077e-09, af0=0.205942272674, crs=464.0, deltaN=2.3e-09, m0=0.424563548062, cuc=-4.6627596e-05, cus=1.192093e-06, e=0.090919908602, sqrtA=4564.252532958984, toe=659664, cic=1.5087426e-05, omega0=0.820318961516, cis=-4.3172389e-05, crc=-560.25, i0=0.157250403892, omega=-0.092528210487, omegaDot=6.3428708e-05, idot=-2.498e-09, reserved2=65535)>",
+            "<UBX(MGA-GPS-EPH, type=1, version=0, svId=2, reserved0=0, fitInterval=0, uraIndex=0, svHealth=0, tgd=-1.7695e-08, iodc=66, toc=214032, reserved1=31, af2=0.0, af1=-1.193e-09, af0=-0.139783025254, crs=23.96875, deltaN=-2.212e-09, m0=0.433148048818, cuc=-4.2332336e-05, cus=1.508743e-06, e=0.490517039318, sqrtA=4191.50502204895, toe=659648, cic=1.5087426e-05, omega0=0.570320870262, cis=4.7497451e-05, crc=791.65625, i0=-0.334953069687, omega=0.321507974528, omegaDot=-0.000123454516, idot=-2.484e-09, reserved2=65535)>",
+            "<UBX(MGA-GPS-EPH, type=1, version=0, svId=3, reserved0=0, fitInterval=0, uraIndex=0, svHealth=0, tgd=1.863e-09, iodc=20, toc=214032, reserved1=31, af2=0.0, af1=-2.561e-09, af0=-0.002922416199, crs=431.96875, deltaN=-3.697e-09, m0=0.513025187887, cuc=5.2100047e-05, cus=-2.902001e-06, e=0.389618253917, sqrtA=5117.375812530518, toe=659664, cic=1.5087426e-05, omega0=0.921850237064, cis=-3.514811e-06, crc=-134.9375, i0=-0.475503564347, omega=-0.850359832402, omegaDot=6.9150773e-05, idot=-2.593e-09, reserved2=65535)>",
+            "<UBX(MGA-GPS-EPH, type=1, version=0, svId=4, reserved0=0, fitInterval=0, uraIndex=0, svHealth=0, tgd=-4.191e-09, iodc=574, toc=214032, reserved1=31, af2=0.0, af1=-9.02e-10, af0=-0.040445805062, crs=255.96875, deltaN=-1.63e-09, m0=0.429373763036, cuc=-1.3738871e-05, cus=-2.108514e-06, e=0.166786856367, sqrtA=7563.125232696533, toe=659648, cic=1.5087426e-05, omega0=-0.60155615909, cis=-2.657995e-06, crc=-69.5625, i0=-0.030582666863, omega=0.993381048553, omegaDot=-0.000237895133, idot=-2.507e-09, reserved2=65535)>",
+            "<UBX(MGA-GPS-EPH, type=1, version=0, svId=5, reserved0=0, fitInterval=0, uraIndex=0, svHealth=0, tgd=-1.1176e-08, iodc=7, toc=214032, reserved1=31, af2=0.0, af1=-2.33e-10, af0=-0.00680840062, crs=-40.03125, deltaN=3.317e-09, m0=0.52358105313, cuc=8.679926e-06, cus=-2.30968e-06, e=0.113663049648, sqrtA=1232.501514434814, toe=659680, cic=1.5087426e-05, omega0=0.031226071529, cis=-5.2364543e-05, crc=97.03125, i0=-0.6395829916, omega=-0.420688559767, omegaDot=6.9157898e-05, idot=-2.684e-09, reserved2=65535)>",
         ]
         for i, pld in enumerate(self.mga_gps_eph_payloads):
             res = UBXMessage("MGA", "MGA-GPS-EPH", SET, payload=pld)
-            # print(res)
+            # print(f'"{res}",')
             self.assertEqual(str(res), EXPECTED_RESULTS[i])
 
 

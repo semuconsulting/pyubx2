@@ -680,7 +680,7 @@ UBX_PAYLOADS_SET = {
         "omega": [I4, 2**-31],
         "omegaDot": [I4, 2**-43],
         "idot": [I2, 2**-43],
-        "reserved2": U4,
+        "reserved2": U2,
     },
     "MGA-GPS-HEALTH": {
         "type": U1,
