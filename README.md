@@ -17,12 +17,7 @@ pyubx2
 [Graphical Client](#gui) |
 [Author & License](#author)
 
-`pyubx2` is an original Python 3 parser for the UBX &copy; protocol. UBX is a proprietary binary protocol implemented on u-blox &trade; GNSS/GPS receiver modules.
-
-`pyubx2` is also capable of parsing NMEA 0183 &copy; and RTCM3 &copy; GNSS/GPS messages via the following inbuilt companion libraries:
-
-- [pynmeagps](http://github.com/semuconsulting/pynmeagps)
-- [pyrtcm](http://github.com/semuconsulting/pyrtcm)
+`pyubx2` is an original Python 3 parser for the UBX &copy;, NMEA 0183 &copy; and RTCM3 &copy; protocols. UBX is a proprietary binary protocol implemented on u-blox &trade; GNSS/GPS receiver modules.
 
 The `pyubx2` homepage is located at [https://github.com/semuconsulting/pyubx2](https://github.com/semuconsulting/pyubx2).
 
@@ -39,7 +34,7 @@ This is an independent project and we have no affiliation whatsoever with u-blox
 ![Contributors](https://img.shields.io/github/contributors/semuconsulting/pyubx2.svg)
 ![Open Issues](https://img.shields.io/github/issues-raw/semuconsulting/pyubx2)
 
-At time of writing the library implements a comprehensive set of inbound (SET/POLL) and outbound (GET) messages for u-blox GPS/GNSS devices from generation 6 through generation 10 [(NEO-M6*, NEO-M7*, NEO-M8*, NEO-M9*, NEO-D9*, RCB-F9*, ZED-F9*, MAX-M10S, etc.)](https://www.u-blox.com/en/positioning-chips-and-modules), but is readily [extensible](#extensibility). Refer to `UBX_MSGIDS` in [ubxtypes_core.py](https://github.com/semuconsulting/pyubx2/blob/master/src/pyubx2/ubxtypes_core.py) for the complete dictionary of messages currently supported. UBX protocol information sourced from public domain u-blox Interface Specifications © 2013-2021, u-blox AG.
+The library implements a comprehensive set of inbound (SET/POLL) and outbound (GET) messages for u-blox GPS/GNSS devices from [generation 6 through generation 10](https://www.u-blox.com/en/positioning-chips-and-modules), but is readily [extensible](#extensibility). Refer to `UBX_MSGIDS` in [ubxtypes_core.py](https://github.com/semuconsulting/pyubx2/blob/master/src/pyubx2/ubxtypes_core.py) for the complete dictionary of messages currently supported. UBX protocol information sourced from public domain u-blox Interface Specifications © 2013-2021, u-blox AG.
 
 Sphinx API Documentation in HTML format is available at [https://www.semuconsulting.com/pyubx2](https://www.semuconsulting.com/pyubx2).
 
