@@ -35,7 +35,7 @@ CONFLVL = {
 }
 
 # UBX-CFG-GNSS
-# key is (gnssId, sigCfgMask)
+# key is (gnssId, sigCfMask)
 SIGCFMASK = {
     (0, 0x01): "GPS L1C/A",
     (0, 0x10): "GPS L2C",
