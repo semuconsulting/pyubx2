@@ -192,14 +192,14 @@ e.g. the `NAV-POSLLH` message has the following attributes:
 
 The `payload` attribute always contains the raw payload as bytes. Attributes within repeating groups are parsed with a two-digit suffix (svid_01, svid_02, etc.).
 
-**Tip:** To iterate through a repeating group of attributes (*e.g., svid*), the following construct can be used:
+**Tip:** To iterate through a repeating group of attributes (*e.g. svid*), the following construct can be used:
 
 ```python
 svids = [] # list of svid values from repeating group
-size = msg.numSV # size of repeating group
-for i in range(size):
+for i in range(msg.numSV): # numSV = size of repeating group
     svid = getattr(msg, f"svid_{i+1:02d}")
     svids.append(svid)
+print(svids)
 ```
 
 If the input message class / id is unrecognised (i.e. not publicly documented by u-blox), `pyubx2` will parse the message to a nominal payload definition and append the term 'NOMINAL' to the message identity.
