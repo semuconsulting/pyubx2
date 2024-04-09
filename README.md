@@ -194,11 +194,11 @@ The `payload` attribute always contains the raw payload as bytes. Attributes wit
 
 **Tip:** To iterate through a repeating group of attributes (*e.g., svid*), the following construct can be used:
 
-```
+```python
 svids = [] # list of svid values from repeating group
 size = msg.numSV # size of repeating group
 for i in range(size):
-    svid = getattr(msg, f"svid_{i+1:02}")
+    svid = getattr(msg, f"svid_{i+1:02d}")
     svids.append(svid)
 ```
 
