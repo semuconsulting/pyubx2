@@ -299,7 +299,7 @@ keyID (int) or keyname (str) format
 >>> from pyubx2 import UBXMessage
 >>> layers = 1
 >>> transaction = 0
->>> cfgData = [("CFG_UART1_BAUDRATE", 9600), (0x40530001, 115200)]
+>>> cfgData = [("CFG_UART1_BAUDRATE", 9600), (0x40520001, 115200)]
 >>> msg = UBXMessage.config_set(layers, transaction, cfgData)
 >>> print(msg)
 <UBX(CFG-VALSET, version=0, ram=1, bbr=0, flash=0, action=0, reserved0=0, cfgData_01=1, cfgData_02=0 ...)>
@@ -320,7 +320,7 @@ Parameters:
 >>> from pyubx2 import UBXMessage
 >>> layers = 4
 >>> transaction = 0
->>> keys = ["CFG_UART1_BAUDRATE", 0x40530001]
+>>> keys = ["CFG_UART1_BAUDRATE", 0x40520001]
 >>> msg = UBXMessage.config_del(layers, transaction, keys)
 >>> print(msg)
 <UBX(CFG-VALDEL, version=0, bbr=0, flash=1, action=0, reserved0=0, keys_01=1079115777, keys_02=1079181313)>
@@ -343,7 +343,7 @@ wildcards - see example below and UBX device interface specification for details
 >>> from pyubx2 import UBXMessage
 >>> layer = 1
 >>> position = 0
->>> keys = ["CFG_UART1_BAUDRATE", 0x40530001]
+>>> keys = ["CFG_UART1_BAUDRATE", 0x40520001]
 >>> msg = UBXMessage.config_poll(layer, position, keys)
 >>> print(msg)
 <UBX(CFG-VALGET, version=0, layer=1, position=0, keys_01=1079115777, keys_02=1079181313)>
