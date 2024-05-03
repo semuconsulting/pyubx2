@@ -184,10 +184,10 @@ The `UBXMessage` object exposes different public attributes depending on its mes
 e.g. the `NAV-POSLLH` message has the following attributes:
 
 ```python
->>> print(msg)
->>> print(msg.identity)
->>> print(msg.lat, msg.lon)
->>> print(msg.hMSL/10**3)
+print(msg)
+print(msg.identity)
+print(msg.lat, msg.lon)
+print(msg.hMSL/10**3)
 ```
 ```
 <UBX(NAV-POSLLH, iTOW=16:01:54, lon=-2.1601284, lat=52.6206345, height=86327, hMSL=37844, hAcc=38885, vAcc=16557)>
@@ -247,8 +247,8 @@ print(msg1)
 B. Pass individual attributes as keyword arguments:
 ```python
 from pyubx2 import UBXMessage, SET
->>> msg2 = UBXMessage(0x06, 0x01, SET, msgClass=0x01, msgID=0x03, rateDDC=0, rateUART1=1, rateUART2=0, rateUSB=0, rateSPI=0)
->>> print(msg2)
+msg2 = UBXMessage(0x06, 0x01, SET, msgClass=0x01, msgID=0x03, rateDDC=0, rateUART1=1, rateUART2=0, rateUSB=0, rateSPI=0)
+print(msg2)
 ```
 ```
 <UBX(CFG-MSG, msgClass=NAV, msgID=NAV-STATUS, rateDDC=0, rateUART1=1, rateUART2=0, rateUSB=0, rateSPI=0, reserved=0)>
