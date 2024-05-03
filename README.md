@@ -116,32 +116,32 @@ The constructor accepts the following optional keyword arguments:
 
 Example -  Serial input. This example will output both UBX and NMEA messages:
 ```python
->>> from serial import Serial
->>> from pyubx2 import UBXReader
->>> stream = Serial('/dev/tty.usbmodem14101', 9600, timeout=3)
->>> ubr = UBXReader(stream)
->>> (raw_data, parsed_data) = ubr.read()
->>> print(parsed_data)
+from serial import Serial
+from pyubx2 import UBXReader
+stream = Serial('/dev/tty.usbmodem14101', 9600, timeout=3)
+ubr = UBXReader(stream)
+(raw_data, parsed_data) = ubr.read()
+print(parsed_data)
 ```
 
 Example - File input (using iterator). This will only output UBX data:
 ```python
->>> from pyubx2 import UBXReader
->>> stream = open('ubxdata.bin', 'rb')
->>> ubr = UBXReader(stream, protfilter=2)
->>> for (raw_data, parsed_data) in ubr: print(parsed_data)
-...
+from pyubx2 import UBXReader
+stream = open('ubxdata.bin', 'rb')
+ubr = UBXReader(stream, protfilter=2)
+for (raw_data, parsed_data) in ubr:
+  print(parsed_data)
 ```
 
 Example - Socket input (using iterator). This will output UBX, NMEA and RTCM3 data:
 ```python
->>> import socket
->>> from pyubx2 import UBXReader
->>> stream = socket.socket(socket.AF_INET, socket.SOCK_STREAM):
->>> stream.connect(("localhost", 50007))
->>> ubr = UBXReader(stream, protfilter=7)
->>> for (raw_data, parsed_data) in ubr: print(parsed_data)
-...
+import socket
+from pyubx2 import UBXReader
+stream = socket.socket(socket.AF_INET, socket.SOCK_STREAM):
+stream.connect(("localhost", 50007))
+ubr = UBXReader(stream, protfilter=7)
+for (raw_data, parsed_data) in ubr:
+  print(parsed_data)
 ```
 
 ---
@@ -159,20 +159,24 @@ The `parse()` method accepts the following optional keyword arguments:
 
 Example - output (GET) message:
 ```python
->>> from pyubx2 import UBXReader
->>> msg = UBXReader.parse(b'\xb5b\x05\x01\x02\x00\x06\x01\x0f\x38')
->>> print(msg)
+from pyubx2 import UBXReader
+msg = UBXReader.parse(b'\xb5b\x05\x01\x02\x00\x06\x01\x0f\x38')
+print(msg)
+msg = UBXReader.parse(b'\xb5b\x01\x12$\x000D\n\x18\xfd\xff\xff\xff\xf1\xff\xff\xff\xfc\xff\xff\xff\x10\x00\x00\x00\x0f\x00\x00\x00\x83\xf5\x01\x00A\x00\x00\x00\xf0\xdfz\x00\xd0\xa6')
+print(msg)
+```
+```
 <UBX(ACK-ACK, clsID=CFG, msgID=CFG-MSG)>
->>> msg = UBXReader.parse(b'\xb5b\x01\x12$\x000D\n\x18\xfd\xff\xff\xff\xf1\xff\xff\xff\xfc\xff\xff\xff\x10\x00\x00\x00\x0f\x00\x00\x00\x83\xf5\x01\x00A\x00\x00\x00\xf0\xdfz\x00\xd0\xa6')
->>> print(msg)
 <UBX(NAV-VELNED, iTOW=16:01:48, velN=-3, velE=-15, velD=-4, speed=16, gSpeed=15, heading=1.28387, sAcc=65, cAcc=80.5272)>
 ```
 
 Example - input (SET) message:
 ```python
->>> from pyubx2 import UBXReader, SET
->>> msg = UBXReader.parse(b"\xb5b\x13\x40\x14\x00\x01\x00\x01\x02\x01\x02\x03\x04\x01\x02\x03\x04\x01\x02\x03\x04\x01\x02\x03\x04\x93\xc8", msgmode=SET)
->>> print(msg)
+from pyubx2 import UBXReader, SET
+msg = UBXReader.parse(b"\xb5b\x13\x40\x14\x00\x01\x00\x01\x02\x01\x02\x03\x04\x01\x02\x03\x04\x01\x02\x03\x04\x01\x02\x03\x04\x93\xc8", msgmode=SET)
+print(msg)
+```
+```
 <UBX(MGA-INI-POS-LLH, type=1, version=0, reserved0=513, lat=6.7305985, lon=6.7305985, alt=67305985, posAcc=67305985)>
 ```
 
@@ -181,12 +185,14 @@ e.g. the `NAV-POSLLH` message has the following attributes:
 
 ```python
 >>> print(msg)
+>>> print(msg.identity)
+>>> print(msg.lat, msg.lon)
+>>> print(msg.hMSL/10**3)
+```
+```
 <UBX(NAV-POSLLH, iTOW=16:01:54, lon=-2.1601284, lat=52.6206345, height=86327, hMSL=37844, hAcc=38885, vAcc=16557)>
->>> msg.identity
 'NAV-POSLLH'
->>> msg.lat, msg.lon
 (52.6206345, -2.1601284)
->>> msg.hMSL/10**3
 37.844
 ```
 
@@ -231,23 +237,29 @@ Example - to generate a CFG-MSG command (*msgClass 0x06, msgID 0x01*) which sets
 
 A. Pass entire payload as bytes:
 ```python
->>> from pyubx2 import UBXMessage, SET
->>> msg1 = UBXMessage(b'\x06', b'\x01', SET, payload=b'\x01\x03\x00\x01\x00\x00\x00\x00')
->>> print(msg1)
+from pyubx2 import UBXMessage, SET
+msg1 = UBXMessage(b'\x06', b'\x01', SET, payload=b'\x01\x03\x00\x01\x00\x00\x00\x00')
+print(msg1)
+```
+```
 <UBX(CFG-MSG, msgClass=NAV, msgID=NAV-STATUS, rateDDC=0, rateUART1=1, rateUART2=0, rateUSB=0, rateSPI=0, reserved=0)>
 ```
 B. Pass individual attributes as keyword arguments:
 ```python
->>> from pyubx2 import UBXMessage, SET
+from pyubx2 import UBXMessage, SET
 >>> msg2 = UBXMessage(0x06, 0x01, SET, msgClass=0x01, msgID=0x03, rateDDC=0, rateUART1=1, rateUART2=0, rateUSB=0, rateSPI=0)
 >>> print(msg2)
+```
+```
 <UBX(CFG-MSG, msgClass=NAV, msgID=NAV-STATUS, rateDDC=0, rateUART1=1, rateUART2=0, rateUSB=0, rateSPI=0, reserved=0)>
 ```
 C. Pass selected attribute as keyword argument; the rest will be set to nominal values (in this case 0):
 ```python
->>> from pyubx2 import UBXMessage, SET
->>> msg3 = UBXMessage('CFG','CFG-MSG', SET, msgClass=0x01, msgID=0x03, rateUART1=1)
->>> print(msg3)
+from pyubx2 import UBXMessage, SET
+msg3 = UBXMessage('CFG','CFG-MSG', SET, msgClass=0x01, msgID=0x03, rateUART1=1)
+print(msg3)
+```
+```
 <UBX(CFG-MSG, msgClass=NAV, msgID=NAV-STATUS, rateDDC=0, rateUART1=1, rateUART2=0, rateUSB=0, rateSPI=0, reserved=0)>
 ```
 
@@ -259,16 +271,18 @@ The `UBXMessage` class implements a `serialize()` method to convert a `UBXMessag
 e.g. to create and send a `CFG-MSG` command which sets the NMEA GLL (*msgClass 0xf0, msgID 0x01*) message rate to 1 on the receiver's UART1 and USB ports:
 
 ```python
->>> from serial import Serial
->>> serialOut = Serial('COM7', 38400, timeout=5)
->>> from pyubx2 import UBXMessage, SET
->>> msg = UBXMessage('CFG','CFG-MSG', SET, msgClass=0xf0, msgID=0x01, rateUART1=1, rateUSB=1)
->>> print(msg)
+from serial import Serial
+from pyubx2 import UBXMessage, SET
+serialOut = Serial('COM7', 38400, timeout=5)
+msg = UBXMessage('CFG','CFG-MSG', SET, msgClass=0xf0, msgID=0x01, rateUART1=1, rateUSB=1)
+print(msg)
+output = msg.serialize()
+print(output)
+serialOut.write(output)
+```
+```
 <UBX(CFG-MSG, msgClass=NMEA-Standard, msgID=GLL, rateDDC=0, rateUART1=1, rateUART2=0, rateUSB=1, rateSPI=0, reserved=0)>
->>> output = msg.serialize()
->>> output
 b'\xb5b\x06\x01\x08\x00\xf0\x01\x00\x01\x00\x01\x00\x00\x022'
->>> serialOut.write(output)
 ```
 
 ---
@@ -296,14 +310,16 @@ Parameters:
 keyID (int) or keyname (str) format
 
 ```python
->>> from pyubx2 import UBXMessage
->>> layers = 1
->>> transaction = 0
->>> cfgData = [("CFG_UART1_BAUDRATE", 9600), (0x40520001, 115200)]
->>> msg = UBXMessage.config_set(layers, transaction, cfgData)
->>> print(msg)
+from pyubx2 import UBXMessage
+layers = 1
+transaction = 0
+cfgData = [("CFG_UART1_BAUDRATE", 9600), (0x40520001, 115200)]
+msg = UBXMessage.config_set(layers, transaction, cfgData)
+print(msg)
+serialOut.write(msg.serialize())
+```
+```
 <UBX(CFG-VALSET, version=0, ram=1, bbr=0, flash=0, action=0, reserved0=0, cfgData_01=1, cfgData_02=0 ...)>
->>> serialOut.write(msg.serialize())
 ```
 
 **UBXMessage.config_del() (CFG-VALDEL)**
@@ -317,14 +333,16 @@ Parameters:
 1. keys - an array of up to 64 keys in either keyID (int) or keyname (str) format
 
 ```python
->>> from pyubx2 import UBXMessage
->>> layers = 4
->>> transaction = 0
->>> keys = ["CFG_UART1_BAUDRATE", 0x40520001]
->>> msg = UBXMessage.config_del(layers, transaction, keys)
->>> print(msg)
+from pyubx2 import UBXMessage
+layers = 4
+transaction = 0
+keys = ["CFG_UART1_BAUDRATE", 0x40520001]
+msg = UBXMessage.config_del(layers, transaction, keys)
+print(msg)
+serialOut.write(msg.serialize())
+```
+```
 <UBX(CFG-VALDEL, version=0, bbr=0, flash=1, action=0, reserved0=0, keys_01=1079115777, keys_02=1079181313)>
->>> serialOut.write(msg.serialize())
 ```
 
 **UBXMessage.config_poll() (CFG-VALGET)**
@@ -340,37 +358,41 @@ Parameters:
 wildcards - see example below and UBX device interface specification for details.
 
 ```python
->>> from pyubx2 import UBXMessage
->>> layer = 1
->>> position = 0
->>> keys = ["CFG_UART1_BAUDRATE", 0x40520001]
->>> msg = UBXMessage.config_poll(layer, position, keys)
->>> print(msg)
+from pyubx2 import UBXMessage
+layer = 1
+position = 0
+keys = ["CFG_UART1_BAUDRATE", 0x40520001]
+msg = UBXMessage.config_poll(layer, position, keys)
+print(msg)
+serialOut.write(msg.serialize())
+```
+```
 <UBX(CFG-VALGET, version=0, layer=1, position=0, keys_01=1079115777, keys_02=1079181313)>
->>> serialOut.write(msg.serialize())
 ```
 
 Wild card queries can be performed by setting bits 0..15 of the keyID to `0xffff` e.g. to retrieve all CFG_MSGOUT parameters (keyID `0x2091*`) :
 
 ```python
->>> from pyubx2 import UBXMessage
->>> layer = 1
->>> position = 0 # retrieve first 64 results
->>> keys = [0x2091ffff]
->>> msg1of3 = UBXMessage.config_poll(layer, position, keys)
->>> print(msg1of3)
+from pyubx2 import UBXMessage
+layer = 1
+position = 0 # retrieve first 64 results
+keys = [0x2091ffff]
+msg1of3 = UBXMessage.config_poll(layer, position, keys)
+print(msg1of3)
+serialOut.write(msg1of3.serialize())
+position = 64 # retrieve next 64 results
+msg2of3 = UBXMessage.config_poll(layer, position, keys)
+print(msg2of3)
+serialOut.write(msg2of3.serialize())
+position = 128 # retrieve next 64 results
+msg3of3 = UBXMessage.config_poll(layer, position, keys)
+print(msg3of3)
+serialOut.write(msg3of3.serialize())
+```
+```
 <UBX(CFG-VALGET, version=0, layer=1, position=0, keys_01=546439167)>
->>> serialOut.write(msg1of3.serialize())
->>> position = 64 # retrieve next 64 results
->>> msg2of3 = UBXMessage.config_poll(layer, position, keys)
->>> print(msg2of3)
 <UBX(CFG-VALGET, version=0, layer=1, position=64, keys_01=546439167)>
->>> serialOut.write(msg2of3.serialize())
->>> position = 128 # retrieve next 64 results
->>> msg3of3 = UBXMessage.config_poll(layer, position, keys)
->>> print(msg3of3)
 <UBX(CFG-VALGET, version=0, layer=1, position=128, keys_01=546439167)>
->>> serialOut.write(msg3of3.serialize())
 ```
 
 ---
