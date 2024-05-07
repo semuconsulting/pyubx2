@@ -118,30 +118,30 @@ Example -  Serial input. This example will output both UBX and NMEA messages:
 ```python
 from serial import Serial
 from pyubx2 import UBXReader
-stream = Serial('/dev/tty.usbmodem14101', 9600, timeout=3)
-ubr = UBXReader(stream)
-(raw_data, parsed_data) = ubr.read()
-print(parsed_data)
+with Serial('/dev/tty.usbmodem14101', 9600, timeout=3) as stream:
+  ubr = UBXReader(stream)
+  raw_data, parsed_data = ubr.read()
+  print(parsed_data)
 ```
 
 Example - File input (using iterator). This will only output UBX data:
 ```python
 from pyubx2 import UBXReader
-stream = open('ubxdata.bin', 'rb')
-ubr = UBXReader(stream, protfilter=2)
-for (raw_data, parsed_data) in ubr:
-  print(parsed_data)
+with open('ubxdata.bin', 'rb') as stream:
+  ubr = UBXReader(stream, protfilter=2)
+  for (raw_data, parsed_data) in ubr:
+    print(parsed_data)
 ```
 
 Example - Socket input (using iterator). This will output UBX, NMEA and RTCM3 data:
 ```python
 import socket
 from pyubx2 import UBXReader
-stream = socket.socket(socket.AF_INET, socket.SOCK_STREAM):
-stream.connect(("localhost", 50007))
-ubr = UBXReader(stream, protfilter=7)
-for (raw_data, parsed_data) in ubr:
-  print(parsed_data)
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as stream:
+  stream.connect(("localhost", 50007))
+  ubr = UBXReader(stream, protfilter=7)
+  for (raw_data, parsed_data) in ubr:
+    print(parsed_data)
 ```
 
 ---
@@ -201,11 +201,11 @@ The `payload` attribute always contains the raw payload as bytes. Attributes wit
 **Tip:** To iterate through a repeating group of attributes (*e.g. svid*), the following construct can be used:
 
 ```python
-svids = [] # list of svid values from repeating group
+vals = [] # list of svid values from repeating group
 for i in range(msg.numSV): # numSV = size of repeating group
     svid = getattr(msg, f"svid_{i+1:02d}")
-    svids.append(svid)
-print(svids)
+    vals.append(svid)
+print(vals)
 ```
 
 If the input message class / id is unrecognised (i.e. not publicly documented by u-blox), `pyubx2` will parse the message to a nominal payload definition and append the term 'NOMINAL' to the message identity.
