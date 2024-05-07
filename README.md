@@ -129,7 +129,7 @@ Example - File input (using iterator). This will only output UBX data:
 from pyubx2 import UBXReader
 with open('ubxdata.bin', 'rb') as stream:
   ubr = UBXReader(stream, protfilter=2)
-  for (raw_data, parsed_data) in ubr:
+  for raw_data, parsed_data in ubr:
     print(parsed_data)
 ```
 
@@ -140,7 +140,7 @@ from pyubx2 import UBXReader
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as stream:
   stream.connect(("localhost", 50007))
   ubr = UBXReader(stream, protfilter=7)
-  for (raw_data, parsed_data) in ubr:
+  for raw_data, parsed_data in ubr:
     print(parsed_data)
 ```
 
