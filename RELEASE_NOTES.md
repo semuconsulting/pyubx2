@@ -1,6 +1,12 @@
 # pyubx2 Release Notes
 
-### RELEASE CANDIDATE 1.2.39
+### RELEASE 1.2.40
+
+ENHANCEMENTS:
+
+1. Internal field naming clarified and docstrings updated - no functional changes.
+
+### RELEASE 1.2.39
 
 FIXES:
 

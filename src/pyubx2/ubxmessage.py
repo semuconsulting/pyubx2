@@ -111,9 +111,9 @@ class UBXMessage:
             else:
                 self._payload = kwargs.get("payload", b"")
                 pdict = self._get_dict(**kwargs)  # get appropriate payload dict
-                for key in pdict:  # process each attribute in dict
+                for anam in pdict:  # process each attribute in dict
                     (offset, index) = self._set_attribute(
-                        offset, pdict, key, index, **kwargs
+                        anam, pdict, offset, index, **kwargs
                     )
             self._do_len_checksum()
 
@@ -125,7 +125,7 @@ class UBXMessage:
         ) as err:
             raise ube.UBXTypeError(
                 (
-                    f"Incorrect type for attribute '{key}' "
+                    f"Incorrect type for attribute '{anam}' "
                     f"in {['GET', 'SET', 'POLL'][self._mode]} message "
                     f"class {self.identity}"
                 )
@@ -133,21 +133,21 @@ class UBXMessage:
         except (OverflowError,) as err:
             raise ube.UBXTypeError(
                 (
-                    f"Overflow error for attribute '{key}' "
+                    f"Overflow error for attribute '{anam}' "
                     f"in {['GET', 'SET', 'POLL'][self._mode]} message "
                     f"class {self.identity}"
                 )
             ) from err
 
     def _set_attribute(
-        self, offset: int, pdict: dict, key: str, index: list, **kwargs
+        self, anam: str, pdict: dict, offset: int, index: list, **kwargs
     ) -> tuple:
         """
         Recursive routine to set individual or grouped payload attributes.
 
-        :param int offset: payload offset in bytes
+        :param str anam: attribute name
         :param dict pdict: dict representing payload definition
-        :param str key: attribute keyword
+        :param int offset: payload offset in bytes
         :param list index: repeating group index array
         :param kwargs: optional payload key/value pairs
         :return: (offset, index[])
@@ -155,36 +155,36 @@ class UBXMessage:
 
         """
 
-        att = pdict[key]  # get attribute type
+        adef = pdict[anam]  # get attribute definition
         if isinstance(
-            att, tuple
+            adef, tuple
         ):  # repeating group of attributes or subdefined bitfield
-            numr, _ = att
+            numr, _ = adef
             if numr in (ubt.X1, ubt.X2, ubt.X4, ubt.X6, ubt.X8, ubt.X24):  # bitfield
                 if self._parsebf:  # if we're parsing bitfields
                     (offset, index) = self._set_attribute_bitfield(
-                        att, offset, index, **kwargs
+                        adef, offset, index, **kwargs
                     )
                 else:  # treat bitfield as a single byte array
                     offset = self._set_attribute_single(
-                        numr, offset, key, index, **kwargs
+                        anam, numr, offset, index, **kwargs
                     )
             else:  # repeating group of attributes
                 (offset, index) = self._set_attribute_group(
-                    att, offset, index, **kwargs
+                    adef, offset, index, **kwargs
                 )
         else:  # single attribute
-            offset = self._set_attribute_single(att, offset, key, index, **kwargs)
+            offset = self._set_attribute_single(anam, adef, offset, index, **kwargs)
 
         return (offset, index)
 
     def _set_attribute_group(
-        self, att: tuple, offset: int, index: list, **kwargs
+        self, adef: tuple, offset: int, index: list, **kwargs
     ) -> tuple:
         """
         Process (nested) group of attributes.
 
-        :param tuple att: attribute group - tuple of (num repeats, attribute dict)
+        :param tuple adef: attribute definition - tuple of (num repeats, attribute dict)
         :param int offset: payload offset in bytes
         :param list index: repeating group index array
         :param kwargs: optional payload key/value pairs
@@ -194,7 +194,7 @@ class UBXMessage:
         """
 
         index.append(0)  # add a (nested) group index
-        numr, attd = att  # number of repeats, attribute dictionary
+        anam, gdict = adef  # attribute signifying group size, group dictionary
         # if CFG-VALGET or CFG-VALSET message, use dedicated method to
         # parse as configuration key value pairs
         if self._ubxClass == b"\x06" and (
@@ -204,12 +204,12 @@ class UBXMessage:
             self._set_attribute_cfgval(offset, **kwargs)
         else:
             # derive or retrieve number of items in group
-            if isinstance(numr, int):  # fixed number of repeats
-                rng = numr
-            elif numr == "None":  # number of repeats 'variable by size'
-                rng = self._calc_num_repeats(attd, self._payload, offset, 0)
+            if isinstance(anam, int):  # fixed number of repeats
+                gsiz = anam
+            elif anam == "None":  # number of repeats 'variable by size'
+                gsiz = self._calc_num_repeats(gdict, self._payload, offset, 0)
             else:  # number of repeats is defined in named attribute
-                rng = getattr(self, numr)
+                gsiz = getattr(self, anam)
                 # special handling for ESF-MEAS message types
                 if (
                     self._ubxClass == b"\x10"
@@ -217,14 +217,14 @@ class UBXMessage:
                     and self._mode == ubt.SET
                 ):
                     if getattr(self, "calibTtagValid", 0):
-                        rng += 1
+                        gsiz += 1
             # recursively process each group attribute,
             # incrementing the payload offset and index as we go
-            for i in range(rng):
+            for i in range(gsiz):
                 index[-1] = i + 1
-                for key1 in attd:
+                for key1 in gdict:
                     (offset, index) = self._set_attribute(
-                        offset, attd, key1, index, **kwargs
+                        key1, gdict, offset, index, **kwargs
                     )
 
         index.pop()  # remove this (nested) group index
@@ -232,17 +232,17 @@ class UBXMessage:
         return (offset, index)
 
     def _set_attribute_single(
-        self, att: object, offset: int, key: str, index: list, **kwargs
+        self, anam: str, adef: object, offset: int, index: list, **kwargs
     ) -> int:
         """
         Set individual attribute value, applying scaling where appropriate.
 
+        :param str anam: attribute keyword
         EITHER
-        :param str att: attribute type string e.g. 'U002'
+        :param str adef: attribute definition string e.g. 'U002'
         OR
-        :param list att: if scaled, list of [attribute type string, scaling factor float]
+        :param list adef: if scaled, list of [attribute type string, scaling factor float]
         :param int offset: payload offset in bytes
-        :param str key: attribute keyword
         :param list index: repeating group index array
         :param kwargs: optional payload key/value pairs
         :return: offset
@@ -252,60 +252,61 @@ class UBXMessage:
         # pylint: disable=no-member
 
         # if attribute is scaled
-        scale = 1
-        if isinstance(att, list) and self._scaling:
-            scale = att[1]
-            att = att[0]
+        ares = 1
+        if isinstance(adef, list) and self._scaling:
+            ares = adef[1]  # attribute resolution (i.e. scaling factor)
+            adef = adef[0]  # attribute definition
 
         # if attribute is part of a (nested) repeating group, suffix name with index
-        keyr = key
+        anami = anam
         for i in index:  # one index for each nested level
             if i > 0:
-                keyr += f"_{i:02d}"
+                anami += f"_{i:02d}"
 
         # determine attribute size (bytes)
-        if att == ubt.CH:  # variable length string
-            atts = len(self._payload)
+        if adef == ubt.CH:  # variable length string
+            asiz = len(self._payload)
         else:
-            atts = attsiz(att)
+            asiz = attsiz(adef)
 
         # if payload keyword has been provided,
         # use the appropriate offset of the payload
         if "payload" in kwargs:
-            valb = self._payload[offset : offset + atts]
-            if scale == 1:
-                val = bytes2val(valb, att)
+            valb = self._payload[offset : offset + asiz]
+            if ares == 1:
+                val = bytes2val(valb, adef)
             else:
-                val = round(bytes2val(valb, att) * scale, ubt.SCALROUND)
+                val = round(bytes2val(valb, adef) * ares, ubt.SCALROUND)
         else:
             # if individual keyword has been provided,
             # set to provided value, else set to
             # nominal value
-            val = kwargs.get(keyr, nomval(att))
-            if scale == 1:
-                valb = val2bytes(val, att)
+            val = kwargs.get(anami, nomval(adef))
+            if ares == 1:
+                valb = val2bytes(val, adef)
             else:
-                valb = val2bytes(int(val / scale), att)
+                valb = val2bytes(int(val / ares), adef)
             self._payload += valb
 
-        if keyr[0:3] == "_HP":  # high precision component of earlier attribute
+        if anami[0:3] == "_HP":  # high precision component of earlier attribute
             # add standard and high precision values in a single attribute
-            setattr(self, keyr[3:], round(getattr(self, keyr[3:]) + val, ubt.SCALROUND))
+            setattr(
+                self, anami[3:], round(getattr(self, anami[3:]) + val, ubt.SCALROUND)
+            )
         else:
-            setattr(self, keyr, val)
-        offset += atts
+            setattr(self, anami, val)
+        offset += asiz
 
         return offset
 
     def _set_attribute_bitfield(
-        self, att: str, offset: int, index: list, **kwargs
+        self, atyp: str, offset: int, index: list, **kwargs
     ) -> tuple:
         """
         Parse bitfield attribute (type 'X').
 
-        :param str att: attribute type e.g. 'X002'
+        :param str atyp: attribute type e.g. 'X002'
         :param int offset: payload offset in bytes
-        :param str key: attribute key name
         :param list index: repeating group index array
         :param kwargs: optional payload key/value pairs
         :return: (offset, index[])
@@ -314,27 +315,27 @@ class UBXMessage:
         """
         # pylint: disable=no-member
 
-        bft, bfd = att  # type of bitfield, bitfield dictionary
-        bfs = attsiz(bft)  # size of bitfield in bytes
+        btyp, bdict = atyp  # type of bitfield, bitfield dictionary
+        bsiz = attsiz(btyp)  # size of bitfield in bytes
         bfoffset = 0
 
         # if payload keyword has been provided,
         # use the appropriate offset of the payload
         if "payload" in kwargs:
-            bitfield = int.from_bytes(self._payload[offset : offset + bfs], "little")
+            bitfield = int.from_bytes(self._payload[offset : offset + bsiz], "little")
         else:
             bitfield = 0
 
         # process each flag in bitfield
-        for key, keyt in bfd.items():
+        for key, keyt in bdict.items():
             (bitfield, bfoffset) = self._set_attribute_bits(
                 bitfield, bfoffset, key, keyt, index, **kwargs
             )
 
         # update payload
-        offset += bfs
+        offset += bsiz
         if "payload" not in kwargs:
-            self._payload += bitfield.to_bytes(bfs, "little")
+            self._payload += bitfield.to_bytes(bsiz, "little")
 
         return (offset, index)
 

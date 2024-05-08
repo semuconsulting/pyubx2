@@ -9,8 +9,6 @@ Created on 15 Dec 2020
 :license: BSD 3-Clause
 """
 
-# pylint: disable=invalid-name
-
 import struct
 from datetime import datetime, timedelta
 from math import cos, pi, sin, trunc
@@ -349,7 +347,7 @@ def nomval(att: str) -> object:
     return val
 
 
-def msgclass2bytes(msgClass: int, msgID: int) -> bytes:
+def msgclass2bytes(msgclass: int, msgid: int) -> bytes:
     """
     Convert message class/id integers to bytes.
 
@@ -360,12 +358,12 @@ def msgclass2bytes(msgClass: int, msgID: int) -> bytes:
 
     """
 
-    msgClass = val2bytes(msgClass, ubt.U1)
-    msgID = val2bytes(msgID, ubt.U1)
-    return (msgClass, msgID)
+    msgclass = val2bytes(msgclass, ubt.U1)
+    msgid = val2bytes(msgid, ubt.U1)
+    return (msgclass, msgid)
 
 
-def msgstr2bytes(msgClass: str, msgID: str) -> bytes:
+def msgstr2bytes(msgclass: str, msgid: str) -> bytes:
     """
     Convert plain text UBX message class to bytes.
 
@@ -378,12 +376,12 @@ def msgstr2bytes(msgClass: str, msgID: str) -> bytes:
     """
 
     try:
-        clsid = key_from_val(ubt.UBX_CLASSES, msgClass)
-        msgid = key_from_val(ubt.UBX_MSGIDS, msgID)[1:2]
+        clsid = key_from_val(ubt.UBX_CLASSES, msgclass)
+        msgid = key_from_val(ubt.UBX_MSGIDS, msgid)[1:2]
         return (clsid, msgid)
     except KeyError as err:
         raise ube.UBXMessageError(
-            f"Undefined message, class {msgClass}, id {msgID}"
+            f"Undefined message, class {msgclass}, id {msgid}"
         ) from err
 
 
@@ -406,7 +404,7 @@ def cfgname2key(name: str) -> tuple:
         ) from err
 
 
-def cfgkey2name(keyID: int) -> tuple:
+def cfgkey2name(keyid: int) -> tuple:
     """
     Return key name and data type for given
     configuration database hexadecimal key.
@@ -422,18 +420,18 @@ def cfgkey2name(keyID: int) -> tuple:
         val = None
         for key, val in ubcdb.UBX_CONFIG_DATABASE.items():
             (kid, typ) = val
-            if keyID == kid:
+            if keyid == kid:
                 return (key, typ)
 
         # undocumented configuration database key
         # type is derived from keyID
-        key = f"CFG_{hex(keyID)}"
-        typ = f"X{ubcdb.UBX_CONFIG_STORSIZE[int(hex(keyID)[2:3])]:03d}"
+        key = f"CFG_{hex(keyid)}"
+        typ = f"X{ubcdb.UBX_CONFIG_STORSIZE[int(hex(keyid)[2:3])]:03d}"
         return (key, typ)
 
     except KeyError as err:
         raise ube.UBXMessageError(
-            f"Invalid configuration database key {hex(keyID)}"
+            f"Invalid configuration database key {hex(keyid)}"
         ) from err
 
 
