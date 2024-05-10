@@ -3,6 +3,10 @@ ubxserver.py
 
 This example illustrates a simple HTTP wrapper around pyubx2.UBXReader.
 
+Usage:
+
+python3 ubxserver.py ipaddress=127.0.0.1 ipport=8080 serport="/dev/ttyACM0" baudrate=38400 timeout=0.1
+
 It displays selected GPS data from NAV-PVT, NAV-POSLLH, NAV-DOP and NAV-SAT
 messages on a dynamically updated web page using the native Python 3 http.server
 library and a RESTful API implemented by the pyubx2 streaming and parsing service.
@@ -21,17 +25,19 @@ Created on 17 May 2021
 :author: semuadmin
 :license: (c) SEMU Consulting 2021 - BSD 3-Clause License
 """
+
 # pylint: disable=invalid-name
 
-from sys import platform
-from io import BufferedReader
-from threading import Thread, Event
-from time import sleep
 import json
+from io import BufferedReader
+from sys import argv
+from threading import Event, Thread
+from time import sleep
+
 from serial import Serial, SerialException, SerialTimeoutException
-from pyubx2 import UBXMessage, UBXReader, GET, UBX_PROTOCOL
 import pyubx2.exceptions as ube
-from gpshttpserver import GPSHTTPServer, GPSHTTPHandler
+from pyubx2 import GET, UBX_PROTOCOL, UBXMessage, UBXReader
+from gpshttpserver import GPSHTTPHandler, GPSHTTPServer
 
 
 class UBXServer:
@@ -169,12 +175,12 @@ class UBXServer:
 
         try:
             if parsed_data.identity == "NAV-PVT":
-                self.gpsdata[
-                    "date"
-                ] = f"{parsed_data.day:02}/{parsed_data.month:02}/{parsed_data.year}"
-                self.gpsdata[
-                    "time"
-                ] = f"{parsed_data.hour:02}:{parsed_data.min:02}:{parsed_data.second:02}"
+                self.gpsdata["date"] = (
+                    f"{parsed_data.day:02}/{parsed_data.month:02}/{parsed_data.year}"
+                )
+                self.gpsdata["time"] = (
+                    f"{parsed_data.hour:02}:{parsed_data.min:02}:{parsed_data.second:02}"
+                )
                 self.gpsdata["latitude"] = parsed_data.lat
                 self.gpsdata["longitude"] = parsed_data.lon
                 self.gpsdata["elevation"] = parsed_data.height / 1000
@@ -207,27 +213,24 @@ class UBXServer:
         return json.dumps(self.gpsdata)
 
 
-if __name__ == "__main__":
-    ADDRESS = "localhost"
-    TCPPORT = 8080
+def main(**kwargs):
+    """
+    Main Routine.
+    """
 
-    # set port, baudrate and timeout to suit your device configuration
-    if platform == "win32":  # Windows
-        prt = "COM13"
-    elif platform == "darwin":  # MacOS
-        prt = "/dev/tty.usbmodem2101"
-    else:  # Linux
-        prt = "/dev/ttyACM1"
-    baud = 9600
-    tmout = 0.1
+    ipaddress = kwargs.get("ipaddress", "localhost")
+    ipport = kwargs.get("ipport", 8080)
+    serport = kwargs.get("serport", "/dev/ttyACM0")
+    baudrate = int(kwargs.get("baudrate", 38400))
+    timeout = float(kwargs.get("timeout", 0.1))
 
-    ubs = UBXServer(prt, baud, tmout)
-    httpd = GPSHTTPServer((ADDRESS, TCPPORT), GPSHTTPHandler, ubs)
+    ubs = UBXServer(serport, baudrate, timeout)
+    httpd = GPSHTTPServer((ipaddress, ipport), GPSHTTPHandler, ubs)
 
     if ubs.connect():
         ubs.start_read_thread()
         print(
-            f"\nStarting HTTP Server on http://{ADDRESS}:{TCPPORT} ...",
+            f"\nStarting HTTP Server on http://{ipaddress}:{ipport} ...",
             "\nPress Ctrl-C to terminate.\n",
         )
         httpd_thread = Thread(target=httpd.serve_forever, daemon=True)
@@ -245,3 +248,8 @@ if __name__ == "__main__":
         sleep(2)  # wait for shutdown
         ubs.disconnect()
         print("\nProcessing Complete")
+
+
+if __name__ == "__main__":
+
+    main(**dict(arg.split("=") for arg in argv[1:]))
