@@ -44,7 +44,7 @@ from pyubx2 import (
 # example configuration database keys and values
 # you could use any of the available keys in UBX_CONFIG_DATABASE
 # provided they are appropriate for your particular device
-CONFIG_KEY1 = "CFG_MSGOUT_UBX_MON_COMMS_USB"
+CONFIG_KEY1 = "CFG_MSGOUT_UBX_MON_COMMS_UART1"
 CONFIG_VAL1 = 1
 CONFIG_KEY2 = "CFG_MSGOUT_UBX_MON_TXBUF_UART1"
 CONFIG_VAL2 = 1
@@ -56,7 +56,7 @@ def read_messages(stream, lock, stopevent, ubxreader):
     """
     # pylint: disable=unused-variable, broad-except
 
-    while not stopevent.is_set:
+    while not stopevent.is_set():
         if stream.in_waiting:
             try:
                 lock.acquire()
@@ -98,7 +98,7 @@ def main(**kwargs):
 
     port = kwargs.get("port", "/dev/ttyACM0")
     baudrate = int(kwargs.get("baudrate", 38400))
-    timeout = float(kwargs.get("timeout", 3))
+    timeout = float(kwargs.get("timeout", 0.1))
 
     with Serial(port, baudrate, timeout=timeout) as stream:
         # create UBXReader instance, reading only UBX messages
