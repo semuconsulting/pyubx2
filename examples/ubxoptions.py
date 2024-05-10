@@ -5,6 +5,10 @@ Series of worked examples illustrating the various options available for
 parsing and constructing UBX messages. The example used here is a CFG-GNSS
 (GNSS Configuration) message.
 
+Usage:
+
+python3 ubxoptions.py
+
 The examples may be run without connecting a receiver.
  
 The CFG-GNSS message contains configuration settings for one or more GNSS

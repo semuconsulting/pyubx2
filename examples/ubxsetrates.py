@@ -5,6 +5,10 @@ This example illustrates how to send UBX commands to a receiver
 (in this case a series of CFG-MSG commands) while simultaneously
 reading acknowledgements from the receiver.
 
+Usage:
+
+python3 ubxsetrates.py port="/dev/ttyACM0" baudrate=38400 timout=0.1 rate=4
+
 It connects to the receiver's serial port and sets up a
 UBXReader read thread. With the read thread running
 in the background, it sends a series of CFG-MSG commands to
@@ -27,13 +31,16 @@ Created on 2 Oct 2020
 
 @author: semuadmin
 """
+
 # pylint: disable=invalid-name
 
 from io import BufferedReader
-from sys import platform
+from sys import argv
 from threading import Lock, Thread
 from time import sleep
+
 from serial import Serial
+
 from pyubx2 import SET, UBX_MSGIDS, UBXMessage, UBXReader
 
 # initialise global variables
@@ -79,24 +86,21 @@ def send_message(stream, lock, message):
     lock.release()
 
 
-if __name__ == "__main__":
-    # set port, baudrate and timeout to suit your device configuration
-    if platform == "win32":  # Windows
-        port = "COM13"
-    elif platform == "darwin":  # MacOS
-        port = "/dev/tty.usbmodem2101"
-    else:  # Linux
-        port = "/dev/ttyACM1"
-    baudrate = 9600
-    timeout = 0.1
-    RATE = 4  # set to 0 to disable NAV messages on USB and UART1 ports
+def main(**kwargs):
+    """
+    Main routine.
+    """
+
+    port = kwargs.get("port", "/dev/ttyACM0")
+    baudrate = int(kwargs.get("baudrate", 38400))
+    timeout = float(kwargs.get("timeout", 0.1))
+    rate = int(kwargs.get("rate", 4))
 
     with Serial(port, baudrate, timeout=timeout) as serial:
         # create UBXReader instance, reading only UBX messages
         ubr = UBXReader(BufferedReader(serial), protfilter=2)
 
         print("\nStarting read thread...\n")
-        reading = True
         serial_lock = Lock()
         read_thread = start_thread(serial, serial_lock, ubr)
 
@@ -111,18 +115,20 @@ if __name__ == "__main__":
                     SET,
                     msgClass=msgid[0],
                     msgID=msgid[1],
-                    rateUART1=RATE,
-                    rateUSB=RATE,
+                    rateUART1=rate,
+                    rateUSB=rate,
                 )
-                print(
-                    f"\nSetting message rate for {msgname} message type to {RATE}...\n"
-                )
+                print(f"Setting message rate for {msgname} message type to {rate}...\n")
                 send_message(serial, serial_lock, msg)
                 sleep(1)
 
         print("\nCommands sent. Waiting for any final acknowledgements...\n")
         sleep(1)
         print("\nStopping reader thread...\n")
-        reading = False
         read_thread.join()
         print("\nProcessing Complete")
+
+
+if __name__ == "__main__":
+
+    main(**dict(arg.split("=") for arg in argv[1:]))

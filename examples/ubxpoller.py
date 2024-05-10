@@ -5,6 +5,10 @@ This example illustrates how to read, write and display UBX messages
 "concurrently" using threads and queues. This represents a useful
 generic pattern for many end user applications.
 
+Usage:
+
+python3 ubxpoller.py port="/dev/ttyACM0" baudrate=38400 timeout=0.1
+
 It implements two threads which run concurrently:
 1) an I/O thread which continuously reads UBX data from the
 receiver and sends any queued outbound command or poll messages.
@@ -16,12 +20,7 @@ Press CTRL-C to terminate.
 
 FYI: Since Python implements a Global Interpreter Lock (GIL),
 threads are not strictly concurrent, though this is of minor
-practical consequence here. True concurrency could be
-achieved using multiprocessing (i.e. separate interpreter
-processes rather than threads) but this is non-trivial in
-this context as serial streams cannot be shared between
-processes. A discrete hardware I/O process must be implemented
-e.g. using RPC server techniques.
+practical consequence here.
 
 Created on 07 Aug 2021
 
@@ -29,14 +28,15 @@ Created on 07 Aug 2021
 :copyright: SEMU Consulting © 2021
 :license: BSD 3-Clause
 """
-# pylint: disable=invalid-name
 
 from queue import Queue
-from sys import platform
-from threading import Event, Lock, Thread
+from sys import argv
+from threading import Event, Thread
 from time import sleep
+
 from serial import Serial
-from pyubx2 import POLL, UBX_PROTOCOL, UBXMessage, UBXReader, UBX_PAYLOADS_POLL
+
+from pyubx2 import POLL, UBX_PAYLOADS_POLL, UBX_PROTOCOL, UBXMessage, UBXReader
 
 
 def io_data(
@@ -87,31 +87,27 @@ def process_data(queue: Queue, stop: Event):
             queue.task_done()
 
 
-if __name__ == "__main__":
-    # set port, baudrate and timeout to suit your device configuration
-    if platform == "win32":  # Windows
-        port = "COM13"
-    elif platform == "darwin":  # MacOS
-        port = "/dev/tty.usbmodem101"
-    else:  # Linux
-        port = "/dev/ttyACM1"
-    baudrate = 38400
-    timeout = 0.1
+def main(**kwargs):
+    """
+    Main routine.
+    """
 
-    DELAY = 1
+    port = kwargs.get("port", "/dev/ttyACM0")
+    baudrate = int(kwargs.get("baudrate", 38400))
+    timeout = float(kwargs.get("timeout", 0.1))
 
-    with Serial(port, baudrate, timeout=timeout) as serial_stream:
-        ubxreader = UBXReader(serial_stream, protfilter=UBX_PROTOCOL)
+    with Serial(port, baudrate, timeout=timeout) as stream:
+        ubxreader = UBXReader(stream, protfilter=UBX_PROTOCOL)
 
-        serial_lock = Lock()
         read_queue = Queue()
         send_queue = Queue()
         stop_event = Event()
+        stop_event.clear()
 
         io_thread = Thread(
             target=io_data,
             args=(
-                serial_stream,
+                stream,
                 ubxreader,
                 read_queue,
                 send_queue,
@@ -144,7 +140,7 @@ if __name__ == "__main__":
                         msg = UBXMessage("NAV", nam, POLL)
                         send_queue.put(msg)
                         count += 1
-                        sleep(DELAY)
+                        sleep(1)
                 stop_event.set()
                 print(f"{count} NAV message types polled.")
 
@@ -156,3 +152,8 @@ if __name__ == "__main__":
         io_thread.join()
         process_thread.join()
         print("\nProcessing complete")
+
+
+if __name__ == "__main__":
+
+    main(**dict(arg.split("=") for arg in argv[1:]))

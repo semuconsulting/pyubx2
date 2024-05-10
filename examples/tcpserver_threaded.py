@@ -27,7 +27,7 @@ SERPORT = "/dev/tty.usbmodem141101"
 BAUD = 9600
 TIMEOUT = 3
 HOST = "localhost"
-PORT = 50007  # Arbitrary non-privileged port
+PORT = 50012  # Arbitrary non-privileged port
 DELAY = 0.25
 
 
