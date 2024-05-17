@@ -121,7 +121,8 @@ from pyubx2 import UBXReader
 with Serial('/dev/tty.usbmodem14101', 9600, timeout=3) as stream:
   ubr = UBXReader(stream)
   raw_data, parsed_data = ubr.read()
-  print(parsed_data)
+  if parsed_data is not None:
+    print(parsed_data)
 ```
 
 Example - File input (using iterator). This will only output UBX data:
