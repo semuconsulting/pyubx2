@@ -205,7 +205,7 @@ class UBXReader:
             rte.RTCMTypeError,
         ) as err:
             if self._quitonerror:
-                self._do_error(str(err))
+                self._do_error(err)
             parsed_data = str(err)
 
         return (raw_data, parsed_data)
@@ -334,7 +334,7 @@ class UBXReader:
             )
         return data
 
-    def _do_error(self, err: str):
+    def _do_error(self, err: Exception):
         """
         Handle error.
 
@@ -343,7 +343,7 @@ class UBXReader:
         """
 
         if self._quitonerror == ERR_RAISE:
-            raise UBXParseError(err)
+            raise err from err
         if self._quitonerror == ERR_LOG:
             # pass to error handler if there is one
             if self._errorhandler is None:
@@ -385,7 +385,7 @@ class UBXReader:
         :param bool scaling: 1 = apply scale factors, 0 = do not apply (1)
         :return: UBXMessage object
         :rtype: UBXMessage
-        :raises: UBXParseError (if data stream contains invalid data or unknown message type)
+        :raises: Exception (if data stream contains invalid data or unknown message type)
         """
         # pylint: disable=too-many-arguments
 

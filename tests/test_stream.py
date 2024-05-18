@@ -24,6 +24,7 @@ from pyubx2 import (
     ERR_LOG,
     ERR_IGNORE,
 )
+from pyrtcm.exceptions import RTCMParseError
 from pyubx2.exceptions import UBXParseError
 import pyubx2.ubxtypes_core as ubt
 
@@ -371,7 +372,7 @@ class StreamTest(unittest.TestCase):
             os.path.join(DIRNAME, "pygpsdata-MIXED-RTCM3BADCRC.log"), "rb"
         ) as stream:
             ubr = UBXReader(stream, protfilter=7, quitonerror=ubt.ERR_RAISE)
-            with self.assertRaisesRegex(UBXParseError, EXPECTED_ERROR):
+            with self.assertRaisesRegex(RTCMParseError, EXPECTED_ERROR):
                 for raw, parsed in ubr:
                     # print(parsed)
                     i += 1
