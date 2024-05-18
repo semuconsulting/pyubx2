@@ -7,8 +7,10 @@ Created on 3 Oct 2020
 
 @author: semuadmin
 """
+
 # pylint: disable=line-too-long, invalid-name, missing-docstring, no-member
 
+from io import BytesIO
 import unittest
 
 from pyubx2 import (
@@ -362,6 +364,22 @@ class ExceptionTest(unittest.TestCase):
             msg = UBXReader.parse(res.serialize(), quitonerror=ERR_RAISE)
         msg = UBXReader.parse(res.serialize(), msgmode=SET)
         self.assertEqual(str(msg), EXPECTED_RESULT)
+
+    def testprematurestreamend(self):
+
+        class SlowReader(BytesIO):
+            def read(self, size: int) -> bytes:
+                b = super().read(min(size, 16))
+                return b
+
+        ubx = b"\xb5b\x06\x8b4\x00\x01\x07\x00\x00\x05\x00R\x10\x01\x06\x00R\x10\x00\x07\x00R\x10\x00\x02\x00R \x01\x03\x00R \x00\x04\x00R \x00\x08\x00R \x00\t\x00R \x01\x01\x00R@\x00\x96\x00\x00\x85\x01"
+
+        with self.assertRaisesRegex(
+            UBXParseError,
+            "Serial stream terminated unexpectedly. 54 bytes requested, 16 bytes returned.",
+        ):
+            for _, parsed_data in UBXReader(SlowReader(ubx), quitonerror=ERR_RAISE):
+                print(parsed_data)
 
 
 if __name__ == "__main__":
