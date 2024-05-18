@@ -311,7 +311,7 @@ class UBXReader:
         if 0 < len(data) < size:  # truncated stream
             raise UBXStreamError(
                 "Serial stream terminated unexpectedly. "
-                + f"{size} bytes requested, {len(data)} bytes returned."
+                f"{size} bytes requested, {len(data)} bytes returned."
             )
         return data
 
@@ -330,7 +330,7 @@ class UBXReader:
         if data[-1:] != b"\x0a":  # truncated stream
             raise UBXStreamError(
                 "Serial stream terminated unexpectedly. "
-                + f"Line requested, {len(data)} bytes returned."
+                f"Line requested, {len(data)} bytes returned."
             )
         return data
 
@@ -444,7 +444,7 @@ class UBXReader:
             modestr = ["GET", "SET", "POLL"][msgmode]
             errmsg = (
                 f"Unknown message type clsid {clsid}, msgid {msgid}, mode {modestr}\n"
-                + "Check 'msgmode' keyword argument is appropriate for data stream"
+                "Check 'msgmode' keyword argument is appropriate for data stream"
             )
             if quitonerror == ERR_RAISE:
                 raise UBXParseError(errmsg) from err

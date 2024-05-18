@@ -10,6 +10,7 @@ Created on 3 Oct 2020
 
 # pylint: disable=line-too-long, invalid-name, missing-docstring, no-member
 
+import os
 from io import BytesIO
 import unittest
 
@@ -32,6 +33,8 @@ from pyubx2.ubxhelpers import (
     val2bytes,
     bytes2val,
 )
+
+DIRNAME = os.path.dirname(__file__)
 
 
 class ExceptionTest(unittest.TestCase):
@@ -365,7 +368,7 @@ class ExceptionTest(unittest.TestCase):
         msg = UBXReader.parse(res.serialize(), msgmode=SET)
         self.assertEqual(str(msg), EXPECTED_RESULT)
 
-    def testprematurestreamend(self):
+    def testprematurestreamend(self):  # test truncated UBX stream
 
         class SlowReader(BytesIO):
             def read(self, size: int) -> bytes:
@@ -380,6 +383,20 @@ class ExceptionTest(unittest.TestCase):
         ):
             for _, parsed_data in UBXReader(SlowReader(ubx), quitonerror=ERR_RAISE):
                 print(parsed_data)
+
+    def testNMEABADEND(self):  # test truncated NMEA file
+        i = 0
+        with self.assertRaisesRegex(
+            UBXStreamError,
+            "Serial stream terminated unexpectedly. Line requested, 30 bytes returned.",
+        ):
+            with open(
+                os.path.join(DIRNAME, "pygpsdata-NMEABADEND.log"), "rb"
+            ) as stream:
+                ubr = UBXReader(stream, quitonerror=ERR_RAISE)
+                for raw, parsed in ubr:
+                    # print(f'"{parsed}",')
+                    i += 1
 
 
 if __name__ == "__main__":
