@@ -540,7 +540,7 @@ class StreamTest(unittest.TestCase):
             self.assertEqual(EXPECTED_RESULT, res)
 
     def testBADHDR_FAIL(self):  # invalid header in data with quitonerror = 2
-        EXPECTED_ERROR = "Unknown protocol b'\\xb5w'"
+        EXPECTED_ERROR = "Unknown protocol header b'\\xb5w'"
         with self.assertRaises(UBXParseError) as context:
             i = 0
             with open(os.path.join(DIRNAME, "pygpsdata-BADHDR.log"), "rb") as stream:
@@ -551,11 +551,14 @@ class StreamTest(unittest.TestCase):
 
     def testBADHDR_LOG(self):  # invalid header in data with quitonerror = 1
         i = 0
+        self.catchio()
         with open(os.path.join(DIRNAME, "pygpsdata-BADHDR.log"), "rb") as stream:
+
             ubr = UBXReader(stream, quitonerror=ERR_LOG)
             for raw, parsed in ubr:
                 i += 1
-            self.assertEqual(parsed, "<UNKNOWN PROTOCOL(header=b'\\xb5w')>")
+        output = self.restoreio().split("\n")
+        self.assertEqual(output, ["Unknown protocol header b'\\xb5w'."])
 
     def testBADHDR_IGNORE(self):  # invalid header in data with quitonerror = 0
         i = 0

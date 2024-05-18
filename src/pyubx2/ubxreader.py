@@ -137,13 +137,13 @@ class UBXReader:
 
         :return: tuple of (raw_data as bytes, parsed_data as UBXMessage, NMEAMessage or RTCMMessage)
         :rtype: tuple
-        :raises: UBXParseError (if unrecognised protocol in data stream)
+        :raises: Exception (if unrecognised protocol in data stream)
         """
 
-        flag = True
+        parsing = True
+        while parsing:  # loop until end of valid message or EOF
+            try:
 
-        try:
-            while flag:  # loop until end of valid message or EOF
                 raw_data = None
                 parsed_data = None
                 byte1 = self._read_bytes(1)  # read the first byte
@@ -158,7 +158,7 @@ class UBXReader:
                     # if protocol filter passes UBX, return message,
                     # otherwise discard and continue
                     if self._protfilter & UBX_PROTOCOL:
-                        flag = False
+                        parsing = False
                     else:
                         continue
                 # if it's an NMEA message (b'\x24\x..)
@@ -167,7 +167,7 @@ class UBXReader:
                     # if protocol filter passes NMEA, return message,
                     # otherwise discard and continue
                     if self._protfilter & NMEA_PROTOCOL:
-                        flag = False
+                        parsing = False
                     else:
                         continue
                 # if it's a RTCM3 message
@@ -177,36 +177,32 @@ class UBXReader:
                     # if protocol filter passes RTCM, return message,
                     # otherwise discard and continue
                     if self._protfilter & RTCM3_PROTOCOL:
-                        flag = False
+                        parsing = False
                     else:
                         continue
                 # unrecognised protocol header
                 else:
-                    if self._quitonerror == ERR_RAISE:
-                        raise UBXParseError(f"Unknown protocol {bytehdr}.")
-                    if self._quitonerror == ERR_LOG:
-                        return (bytehdr, f"<UNKNOWN PROTOCOL(header={bytehdr})>")
-                    continue
+                    raise UBXParseError(f"Unknown protocol header {bytehdr}.")
 
-        except EOFError:
-            return (None, None)
-        except (
-            UBXMessageError,
-            UBXTypeError,
-            UBXParseError,
-            UBXStreamError,
-            nme.NMEAMessageError,
-            nme.NMEATypeError,
-            nme.NMEAParseError,
-            nme.NMEAStreamError,
-            rte.RTCMMessageError,
-            rte.RTCMParseError,
-            rte.RTCMStreamError,
-            rte.RTCMTypeError,
-        ) as err:
-            if self._quitonerror:
-                self._do_error(err)
-            parsed_data = str(err)
+            except EOFError:
+                return (None, None)
+            except (
+                UBXMessageError,
+                UBXTypeError,
+                UBXParseError,
+                UBXStreamError,
+                nme.NMEAMessageError,
+                nme.NMEATypeError,
+                nme.NMEAParseError,
+                nme.NMEAStreamError,
+                rte.RTCMMessageError,
+                rte.RTCMParseError,
+                rte.RTCMStreamError,
+                rte.RTCMTypeError,
+            ) as err:
+                if self._quitonerror:
+                    self._do_error(err)
+                continue
 
         return (raw_data, parsed_data)
 
@@ -346,6 +342,7 @@ class UBXReader:
             raise err from err
         if self._quitonerror == ERR_LOG:
             # pass to error handler if there is one
+            # else just print to stdout
             if self._errorhandler is None:
                 print(err)
             else:
