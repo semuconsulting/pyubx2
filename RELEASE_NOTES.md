@@ -4,6 +4,8 @@
 
 ENHANCEMENTS:
 
+1. Enhance stream exception handling. Fixes #149
+
 ### RELEASE 1.2.40
 
 ENHANCEMENTS:
