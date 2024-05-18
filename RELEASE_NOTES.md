@@ -1,5 +1,9 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.2.41
+
+ENHANCEMENTS:
+
 ### RELEASE 1.2.40
 
 ENHANCEMENTS:
