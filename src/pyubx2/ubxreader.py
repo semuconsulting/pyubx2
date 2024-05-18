@@ -137,7 +137,7 @@ class UBXReader:
 
         :return: tuple of (raw_data as bytes, parsed_data as UBXMessage, NMEAMessage or RTCMMessage)
         :rtype: tuple
-        :raises: UBXStreamError (if unrecognised protocol in data stream)
+        :raises: UBXParseError (if unrecognised protocol in data stream)
         """
 
         flag = True
@@ -306,8 +306,13 @@ class UBXReader:
         """
 
         data = self._stream.read(size)
-        if len(data) < size:  # EOF
+        if len(data) == 0:  # EOF
             raise EOFError()
+        if 0 < len(data) < size:  # truncated stream
+            raise UBXStreamError(
+                "Serial stream terminated unexpectedly. "
+                + f"{size} bytes requested, {len(data)} bytes returned."
+            )
         return data
 
     def _read_line(self) -> bytes:
@@ -320,8 +325,13 @@ class UBXReader:
         """
 
         data = self._stream.readline()  # NMEA protocol is CRLF-terminated
-        if data[-1:] != b"\x0a":
-            raise EOFError()
+        if len(data) == 0:
+            raise EOFError()  # EOF
+        if data[-1:] != b"\x0a":  # truncated stream
+            raise UBXStreamError(
+                "Serial stream terminated unexpectedly. "
+                + f"Line requested, {len(data)} bytes returned."
+            )
         return data
 
     def _do_error(self, err: str):
