@@ -137,7 +137,7 @@ class UBXReader:
 
         :return: tuple of (raw_data as bytes, parsed_data as UBXMessage, NMEAMessage or RTCMMessage)
         :rtype: tuple
-        :raises: UBXStreamError (if unrecognised protocol in data stream)
+        :raises: UBXParseError (if unrecognised protocol in data stream)
         """
 
         flag = True
@@ -205,7 +205,7 @@ class UBXReader:
             rte.RTCMTypeError,
         ) as err:
             if self._quitonerror:
-                self._do_error(str(err))
+                self._do_error(err)
             parsed_data = str(err)
 
         return (raw_data, parsed_data)
@@ -306,8 +306,13 @@ class UBXReader:
         """
 
         data = self._stream.read(size)
-        if len(data) < size:  # EOF
+        if len(data) == 0:  # EOF
             raise EOFError()
+        if 0 < len(data) < size:  # truncated stream
+            raise UBXStreamError(
+                "Serial stream terminated unexpectedly. "
+                + f"{size} bytes requested, {len(data)} bytes returned."
+            )
         return data
 
     def _read_line(self) -> bytes:
@@ -320,11 +325,16 @@ class UBXReader:
         """
 
         data = self._stream.readline()  # NMEA protocol is CRLF-terminated
-        if data[-1:] != b"\x0a":
-            raise EOFError()
+        if len(data) == 0:
+            raise EOFError()  # EOF
+        if data[-1:] != b"\x0a":  # truncated stream
+            raise UBXStreamError(
+                "Serial stream terminated unexpectedly. "
+                + f"Line requested, {len(data)} bytes returned."
+            )
         return data
 
-    def _do_error(self, err: str):
+    def _do_error(self, err: Exception):
         """
         Handle error.
 
@@ -333,7 +343,7 @@ class UBXReader:
         """
 
         if self._quitonerror == ERR_RAISE:
-            raise UBXParseError(err)
+            raise err from err
         if self._quitonerror == ERR_LOG:
             # pass to error handler if there is one
             if self._errorhandler is None:
@@ -375,7 +385,7 @@ class UBXReader:
         :param bool scaling: 1 = apply scale factors, 0 = do not apply (1)
         :return: UBXMessage object
         :rtype: UBXMessage
-        :raises: UBXParseError (if data stream contains invalid data or unknown message type)
+        :raises: Exception (if data stream contains invalid data or unknown message type)
         """
         # pylint: disable=too-many-arguments
 
