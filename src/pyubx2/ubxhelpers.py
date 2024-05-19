@@ -18,7 +18,14 @@ from pynmeagps.nmeatypes_core import NMEA_HDR
 import pyubx2.exceptions as ube
 import pyubx2.ubxtypes_configdb as ubcdb
 import pyubx2.ubxtypes_core as ubt
-from pyubx2.ubxtypes_core import POLL, SET, UBX_HDR
+from pyubx2.ubxtypes_core import (
+    NMEA_PROTOCOL,
+    POLL,
+    RTCM3_PROTOCOL,
+    SET,
+    UBX_HDR,
+    UBX_PROTOCOL,
+)
 from pyubx2.ubxtypes_decodes import FIXTYPE, GNSSLIST
 
 EPOCH0 = datetime(1980, 1, 6)  # EPOCH start date
@@ -26,19 +33,25 @@ LEAPOFFSET = 18  # leap year offset in seconds, valid as from 1/1/2017
 SIW = 604800  # seconds in week = 3600*24*7
 
 
-def att2idx(att: str) -> int:
+def att2idx(att: str) -> object:
     """
-    Get integer index corresponding to grouped attribute.
+    Get integer indices corresponding to grouped attribute.
 
-    e.g. svid_06 -> 6; gnssId_103 -> 103
+    e.g. svid_06 -> 6; gnssId_103 -> 103, gsid_03_04 -> (3,4), tow -> 0
 
     :param str att: grouped attribute name e.g. svid_01
-    :return: index as integer, or 0 if not grouped
-    :rtype: int
+    :return: indices as integer(s), or 0 if not grouped
+    :rtype: int or tuple for nested group
     """
 
     try:
-        return int(att[att.rindex("_") - len(att) + 1 :])
+        att = att.split("_")
+        ln = len(att)
+        if ln == 2:  # one group level
+            return int(att[1])
+        if ln > 2:  # nested group level(s)
+            return tuple(int(att[i]) for i in range(1, ln))
+        return 0  # not grouped
     except ValueError:
         return 0
 
@@ -47,17 +60,14 @@ def att2name(att: str) -> str:
     """
     Get name of grouped attribute.
 
-    e.g. svid_06 -> svid; gnssId_103 -> gnssId
+    e.g. svid_06 -> svid; gnssId_103 -> gnssId, tow -> tow
 
     :param str att: grouped attribute name e.g. svid_01
-    :return: name without index e.g. DF406
+    :return: name without index e.g. svid
     :rtype: str
     """
 
-    try:
-        return att[: att.rindex("_")]
-    except ValueError:
-        return att
+    return att.split("_")[0]
 
 
 def calc_checksum(content: bytes) -> bytes:
@@ -446,11 +456,11 @@ def protocol(raw: bytes) -> int:
 
     p = raw[0:2]
     if p == UBX_HDR:
-        return 2
+        return UBX_PROTOCOL
     if p in NMEA_HDR:
-        return 1
+        return NMEA_PROTOCOL
     if p[0] == 0xD3 and (p[1] & ~0x03) == 0:
-        return 4
+        return RTCM3_PROTOCOL
     return 0
 
 

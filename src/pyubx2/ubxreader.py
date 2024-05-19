@@ -1,17 +1,16 @@
 """
 UBXReader class.
 
-Reads and parses individual UBX, NMEA or RTCM3 messages from any stream
-which supports a read(n) -> bytes method.
+Reads and parses individual UBX, NMEA or RTCM3 messages from any viable
+data stream which supports a read(n) -> bytes method.
 
 Returns both the raw binary data (as bytes) and the parsed data
 (as a UBXMessage, NMEAMessage or RTCMMessage object).
 
-'protfilter' governs which protocols (NMEA, UBX or RTCM3) are processed
-'quitonerror' governs how errors are handled
-'msgmode' indicates the type of UBX datastream (output GET, input SET, query POLL)
-
-If msgmode set to SETPOLL, input mode will be automatically detected by parser.
+- 'protfilter' governs which protocols (NMEA, UBX or RTCM3) are processed
+- 'quitonerror' governs how errors are handled
+- 'msgmode' indicates the type of UBX datastream (output GET, input SET, query POLL). 
+  If msgmode is set to SETPOLL, input/query mode will be automatically detected by parser.
 
 Created on 2 Oct 2020
 
@@ -66,7 +65,7 @@ class UBXReader:
         quitonerror: int = ERR_LOG,
         parsebitfield: bool = True,
         scaling: bool = True,
-        labelmsm: bool = True,
+        labelmsm: int = 1,
         bufsize: int = 4096,
         parsing: bool = True,
         errorhandler: object = None,
@@ -75,15 +74,18 @@ class UBXReader:
 
         :param datastream stream: input data stream
         :param int msgmode: 0=GET, 1=SET, 2=POLL, 3=SETPOLL (0)
-        :param int validate: 0 = ignore invalid checksum, 1 = validate checksum (1)
-        :param int protfilter: protocol filter 1 = NMEA, 2 = UBX, 4 = RTCM3 (3)
-        :param int quitonerror: 0 = ignore errors,  1 = log continue, 2 = (re)raise (1)
+        :param int validate: VALCKSUM (1) = Validate checksum,
+            VALNONE (0) = ignore invalid checksum (1)
+        :param int protfilter: NMEA_PROTOCOL (1), UBX_PROTOCOL (2), RTCM3_PROTOCOL (4),
+            Can be OR'd (7)
+        :param int quitonerror: ERR_IGNORE (0) = ignore errors,  ERR_LOG (1) = log continue,
+            ERR_RAISE (2) = (re)raise (1)
         :param bool parsebitfield: 1 = parse bitfields, 0 = leave as bytes (1)
         :param bool scaling: 1 = apply scale factors, 0 = do not apply (1)
-        :param bool labelmsm: whether to label RTCM3 MSM NSAT and NCELL attributes (1)
+        :param int labelmsm: RTCM3 MSM label type 1 = RINEX, 2 = BAND (1)
         :param int bufsize: socket recv buffer size (4096)
         :param bool parsing: True = parse data, False = don't parse data (output raw only) (True)
-        :param int errorhandler: error handling object or function (None)
+        :param object errorhandler: error handling object or function (None)
         :raises: UBXStreamError (if mode is invalid)
         """
         # pylint: disable=too-many-arguments
@@ -137,7 +139,7 @@ class UBXReader:
 
         :return: tuple of (raw_data as bytes, parsed_data as UBXMessage, NMEAMessage or RTCMMessage)
         :rtype: tuple
-        :raises: Exception (if unrecognised protocol in data stream)
+        :raises: Exception (if invalid or unrecognised protocol in data stream)
         """
 
         parsing = True
@@ -268,7 +270,6 @@ class UBXReader:
         Parse any RTCM3 data in the stream (using pyrtcm library).
 
         :param bytes hdr: first 2 bytes of RTCM3 header
-        :param bool validate: (kwarg) validate crc Y/N
         :return: tuple of (raw_data as bytes, parsed_stub as RTCMMessage)
         :rtype: tuple
         """
@@ -298,7 +299,7 @@ class UBXReader:
         :param int size: number of bytes to read
         :return: bytes
         :rtype: bytes
-        :raises: EOFError if stream ends prematurely
+        :raises: UBXStreamError if stream ends prematurely
         """
 
         data = self._stream.read(size)
@@ -317,7 +318,7 @@ class UBXReader:
 
         :return: bytes
         :rtype: bytes
-        :raises: EOFError if stream ends prematurely
+        :raises: UBXStreamError if stream ends prematurely
         """
 
         data = self._stream.readline()  # NMEA protocol is CRLF-terminated
@@ -334,8 +335,8 @@ class UBXReader:
         """
         Handle error.
 
-        :param str err: error message
-        :raises: UBXParseError if quitonerror = 2
+        :param Exception err: error
+        :raises: Exception if quitonerror = ERR_RAISE (2)
         """
 
         if self._quitonerror == ERR_RAISE:
@@ -371,13 +372,12 @@ class UBXReader:
         """
         Parse UBX byte stream to UBXMessage object.
 
-        Includes option to validate incoming payload length and checksum
-        (the UBXMessage constructor can calculate and assign its own values anyway).
-
         :param bytes message: binary message to parse
-        :param int quitonerror: 0 = ignore errors,  1 = log continue, 2 = (re)raise (1)
-        :param int validate: validate cksum (VALCKSUM (1)=True (default), VALNONE (0)=False)
-        :param int msgmode: message mode (0=GET (default), 1=SET, 2=POLL)
+        :param int msgmode: GET (0), SET (1), POLL (2) (0)
+        :param int validate: VALCKSUM (1) = Validate checksum,
+            VALNONE (0) = ignore invalid checksum (1)
+        :param int quitonerror: ERR_IGNORE (0) = ignore errors,  ERR_LOG (1) = log continue,
+            ERR_RAISE (2) = (re)raise (1)
         :param bool parsebitfield: 1 = parse bitfields, 0 = leave as bytes (1)
         :param bool scaling: 1 = apply scale factors, 0 = do not apply (1)
         :return: UBXMessage object
