@@ -305,15 +305,15 @@ Sets up to 64 parameters in the designated memory layer(s).
 
 Parameters:
 
-1. layers - 1 = Volatile RAM, 2 = Battery-Backed RAM (BBR), 4 = External Flash (may be OR'd)
-1. transaction - 0 = None, 1 = Start, 2 = Ongoing, 3 = Commit
+1. layers - `SET_LAYER_RAM` (1) = Volatile RAM, `SET_LAYER_BBR` (2) = Battery-Backed RAM (BBR), `SET_LAYER_FLASH` (4) = External Flash (may be OR'd)
+1. transaction - `TXN_NONE` (0) = None, `TXN_START` (1) = Start, `TXN_ONGOING` (2) = Ongoing, `TXN_COMMIT` (3) = Commit
 1. cfgData - an array of up to 64 (key, value) tuples. Keys can be in either 
 keyID (int) or keyname (str) format
 
 ```python
-from pyubx2 import UBXMessage
-layers = 1
-transaction = 0
+from pyubx2 import UBXMessage, SET_LAYER_RAM, TXN_NONE
+layers = SET_LAYER_RAM
+transaction = TXN_NONE
 cfgData = [("CFG_UART1_BAUDRATE", 9600), (0x40520001, 115200)]
 msg = UBXMessage.config_set(layers, transaction, cfgData)
 print(msg)
@@ -329,14 +329,14 @@ Unsets (deletes) up to 64 parameter settings in the designated non-volatile memo
 
 Parameters:
 
-1. layers - 2 = Battery-Backed RAM (BBR), 4 = External Flash
-1. transaction - 0 = None, 1 = Start, 2 = Ongoing, 3 = Commit
+1. layers - `SET_LAYER_BBR` (2) = Battery-Backed RAM (BBR), `SET_LAYER_FLASH` (4) = External Flash (may be OR'd)
+1. transaction - `TXN_NONE` (0) = None, `TXN_START` (1) = Start, `TXN_ONGOING` (2) = Ongoing, `TXN_COMMIT` (3) = Commit
 1. keys - an array of up to 64 keys in either keyID (int) or keyname (str) format
 
 ```python
-from pyubx2 import UBXMessage
-layers = 4
-transaction = 0
+from pyubx2 import UBXMessage, SET_LAYER_FLASH, TXN_NONE
+layers = SET_LAYER_FLASH
+transaction = TXN_NONE
 keys = ["CFG_UART1_BAUDRATE", 0x40520001]
 msg = UBXMessage.config_del(layers, transaction, keys)
 print(msg)
@@ -352,15 +352,15 @@ Polls up to 64 parameters from the designated memory layer.
 
 Parameters:
 
-1. layer - 0 = Volatile RAM, 1 = Battery-Backed RAM (BBR), 2 = External Flash, 7 = Default (readonly)
+1. layer - `POLL_LAYER_RAM` (0) = Volatile RAM, `POLL_LAYER_BBR` (1) = Battery-Backed RAM (BBR), `POLL_LAYER_FLASH` (2) = External Flash, `POLL_LAYER_DEFAULT` (7) = Default (readonly)
 1. position - unsigned integer representing number of items to be skipped before returning result
 (used when number of matches for an individual query exceeds 64)
 1. keys - an array of up to 64 keys in either keyID (int) or keyname (str) format. keyIDs can use
 wildcards - see example below and UBX device interface specification for details.
 
 ```python
-from pyubx2 import UBXMessage
-layer = 1
+from pyubx2 import UBXMessage,  POLL_LAYER_BBR
+layer = POLL_LAYER_BBR
 position = 0
 keys = ["CFG_UART1_BAUDRATE", 0x40520001]
 msg = UBXMessage.config_poll(layer, position, keys)
@@ -374,8 +374,8 @@ serialOut.write(msg.serialize())
 Wild card queries can be performed by setting bits 0..15 of the keyID to `0xffff` e.g. to retrieve all CFG_MSGOUT parameters (keyID `0x2091*`) :
 
 ```python
-from pyubx2 import UBXMessage
-layer = 1
+from pyubx2 import UBXMessage, POLL_LAYER_BBR
+layer = POLL_LAYER_BBR
 position = 0 # retrieve first 64 results
 keys = [0x2091ffff]
 msg1of3 = UBXMessage.config_poll(layer, position, keys)
