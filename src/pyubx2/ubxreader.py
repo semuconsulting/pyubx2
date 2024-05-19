@@ -62,7 +62,7 @@ class UBXReader:
         datastream,
         msgmode: int = GET,
         validate: int = VALCKSUM,
-        protfilter: int = NMEA_PROTOCOL | UBX_PROTOCOL,
+        protfilter: int = NMEA_PROTOCOL | UBX_PROTOCOL | RTCM3_PROTOCOL,
         quitonerror: int = ERR_LOG,
         parsebitfield: bool = True,
         scaling: bool = True,
