@@ -14,6 +14,7 @@ import sys
 import os
 import unittest
 from io import StringIO
+from logging import ERROR
 
 from pyubx2 import (
     UBXReader,
@@ -551,14 +552,15 @@ class StreamTest(unittest.TestCase):
 
     def testBADHDR_LOG(self):  # invalid header in data with quitonerror = 1
         i = 0
-        self.catchio()
-        with open(os.path.join(DIRNAME, "pygpsdata-BADHDR.log"), "rb") as stream:
-
-            ubr = UBXReader(stream, quitonerror=ERR_LOG)
-            for raw, parsed in ubr:
-                i += 1
-        output = self.restoreio().split("\n")
-        self.assertEqual(output, ["Unknown protocol header b'\\xb5w'."])
+        with self.assertLogs(level=ERROR) as log:
+            with open(os.path.join(DIRNAME, "pygpsdata-BADHDR.log"), "rb") as stream:
+                ubr = UBXReader(stream, quitonerror=ERR_LOG)
+                for raw, parsed in ubr:
+                    i += 1
+            self.assertEqual(
+                ["ERROR:pyubx2.ubxreader:Unknown protocol header b'\\xb5w'."],
+                log.output,
+            )
 
     def testBADHDR_IGNORE(self):  # invalid header in data with quitonerror = 0
         i = 0

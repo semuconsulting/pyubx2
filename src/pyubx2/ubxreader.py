@@ -19,6 +19,7 @@ Created on 2 Oct 2020
 :license: BSD 3-Clause
 """
 
+from logging import getLogger
 from socket import socket
 
 import pynmeagps.exceptions as nme
@@ -103,6 +104,7 @@ class UBXReader:
         self._labelmsm = labelmsm
         self._msgmode = msgmode
         self._parsing = parsing
+        self._logger = getLogger(__name__)
 
         if self._msgmode not in (GET, SET, POLL, SETPOLL):
             raise UBXStreamError(
@@ -343,9 +345,9 @@ class UBXReader:
             raise err from err
         if self._quitonerror == ERR_LOG:
             # pass to error handler if there is one
-            # else just print to stdout
+            # else just log
             if self._errorhandler is None:
-                print(err)
+                self._logger.error(err)
             else:
                 self._errorhandler(err)
 
@@ -390,6 +392,7 @@ class UBXReader:
             raise UBXParseError(
                 f"Invalid message mode {msgmode} - must be 0, 1, 2 or 3"
             )
+        logger = getLogger(__name__)
 
         lenm = len(message)
         hdr = message[0:2]
@@ -446,5 +449,5 @@ class UBXReader:
             if quitonerror == ERR_RAISE:
                 raise UBXParseError(errmsg) from err
             if quitonerror == ERR_LOG:
-                print(errmsg)
+                logger.error(errmsg)
             return None
