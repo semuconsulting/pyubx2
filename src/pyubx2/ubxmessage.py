@@ -979,8 +979,10 @@ class UBXMessage:
         configuration database (key, value) tuples. Keys
         can be in int (keyID) or str (keyname) format.
 
-        :param int layers: memory layer(s) (1=RAM, 2=BBR, 4=Flash)
-        :param int transaction: 0=no txn, 1=start txn, 2=continue txn, 3=apply txn
+        :param int layers: memory layer(s) SET_LAYER_RAM (1) = RAM,
+            SET_LAYER_BBR (2) = Battery Backed RAM, SETLAYER_FLASH (4) = Flash
+        :param int transaction: TXN_NONE (0) = no txn, TXN _START (1) = start txn,
+            TXN_ONGOING (2) = continue txn, TXT_COMMIT (3) = apply txn
         :param list cfgData: list of up to 64 tuples (key, value)
         :return: UBXMessage CFG-VALSET
         :rtype: UBXMessage
@@ -1017,11 +1019,13 @@ class UBXMessage:
     def config_del(layers: int, transaction: int, keys: list) -> object:
         """
         Construct CFG-VALDEL message from an array of
-        configuration database keys, which can be in int (keyID)
+        configuration database keys. Keys can be in int (keyID)
         or str (keyname) format.
 
-        :param int layers: memory layer(s) (2=BBR, 4=Flash)
-        :param int transaction: 0=no txn, 1=start txn, 2=continue txn, 3=apply txn
+        :param int layers: non-volatile memory layer(s) SET_LAYER_BBR (2) = Battery Backed RAM,
+            SET_LAYER_FLASH (4) = Flash
+        :param int transaction: TXN_NONE (0) = no txn, TXN _START (1) = start txn,
+            TXN_ONGOING (2) = continue txn, TXT_COMMIT (3) = apply txn
         :param list keys: array of up to 64 keys as int (keyID) or string (keyname)
         :return: UBXMessage CFG-VALDEL
         :rtype: UBXMessage
@@ -1056,7 +1060,9 @@ class UBXMessage:
         configuration database keys, which can be in int (keyID)
         or str (keyname) format.
 
-        :param int layer: memory layer (0=RAM, 1=BBR, 2=Flash, 7 = Default)
+        :param int layer: memory layer POLL_LAYER_RAM (0) = RAM,
+            POLL_LAYER_BBR (1) = Battery-backed RAM, POLL_LAYER_FLASH (2) = Flash,
+            POLL_LAYER_DEFAULT (7) = Default
         :param int position: number of keys to skip before returning result
         :param list keys: array of up to 64 keys as int (keyID) or str (keyname)
         :return: UBXMessage CFG-VALGET

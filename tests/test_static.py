@@ -7,6 +7,7 @@ Created on 3 Oct 2020
 
 @author: semuadmin
 """
+
 # pylint: disable=line-too-long, invalid-name, missing-docstring, no-member
 
 import os
@@ -165,7 +166,7 @@ class StaticTest(unittest.TestCase):
         self.assertEqual(res, "11:31:14")
 
     def testutc2itow(self):
-        dt = datetime(2024,2,8,11,31,14)
+        dt = datetime(2024, 2, 8, 11, 31, 14)
         res = utc2itow(dt)
         self.assertEqual(res, (2300, 387092000))
 
@@ -254,8 +255,8 @@ class StaticTest(unittest.TestCase):
         self.assertEqual(res, EXPECTED_RESULT)
 
     def testatt2idx(self):  # test att2idx
-        EXPECTED_RESULT = [4, 16, 101, 0]
-        atts = ["svid_04", "gnssId_16", "cno_101", "gmsLon"]
+        EXPECTED_RESULT = [4, 16, 101, 0, (3, 6), 0]
+        atts = ["svid_04", "gnssId_16", "cno_101", "gmsLon", "gnod_03_06", "dodgy_xx"]
         for i, att in enumerate(atts):
             res = att2idx(att)
             # print(res)
@@ -285,25 +286,38 @@ class StaticTest(unittest.TestCase):
 
     def testval2sphp(self):
         res = val2sphp(100.123456789)
-        self.assertEqual(res, (1001234567,89))
+        self.assertEqual(res, (1001234567, 89))
         res = val2sphp(-13.987654321)
-        self.assertEqual(res, (-139876543,-21))
+        self.assertEqual(res, (-139876543, -21))
         res = val2sphp(5.9876543)
-        self.assertEqual(res, (59876543,0))
+        self.assertEqual(res, (59876543, 0))
 
     def testgetinputmode(self):
-        res = getinputmode(UBXMessage("CFG","CFG-ODO", POLL).serialize())
+        res = getinputmode(UBXMessage("CFG", "CFG-ODO", POLL).serialize())
         self.assertEqual(res, POLL)
-        res = getinputmode(UBXMessage.config_poll(0,0,["CFG_UART1_BAUDRATE", 0x40530001]).serialize())
+        res = getinputmode(
+            UBXMessage.config_poll(0, 0, ["CFG_UART1_BAUDRATE", 0x40530001]).serialize()
+        )
         self.assertEqual(res, POLL)
-        res = getinputmode(UBXMessage.config_set(0,0,[("CFG_UART1_BAUDRATE", 9600), (0x40530001, 115200)]).serialize())
+        res = getinputmode(
+            UBXMessage.config_set(
+                0, 0, [("CFG_UART1_BAUDRATE", 9600), (0x40530001, 115200)]
+            ).serialize()
+        )
         self.assertEqual(res, SET)
-        res = getinputmode(UBXMessage.config_del(0,0,["CFG_UART1_BAUDRATE", 0x40530001]).serialize())
+        res = getinputmode(
+            UBXMessage.config_del(0, 0, ["CFG_UART1_BAUDRATE", 0x40530001]).serialize()
+        )
         self.assertEqual(res, SET)
-        res = getinputmode(UBXMessage("CFG","CFG-INF", POLL, protocolID=1).serialize())
+        res = getinputmode(UBXMessage("CFG", "CFG-INF", POLL, protocolID=1).serialize())
         self.assertEqual(res, POLL)
-        res = getinputmode(UBXMessage("CFG","CFG-INF", SET, protocolID=1, infMsgMask_01=1,infMsgMask_02=1).serialize())
+        res = getinputmode(
+            UBXMessage(
+                "CFG", "CFG-INF", SET, protocolID=1, infMsgMask_01=1, infMsgMask_02=1
+            ).serialize()
+        )
         self.assertEqual(res, SET)
+
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']

@@ -101,25 +101,25 @@ class pyubx2.ubxreader.UBXReader(stream, *args, **kwargs)
 ```
 
 You can create a `UBXReader` object by calling the constructor with an active stream object. 
-The stream object can be any data stream which supports a `read(n) -> bytes` method (e.g. File or Serial, with 
+The stream object can be any viable data stream which supports a `read(n) -> bytes` method (e.g. File or Serial, with 
 or without a buffer wrapper). `pyubx2` implements an internal `SocketStream` class to allow sockets to be read in the same way as other streams (see example below).
 
 Individual input UBX, NMEA or RTCM3 messages can then be read using the `UBXReader.read()` function, which returns both the raw binary data (as bytes) and the parsed data (as a `UBXMessage`, `NMEAMessage` or `RTCMMessage` object, via the `parse()` method). The function is thread-safe in so far as the incoming data stream object is thread-safe. `UBXReader` also implements an iterator.
 
 The constructor accepts the following optional keyword arguments:
 
-* `protfilter`: 1 = NMEA, 2 = UBX, 4 = RTCM3 (can be OR'd. default is 3 - NMEA & UBX)
-* `quitonerror`: 0 = ignore errors, 1 = log errors and continue (default), 2 = (re)raise errors and terminate
-* `validate`: VALCKSUM (0x01) = validate checksum (default), VALNONE (0x00) = ignore invalid checksum or length
+* `protfilter`: `NMEA_PROTOCOL` (1), `UBX_PROTOCOL` (2), `RTCM3_PROTOCOL` (4). Can be OR'd; default is `NMEA_PROTOCOL | UBX_PROTOCOL | RTCM3_PROTOCOL` (7)
+* `quitonerror`: `ERR_IGNORE` (0) = ignore errors, `ERR_LOG` (1) = log errors and continue (default), `ERR_RAISE` (2) = (re)raise errors and terminate
+* `validate`: `VALCKSUM` (0x01) = validate checksum (default), `VALNONE` (0x00) = ignore invalid checksum or length
 * `parsebitfield`: 1 = parse bitfields ('X' type properties) as individual bit flags, where defined (default), 0 = leave bitfields as byte sequences
-* `msgmode`: 0 = GET (default), 1 = SET, 2 = POLL, 3 = SETPOLL (automatically determine SET or POLL input mode)
+* `msgmode`: `GET` (0) (default), `SET` (1), `POLL` (2), `SETPOLL` (3) = automatically determine SET or POLL input mode
 
-Example -  Serial input. This example will output both UBX and NMEA messages:
+Example -  Serial input. This example will output both UBX and NMEA messages but not RTCM3:
 ```python
 from serial import Serial
-from pyubx2 import UBXReader
-with Serial('/dev/tty.usbmodem14101', 9600, timeout=3) as stream:
-  ubr = UBXReader(stream)
+from pyubx2 import UBXReader, NMEA_PROTOCOL, UBX_PROTOCOL
+with Serial('/dev/ttyACM0', 38400, timeout=3) as stream:
+  ubr = UBXReader(stream, protfilter=NMEA_PROTOCOL | UBX_PROTOCOL)
   raw_data, parsed_data = ubr.read()
   if parsed_data is not None:
     print(parsed_data)
@@ -127,9 +127,9 @@ with Serial('/dev/tty.usbmodem14101', 9600, timeout=3) as stream:
 
 Example - File input (using iterator). This will only output UBX data:
 ```python
-from pyubx2 import UBXReader
+from pyubx2 import UBXReader, UBX_PROTOCOL
 with open('ubxdata.bin', 'rb') as stream:
-  ubr = UBXReader(stream, protfilter=2)
+  ubr = UBXReader(stream, protfilter=UBX_PROTOCOL)
   for raw_data, parsed_data in ubr:
     print(parsed_data)
 ```
@@ -137,10 +137,10 @@ with open('ubxdata.bin', 'rb') as stream:
 Example - Socket input (using iterator). This will output UBX, NMEA and RTCM3 data:
 ```python
 import socket
-from pyubx2 import UBXReader
+from pyubx2 import UBXReader, NMEA_PROTOCOL, UBX_PROTOCOL, RTCM3_PROTOCOL
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as stream:
   stream.connect(("localhost", 50007))
-  ubr = UBXReader(stream, protfilter=7)
+  ubr = UBXReader(stream, protfilter=NMEA_PROTOCOL | UBX_PROTOCOL | RTCM3_PROTOCOL)
   for raw_data, parsed_data in ubr:
     print(parsed_data)
 ```
@@ -156,7 +156,7 @@ The `parse()` method accepts the following optional keyword arguments:
 
 * `validate`: VALCKSUM (0x01) = validate checksum (default), VALNONE (0x00) = ignore invalid checksum or length
 * `parsebitfield`: 1 = parse bitfields as individual bit flags, where defined (default), 0 = leave bitfields as byte sequences
-* `msgmode`: 0 = GET (default), 1 = SET, 2 = POLL, 3 = SETPOLL (automatically determine SET or POLL input mode)
+* `msgmode`: `GET` (0) (default), `SET` (1), `POLL` (2), `SETPOLL` (3) = automatically determine SET or POLL input mode
 
 Example - output (GET) message:
 ```python
@@ -305,15 +305,15 @@ Sets up to 64 parameters in the designated memory layer(s).
 
 Parameters:
 
-1. layers - 1 = Volatile RAM, 2 = Battery-Backed RAM (BBR), 4 = External Flash (may be OR'd)
-1. transaction - 0 = None, 1 = Start, 2 = Ongoing, 3 = Commit
+1. layers - `SET_LAYER_RAM` (1) = Volatile RAM, `SET_LAYER_BBR` (2) = Battery-Backed RAM (BBR), `SET_LAYER_FLASH` (4) = External Flash (may be OR'd)
+1. transaction - `TXN_NONE` (0) = None, `TXN_START` (1) = Start, `TXN_ONGOING` (2) = Ongoing, `TXN_COMMIT` (3) = Commit
 1. cfgData - an array of up to 64 (key, value) tuples. Keys can be in either 
 keyID (int) or keyname (str) format
 
 ```python
-from pyubx2 import UBXMessage
-layers = 1
-transaction = 0
+from pyubx2 import UBXMessage, SET_LAYER_RAM, TXN_NONE
+layers = SET_LAYER_RAM
+transaction = TXN_NONE
 cfgData = [("CFG_UART1_BAUDRATE", 9600), (0x40520001, 115200)]
 msg = UBXMessage.config_set(layers, transaction, cfgData)
 print(msg)
@@ -329,14 +329,14 @@ Unsets (deletes) up to 64 parameter settings in the designated non-volatile memo
 
 Parameters:
 
-1. layers - 2 = Battery-Backed RAM (BBR), 4 = External Flash
-1. transaction - 0 = None, 1 = Start, 2 = Ongoing, 3 = Commit
+1. layers - `SET_LAYER_BBR` (2) = Battery-Backed RAM (BBR), `SET_LAYER_FLASH` (4) = External Flash (may be OR'd)
+1. transaction - `TXN_NONE` (0) = None, `TXN_START` (1) = Start, `TXN_ONGOING` (2) = Ongoing, `TXN_COMMIT` (3) = Commit
 1. keys - an array of up to 64 keys in either keyID (int) or keyname (str) format
 
 ```python
-from pyubx2 import UBXMessage
-layers = 4
-transaction = 0
+from pyubx2 import UBXMessage, SET_LAYER_FLASH, TXN_NONE
+layers = SET_LAYER_FLASH
+transaction = TXN_NONE
 keys = ["CFG_UART1_BAUDRATE", 0x40520001]
 msg = UBXMessage.config_del(layers, transaction, keys)
 print(msg)
@@ -352,15 +352,15 @@ Polls up to 64 parameters from the designated memory layer.
 
 Parameters:
 
-1. layer - 0 = Volatile RAM, 1 = Battery-Backed RAM (BBR), 2 = External Flash, 7 = Default (readonly)
+1. layer - `POLL_LAYER_RAM` (0) = Volatile RAM, `POLL_LAYER_BBR` (1) = Battery-Backed RAM (BBR), `POLL_LAYER_FLASH` (2) = External Flash, `POLL_LAYER_DEFAULT` (7) = Default (readonly)
 1. position - unsigned integer representing number of items to be skipped before returning result
 (used when number of matches for an individual query exceeds 64)
 1. keys - an array of up to 64 keys in either keyID (int) or keyname (str) format. keyIDs can use
 wildcards - see example below and UBX device interface specification for details.
 
 ```python
-from pyubx2 import UBXMessage
-layer = 1
+from pyubx2 import UBXMessage,  POLL_LAYER_BBR
+layer = POLL_LAYER_BBR
 position = 0
 keys = ["CFG_UART1_BAUDRATE", 0x40520001]
 msg = UBXMessage.config_poll(layer, position, keys)
@@ -374,8 +374,8 @@ serialOut.write(msg.serialize())
 Wild card queries can be performed by setting bits 0..15 of the keyID to `0xffff` e.g. to retrieve all CFG_MSGOUT parameters (keyID `0x2091*`) :
 
 ```python
-from pyubx2 import UBXMessage
-layer = 1
+from pyubx2 import UBXMessage, POLL_LAYER_BBR
+layer = POLL_LAYER_BBR
 position = 0 # retrieve first 64 results
 keys = [0x2091ffff]
 msg1of3 = UBXMessage.config_poll(layer, position, keys)
