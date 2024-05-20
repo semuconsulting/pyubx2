@@ -234,7 +234,6 @@ class UBXReader:
             parsed_data = self.parse(
                 raw_data,
                 validate=self._validate,
-                quitonerror=self._quitonerror,
                 msgmode=self._msgmode,
                 parsebitfield=self._parsebf,
                 scaling=self._scaling,
@@ -325,7 +324,7 @@ class UBXReader:
 
         data = self._stream.readline()  # NMEA protocol is CRLF-terminated
         if len(data) == 0:
-            raise EOFError()  # EOF
+            raise EOFError()  # pragma: no cover
         if data[-1:] != b"\x0a":  # truncated stream
             raise UBXStreamError(
                 "Serial stream terminated unexpectedly. "
@@ -367,7 +366,6 @@ class UBXReader:
         message: bytes,
         msgmode: int = GET,
         validate: int = VALCKSUM,
-        quitonerror: int = ERR_LOG,
         parsebitfield: bool = True,
         scaling: bool = True,
     ) -> object:
@@ -378,8 +376,6 @@ class UBXReader:
         :param int msgmode: GET (0), SET (1), POLL (2) (0)
         :param int validate: VALCKSUM (1) = Validate checksum,
             VALNONE (0) = ignore invalid checksum (1)
-        :param int quitonerror: ERR_IGNORE (0) = ignore errors,  ERR_LOG (1) = log continue,
-            ERR_RAISE (2) = (re)raise (1)
         :param bool parsebitfield: 1 = parse bitfields, 0 = leave as bytes (1)
         :param bool scaling: 1 = apply scale factors, 0 = do not apply (1)
         :return: UBXMessage object
@@ -392,7 +388,6 @@ class UBXReader:
             raise UBXParseError(
                 f"Invalid message mode {msgmode} - must be 0, 1, 2 or 3"
             )
-        logger = getLogger(__name__)
 
         lenm = len(message)
         hdr = message[0:2]
@@ -426,28 +421,16 @@ class UBXReader:
                 raise UBXParseError(
                     (f"Message checksum {ckm}" f" invalid - should be {ckv}")
                 )
-        try:
-            # if input message (SET or POLL), determine mode automatically
-            if msgmode == SETPOLL:
-                msgmode = getinputmode(message)  # returns SET or POLL
-            if payload is None:
-                return UBXMessage(clsid, msgid, msgmode)
-            return UBXMessage(
-                clsid,
-                msgid,
-                msgmode,
-                payload=payload,
-                parsebitfield=parsebitfield,
-                scaling=scaling,
-            )
-        except KeyError as err:
-            modestr = ["GET", "SET", "POLL"][msgmode]
-            errmsg = (
-                f"Unknown message type clsid {clsid}, msgid {msgid}, mode {modestr}\n"
-                "Check 'msgmode' keyword argument is appropriate for data stream"
-            )
-            if quitonerror == ERR_RAISE:
-                raise UBXParseError(errmsg) from err
-            if quitonerror == ERR_LOG:
-                logger.error(errmsg)
-            return None
+        # if input message (SET or POLL), determine mode automatically
+        if msgmode == SETPOLL:
+            msgmode = getinputmode(message)  # returns SET or POLL
+        if payload is None:
+            return UBXMessage(clsid, msgid, msgmode)
+        return UBXMessage(
+            clsid,
+            msgid,
+            msgmode,
+            payload=payload,
+            parsebitfield=parsebitfield,
+            scaling=scaling,
+        )
