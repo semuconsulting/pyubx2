@@ -65,7 +65,6 @@ class UBXReader:
         protfilter: int = NMEA_PROTOCOL | UBX_PROTOCOL | RTCM3_PROTOCOL,
         quitonerror: int = ERR_LOG,
         parsebitfield: bool = True,
-        scaling: bool = True,
         labelmsm: int = 1,
         bufsize: int = 4096,
         parsing: bool = True,
@@ -82,7 +81,6 @@ class UBXReader:
         :param int quitonerror: ERR_IGNORE (0) = ignore errors,  ERR_LOG (1) = log continue,
             ERR_RAISE (2) = (re)raise (1)
         :param bool parsebitfield: 1 = parse bitfields, 0 = leave as bytes (1)
-        :param bool scaling: 1 = apply scale factors, 0 = do not apply (1)
         :param int labelmsm: RTCM3 MSM label type 1 = RINEX, 2 = BAND (1)
         :param int bufsize: socket recv buffer size (4096)
         :param bool parsing: True = parse data, False = don't parse data (output raw only) (True)
@@ -100,7 +98,6 @@ class UBXReader:
         self._errorhandler = errorhandler
         self._validate = validate
         self._parsebf = parsebitfield
-        self._scaling = scaling
         self._labelmsm = labelmsm
         self._msgmode = msgmode
         self._parsing = parsing
@@ -236,7 +233,6 @@ class UBXReader:
                 validate=self._validate,
                 msgmode=self._msgmode,
                 parsebitfield=self._parsebf,
-                scaling=self._scaling,
             )
         else:
             parsed_data = None
@@ -286,7 +282,6 @@ class UBXReader:
             parsed_data = RTCMReader.parse(
                 raw_data,
                 validate=self._validate,
-                scaling=self._scaling,
                 labelmsm=self._labelmsm,
             )
         else:
@@ -367,7 +362,6 @@ class UBXReader:
         msgmode: int = GET,
         validate: int = VALCKSUM,
         parsebitfield: bool = True,
-        scaling: bool = True,
     ) -> object:
         """
         Parse UBX byte stream to UBXMessage object.
@@ -377,7 +371,6 @@ class UBXReader:
         :param int validate: VALCKSUM (1) = Validate checksum,
             VALNONE (0) = ignore invalid checksum (1)
         :param bool parsebitfield: 1 = parse bitfields, 0 = leave as bytes (1)
-        :param bool scaling: 1 = apply scale factors, 0 = do not apply (1)
         :return: UBXMessage object
         :rtype: UBXMessage
         :raises: Exception (if data stream contains invalid data or unknown message type)
@@ -432,5 +425,4 @@ class UBXReader:
             msgmode,
             payload=payload,
             parsebitfield=parsebitfield,
-            scaling=scaling,
         )
