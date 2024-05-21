@@ -1,5 +1,11 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.2.42
+
+ENHANCEMENTS:
+
+1. Internal refactoring to improve performance and exception handling.
+
 ### RELEASE 1.2.41
 
 ENHANCEMENTS:
