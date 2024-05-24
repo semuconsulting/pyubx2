@@ -472,9 +472,9 @@ class UBXMessage:
                     pdict = UBX_PAYLOADS_GET[self.identity]
             return pdict
         except KeyError as err:
+            mode = ["GET", "SET", "POLL"][self._mode]
             raise UBXMessageError(
-                f"Unknown message type {escapeall(self._ubxClass + self._ubxID)}"
-                f", mode {["GET", "SET", "POLL"][self._mode]}. "
+                f"Unknown message type {escapeall(self._ubxClass + self._ubxID)}, mode {mode}. "
                 "Check 'msgmode' setting is appropriate for data stream"
             ) from err
 
