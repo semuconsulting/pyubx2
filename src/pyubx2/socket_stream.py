@@ -48,7 +48,7 @@ class SocketStream:
         try:
             data = self._socket.recv(self._bufsize)
             if len(data) == 0:
-                return False
+                return False  # pragma: no cover
             self._buffer += data
         except (OSError, TimeoutError):
             return False
@@ -100,7 +100,7 @@ class SocketStream:
                 if line[-1:] == b"\n":  # LF
                     break
             else:
-                break
+                break  # pragma: no cover
 
         return line
 

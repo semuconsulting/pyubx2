@@ -13,6 +13,7 @@ Created on 3 Oct 2020
 import os
 from io import BytesIO
 import unittest
+from logging import ERROR
 
 from pyubx2 import (
     UBXMessage,
@@ -25,6 +26,7 @@ from pyubx2 import (
     SET,
     POLL,
     VALCKSUM,
+    ERR_LOG,
     ERR_RAISE,
 )
 from pyubx2.ubxhelpers import (
@@ -332,9 +334,10 @@ class ExceptionTest(unittest.TestCase):
             )
 
     def testParseMode2(self):  # test parser with incorrect mode for input message
-        EXPECTED_ERROR = "Unknown message type clsid (.*), msgid (.*), mode GET"
-        with self.assertRaisesRegex(UBXParseError, EXPECTED_ERROR):
-            UBXReader.parse(self.mga_ini, validate=VALCKSUM, quitonerror=ERR_RAISE)
+        EXPECTED_ERROR = "Unknown message type b'\\x13\\x40', mode GET. Check 'msgmode' setting is appropriate for data stream"
+        with self.assertRaises(UBXMessageError) as context:
+            UBXReader.parse(self.mga_ini, validate=VALCKSUM)
+        self.assertTrue(EXPECTED_ERROR in str(context.exception))
 
     def testStreamMode(self):  # test invalid stream message mode
         EXPECTED_ERROR = "Invalid stream mode 4 - must be 0, 1, 2 or 3"
@@ -352,19 +355,17 @@ class ExceptionTest(unittest.TestCase):
             bytes2val(b"\x01", "Z001")
 
     def testWRONGMSGMODE(self):  # test parse of SET message with GET msgmode
-        EXPECTED_ERROR = (
-            "Unknown message type clsid (.*), msgid (.*), mode GET\n"
-            + "Check 'msgmode' keyword argument is appropriate for data stream"
-        )
+        EXPECTED_ERROR = "Unknown message type b'\\x06\\x8a', mode GET. Check 'msgmode' setting is appropriate for data stream"
         EXPECTED_RESULT = "<UBX(CFG-VALSET, version=0, ram=1, bbr=1, flash=0, action=0, reserved0=0, CFG_UART1_BAUDRATE=9600)>"
-        res = UBXMessage(
-            "CFG",
-            "CFG-VALSET",
-            SET,
-            payload=b"\x00\x03\x00\x00\x01\x00\x52\x40\x80\x25\x00\x00",
-        )
-        with self.assertRaisesRegex(UBXParseError, EXPECTED_ERROR):
-            msg = UBXReader.parse(res.serialize(), quitonerror=ERR_RAISE)
+        with self.assertRaises(UBXMessageError) as context:
+            res = UBXMessage(
+                "CFG",
+                "CFG-VALSET",
+                SET,
+                payload=b"\x00\x03\x00\x00\x01\x00\x52\x40\x80\x25\x00\x00",
+            )
+            msg = UBXReader.parse(res.serialize())
+        self.assertTrue(EXPECTED_ERROR in str(context.exception))
         msg = UBXReader.parse(res.serialize(), msgmode=SET)
         self.assertEqual(str(msg), EXPECTED_RESULT)
 

@@ -92,6 +92,14 @@ pyubx2.ubxtypes\_set module
    :undoc-members:
    :show-inheritance:
 
+pyubx2.ubxvariants module
+-------------------------
+
+.. automodule:: pyubx2.ubxvariants
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 

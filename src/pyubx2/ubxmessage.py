@@ -1,4 +1,6 @@
 """
+ubxmessage.py
+
 Main UBX Message Protocol Class.
 
 Created on 26 Sep 2020
@@ -12,11 +14,7 @@ Created on 26 Sep 2020
 
 import struct
 
-import pyubx2.exceptions as ube
-import pyubx2.ubxtypes_core as ubt
-import pyubx2.ubxtypes_get as ubg
-import pyubx2.ubxtypes_poll as ubp
-import pyubx2.ubxtypes_set as ubs
+from pyubx2.exceptions import UBXMessageError, UBXTypeError
 from pyubx2.ubxhelpers import (
     attsiz,
     bytes2val,
@@ -31,6 +29,29 @@ from pyubx2.ubxhelpers import (
     nomval,
     val2bytes,
 )
+from pyubx2.ubxtypes_core import (
+    CH,
+    GET,
+    POLL,
+    SCALROUND,
+    SET,
+    U1,
+    U2,
+    U4,
+    UBX_CLASSES,
+    UBX_HDR,
+    UBX_MSGIDS,
+    X1,
+    X2,
+    X4,
+    X6,
+    X8,
+    X24,
+)
+from pyubx2.ubxtypes_get import UBX_PAYLOADS_GET
+from pyubx2.ubxtypes_poll import UBX_PAYLOADS_POLL
+from pyubx2.ubxtypes_set import UBX_PAYLOADS_SET
+from pyubx2.ubxvariants import VARIANTS
 
 
 class UBXMessage:
@@ -42,7 +63,6 @@ class UBXMessage:
         ubxID,
         msgmode: int,
         parsebitfield: bool = True,
-        scaling: bool = True,
         **kwargs,
     ):
         """Constructor.
@@ -59,7 +79,6 @@ class UBXMessage:
         :param object msgID: message ID as str, int or byte
         :param int msgmode: message mode (0=GET, 1=SET, 2=POLL)
         :param bool parsebitfield: parse bitfields ('X' type attributes) Y/N
-        :param bool scaling: apply scale factors Y/N
         :param kwargs: optional payload keyword arguments
         :raises: UBXMessageError
         """
@@ -70,12 +89,10 @@ class UBXMessage:
         self._payload = b""
         self._length = b""
         self._checksum = b""
-
         self._parsebf = parsebitfield  # parsing bitfields Y/N?
-        self._scaling = scaling  # apply scale factors Y/N?
 
-        if msgmode not in (ubt.GET, ubt.SET, ubt.POLL):
-            raise ube.UBXMessageError(f"Invalid msgmode {msgmode} - must be 0, 1 or 2")
+        if msgmode not in (GET, SET, POLL):
+            raise UBXMessageError(f"Invalid msgmode {msgmode} - must be 0, 1 or 2")
 
         # accommodate different formats of msgClass and msgID
         if isinstance(ubxClass, str) and isinstance(
@@ -123,7 +140,7 @@ class UBXMessage:
             TypeError,
             ValueError,
         ) as err:
-            raise ube.UBXTypeError(
+            raise UBXTypeError(
                 (
                     f"Incorrect type for attribute '{anam}' "
                     f"in {['GET', 'SET', 'POLL'][self._mode]} message "
@@ -131,7 +148,7 @@ class UBXMessage:
                 )
             ) from err
         except (OverflowError,) as err:
-            raise ube.UBXTypeError(
+            raise UBXTypeError(
                 (
                     f"Overflow error for attribute '{anam}' "
                     f"in {['GET', 'SET', 'POLL'][self._mode]} message "
@@ -160,7 +177,7 @@ class UBXMessage:
             adef, tuple
         ):  # repeating group of attributes or subdefined bitfield
             numr, _ = adef
-            if numr in (ubt.X1, ubt.X2, ubt.X4, ubt.X6, ubt.X8, ubt.X24):  # bitfield
+            if numr in (X1, X2, X4, X6, X8, X24):  # bitfield
                 if self._parsebf:  # if we're parsing bitfields
                     (offset, index) = self._set_attribute_bitfield(
                         adef, offset, index, **kwargs
@@ -198,8 +215,8 @@ class UBXMessage:
         # if CFG-VALGET or CFG-VALSET message, use dedicated method to
         # parse as configuration key value pairs
         if self._ubxClass == b"\x06" and (
-            (self._ubxID == b"\x8b" and self._mode == ubt.GET)
-            or (self._ubxID == b"\x8a" and self._mode == ubt.SET)
+            (self._ubxID == b"\x8b" and self._mode == GET)
+            or (self._ubxID == b"\x8a" and self._mode == SET)
         ):
             self._set_attribute_cfgval(offset, **kwargs)
         else:
@@ -214,7 +231,7 @@ class UBXMessage:
                 if (
                     self._ubxClass == b"\x10"
                     and self._ubxID == b"\x02"
-                    and self._mode == ubt.SET
+                    and self._mode == SET
                 ):
                     if getattr(self, "calibTtagValid", 0):
                         gsiz += 1
@@ -253,7 +270,7 @@ class UBXMessage:
 
         # if attribute is scaled
         ares = 1
-        if isinstance(adef, list) and self._scaling:
+        if isinstance(adef, list):
             ares = adef[1]  # attribute resolution (i.e. scaling factor)
             adef = adef[0]  # attribute definition
 
@@ -264,7 +281,7 @@ class UBXMessage:
                 anami += f"_{i:02d}"
 
         # determine attribute size (bytes)
-        if adef == ubt.CH:  # variable length string
+        if adef == CH:  # variable length string
             asiz = len(self._payload)
         else:
             asiz = attsiz(adef)
@@ -276,7 +293,7 @@ class UBXMessage:
             if ares == 1:
                 val = bytes2val(valb, adef)
             else:
-                val = round(bytes2val(valb, adef) * ares, ubt.SCALROUND)
+                val = round(bytes2val(valb, adef) * ares, SCALROUND)
         else:
             # if individual keyword has been provided,
             # set to provided value, else set to
@@ -290,14 +307,11 @@ class UBXMessage:
 
         if anami[0:3] == "_HP":  # high precision component of earlier attribute
             # add standard and high precision values in a single attribute
-            setattr(
-                self, anami[3:], round(getattr(self, anami[3:]) + val, ubt.SCALROUND)
-            )
+            setattr(self, anami[3:], round(getattr(self, anami[3:]) + val, SCALROUND))
         else:
             setattr(self, anami, val)
-        offset += asiz
 
-        return offset
+        return offset + asiz
 
     def _set_attribute_bitfield(
         self, atyp: str, offset: int, index: list, **kwargs
@@ -333,11 +347,10 @@ class UBXMessage:
             )
 
         # update payload
-        offset += bsiz
         if "payload" not in kwargs:
             self._payload += bitfield.to_bytes(bsiz, "little")
 
-        return (offset, index)
+        return (offset + bsiz, index)
 
     def _set_attribute_bits(
         self,
@@ -372,16 +385,14 @@ class UBXMessage:
         atts = attsiz(keyt)  # determine flag size in bits
 
         if "payload" in kwargs:
-            mask = pow(2, atts) - 1
-            val = (bitfield >> bfoffset) & mask
+            val = (bitfield >> bfoffset) & ((1 << atts) - 1)
         else:
             val = kwargs.get(keyr, 0)
             bitfield = bitfield | (val << bfoffset)
 
         if key[0:8] != "reserved":  # don't bother to set reserved bits
             setattr(self, keyr, val)
-        bfoffset += atts
-        return (bitfield, bfoffset)
+        return (bitfield, bfoffset + atts)
 
     def _set_attribute_cfgval(self, offset: int, **kwargs):
         """
@@ -398,7 +409,7 @@ class UBXMessage:
         if "payload" in kwargs:
             self._payload = kwargs["payload"]
         else:
-            raise ube.UBXMessageError(
+            raise UBXMessageError(
                 "CFG-VALGET message definitions must include payload keyword"
             )
         cfglen = len(self._payload[offset:])
@@ -424,20 +435,17 @@ class UBXMessage:
         """
         Calculate and format payload length and checksum as bytes."""
 
-        if self._payload is None:
-            self._length = val2bytes(0, ubt.U2)
-            self._checksum = calc_checksum(self._ubxClass + self._ubxID + self._length)
-        else:
-            self._length = val2bytes(len(self._payload), ubt.U2)
-            self._checksum = calc_checksum(
-                self._ubxClass + self._ubxID + self._length + self._payload
-            )
+        payload = b"" if self._payload is None else self._payload
+        self._length = val2bytes(len(payload), U2)
+        self._checksum = calc_checksum(
+            self._ubxClass + self._ubxID + self._length + payload
+        )
 
     def _get_dict(self, **kwargs) -> dict:
         """
         Get payload dictionary corresponding to message mode (GET/SET/POLL)
         Certain message types need special handling as alternate payload
-        definitions exist for the same ubxClass/ubxID.
+        variants exist for the same ubxClass/ubxID/mode.
 
         :param kwargs: optional payload key/value pairs
         :return: dictionary representing payload definition
@@ -446,312 +454,29 @@ class UBXMessage:
         """
 
         try:
-            if self._mode == ubt.POLL:
-                # CFG-TP5 POLL
-                if self._ubxClass == b"\x06" and self._ubxID == b"\x31":
-                    pdict = self._get_cfgtp5_version(**kwargs)
-                else:
-                    pdict = ubp.UBX_PAYLOADS_POLL[self.identity]
-            elif self._mode == ubt.SET:
-                # MGA SET
-                if self._ubxClass == b"\x13" and self._ubxID != b"\x80":
-                    pdict = self._get_mga_version(ubt.SET, **kwargs)
-                # RXM-PMP SET
-                elif self._ubxClass == b"\x02" and self._ubxID == b"\x72":
-                    pdict = self._get_rxmpmp_version(**kwargs)
-                # RXM-PMREQ SET
-                elif self._ubxClass == b"\x02" and self._ubxID == b"\x41":
-                    pdict = self._get_rxmpmreq_version(**kwargs)
-                # TIM-VCOCAL SET
-                elif self._ubxClass == b"\x0d" and self._ubxID == b"\x15":
-                    pdict = self._get_timvcocal_version(**kwargs)
-                # CFG-DAT SET
-                elif self._ubxClass == b"\x06" and self._ubxID == b"\x06":
-                    pdict = self._get_cfgdat_version(**kwargs)
-                else:
-                    pdict = ubs.UBX_PAYLOADS_SET[self.identity]
+            msg = self._ubxClass + self._ubxID
+            variant = VARIANTS[self._mode].get(msg, False)
+            if variant and msg[0] == 0x13:  # MGA
+                pdict = variant(msg, self._mode, **kwargs)
+            elif variant:
+                pdict = variant(**kwargs)
+            elif self._mode == POLL:
+                pdict = UBX_PAYLOADS_POLL[self.identity]
+            elif self._mode == SET:
+                pdict = UBX_PAYLOADS_SET[self.identity]
             else:
-                # MGA GET
-                if self._ubxClass == b"\x13" and self._ubxID != b"\x80":
-                    pdict = self._get_mga_version(ubt.GET, **kwargs)
-                # RXM-PMP GET
-                elif self._ubxClass == b"\x02" and self._ubxID == b"\x72":
-                    pdict = self._get_rxmpmp_version(**kwargs)
-                # RXM-RLM GET
-                elif self._ubxClass == b"\x02" and self._ubxID == b"\x59":
-                    pdict = self._get_rxmrlm_version(**kwargs)
-                # CFG-NMEA GET
-                elif self._ubxClass == b"\x06" and self._ubxID == b"\x17":
-                    pdict = self._get_cfgnmea_version(**kwargs)
-                # NAV-AOPSTATUS GET
-                elif self._ubxClass == b"\x01" and self._ubxID == b"\x60":
-                    pdict = self._get_aopstatus_version(**kwargs)
-                # NAV-RELPOSNED GET
-                elif self._ubxClass == b"\x01" and self._ubxID == b"\x3C":
-                    pdict = self._get_relposned_version(**kwargs)
                 # Unknown GET message, parsed to nominal definition
-                elif self.identity[-7:] == "NOMINAL":
+                if self.identity[-7:] == "NOMINAL":
                     pdict = {}
                 else:
-                    pdict = ubg.UBX_PAYLOADS_GET[self.identity]
+                    pdict = UBX_PAYLOADS_GET[self.identity]
             return pdict
         except KeyError as err:
-            raise KeyError(
-                f"{err} - Check 'msgmode' keyword argument is appropriate for data stream"
+            mode = ["GET", "SET", "POLL"][self._mode]
+            raise UBXMessageError(
+                f"Unknown message type {escapeall(self._ubxClass + self._ubxID)}, mode {mode}. "
+                "Check 'msgmode' setting is appropriate for data stream"
             ) from err
-
-    def _get_cfgtp5_version(self, **kwargs) -> dict:
-        """
-        Select appropriate CFG-TP5 POLL payload definition by checking
-        presence of tpIdx or payload argument.
-
-        :param kwargs: optional payload key/value pairs
-        :return: dictionary representing payload definition
-        :rtype: dict
-
-        """
-
-        lp = 0
-        if "payload" in kwargs:
-            lp = len(kwargs["payload"])
-        elif "tpIdx" in kwargs:
-            lp = 1
-        if lp == 1:
-            pdict = ubp.UBX_PAYLOADS_POLL["CFG-TP5-TPX"]
-        else:
-            pdict = ubp.UBX_PAYLOADS_POLL["CFG-TP5"]
-        return pdict
-
-    def _get_mga_version(self, mode: int, **kwargs) -> dict:
-        """
-        Select appropriate MGA payload definition by checking
-        value of 'type' attribute (1st byte of payload).
-
-        :param str mode: mode (0=GET, 1=SET, 2=POLL)
-        :param kwargs: optional payload key/value pairs
-        :return: dictionary representing payload definition
-        :rtype: dict
-        :raises: UBXMessageError
-
-        """
-
-        if "type" in kwargs:
-            typ = val2bytes(kwargs["type"], ubt.U1)
-        elif "payload" in kwargs:
-            typ = kwargs["payload"][0:1]
-        else:
-            raise ube.UBXMessageError(
-                "MGA message definitions must include type or payload keyword"
-            )
-        identity = ubt.UBX_MSGIDS[self._ubxClass + self._ubxID + typ]
-        if mode == ubt.SET:
-            pdict = ubs.UBX_PAYLOADS_SET[identity]
-        else:
-            pdict = ubg.UBX_PAYLOADS_GET[identity]
-        return pdict
-
-    def _get_rxmpmreq_version(self, **kwargs) -> dict:
-        """
-        Select appropriate RXM-PMREQ payload definition by checking
-        the 'version' keyword or payload length.
-
-        :param kwargs: optional payload key/value pairs
-        :return: dictionary representing payload definition
-        :rtype: dict
-        :raises: UBXMessageError
-
-        """
-
-        lpd = 0
-        if "version" in kwargs:  # assume longer version
-            lpd = 16
-        elif "payload" in kwargs:
-            lpd = len(kwargs["payload"])
-        else:
-            raise ube.UBXMessageError(
-                "RXM-PMREQ message definitions must include version or payload keyword"
-            )
-        if lpd == 16:
-            pdict = ubs.UBX_PAYLOADS_SET["RXM-PMREQ"]  # long
-        else:
-            pdict = ubs.UBX_PAYLOADS_SET["RXM-PMREQ-S"]  # short
-        return pdict
-
-    def _get_rxmpmp_version(self, **kwargs) -> dict:
-        """
-        Select appropriate RXM-PMP payload definition by checking
-        value of 'version' attribute (1st byte of payload).
-
-        :param kwargs: optional payload key/value pairs
-        :return: dictionary representing payload definition
-        :rtype: dict
-        :raises: UBXMessageError
-
-        """
-
-        if "version" in kwargs:
-            ver = val2bytes(kwargs["version"], ubt.U1)
-        elif "payload" in kwargs:
-            ver = kwargs["payload"][0:1]
-        else:
-            raise ube.UBXMessageError(
-                "RXM-PMP message definitions must include version or payload keyword"
-            )
-        if ver == b"\x00":
-            pdict = ubs.UBX_PAYLOADS_SET["RXM-PMP-V0"]
-        else:
-            pdict = ubs.UBX_PAYLOADS_SET["RXM-PMP-V1"]
-        return pdict
-
-    def _get_rxmrlm_version(self, **kwargs) -> dict:
-        """
-        Select appropriate RXM-RLM payload definition by checking
-        value of 'type' attribute (2nd byte of payload).
-
-        :param kwargs: optional payload key/value pairs
-        :return: dictionary representing payload definition
-        :rtype: dict
-        :raises: UBXMessageError
-
-        """
-
-        if "type" in kwargs:
-            typ = val2bytes(kwargs["type"], ubt.U1)
-        elif "payload" in kwargs:
-            typ = kwargs["payload"][1:2]
-        else:
-            raise ube.UBXMessageError(
-                "RXM-RLM message definitions must include type or payload keyword"
-            )
-        if typ == b"\x01":
-            pdict = ubg.UBX_PAYLOADS_GET["RXM-RLM-S"]  # short
-        else:
-            pdict = ubg.UBX_PAYLOADS_GET["RXM-RLM-L"]  # long
-        return pdict
-
-    def _get_cfgnmea_version(self, **kwargs) -> dict:
-        """
-        Select appropriate payload definition version for older
-        generations of CFG-NMEA message by checking payload length.
-
-        :param kwargs: optional payload key/value pairs
-        :return: dictionary representing payload definition
-        :rtype: dict
-        :raises: UBXMessageError
-
-        """
-
-        if "payload" in kwargs:
-            lpd = len(kwargs["payload"])
-        else:
-            raise ube.UBXMessageError(
-                "CFG-NMEA message definitions must include payload keyword"
-            )
-        if lpd == 4:
-            pdict = ubg.UBX_PAYLOADS_GET["CFG-NMEAvX"]
-        elif lpd == 12:
-            pdict = ubg.UBX_PAYLOADS_GET["CFG-NMEAv0"]
-        else:
-            pdict = ubg.UBX_PAYLOADS_GET["CFG-NMEA"]
-        return pdict
-
-    def _get_aopstatus_version(self, **kwargs) -> dict:
-        """
-        Select appropriate payload definition version for older
-        generations of NAV-AOPSTATUS message by checking payload length.
-
-        :param kwargs: optional payload key/value pairs
-        :return: dictionary representing payload definition
-        :rtype: dict
-        :raises: UBXMessageError
-
-        """
-
-        if "payload" in kwargs:
-            lpd = len(kwargs["payload"])
-        else:
-            raise ube.UBXMessageError(
-                "NAV-AOPSTATUS message definitions must include payload keyword"
-            )
-        if lpd == 20:
-            pdict = ubg.UBX_PAYLOADS_GET["NAV-AOPSTATUS-L"]
-        else:
-            pdict = ubg.UBX_PAYLOADS_GET["NAV-AOPSTATUS"]
-        return pdict
-
-    def _get_relposned_version(self, **kwargs) -> dict:
-        """
-        Select appropriate NAV-RELPOSNED payload definition by checking
-        value of 'version' attribute (1st byte of payload).
-
-        :param kwargs: optional payload key/value pairs
-        :return: dictionary representing payload definition
-        :rtype: dict
-        :raises: UBXMessageError
-
-        """
-
-        if "version" in kwargs:
-            ver = val2bytes(kwargs["version"], ubt.U1)
-        elif "payload" in kwargs:
-            ver = kwargs["payload"][0:1]
-        else:
-            raise ube.UBXMessageError(
-                "NAV-RELPOSNED message definitions must include version or payload keyword"
-            )
-        if ver == b"\x00":
-            pdict = ubg.UBX_PAYLOADS_GET["NAV-RELPOSNED-V0"]
-        else:
-            pdict = ubg.UBX_PAYLOADS_GET["NAV-RELPOSNED"]
-        return pdict
-
-    def _get_timvcocal_version(self, **kwargs) -> dict:
-        """
-        Select appropriate TIM-VCOCAL SET payload definition by checking
-        the payload length.
-
-        :param kwargs: optional payload key/value pairs
-        :return: dictionary representing payload definition
-        :rtype: dict
-        :raises: UBXMessageError
-
-        """
-
-        lpd = 1
-        typ = 0
-        if "type" in kwargs:
-            typ = kwargs["type"]
-        elif "payload" in kwargs:
-            lpd = len(kwargs["payload"])
-        else:
-            raise ube.UBXMessageError(
-                "TIM-VCOCAL SET message definitions must include type or payload keyword"
-            )
-        if lpd == 1 and typ == 0:
-            pdict = ubs.UBX_PAYLOADS_SET["TIM-VCOCAL-V0"]  # stop cal
-        else:
-            pdict = ubs.UBX_PAYLOADS_SET["TIM-VCOCAL"]  # cal
-        return pdict
-
-    def _get_cfgdat_version(self, **kwargs) -> dict:
-        """
-        Select appropriate CFG-DAT SET payload definition by checking
-        presence of datumNum keyword or payload length of 2 bytes.
-
-        :param kwargs: optional payload key/value pairs
-        :return: dictionary representing payload definition
-        :rtype: dict
-
-        """
-
-        lpd = 0
-        if "payload" in kwargs:
-            lpd = len(kwargs["payload"])
-        if lpd == 2 or "datumNum" in kwargs:
-            pdict = ubs.UBX_PAYLOADS_SET["CFG-DAT-NUM"]  # datum num set
-        else:
-            pdict = ubs.UBX_PAYLOADS_SET["CFG-DAT"]  # manual datum set
-        return pdict
 
     def _calc_num_repeats(
         self, attd: dict, payload: bytes, offset: int, offsetend: int = 0
@@ -819,11 +544,11 @@ class UBXMessage:
                     self._ubxClass == b"\x06" and self._ubxID == b"\x01"
                 ):
                     if att in ["clsID", "msgClass"]:
-                        clsid = val2bytes(val, ubt.U1)
-                        val = ubt.UBX_CLASSES.get(clsid, clsid)
+                        clsid = val2bytes(val, U1)
+                        val = UBX_CLASSES.get(clsid, clsid)
                     if att == "msgID" and clsid:
-                        msgid = val2bytes(val, ubt.U1)
-                        val = ubt.UBX_MSGIDS.get(clsid + msgid, clsid + msgid)
+                        msgid = val2bytes(val, U1)
+                        val = UBX_MSGIDS.get(clsid + msgid, clsid + msgid)
                 stg += att + "=" + str(val)
                 if i < len(self.__dict__) - 1:
                     stg += ", "
@@ -857,7 +582,7 @@ class UBXMessage:
         """
 
         if self._immutable:
-            raise ube.UBXMessageError(
+            raise UBXMessageError(
                 f"Object is immutable. Updates to {name} not permitted after initialisation."
             )
 
@@ -872,11 +597,14 @@ class UBXMessage:
 
         """
 
-        output = ubt.UBX_HDR + self._ubxClass + self._ubxID + self._length
-        output += (
-            self._checksum if self._payload is None else self._payload + self._checksum
+        return (
+            UBX_HDR
+            + self._ubxClass
+            + self._ubxID
+            + self._length
+            + (b"" if self._payload is None else self._payload)
+            + self._checksum
         )
-        return output
 
     @property
     def identity(self) -> str:
@@ -896,15 +624,15 @@ class UBXMessage:
             # all MGA messages except MGA-DBD need to be identified by the
             # 'type' attribute - the first byte of the payload
             if self._ubxClass == b"\x13" and self._ubxID != b"\x80":
-                umsg_name = ubt.UBX_MSGIDS[
+                umsg_name = UBX_MSGIDS[
                     self._ubxClass + self._ubxID + self._payload[0:1]
                 ]
             else:
-                umsg_name = ubt.UBX_MSGIDS[self._ubxClass + self._ubxID]
+                umsg_name = UBX_MSGIDS[self._ubxClass + self._ubxID]
         except KeyError:
             # unrecognised u-blox message, parsed to UBX-NOMINAL definition
-            if self._ubxClass in ubt.UBX_CLASSES:  # known class
-                cls = ubt.UBX_CLASSES[self._ubxClass]
+            if self._ubxClass in UBX_CLASSES:  # known class
+                cls = UBX_CLASSES[self._ubxClass]
             else:  # unknown class
                 cls = "UNKNOWN"
             umsg_name = (
@@ -946,7 +674,7 @@ class UBXMessage:
 
         """
 
-        return bytes2val(self._length, ubt.U2)
+        return bytes2val(self._length, U2)
 
     @property
     def payload(self) -> bytes:
@@ -992,13 +720,13 @@ class UBXMessage:
 
         num = len(cfgData)
         if num > 64:
-            raise ube.UBXMessageError(
+            raise UBXMessageError(
                 f"Number of configuration tuples {num} exceeds maximum of 64"
             )
 
-        version = val2bytes(0 if transaction == 0 else 1, ubt.U1)
-        layers = val2bytes(layers, ubt.U1)
-        transaction = val2bytes(transaction, ubt.U1)
+        version = val2bytes(0 if transaction == 0 else 1, U1)
+        layers = val2bytes(layers, U1)
+        transaction = val2bytes(transaction, U1)
         payload = version + layers + transaction + b"\x00"
         lis = b""
 
@@ -1009,11 +737,11 @@ class UBXMessage:
                 (key, att) = cfgname2key(key)  # lookup keyID & attribute type
             else:
                 (_, att) = cfgkey2name(key)  # lookup attribute type
-            keyb = val2bytes(key, ubt.U4)
+            keyb = val2bytes(key, U4)
             valb = val2bytes(val, att)
             lis = lis + keyb + valb
 
-        return UBXMessage("CFG", "CFG-VALSET", ubt.SET, payload=payload + lis)
+        return UBXMessage("CFG", "CFG-VALSET", SET, payload=payload + lis)
 
     @staticmethod
     def config_del(layers: int, transaction: int, keys: list) -> object:
@@ -1035,23 +763,23 @@ class UBXMessage:
 
         num = len(keys)
         if num > 64:
-            raise ube.UBXMessageError(
+            raise UBXMessageError(
                 f"Number of configuration keys {num} exceeds maximum of 64"
             )
 
-        version = val2bytes(0 if transaction == 0 else 1, ubt.U1)
-        layers = val2bytes(layers, ubt.U1)
-        transaction = val2bytes(transaction, ubt.U1)
+        version = val2bytes(0 if transaction == 0 else 1, U1)
+        layers = val2bytes(layers, U1)
+        transaction = val2bytes(transaction, U1)
         payload = version + layers + transaction + b"\x00"
         lis = b""
 
         for key in keys:
             if isinstance(key, str):  # if keyname as a string
                 (key, _) = cfgname2key(key)  # lookup keyID
-            keyb = val2bytes(key, ubt.U4)
+            keyb = val2bytes(key, U4)
             lis = lis + keyb
 
-        return UBXMessage("CFG", "CFG-VALDEL", ubt.SET, payload=payload + lis)
+        return UBXMessage("CFG", "CFG-VALDEL", SET, payload=payload + lis)
 
     @staticmethod
     def config_poll(layer: int, position: int, keys: list) -> object:
@@ -1073,20 +801,20 @@ class UBXMessage:
 
         num = len(keys)
         if num > 64:
-            raise ube.UBXMessageError(
+            raise UBXMessageError(
                 f"Number of configuration keys {num} exceeds maximum of 64"
             )
 
-        version = val2bytes(0, ubt.U1)
-        layer = val2bytes(layer, ubt.U1)
-        position = val2bytes(position, ubt.U2)
+        version = val2bytes(0, U1)
+        layer = val2bytes(layer, U1)
+        position = val2bytes(position, U2)
         payload = version + layer + position
         lis = b""
 
         for key in keys:
             if isinstance(key, str):  # if keyname as a string
                 (key, _) = cfgname2key(key)  # lookup keyID
-            keyb = val2bytes(key, ubt.U4)
+            keyb = val2bytes(key, U4)
             lis = lis + keyb
 
-        return UBXMessage("CFG", "CFG-VALGET", ubt.POLL, payload=payload + lis)
+        return UBXMessage("CFG", "CFG-VALGET", POLL, payload=payload + lis)
