@@ -1,5 +1,11 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.2.43
+
+FIXES:
+
+1. Fix typo in NAV-PVT definition = difSoln is now diffSoln. Fixes [#152](https://github.com/semuconsulting/pyubx2/issues/152)
+
 ### RELEASE 1.2.42
 
 ENHANCEMENTS:
