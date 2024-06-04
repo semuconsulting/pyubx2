@@ -4,7 +4,7 @@
 
 FIXES:
 
-1. Fix typo in NAV-PVT definition = difSoln is now diffSoln. Fixes [#152](https://github.com/semuconsulting/pyubx2/issues/152)
+1. Fix typo in NAV-PVT definition = difSoln is now diffSoln. Fixes [#152](https://github.com/semuconsulting/pyubx2/issues/152). **NB:** any existing references to `msg.difSoln` will need to be changed to `msg.diffSoln` in user code.
 
 ### RELEASE 1.2.42
 
