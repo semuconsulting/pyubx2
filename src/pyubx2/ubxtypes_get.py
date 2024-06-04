@@ -2429,7 +2429,7 @@ UBX_PAYLOADS_GET = {
             X1,
             {
                 "gnssFixOk": U1,
-                "difSoln": U1,
+                "diffSoln": U1,
                 "psmState": U3,
                 "headVehValid": U1,
                 "carrSoln": U2,
