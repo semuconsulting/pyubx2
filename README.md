@@ -45,14 +45,15 @@ Contributions welcome - please refer to [CONTRIBUTING.MD](https://github.com/sem
 ---
 ## <a name="installation">Installation</a>
 
-`pyubx2` is compatible with Python >=3.8. In the following, `python3` & `pip` refer to the Python 3 executables. You may need to type `python` or `pip3`, depending on your particular environment.
-
 ![Python version](https://img.shields.io/pypi/pyversions/pyubx2.svg?style=flat)
 [![PyPI version](https://img.shields.io/pypi/v/pyubx2.svg?style=flat)](https://pypi.org/project/pyubx2/)
 ![PyPI downloads](https://img.shields.io/pypi/dm/pyubx2.svg?style=flat)
 
-The recommended way to install the latest version of `pyubx2` is with
-[pip](http://pypi.python.org/pypi/pip/):
+`pyubx2` is compatible with Python 3.8 - 3.13 and has no third-party library dependencies.
+
+In the following, `python3` & `pip` refer to the Python 3 executables. You may need to substitute `python` for `python3`, depending on your particular environment (*on Windows it's generally `python`*).
+
+The recommended way to install the latest version of `pyubx2` is with [pip](http://pypi.python.org/pypi/pip/):
 
 ```shell
 python3 -m pip install --upgrade pyubx2
@@ -64,7 +65,7 @@ If required, `pyubx2` can also be installed into a virtual environment, e.g.:
 python3 -m pip install --user --upgrade virtualenv
 python3 -m virtualenv env
 source env/bin/activate (or env\Scripts\activate on Windows)
-(env) python3 -m pip install --upgrade pyubx2
+python3 -m pip install --upgrade pyubx2
 ...
 deactivate
 ```
