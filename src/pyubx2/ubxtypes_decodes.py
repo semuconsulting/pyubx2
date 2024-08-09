@@ -297,6 +297,20 @@ CARRSOLN = {
     1: "RTK FLOAT",
     2: "RTK FIXED",
 }
+LASTCORRECTIONAGE = {
+    0: 0,
+    1: 1,
+    2: 2,
+    3: 5,
+    4: 10,
+    5: 15,
+    6: 20,
+    7: 30,
+    8: 45,
+    9: 60,
+    10: 90,
+    11: 120,
+}
 
 # UBX-NAV-SAT
 QUALITYIND = {
