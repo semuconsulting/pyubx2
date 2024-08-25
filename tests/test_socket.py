@@ -1,6 +1,6 @@
 """
 Socket reader tests for pyubx2 - uses dummy socket class
-to achieve 99% test coverage of SocketStream.
+to achieve 99% test coverage of SocketWrapper.
 
 Created on 11 May 2022
 
