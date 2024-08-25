@@ -33,7 +33,7 @@ from pyubx2.exceptions import (
     UBXStreamError,
     UBXTypeError,
 )
-from pyubx2.socket_stream import SocketStream
+from pyubx2.socket_wrapper import SocketWrapper
 from pyubx2.ubxhelpers import bytes2val, calc_checksum, getinputmode, val2bytes
 from pyubx2.ubxmessage import UBXMessage
 from pyubx2.ubxtypes_core import (
@@ -90,7 +90,7 @@ class UBXReader:
         # pylint: disable=too-many-arguments
 
         if isinstance(datastream, socket):
-            self._stream = SocketStream(datastream, bufsize=bufsize)
+            self._stream = SocketWrapper(datastream, bufsize=bufsize)
         else:
             self._stream = datastream
         self._protfilter = protfilter
