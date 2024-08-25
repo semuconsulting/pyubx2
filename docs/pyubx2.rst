@@ -12,10 +12,10 @@ pyubx2.exceptions module
    :undoc-members:
    :show-inheritance:
 
-pyubx2.socket\_stream module
-----------------------------
+pyubx2.socket\_wrapper module
+-----------------------------
 
-.. automodule:: pyubx2.socket_stream
+.. automodule:: pyubx2.socket_wrapper
    :members:
    :undoc-members:
    :show-inheritance:

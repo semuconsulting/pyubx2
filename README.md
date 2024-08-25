@@ -103,7 +103,7 @@ class pyubx2.ubxreader.UBXReader(stream, *args, **kwargs)
 
 You can create a `UBXReader` object by calling the constructor with an active stream object. 
 The stream object can be any viable data stream which supports a `read(n) -> bytes` method (e.g. File or Serial, with 
-or without a buffer wrapper). `pyubx2` implements an internal `SocketStream` class to allow sockets to be read in the same way as other streams (see example below).
+or without a buffer wrapper). `pyubx2` implements an internal `SocketWrapper` class to allow sockets to be read in the same way as other streams (see example below).
 
 Individual input UBX, NMEA or RTCM3 messages can then be read using the `UBXReader.read()` function, which returns both the raw binary data (as bytes) and the parsed data (as a `UBXMessage`, `NMEAMessage` or `RTCMMessage` object, via the `parse()` method). The function is thread-safe in so far as the incoming data stream object is thread-safe. `UBXReader` also implements an iterator.
 

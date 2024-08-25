@@ -1,5 +1,5 @@
 """
-UBX Custom Exception Types
+UBX Custom Exception Types.
 
 Created on 27 Sep 2020
 

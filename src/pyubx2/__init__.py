@@ -26,7 +26,7 @@ from pyubx2.exceptions import (
     UBXStreamError,
     UBXTypeError,
 )
-from pyubx2.socket_stream import SocketStream
+from pyubx2.socket_wrapper import SocketWrapper
 from pyubx2.ubxhelpers import *
 from pyubx2.ubxmessage import UBXMessage
 from pyubx2.ubxreader import UBXReader

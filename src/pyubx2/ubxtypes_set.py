@@ -1,8 +1,8 @@
 """
-UBX Protocol Input payload definitions
+UBX Protocol SET payload definitions.
 
 THESE ARE THE PAYLOAD DEFINITIONS FOR _SET_ MESSAGES _TO_ THE RECEIVER
-(e.g. configuration and calibration commands; AssistNow payloads)
+(e.g. configuration and calibration commands; AssistNow payloads).
 
 Created on 27 Sep 2020
 

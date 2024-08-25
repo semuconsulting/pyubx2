@@ -1,6 +1,6 @@
 """
 Collection of UBX helper methods which can be used
-outside the UBXMessage or UBXReader classes
+outside the UBXMessage or UBXReader classes.
 
 Created on 15 Dec 2020
 
@@ -564,3 +564,61 @@ def getinputmode(data: bytes) -> int:
     ):
         return POLL
     return SET
+
+
+def process_monver(msg: object) -> dict:
+    """
+    Process parsed MON-VER sentence into dictionary of
+    hardware, firmware and software version identifiers.
+
+    :param UBXMessage msg: UBX MON-VER config message
+    :return: dict of version information
+    :rtype: dict
+    """
+
+    exts = []
+    fw_version = "N/A"
+    rom_version = "N/A"
+    gnss_supported = ""
+    model = ""
+    sw_version = getattr(msg, "swVersion", b"N/A")
+    sw_version = sw_version.replace(b"\x00", b"").decode()
+    sw_version = sw_version.replace("ROM CORE", "ROM")
+    sw_version = sw_version.replace("EXT CORE", "Flash")
+    hw_version = getattr(msg, "hwVersion", b"N/A")
+    hw_version = hw_version.replace(b"\x00", b"").decode()
+
+    for i in range(9):
+        ext = getattr(msg, f"extension_{i+1:02d}", b"")
+        ext = ext.replace(b"\x00", b"").decode()
+        exts.append(ext)
+        if "FWVER=" in exts[i]:
+            fw_version = exts[i].replace("FWVER=", "")
+        if "PROTVER=" in exts[i]:
+            rom_version = exts[i].replace("PROTVER=", "")
+        if "PROTVER " in exts[i]:
+            rom_version = exts[i].replace("PROTVER ", "")
+        if "MOD=" in exts[i]:
+            model = exts[i].replace("MOD=", "")
+            hw_version = f"{model} {hw_version}"
+        for gnss in (
+            "GPS",
+            "GLO",
+            "GAL",
+            "BDS",
+            "SBAS",
+            "IMES",
+            "QZSS",
+            "NAVIC",
+        ):
+            if gnss in exts[i]:
+                gnss_supported = gnss_supported + gnss + " "
+
+    verdata = {}
+    verdata["swversion"] = sw_version
+    verdata["hwversion"] = hw_version
+    verdata["fwversion"] = fw_version
+    verdata["romversion"] = rom_version
+    verdata["gnss"] = gnss_supported
+
+    return verdata

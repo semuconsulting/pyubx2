@@ -1,10 +1,10 @@
 """
-UBX Protocol Configuration Database Keys
+UBX Protocol Configuration Database Keys.
 
-Used by CFG_VALGET, CFG_VALSET and CFG_VALDEL message types
+Used by CFG_VALGET, CFG_VALSET and CFG_VALDEL message types.
 
 Format:
-"keyname": (keyID, "type")
+ "keyname": (keyID, "type")
 
 Created on 30 Nov 2020
 
@@ -35,20 +35,31 @@ from pyubx2.ubxtypes_core import (
 
 # memory layer designators for CFG_VALSET & CFG_VALDEL
 SET_LAYER_RAM = 1
+"""Set RAM (volatile) memory layer in UBX-CFG-VALSET, UBX-CFG-VALDEL"""
 SET_LAYER_BBR = 2
+"""Set Battery-backed RAM memory layer in UBX-CFG-VALSET, UBX-CFG-VALDEL"""
 SET_LAYER_FLASH = 4
+"""Set Flash memory layer in UBX-CFG-VALSET, UBX-CFG-VALDEL"""
 
 # memory layer designators for CFG_VALGET
 POLL_LAYER_RAM = 0
+"""Poll RAM (volatile) memory layer in UBX-CFG-VALGET"""
 POLL_LAYER_BBR = 1
+"""Poll Battery-backed RAM memory layer in UBX-CFG-VALGET"""
 POLL_LAYER_FLASH = 2
+"""Poll Flash memory layer in UBX-CFG-VALGET"""
 POLL_LAYER_DEFAULT = 7
+"""Poll factory default (immutable) memory layer in UBX-CFG-VALGET"""
 
 # transaction state designators for CFG_VALSET & CFG_VALDEL
 TXN_NONE = 0
+"""Transaction none in UBX-CFG-VALSET, UBX-CFG-VALDEL"""
 TXN_START = 1
+"""Transaction start in UBX-CFG-VALSET, UBX-CFG-VALDEL"""
 TXN_ONGOING = 2
+"""Transaction ongoing in UBX-CFG-VALSET, UBX-CFG-VALDEL"""
 TXN_COMMIT = 3
+"""Transaction commit in UBX-CFG-VALSET, UBX-CFG-VALDEL"""
 
 # bits 28..30 of Configuration KeyID represent
 # storage length of Configuration Value in bytes

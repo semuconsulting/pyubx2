@@ -1,5 +1,13 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.2.44
+
+CHANGES:
+
+1. Add `process_monver()` helper method to extract dictionary of hardware, firmware and software version identifiers from parsed MON-VER message.
+1. Sphinx documentation and docstrings enhanced to include global constants and decodes.
+1. `socket_stream.SocketStream` class renamed to `socket_wrapper.SocketWrapper` class for clarity.
+
 ### RELEASE 1.2.43
 
 FIXES:
