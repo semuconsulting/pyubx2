@@ -5,6 +5,7 @@
 CHANGES:
 
 1. Add `process_monver()` helper method to extract dictionary of hardware, firmware and software version identifiers from parsed MON-VER message.
+1. Sphinx documentation and docstrings enhanced to include global constants and decodes.
 
 ### RELEASE 1.2.43
 

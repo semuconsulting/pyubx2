@@ -1,5 +1,5 @@
 """
-UBX Protocol core globals and constants
+UBX Protocol core globals, constants, datatypes and message identifiers.
 
 Created on 27 Sep 2020
 
@@ -9,18 +9,31 @@ Information sourced from public domain u-blox Interface Specifications © 2013-2
 """
 
 UBX_HDR = b"\xb5\x62"
+"""UBX message header"""
 GET = 0
+"""GET (receive, response) message types"""
 SET = 1
+"""SET (command) message types"""
 POLL = 2
+"""POLL (query) message types"""
 SETPOLL = 3
+"""SETPOLL (SET or POLL) message types"""
 VALNONE = 0
+"""Do not validate checksum"""
 VALCKSUM = 1
+"""Validate checksum"""
 NMEA_PROTOCOL = 1
+"""NMEA Protocol"""
 UBX_PROTOCOL = 2
+"""UBX Protocol"""
 RTCM3_PROTOCOL = 4
+"""RTCM3 Protocol"""
 ERR_RAISE = 2
+"""Raise error and quit"""
 ERR_LOG = 1
+"""Log errors"""
 ERR_IGNORE = 0
+"""Ignore errors"""
 
 # scaling factor constants
 SCAL9 = 1e-9  # 0.000000001

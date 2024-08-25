@@ -1,6 +1,6 @@
 """
 Collection of UBX helper methods which can be used
-outside the UBXMessage or UBXReader classes
+outside the UBXMessage or UBXReader classes.
 
 Created on 15 Dec 2020
 

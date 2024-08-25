@@ -1,8 +1,8 @@
 """
-UBX Protocol Output payload definitions
+UBX Protocol GET output payload definitions.
 
 THESE ARE THE PAYLOAD DEFINITIONS FOR _GET_ MESSAGES _FROM_ THE RECEIVER
-(e.g. Periodic Navigation Data; Poll Responses; Info messages)
+(e.g. Periodic Navigation Data; Poll Responses; Info messages).
 
 Created on 27 Sep 2020
 
