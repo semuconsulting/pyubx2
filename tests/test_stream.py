@@ -258,6 +258,7 @@ class StreamTest(unittest.TestCase):
         self,
     ):  # test stream of UBX MON messages
         EXPECTED_RESULTS = (
+            "<UBX(MON-VER, swVersion=b'EXT CORE 1.00 (f17067)\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00', hwVersion=b'00190000\\x00\\x00', extension_01=b'ROM BASE 0x118B2060\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00', extension_02=b'FWVER=HPG 1.50\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00', extension_03=b'PROTVER=27.50\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00', extension_04=b'MOD=ZED-F9P\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00', extension_05=b'GPS;GLO;GAL;BDS\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00', extension_06=b'SBAS;QZSS\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00')>",
             "<UBX(MON-MSGPP, msg1_01=0, msg1_02=0, msg1_03=0, msg1_04=0, msg1_05=0, msg1_06=0, msg1_07=0, msg1_08=0, msg2_01=0, msg2_02=0, msg2_03=0, msg2_04=0, msg2_05=0, msg2_06=0, msg2_07=0, msg2_08=0, msg3_01=0, msg3_02=0, msg3_03=0, msg3_04=0, msg3_05=0, msg3_06=0, msg3_07=0, msg3_08=0, msg4_01=123, msg4_02=0, msg4_03=0, msg4_04=0, msg4_05=0, msg4_06=0, msg4_07=0, msg4_08=0, msg5_01=0, msg5_02=0, msg5_03=0, msg5_04=0, msg5_05=0, msg5_06=0, msg5_07=0, msg5_08=0, msg6_01=0, msg6_02=0, msg6_03=0, msg6_04=0, msg6_05=0, msg6_06=0, msg6_07=0, msg6_08=0, skipped_01=0, skipped_02=0, skipped_03=0, skipped_04=0, skipped_05=0, skipped_06=0)>",
             "<UBX(MON-TXBUF, pending_01=0, pending_02=0, pending_03=0, pending_04=0, pending_05=0, pending_06=0, usage_01=0, usage_02=0, usage_03=0, usage_04=0, usage_05=0, usage_06=0, peakUsage_01=0, peakUsage_02=12, peakUsage_03=0, peakUsage_04=24, peakUsage_05=0, peakUsage_06=0, tUsage=0, tPeakUsage=24, limit=0, lem=0, alloc=0, reserved0=0)>",
             "<UBX(MON-RXBUF, pending_01=0, pending_02=0, pending_03=0, pending_04=0, pending_05=0, pending_06=0, usage_01=0, usage_02=0, usage_03=0, usage_04=0, usage_05=0, usage_06=0, peakUsage_01=0, peakUsage_02=0, peakUsage_03=0, peakUsage_04=4, peakUsage_05=0, peakUsage_06=0)>",
@@ -278,7 +279,7 @@ class StreamTest(unittest.TestCase):
                 # print(f'"{parsed}",')
                 self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
                 i += 1
-            self.assertEqual(i, 11)
+            self.assertEqual(i, 12)
 
     def testCFGLOG(
         self,
