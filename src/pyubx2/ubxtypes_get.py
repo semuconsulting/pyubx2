@@ -3434,9 +3434,9 @@ UBX_PAYLOADS_GET = {
                 "timeElapsed": U4,
                 "detectionType": U1,
                 "eventType": U1,
+                "reserved1": U2,
             },
         ),
-        "reserved1": U2,
     },
     "SEC-SIGN": {
         "version": U1,
