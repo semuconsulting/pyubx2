@@ -1,5 +1,11 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.2.45
+
+FIXES:
+
+1. Fix SEC-SIGLOG payload definition - thanks to @Niederb for contribution.
+
 ### RELEASE 1.2.44
 
 CHANGES:
