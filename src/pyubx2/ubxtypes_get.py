@@ -3404,7 +3404,7 @@ UBX_PAYLOADS_GET = {
     # ********************************************************************
     # Security Feature Messages
     # Messages in the SEC class are used for security features of the receiver.
-    "SEC-SIG": {
+    "SEC-SIG-V1": {
         "version": U1,  # 0x01
         "reserved0": U3,
         "jamFlags": (
@@ -3423,6 +3423,20 @@ UBX_PAYLOADS_GET = {
             },
         ),
         "reserved2": U3,
+    },
+    "SEC-SIG-V2": {
+        "version": U1,  # 0x02
+        "sigSecFlags": (
+            X1,
+            {
+                "jamDetEnabled": U1,
+                "jammingState": U2,
+                "spfDetEnabled": U1,
+                "spoofingState": U3,
+            },
+        ),
+        "reserved0": U1,
+        "jamNumCentFreqs": U1,
     },
     "SEC-SIGLOG": {
         "version": U1,  # 0x00

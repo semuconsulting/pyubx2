@@ -281,6 +281,24 @@ class StreamTest(unittest.TestCase):
                 i += 1
             self.assertEqual(i, 12)
 
+    def testSEC(
+        self,
+    ):  # test stream of UBX MON messages
+        EXPECTED_RESULTS = (
+            "<UBX(SEC-SIGLOG, version=1, numEvents=0, reserved0=132701618176)>",
+            "<UBX(SEC-SIG, version=2, jamDetEnabled=1, jammingState=1, spfDetEnabled=1, spoofingState=1, reserved0=0, jamNumCentFreqs=6)>",
+            "<UBX(SEC-SIGLOG, version=1, numEvents=0, reserved0=132767154176)>",
+            "<UBX(SEC-SIG, version=1, reserved0=0, jamDetEnabled=1, jammingState=2, reserved1=0, spfDetEnabled=1, spoofingState=3, reserved2=0)>",
+        )
+        i = 0
+        with open(os.path.join(DIRNAME, "pygpsdata-SEC.log"), "rb") as stream:
+            ubr = UBXReader(stream)
+            for raw, parsed in ubr:
+                # print(f'"{parsed}",')
+                self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
+                i += 1
+            self.assertEqual(i, 4)
+
     def testCFGLOG(
         self,
     ):  # test stream of UBX CFG messages
