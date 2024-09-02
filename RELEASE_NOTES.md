@@ -1,5 +1,16 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.2.45
+
+ENHANCEMENTS:
+
+1. Add SEC-OSNMA payload definition.
+
+FIXES:
+
+1. Fix SEC-SIGLOG payload definition - thanks to @Niederb for contribution.
+1. Cater for alternate (v1, v2) versions of SEC-SIG message = Fixes [#156](https://github.com/semuconsulting/pyubx2/issues/156).
+
 ### RELEASE 1.2.44
 
 CHANGES:

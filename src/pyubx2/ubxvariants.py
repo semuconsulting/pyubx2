@@ -264,6 +264,30 @@ def get_cfgdat_dict(**kwargs) -> dict:
     return UBX_PAYLOADS_SET["CFG-DAT"]  # manual datum set
 
 
+def get_secsig_dict(**kwargs) -> dict:
+    """
+    Select appropriate CFG-DAT SET payload definition by checking
+    presence of datumNum keyword or payload length of 2 bytes.
+
+    :param kwargs: optional payload key/value pairs
+    :return: dictionary representing payload definition
+    :rtype: dict
+
+    """
+
+    if "version" in kwargs:
+        ver = val2bytes(kwargs["version"], U1)
+    elif "payload" in kwargs:
+        ver = kwargs["payload"][0:1]
+    else:
+        raise UBXMessageError(
+            "SEC-SIG message definitions must include version or payload keyword"
+        )
+    if ver == b"\x01":
+        return UBX_PAYLOADS_GET["SEC-SIG-V1"]
+    return UBX_PAYLOADS_GET["SEC-SIG-V2"]
+
+
 VARIANTS = {
     POLL: {b"\x06\x31": get_cfgtp5_dict},  # CFG-TP5
     SET: {
@@ -287,5 +311,6 @@ VARIANTS = {
         b"\x06\x17": get_cfgnmea_dict,  # CFG-NMEA
         b"\x01\x60": get_aopstatus_dict,  # NAV-AOPSTATUS
         b"\x01\x3C": get_relposned_dict,  # NAV-RELPOSNED
+        b"\x27\x09": get_secsig_dict,  # SEC-SIG
     },
 }

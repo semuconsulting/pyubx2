@@ -46,6 +46,7 @@ from pyubx2.ubxtypes_core import (
     U9,
     U10,
     U12,
+    U15,
     U16,
     U20,
     U22,
@@ -3404,7 +3405,91 @@ UBX_PAYLOADS_GET = {
     # ********************************************************************
     # Security Feature Messages
     # Messages in the SEC class are used for security features of the receiver.
-    "SEC-SIG": {
+    "SEC-OSNMA": {
+        "version": U1,  # 0x02
+        "nmaHeader": (
+            X1,
+            {
+                "headerAuthStatus": U1,
+                "nmaStatus": U2,
+                "chainInForce": U2,
+                "CPKS": U3,
+            },
+        ),
+        "osnmaMonitoring": (
+            X1,
+            {
+                "osnmaEnabled": U1,
+                "numSVs": U5,
+                "nmaHeaderUpdate": U2,
+            },
+        ),
+        "timeSyncReq": (
+            X1,
+            {
+                "timSyncEnabled": U1,
+                "timSyncStatus": U3,
+                "timSyncReqDiff": U4,  # I4
+            },
+        ),
+        "reserved0": U4,
+        "dsmAuthentication": (
+            X4,
+            {
+                "dsmAuthenticationStatus": U6,
+                "hashFunction": U2,
+                "macFunction": U2,
+                "pubKeyId": U4,
+                "macLookupTable": U8,
+                "keySize": U4,
+                "macSize": U4,
+                "fromNVS": U1,
+            },
+        ),
+        "teslaKey": (
+            X4,
+            {
+                "teslaKeyAuthStatus": U3,
+                "wnSf": U12,
+                "towSf": U15,
+                "chainId": U2,
+            },
+        ),
+        "generalAndTiming": (
+            X4,
+            {
+                "authSVs": U6,
+                "authNumTim": U6,
+                "timingAuthResult": U2,
+                "macAdkdType": U1,
+                "pubKeySrc": U2,
+                "merkleRootSrc": U2,
+                "merkleRootVal": U1,
+                "futureMerkleRootSrc": U2,
+                "futureMerkleRootVal": U1,
+                "pubKeyVal": U1,
+                "futurePubKeyVal": U1,
+                "futurePubKeySrc": U2,
+                "futurePubKeyId": U4,
+            },
+        ),
+        "authSVgroup": (
+            "authSVs",  # repeating group * authSVs
+            {
+                "bitfield1": (
+                    X2,
+                    {
+                        "IODE": U10,
+                        "authNum": U5,
+                        "authStatus": U1,
+                    },
+                ),
+                "svId": U1,
+                "reserved1": U1,
+            },
+        ),
+    },
+    "SEC-SIG-V1": {
         "version": U1,  # 0x01
         "reserved0": U3,
         "jamFlags": (
@@ -3424,6 +3509,20 @@ UBX_PAYLOADS_GET = {
         ),
         "reserved2": U3,
     },
+    "SEC-SIG-V2": {
+        "version": U1,  # 0x02
+        "sigSecFlags": (
+            X1,
+            {
+                "jamDetEnabled": U1,
+                "jammingState": U2,
+                "spfDetEnabled": U1,
+                "spoofingState": U3,
+            },
+        ),
+        "reserved0": U1,
+        "jamNumCentFreqs": U1,
+    },
     "SEC-SIGLOG": {
         "version": U1,  # 0x00
         "numEvents": U1,
@@ -3434,9 +3533,9 @@ UBX_PAYLOADS_GET = {
                 "timeElapsed": U4,
                 "detectionType": U1,
                 "eventType": U1,
+                "reserved1": U2,
             },
         ),
-        "reserved1": U2,
     },
     "SEC-SIGN": {
         "version": U1,

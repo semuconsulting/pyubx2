@@ -78,6 +78,7 @@ U9 = "U009"  # Unsigned Int 9 bytes
 U10 = "U010"  # Unsigned Int 10 bytes
 U11 = "U011"  # Unsigned Int 11 bytes
 U12 = "U012"  # Unsigned Int 12 bytes
+U15 = "U015"  # Unsigned Int 15 bytes
 U16 = "U016"  # Unsigned Int 16 bytes
 U20 = "U020"  # Unsigned Int 20 bytes
 U22 = "U022"  # Unsigned Int 22 bytes
@@ -401,7 +402,8 @@ UBX_MSGIDS = {
     # ***************************************************************
     # Security messages
     # ***************************************************************
-    b"\x27\x09": "SEC-SIG",
+    b"\x27\x0a": "SEC-OSNMA",
+    b"\x27\x09": "SEC-SIG",  # 2 versions
     b"\x27\x10": "SEC-SIGLOG",
     b"\x27\x01": "SEC-SIGN",
     b"\x27\x03": "SEC-UNIQID",
