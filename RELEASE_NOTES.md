@@ -2,6 +2,10 @@
 
 ### RELEASE 1.2.45
 
+ENHANCEMENTS:
+
+1. Add SEC-OSNMA payload definition.
+
 FIXES:
 
 1. Fix SEC-SIGLOG payload definition - thanks to @Niederb for contribution.

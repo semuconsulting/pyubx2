@@ -210,6 +210,7 @@ UBX_PAYLOADS_POLL = {
     "RXM-SVSI": {},
     "RXM-TM": {},
     # *************************************************
+    "SEC-OSNMA": {},
     "SEC-SIG": {},
     "SEC-SIGLOG": {},
     "SEC-SIGN": {},
