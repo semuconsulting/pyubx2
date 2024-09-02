@@ -266,8 +266,8 @@ def get_cfgdat_dict(**kwargs) -> dict:
 
 def get_secsig_dict(**kwargs) -> dict:
     """
-    Select appropriate CFG-DAT SET payload definition by checking
-    presence of datumNum keyword or payload length of 2 bytes.
+    Select appropriate SEC-SIG GET payload definition by checking
+    value of 'version' attribute (1st byte of payload).
 
     :param kwargs: optional payload key/value pairs
     :return: dictionary representing payload definition
