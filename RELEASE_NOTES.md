@@ -1,5 +1,11 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.2.46
+
+ENHANCEMENTS:
+
+1. Minimum version of pynmeagps updated to 1.0.42 - incorporates additional NMEA sentence definitions and helper functions.
+
 ### RELEASE 1.2.45
 
 ENHANCEMENTS:
