@@ -1,5 +1,11 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.2.47
+
+ENHANCEMENTS:
+
+1. Add 37 additional config database keys for F9P HPG 1.50 (FYI UBX NAV-TIMETRUSTED message type 0x0164 added in this firmware version, but definition not yet publicly documented).
+
 ### RELEASE 1.2.46
 
 ENHANCEMENTS:
