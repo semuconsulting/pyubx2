@@ -37,7 +37,7 @@ dependencies = ["pynmeagps >= 1.0.43", "pyrtcm >= 1.1.2"]
 
 [project.urls]
 homepage = "https://github.com/semuconsulting/pyubx2"
-documentation = "https://pyubx2.readthedocs.io/"
+documentation = "https://www.semuconsulting.com/pyubx2/"
 repository = "https://github.com/semuconsulting/pyubx2"
 changelog = "https://github.com/semuconsulting/pyubx2/blob/master/RELEASE_NOTES.md"
 
