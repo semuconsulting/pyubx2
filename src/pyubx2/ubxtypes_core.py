@@ -341,6 +341,7 @@ UBX_MSGIDS = {
     b"\x01\x26": "NAV-TIMELS",
     b"\x01\x63": "NAV-TIMENAVIC",
     b"\x01\x27": "NAV-TIMEQZSS",
+    # b"\x01\x64": "NAV-TIMETRUSTED",  # not publicly documented
     b"\x01\x21": "NAV-TIMEUTC",
     b"\x01\x11": "NAV-VELECEF",
     b"\x01\x12": "NAV-VELNED",

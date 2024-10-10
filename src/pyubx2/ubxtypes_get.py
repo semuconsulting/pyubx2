@@ -2912,6 +2912,15 @@ UBX_PAYLOADS_GET = {
         ),
         "tAcc": U4,
     },
+    # nominal definition, excluded from public HPG 1.50 interface manual:
+    # "NAV-TIMETRUSTED": {
+    #     "group": (
+    #         "None",
+    #         {
+    #             "data": X1,
+    #         },
+    #     ),
+    # },
     "NAV-TIMEUTC": {
         "iTOW": U4,
         "tAcc": U4,

@@ -17,7 +17,7 @@ If you're adding or amending UBX payload definitions or configuration database k
 ## Coding conventions
 
 * This is open source software. Code should be as simple and transparent as possible. Favour clarity over brevity.
-* The code should be compatible with Python >= 3.8.
+* The code should be compatible with Python >= 3.9.
 * The core code should be as generic and reusable as possible. We endeavour to limit the amount of processing dedicated to specific UBX message types, though this is sometimes unavoidable.
 * Avoid external library dependencies unless there's a compelling reason not to.
 * We use and recommend [Visual Studio Code](https://code.visualstudio.com/) with the [Python Extension](https://marketplace.visualstudio.com/items?itemName=ms-python.python) for development and testing.
@@ -37,7 +37,7 @@ Please write unitttest examples for new code you create and add them to the `/te
 
 We test on the following platforms using a variety of u-blox devices from Generation 7 throught Generation 10:
 * Windows 11
-* MacOS (Ventura & Sonoma, Intel & Apple Silicon)
+* MacOS (Intel & Apple Silicon)
 * Linux (Ubuntu 22.04 LTS Jammy Jellyfish, 24.04 LTS Noble Numbat)
 * Raspberry Pi OS (32-bit & 64-bit)
 

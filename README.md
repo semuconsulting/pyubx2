@@ -36,7 +36,7 @@ This is an independent project and we have no affiliation whatsoever with u-blox
 
 The library implements a comprehensive set of inbound (SET/POLL) and outbound (GET) messages for u-blox GPS/GNSS devices from [generation 6 through generation 10](https://www.u-blox.com/en/positioning-chips-and-modules), but is readily [extensible](#extensibility). Refer to `UBX_MSGIDS` in [ubxtypes_core.py](https://github.com/semuconsulting/pyubx2/blob/master/src/pyubx2/ubxtypes_core.py) for the complete dictionary of messages currently supported. UBX protocol information sourced from public domain u-blox Interface Specifications © 2013-2021, u-blox AG.
 
-Sphinx API Documentation in HTML format is available at [https://www.semuconsulting.com/pyubx2](https://www.semuconsulting.com/pyubx2).
+Sphinx API Documentation in HTML format is available at [Read the Docs](https://pyubx2.readthedocs.io/).
 
 Contributions welcome - please refer to [CONTRIBUTING.MD](https://github.com/semuconsulting/pyubx2/blob/master/CONTRIBUTING.md). Feel free to discuss any proposed changes beforehand in the [Discussion Channel](https://github.com/semuconsulting/pyubx2/discussions/categories/ideas).
 
@@ -49,7 +49,7 @@ Contributions welcome - please refer to [CONTRIBUTING.MD](https://github.com/sem
 [![PyPI version](https://img.shields.io/pypi/v/pyubx2.svg?style=flat)](https://pypi.org/project/pyubx2/)
 ![PyPI downloads](https://img.shields.io/pypi/dm/pyubx2.svg?style=flat)
 
-`pyubx2` is compatible with Python 3.8 - 3.13 and has no third-party library dependencies.
+`pyubx2` is compatible with Python 3.9 - 3.13 and has no third-party library dependencies.
 
 In the following, `python3` & `pip` refer to the Python 3 executables. You may need to substitute `python` for `python3`, depending on your particular environment (*on Windows it's generally `python`*).
 
