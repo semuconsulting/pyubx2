@@ -1,1 +1,3 @@
 sphinx-rtd-theme
+pynmeagps
+pyrtcm
