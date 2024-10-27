@@ -16,8 +16,9 @@ assignees: semuadmin
 A clear and concise description of what the bug is.
 
 Please specify the pyubx2 version (`>>> pyubx2.version`) and, where possible, include:
+- The **complete** Python script.
 - The error message and full traceback.
-- A binary / hexadecimal dump of the UBX data stream (e.g. from PuTTY, screen or u-center).
+- A binary / hexadecimal dump of the UBX data stream.
 
 **To Reproduce**
 
@@ -31,7 +32,7 @@ A clear and concise description of what you expected to happen.
 
 **Desktop (please complete the following information):**
 
-- The operating system you're using [e.g. Windows 10, MacOS Big Sur, Ubuntu Bionic]
+- The operating system you're using [e.g. Windows 10, MacOS Sequoia, Ubuntu Noble]
 - The type of serial connection [e.g. USB, UART1, I2C]
 
 **GNSS/GPS Device (please complete the following information as best you can):**
