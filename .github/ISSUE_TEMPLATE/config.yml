@@ -3,6 +3,3 @@ contact_links:
   - name: pyubx2 Community Support
     url: https://github.com/semuconsulting/pyubx2/discussions
     about: Please ask and answer questions here.
-  - name: pyubx2 Security Report
-    url: https://github.com/semuconsulting/pyubx2/security/policy
-    about: Please report security vulnerabilities via an Issue template.
