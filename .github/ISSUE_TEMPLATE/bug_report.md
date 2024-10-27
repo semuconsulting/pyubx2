@@ -35,7 +35,7 @@ A clear and concise description of what you expected to happen.
 
 **Desktop (please complete the following information):**
 
-- The operating system you're using [e.g. Windows 10, MacOS Sequoia, Ubuntu Noble].
+- The operating system you're using [e.g. Windows 11, MacOS Sequoia, Ubuntu Noble].
 - The type of serial connection [e.g. USB, UART1, I2C].
 
 **GNSS/GPS Device (please complete the following information as best you can):**
