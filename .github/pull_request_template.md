@@ -4,6 +4,8 @@
 
 Please include a summary of the change and which issue is fixed. Please also include relevant motivation and context and, where applicable, any u-blox documentation sources you have used. List any dependencies that are required for this change.
 
+Please do **NOT** submit PRs containing information (e.g. UBX message definitions) which is subject to a u-blox Non-Disclosure Agreement (NDA).
+
 Fixes # (issue)
 
 ## Testing
