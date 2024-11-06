@@ -345,16 +345,18 @@ class FillTest(unittest.TestCase):
         )
         self.assertEqual(str(res), EXPECTED_RESULT)
 
-    def testESF_MEAS_NEG(self):  # test ESF-MEAS with -ve value
-        EXPECTED_RESULT = "<UBX(ESF-MEAS, timeTag=1000, timeMarkSent=0, timeMarkEdge=0, calibTtagValid=0, numMeas=1, id=0, dataField_01=-10, dataType_01=11)>"
+    def testESF_MEAS_NEG(self):  # test ESF-MEAS with -ve value and bitmask
+        EXPECTED_RESULT = "<UBX(ESF-MEAS, timeTag=1000, timeMarkSent=0, timeMarkEdge=0, calibTtagValid=0, numMeas=2, id=0, dataField_01=-10, dataType_01=11, dataField_02=8388618, dataType_02=12)>"
         res = UBXMessage(
             "ESF",
             "ESF-MEAS",
             SET,
             timeTag=1000,
-            numMeas=1,
+            numMeas=2,
             dataField_01=-10,
             dataType_01=11,
+            dataField_02=0b100000000000000000001010,
+            dataType_02=12,
         )
         self.assertEqual(str(res), EXPECTED_RESULT)
 

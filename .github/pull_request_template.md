@@ -22,7 +22,7 @@ If you're adding new UBX message definitions for Generation 9+ devices, please c
 - [ ] I agree to abide by the code of conduct (see [CODE_OF_CONDUCT.md](https://github.com/semuconsulting/pyubx2/blob/master/CODE_OF_CONDUCT.md)).
 - [ ] My code follows the style guidelines of this project (see [CONTRIBUTING.MD](https://github.com/semuconsulting/pyubx2/blob/master/CONTRIBUTING.md)).
 - [ ] I have performed a self-review of my own code.
-- [ ] (*if appropriate*) I have cited my u-blox documentation source(s).
+- [ ] (*if appropriate*) I have cited my PUBLIC DOMAIN u-blox documentation source(s).
 - [ ] I have commented my code, particularly in hard-to-understand areas.
 - [ ] I have made corresponding changes to the documentation.
 - [ ] (*if appropriate*) I have added test cases to the `tests/test_*.py` unittest suite to maintain >= 99% code coverage.
