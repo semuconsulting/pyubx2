@@ -7,6 +7,7 @@ Created on 21 Oct 2020
 
 @author: semuadmin
 """
+
 # pylint: disable=line-too-long, invalid-name, missing-docstring, no-member
 
 import unittest
@@ -330,6 +331,32 @@ class FillTest(unittest.TestCase):
         res1 = UBXMessage("CFG", "CFG-TP5", POLL)
         res2 = "<UBX(CFG-TP5)>"
         self.assertEqual(str(res1), res2)
+
+    def testESF_MEAS_POS(self):  # test ESF-MEAS with +ve value
+        EXPECTED_RESULT = "<UBX(ESF-MEAS, timeTag=1000, timeMarkSent=0, timeMarkEdge=0, calibTtagValid=0, numMeas=1, id=0, dataField_01=10, dataType_01=11)>"
+        res = UBXMessage(
+            "ESF",
+            "ESF-MEAS",
+            SET,
+            timeTag=1000,
+            numMeas=1,
+            dataField_01=10,
+            dataType_01=11,
+        )
+        self.assertEqual(str(res), EXPECTED_RESULT)
+
+    def testESF_MEAS_NEG(self):  # test ESF-MEAS with -ve value
+        EXPECTED_RESULT = "<UBX(ESF-MEAS, timeTag=1000, timeMarkSent=0, timeMarkEdge=0, calibTtagValid=0, numMeas=1, id=0, dataField_01=-10, dataType_01=11)>"
+        res = UBXMessage(
+            "ESF",
+            "ESF-MEAS",
+            SET,
+            timeTag=1000,
+            numMeas=1,
+            dataField_01=-10,
+            dataType_01=11,
+        )
+        self.assertEqual(str(res), EXPECTED_RESULT)
 
     def testCFG_TP5_TPX(self):  # test CFG-TP5-TPX constructor
         res1 = UBXMessage("CFG", "CFG-TP5", POLL, payload=b"\x01")

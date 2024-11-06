@@ -1,5 +1,11 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.2.48
+
+FIXES:
+
+1. Allow signed values in X bitfields (despite Interface Manual saying they're unsigned) - allows user to enter -ve values for ESF-MEAS.dataField.
+
 ### RELEASE 1.2.47
 
 ENHANCEMENTS:

@@ -348,7 +348,7 @@ class UBXMessage:
 
         # update payload
         if "payload" not in kwargs:
-            self._payload += bitfield.to_bytes(bsiz, "little")
+            self._payload += bitfield.to_bytes(bsiz, "little", signed=True)
 
         return (offset + bsiz, index)
 
