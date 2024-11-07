@@ -4,6 +4,8 @@
 
 ENHANCEMENTS:
 
+1. Add helper methods `val2twoscomp` and `val2signmag` to convert signed integer to appropriate two's complement or sign magnitude binary representation.
+
 ### RELEASE 1.2.47
 
 ENHANCEMENTS:

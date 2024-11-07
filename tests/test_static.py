@@ -40,6 +40,8 @@ from pyubx2.ubxhelpers import (
     utc2itow,
     val2bytes,
     val2sphp,
+    val2twoscomp,
+    val2signmag,
 )
 
 
@@ -332,6 +334,18 @@ class StaticTest(unittest.TestCase):
         }
         res = process_monver(msg)
         self.assertEqual(res, EXPECTED_RESULT)
+
+    def testval2twoscomp(self):
+        res = val2twoscomp(10, "U24")
+        self.assertEqual(res, 0b0000000000000000000001010)
+        res = val2twoscomp(-10, "U24")
+        self.assertEqual(res, 0b111111111111111111110110)
+
+    def testval2signmag(self):
+        res = val2signmag(10, "U24")
+        self.assertEqual(res, 0b0000000000000000000001010)
+        res = val2signmag(-10, "U24")
+        self.assertEqual(res, 0b1000000000000000000001010)
 
 
 if __name__ == "__main__":
