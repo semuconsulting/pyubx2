@@ -622,3 +622,31 @@ def process_monver(msg: object) -> dict:
     verdata["gnss"] = gnss_supported
 
     return verdata
+
+
+def val2twoscomp(val: int, att: str) -> int:
+    """
+    Convert signed integer to two's complement binary representation.
+
+    :param int val: value
+    :param str att: attribute type e.g. "U024"
+    :return: two's complement representation of value
+    :rtype: int
+    """
+
+    return val & pow(2, attsiz(att)) - 1
+
+
+def val2signmag(val: int, att: str) -> int:
+    """
+    Convert signed integer to sign magnitude binary representation.
+
+    High-order bit represents sign (0 +ve, 1 -ve).
+
+    :param int val: value
+    :param str att: attribute type e.g. "U024"
+    :return: sign magnitude representation of value
+    :rtype: int
+    """
+
+    return (abs(val) & pow(2, attsiz(att)) - 1) | ((1 if val < 0 else 0) << attsiz(att))

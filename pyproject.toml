@@ -7,7 +7,7 @@ name = "pyubx2"
 authors = [{ name = "semuadmin", email = "semuadmin@semuconsulting.com" }]
 maintainers = [{ name = "semuadmin", email = "semuadmin@semuconsulting.com" }]
 description = "UBX protocol parser and generator"
-version = "1.2.47"
+version = "1.2.48"
 license = { file = "LICENSE" }
 readme = "README.md"
 requires-python = ">=3.9"
