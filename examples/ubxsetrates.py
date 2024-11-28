@@ -9,17 +9,18 @@ Usage:
 
 python3 ubxsetrates.py port="/dev/ttyACM0" baudrate=38400 timout=0.1 rate=4
 
-It connects to the receiver's serial port and sets up a
-UBXReader read thread. With the read thread running
-in the background, it sends a series of CFG-MSG commands to
-the device to set the message rate of each UBX-NAV message type to
-the designated rate value on the UART1 and USB ports.
+It implements two threads which run concurrently:
+1) an I/O thread which continuously reads UBX data from the
+receiver and sends any queued outbound command or poll messages.
+2) a process thread which processes parsed UBX data - in this example
+it simply prints the parsed data to the terminal.
+UBX data is passed between threads using queues.
 
 NB: the rate value means 'per navigation solution' e.g. a rate of
 4 means 'every 4th navigation solution', which at a standard solution
 interval of 1000ms corresponds to every 4 seconds.
 
-The read thread reads and parses any responses and outputs
+The process thread reads and parses any responses and outputs
 them to the terminal. You should also start seeing any incoming
 UBX-NAV messages arriving at the designated rate.
 
@@ -27,63 +28,69 @@ The response may be an ACK-ACK acknowledgement message, or an
 ACK-NAK message signifying that this particular navigation message
 type is not supported by the receiver.
 
-Created on 2 Oct 2020
+Created on 07 Aug 2021
 
-@author: semuadmin
+:author: semuadmin
+:copyright: SEMU Consulting © 2021
+:license: BSD 3-Clause
 """
 
-# pylint: disable=invalid-name
-
-from io import BufferedReader
+from queue import Queue
 from sys import argv
-from threading import Lock, Thread
+from threading import Event, Thread
 from time import sleep
 
 from serial import Serial
 
-from pyubx2 import SET, UBX_MSGIDS, UBXMessage, UBXReader
-
-# initialise global variables
-reading = False
+from pyubx2 import SET, UBX_MSGIDS, UBX_PROTOCOL, UBXMessage, UBXReader
 
 
-def read_messages(stream, lock, ubxreader):
+def io_data(
+    stream: object,
+    ubr: UBXReader,
+    readqueue: Queue,
+    sendqueue: Queue,
+    stop: Event,
+):
     """
-    Reads, parses and prints out incoming UBX messages
-    """
-    # pylint: disable=unused-variable, broad-except
+    THREADED
+    Read and parse inbound UBX data and place
+    raw and parsed data on queue.
 
-    while reading:
+    Send any queued outbound messages to receiver.
+    """
+    # pylint: disable=broad-exception-caught
+
+    while not stop.is_set():
         if stream.in_waiting:
             try:
-                lock.acquire()
-                (raw_data, parsed_data) = ubxreader.read()
-                lock.release()
+                (raw_data, parsed_data) = ubr.read()
                 if parsed_data:
-                    print(parsed_data)
+                    readqueue.put((raw_data, parsed_data))
+
+                # refine this if outbound message rates exceed inbound
+                while not sendqueue.empty():
+                    data = sendqueue.get(False)
+                    if data is not None:
+                        ubr.datastream.write(data.serialize())
+                    sendqueue.task_done()
+
             except Exception as err:
                 print(f"\n\nSomething went wrong {err}\n\n")
                 continue
 
 
-def start_thread(stream, lock, ubxreader):
+def process_data(queue: Queue, stop: Event):
     """
-    Start read thread
-    """
-
-    thr = Thread(target=read_messages, args=(stream, lock, ubxreader), daemon=True)
-    thr.start()
-    return thr
-
-
-def send_message(stream, lock, message):
-    """
-    Send message to device
+    THREADED
+    Get UBX data from queue and display.
     """
 
-    lock.acquire()
-    stream.write(message.serialize())
-    lock.release()
+    while not stop.is_set():
+        if queue.empty() is False:
+            (_, parsed) = queue.get()
+            print(parsed)
+            queue.task_done()
 
 
 def main(**kwargs):
@@ -96,37 +103,70 @@ def main(**kwargs):
     timeout = float(kwargs.get("timeout", 0.1))
     rate = int(kwargs.get("rate", 4))
 
-    with Serial(port, baudrate, timeout=timeout) as serial:
-        # create UBXReader instance, reading only UBX messages
-        ubr = UBXReader(BufferedReader(serial), protfilter=2)
+    with Serial(port, baudrate, timeout=timeout) as stream:
+        ubxreader = UBXReader(stream, protfilter=UBX_PROTOCOL)
 
-        print("\nStarting read thread...\n")
-        serial_lock = Lock()
-        read_thread = start_thread(serial, serial_lock, ubr)
+        read_queue = Queue()
+        send_queue = Queue()
+        stop_event = Event()
+        stop_event.clear()
 
-        # set the UART1 and USB message rate for each UBX-NAV message
-        # via a CFG-MSG command
-        print("\nSending CFG-MSG message rate configuration messages...\n")
-        for msgid, msgname in UBX_MSGIDS.items():
-            if msgid[0] == 0x01:  # NAV
-                msg = UBXMessage(
-                    "CFG",
-                    "CFG-MSG",
-                    SET,
-                    msgClass=msgid[0],
-                    msgID=msgid[1],
-                    rateUART1=rate,
-                    rateUSB=rate,
-                )
-                print(f"Setting message rate for {msgname} message type to {rate}...\n")
-                send_message(serial, serial_lock, msg)
+        io_thread = Thread(
+            target=io_data,
+            args=(
+                stream,
+                ubxreader,
+                read_queue,
+                send_queue,
+                stop_event,
+            ),
+        )
+        process_thread = Thread(
+            target=process_data,
+            args=(
+                read_queue,
+                stop_event,
+            ),
+        )
+
+        print("\nStarting handler threads. Press Ctrl-C to terminate...")
+        io_thread.start()
+        process_thread.start()
+
+        # loop until user presses Ctrl-C
+        while not stop_event.is_set():
+            try:
+                # DO STUFF IN THE BACKGROUND...
+
+                print("\nSending CFG-MSG message rate configuration messages...\n")
+                for msgid, msgname in UBX_MSGIDS.items():
+                    if msgid[0] == 0x01:  # NAV
+                        msg = UBXMessage(
+                            "CFG",
+                            "CFG-MSG",
+                            SET,
+                            msgClass=msgid[0],
+                            msgID=msgid[1],
+                            rateUART1=rate,
+                            rateUSB=rate,
+                        )
+                        print(
+                            f"Setting message rate for {msgname} message type to {rate}...\n"
+                        )
+                        send_queue.put(msg)
+                        sleep(1)
+
+                print("\nCommands sent. Waiting for any final acknowledgements...\n")
                 sleep(1)
 
-        print("\nCommands sent. Waiting for any final acknowledgements...\n")
-        sleep(1)
-        print("\nStopping reader thread...\n")
-        read_thread.join()
-        print("\nProcessing Complete")
+            except KeyboardInterrupt:  # capture Ctrl-C
+                print("\n\nTerminated by user.")
+                stop_event.set()
+
+        print("\nStop signal set. Waiting for threads to complete...")
+        io_thread.join()
+        process_thread.join()
+        print("\nProcessing complete")
 
 
 if __name__ == "__main__":
