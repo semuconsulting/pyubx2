@@ -19,6 +19,7 @@ import pyubx2.exceptions as ube
 import pyubx2.ubxtypes_configdb as ubcdb
 import pyubx2.ubxtypes_core as ubt
 from pyubx2.ubxtypes_core import (
+    ATTTYPE,
     NMEA_PROTOCOL,
     POLL,
     RTCM3_PROTOCOL,
@@ -125,11 +126,13 @@ def attsiz(att: str) -> int:
     Helper function to return attribute size in bytes.
 
     :param str: attribute type e.g. 'U002'
-    :return: size of attribute in bytes
+    :return: size of attribute in bytes, or -1 if variable length
     :rtype: int
 
     """
 
+    if att == "CH":  # variable length
+        return -1
     return int(att[1:4])
 
 
@@ -274,11 +277,22 @@ def val2bytes(val, att: str) -> bytes:
 
     """
 
-    if att == ubt.CH:  # single variable-length string (e.g. INF-NOTICE)
-        return val.encode("utf-8", "backslashreplace")
+    try:
+        if not isinstance(val, ATTTYPE[atttyp(att)]):
+            raise TypeError(
+                f"Attribute type {att} value {val} must be {ATTTYPE[atttyp(att)]}, not {type(val)}"
+            )
+    except KeyError as err:
+        raise ube.UBXTypeError(f"Unknown attribute type {att}") from err
+
     atts = attsiz(att)
-    if atttyp(att) in ("C", "X"):  # byte or char
+    if atttyp(att) == "X":  # byte
         valb = val
+    elif atttyp(att) == "C":  # char
+        if isinstance(val, str):
+            valb = val.encode("utf-8", "backslashreplace")
+        else:  # byte
+            valb = val
     elif atttyp(att) in ("E", "L", "U"):  # unsigned integer
         valb = val.to_bytes(atts, byteorder="little", signed=False)
     elif atttyp(att) == "A":  # array of unsigned integers
@@ -289,11 +303,9 @@ def val2bytes(val, att: str) -> bytes:
     elif atttyp(att) == "I":  # signed integer
         valb = val.to_bytes(atts, byteorder="little", signed=True)
     elif att == ubt.R4:  # single precision floating point
-        valb = struct.pack("<f", val)
+        valb = struct.pack("<f", float(val))
     elif att == ubt.R8:  # double precision floating point
-        valb = struct.pack("<d", val)
-    else:
-        raise ube.UBXTypeError(f"Unknown attribute type {att}")
+        valb = struct.pack("<d", float(val))
     return valb
 
 

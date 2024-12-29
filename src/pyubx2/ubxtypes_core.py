@@ -96,6 +96,18 @@ X24 = "X024"  # Bitfield 24 bytes
 R4 = "R004"  # Float (IEEE 754) Single Precision 4 bytes
 R8 = "R008"  # Float (IEEE 754) Double Precision 8 bytes
 
+ATTTYPE = {
+    "A": type([0, 1]),
+    "C": (type(b"0"), type("0")),
+    "E": type(0),
+    "I": type(0),
+    "L": type(0),
+    "R": (type(0), type(0.1)),
+    "U": type(0),
+    "X": type(b"0"),
+}
+"""Permissible attribute types"""
+
 # ***********************************************
 # THESE ARE THE UBX PROTOCOL CORE MESSAGE CLASSES
 # ***********************************************

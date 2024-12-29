@@ -420,6 +420,12 @@ class ExceptionTest(unittest.TestCase):
                 transaction=TXN_NONE,
                 cfgData=[(0x5005002A, b"\x00")],
             )
+        with self.assertRaises(TypeError):
+            UBXMessage.config_set(
+                layers=SET_LAYER_FLASH,
+                transaction=TXN_NONE,
+                cfgData=[(0x40110069, 0.1), (0x40110068, "0")],
+            )
 
 
 if __name__ == "__main__":
