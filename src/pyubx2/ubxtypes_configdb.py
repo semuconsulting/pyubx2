@@ -33,6 +33,17 @@ from pyubx2.ubxtypes_core import (
     L,
 )
 
+CFDBTYPE = {
+    "C": type(b"0"),
+    "E": type(0),
+    "I": type(0),
+    "L": type(0),
+    "R": type(0.1),
+    "U": type(0),
+    "X": type(b"0"),
+}
+"""Configuration Ddtabase permissible attribute types"""
+
 # memory layer designators for CFG_VALSET & CFG_VALDEL
 SET_LAYER_RAM = 1
 """Set RAM (volatile) memory layer in UBX-CFG-VALSET, UBX-CFG-VALDEL"""
