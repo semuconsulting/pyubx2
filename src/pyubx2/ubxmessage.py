@@ -17,6 +17,7 @@ import struct
 from pyubx2.exceptions import UBXMessageError, UBXTypeError
 from pyubx2.ubxhelpers import (
     attsiz,
+    atttyp,
     bytes2val,
     calc_checksum,
     cfgkey2name,
@@ -29,6 +30,7 @@ from pyubx2.ubxhelpers import (
     nomval,
     val2bytes,
 )
+from pyubx2.ubxtypes_configdb import CFDBTYPE
 from pyubx2.ubxtypes_core import (
     CH,
     GET,
@@ -734,10 +736,15 @@ class UBXMessage:
             att = ""
             (key, val) = cfgItem
             if isinstance(key, str):  # if key is a string (keyname)
-                (key, att) = cfgname2key(key)  # lookup keyID & attribute type
+                (kid, att) = cfgname2key(key)  # lookup keyID & attribute type
             else:
-                (_, att) = cfgkey2name(key)  # lookup attribute type
-            keyb = val2bytes(key, U4)
+                kid = key
+                (key, att) = cfgkey2name(key)  # lookup attribute type
+            if type(val) != CFDBTYPE[atttyp(att)]:
+                raise TypeError(
+                    f"Configuration {kid:#08x} ({key}) value {val} must be {CFDBTYPE[atttyp(att)]}, not {type(val)}"
+                )
+            keyb = val2bytes(kid, U4)
             valb = val2bytes(val, att)
             lis = lis + keyb + valb
 

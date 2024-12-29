@@ -28,6 +28,8 @@ from pyubx2 import (
     VALCKSUM,
     ERR_LOG,
     ERR_RAISE,
+    SET_LAYER_FLASH,
+    TXN_NONE,
 )
 from pyubx2.ubxhelpers import (
     cfgkey2name,
@@ -398,6 +400,26 @@ class ExceptionTest(unittest.TestCase):
                 for raw, parsed in ubr:
                     # print(f'"{parsed}",')
                     i += 1
+
+    def testBADConfigSet(self):  # test invalid configuration database value type
+        with self.assertRaises(TypeError):
+            UBXMessage.config_set(
+                layers=SET_LAYER_FLASH,
+                transaction=TXN_NONE,
+                cfgData=[(0x20920006, 0)],
+            )
+        with self.assertRaises(TypeError):
+            UBXMessage.config_set(
+                layers=SET_LAYER_FLASH,
+                transaction=TXN_NONE,
+                cfgData=[(0x209100E0, b"\x00")],
+            )
+        with self.assertRaises(TypeError):
+            UBXMessage.config_set(
+                layers=SET_LAYER_FLASH,
+                transaction=TXN_NONE,
+                cfgData=[(0x5005002A, b"\x00")],
+            )
 
 
 if __name__ == "__main__":
