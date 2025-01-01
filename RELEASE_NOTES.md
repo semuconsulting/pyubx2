@@ -1,10 +1,16 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.2.50
+
+ENHANCEMENTS:
+
+1. Minor internal streamlining of helper methods.
+
 ### RELEASE 1.2.49
 
 ENHANCEMENTS:
 
-1. Enhance pyubx2.config_set() exception handling - addresses #173.
+1. Enhance val2bytes() helper method exception handling - addresses #173.
 
 ### RELEASE 1.2.48
 
