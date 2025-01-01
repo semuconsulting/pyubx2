@@ -11,7 +11,7 @@ Created on 19 Apr 2021
 
 import unittest
 
-from pyubx2 import UBXMessage, SET, POLL
+from pyubx2 import UBXMessage, SET, POLL, SET_LAYER_FLASH, TXN_NONE
 from pyubx2.ubxtypes_configdb import UBX_CONFIG_DATABASE
 from tests.configdb_baseline import UBX_CONFIG_DATABASE_BASELINE
 
@@ -62,6 +62,16 @@ class ConfigTest(unittest.TestCase):
             payload=b"\x00\x03\x00\x00\x01\x00\x52\x40\x80\x25\x00\x00",
         )
         self.assertEqual(str(res), EXPECTED_RESULT)
+
+    def testGOODConfigSet(self):
+        EXPECTED_RESULT = "<UBX(CFG-VALSET, version=0, ram=0, bbr=0, flash=1, action=0, reserved0=0, CFG_NAVSPG_USRDAT_ROTZ=0.0, CFG_NAVSPG_USRDAT_ROTY=0.10000000149011612)>"
+        msg = UBXMessage.config_set(
+            layers=SET_LAYER_FLASH,
+            transaction=TXN_NONE,
+            cfgData=[(0x40110069, 0), (0x40110068, 0.1)],
+        )
+        # print(msg)
+        self.assertEqual(str(msg), EXPECTED_RESULT)
 
 
 if __name__ == "__main__":

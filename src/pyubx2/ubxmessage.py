@@ -734,10 +734,11 @@ class UBXMessage:
             att = ""
             (key, val) = cfgItem
             if isinstance(key, str):  # if key is a string (keyname)
-                (key, att) = cfgname2key(key)  # lookup keyID & attribute type
+                (kid, att) = cfgname2key(key)  # lookup keyID & attribute type
             else:
-                (_, att) = cfgkey2name(key)  # lookup attribute type
-            keyb = val2bytes(key, U4)
+                kid = key
+                (key, att) = cfgkey2name(key)  # lookup attribute type
+            keyb = val2bytes(kid, U4)
             valb = val2bytes(val, att)
             lis = lis + keyb + valb
 

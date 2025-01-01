@@ -1,5 +1,11 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.2.49
+
+ENHANCEMENTS:
+
+1. Enhance pyubx2.config_set() exception handling - addresses #173.
+
 ### RELEASE 1.2.48
 
 ENHANCEMENTS:
