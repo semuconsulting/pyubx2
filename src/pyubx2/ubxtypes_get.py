@@ -153,7 +153,7 @@ UBX_PAYLOADS_GET = {
         "reserved3": U1,
         "reserved4": U1,
     },
-    "ALP-ALPSRV": {
+    "AID-ALPSRV": {
         "idSize": U1,
         "type": U1,
         "ofs": U2,
@@ -162,7 +162,7 @@ UBX_PAYLOADS_GET = {
         "dataSize": U2,
         "id1": U1,
         "id2": U1,
-        "id3": U1,
+        "id3": U4,
     },
     # ********************************************************************
     # Configuration Input Messages: i.e. Set Dynamic Model, Set DOP Mask, Set Baud Rate, etc..
