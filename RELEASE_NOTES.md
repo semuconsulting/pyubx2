@@ -2,6 +2,11 @@
 
 ### RELEASE 1.2.50
 
+FIXES:
+
+1. Fix typos in AID-ALPSRV message definitions - thanks to @wheirman for contribution.
+1. Add alternate AID-ALPSRV Request and Send GET message types.
+
 ENHANCEMENTS:
 
 1. Minor internal streamlining of helper methods.

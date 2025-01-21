@@ -53,7 +53,7 @@ UBX_PAYLOADS_SET = {
             },
         ),
     },
-    "AID-ALPSRV": {
+    "AID-ALPSRV": {  # ALP server sends AlmanacPlus data to client
         "idSize": U1,
         "type": U1,
         "ofs": U2,

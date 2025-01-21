@@ -9,6 +9,7 @@ Created on 3 Oct 2020
 
 @author: semuadmin
 """
+
 # pylint: disable=line-too-long, invalid-name, missing-docstring, no-member
 
 import unittest
@@ -376,6 +377,43 @@ class SpecialTest(unittest.TestCase):
     def testUnknownID(self):  # test for known class, unknown id
         EXPECTED_RESULT = "<UBX(DBG-0c66-NOMINAL, payload=b'\\x55\\x66')>"
         msg = UBXReader.parse(b"\xb5b\x0c\x66\x02\x00\x55\x66\x2f\x5e")
+        # print(msg)
+        self.assertEqual(str(msg), EXPECTED_RESULT)
+
+    def testAIDALPSRVREQ(self):
+        EXPECTED_RESULT = "<UBX(AID-ALPSRV, idSize=60, type=253, ofs=23, size=24, fileId=12, dataSize=6, id1=1, id2=2, id3=3)>"
+        msg = UBXMessage(
+            "AID",
+            "AID-ALPSRV",
+            GET,
+            idSize=0x3C,
+            type=0xFD,
+            ofs=23,
+            size=24,
+            fileId=12,
+            dataSize=6,
+            id1=1,
+            id2=2,
+            id3=3,
+        )
+        # print(msg)
+        self.assertEqual(str(msg), EXPECTED_RESULT)
+
+    def testAIDALPSRVSEND(self):
+        EXPECTED_RESULT = "<UBX(AID-ALPSRV, idSize=60, type=255, ofs=23, size=6, fileId=12, data_01=1, data_02=2, data_03=3, data_04=0, data_05=0, data_06=0)>"
+        msg = UBXMessage(
+            "AID",
+            "AID-ALPSRV",
+            GET,
+            idSize=0x3C,
+            type=0xFF,
+            ofs=23,
+            size=6,
+            fileId=12,
+            data_01=1,
+            data_02=2,
+            data_03=3,
+        )
         # print(msg)
         self.assertEqual(str(msg), EXPECTED_RESULT)
 
