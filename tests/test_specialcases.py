@@ -14,7 +14,7 @@ Created on 3 Oct 2020
 
 import unittest
 
-from pyubx2 import UBXMessage, UBXReader, SET, GET
+from pyubx2 import UBXMessage, UBXReader, SET, GET, UBXMessageError
 import pyubx2.ubxtypes_configdb as ubxcdb
 
 
@@ -416,6 +416,24 @@ class SpecialTest(unittest.TestCase):
         )
         # print(msg)
         self.assertEqual(str(msg), EXPECTED_RESULT)
+
+    def testAIDALPSRVNOTYPE(self):
+        with self.assertRaisesRegex(
+            UBXMessageError,
+            "AID-ALPSRV GET message definitions must include type or payload keyword",
+        ):
+            msg = UBXMessage(
+                "AID",
+                "AID-ALPSRV",
+                GET,
+                idSize=0x3C,
+                ofs=23,
+                size=6,
+                fileId=12,
+                data_01=1,
+                data_02=2,
+                data_03=3,
+            )
 
 
 if __name__ == "__main__":
