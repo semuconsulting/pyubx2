@@ -17,7 +17,7 @@ pyubx2
 [Graphical Client](#gui) |
 [Author & License](#author)
 
-`pyubx2` is an original Python 3 parser for the UBX &copy;, NMEA 0183 &copy; and RTCM3 &copy; protocols. UBX is a proprietary binary protocol implemented on u-blox &trade; GNSS/GPS receiver modules.
+`pyubx2` is an original Python 3 parser for the UBX &copy; protocol. UBX is a proprietary binary protocol implemented on u-blox &trade; GNSS receiver modules. `pyubx2` can also parse NMEA 0183 &copy; and RTCM3 &copy; protocols via the underlying [`pynmeagps`](https://github.com/semuconsulting/pynmeagps) and [`pyrtcm`](https://github.com/semuconsulting/pyrtcm) packages from the same author - hence it covers all the protocols that u-blox GNSS receivers are capable of outputting.
 
 The `pyubx2` homepage is located at [https://github.com/semuconsulting/pyubx2](https://github.com/semuconsulting/pyubx2).
 
@@ -49,9 +49,7 @@ Contributions welcome - please refer to [CONTRIBUTING.MD](https://github.com/sem
 [![PyPI version](https://img.shields.io/pypi/v/pyubx2.svg?style=flat)](https://pypi.org/project/pyubx2/)
 ![PyPI downloads](https://img.shields.io/pypi/dm/pyubx2.svg?style=flat)
 
-`pyubx2` is compatible with Python 3.9 - 3.13 and has no third-party library dependencies.
-
-In the following, `python3` & `pip` refer to the Python 3 executables. You may need to substitute `python` for `python3`, depending on your particular environment (*on Windows it's generally `python`*).
+`pyubx2` is compatible with Python 3.9 - 3.13. In the following, `python3` & `pip` refer to the Python 3 executables. You may need to substitute `python` for `python3`, depending on your particular environment (*on Windows it's generally `python`*).
 
 The recommended way to install the latest version of `pyubx2` is with [pip](http://pypi.python.org/pypi/pip/):
 
