@@ -153,16 +153,29 @@ UBX_PAYLOADS_GET = {
         "reserved3": U1,
         "reserved4": U1,
     },
-    "ALP-ALPSRV": {
+    "AID-ALPSRV-REQ": {  # ALP client requests AlmanacPlus data from server
         "idSize": U1,
-        "type": U1,
+        "type": U1,  # must not be 0xFF
         "ofs": U2,
         "size": U2,
         "fileId": U2,
         "dataSize": U2,
         "id1": U1,
         "id2": U1,
-        "id3": U1,
+        "id3": U4,
+    },
+    "AID-ALPSRV-SEND": {  # ALP client sends AlmanacPlus data to server
+        "idSize": U1,
+        "type": U1,  # must be 0xFF
+        "ofs": U2,
+        "size": U2,
+        "fileId": U2,
+        "group": (
+            "size",
+            {
+                "data": U2,
+            },
+        ),
     },
     # ********************************************************************
     # Configuration Input Messages: i.e. Set Dynamic Model, Set DOP Mask, Set Baud Rate, etc..

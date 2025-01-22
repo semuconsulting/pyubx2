@@ -288,6 +288,30 @@ def get_secsig_dict(**kwargs) -> dict:
     return UBX_PAYLOADS_GET["SEC-SIG-V2"]
 
 
+def get_alpsrv_dict(**kwargs) -> dict:
+    """
+    Select appropriate AID-ALPSRV GET payload definition by checking
+    value of 'type' attribute (2nd byte of payload).
+
+    :param kwargs: optional payload key/value pairs
+    :return: dictionary representing payload definition
+    :rtype: dict
+
+    """
+
+    if "type" in kwargs:
+        typ = val2bytes(kwargs["type"], U1)
+    elif "payload" in kwargs:
+        typ = kwargs["payload"][1:2]
+    else:
+        raise UBXMessageError(
+            "AID-ALPSRV GET message definitions must include type or payload keyword"
+        )
+    if typ == b"\xff":
+        return UBX_PAYLOADS_GET["AID-ALPSRV-SEND"]
+    return UBX_PAYLOADS_GET["AID-ALPSRV-REQ"]
+
+
 VARIANTS = {
     POLL: {b"\x06\x31": get_cfgtp5_dict},  # CFG-TP5
     SET: {
@@ -304,6 +328,7 @@ VARIANTS = {
         b"\x06\x06": get_cfgdat_dict,  # CFG-DAT
     },
     GET: {
+        b"\x0b\x32": get_alpsrv_dict,  # AID-ALPSRV
         b"\x13\x21": get_mga_dict,  # MGA FLASH
         b"\x13\x60": get_mga_dict,  # MGA ACK NAK
         b"\x02\x72": get_rxmpmp_dict,  # RXM-PMP

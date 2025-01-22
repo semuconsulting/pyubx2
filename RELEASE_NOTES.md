@@ -1,10 +1,21 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.2.50
+
+FIXES:
+
+1. Fix typos in AID-ALPSRV message definitions - thanks to @wheirman for contribution.
+1. Add alternate AID-ALPSRV Request and Send GET message types.
+
+ENHANCEMENTS:
+
+1. Minor internal streamlining of helper methods.
+
 ### RELEASE 1.2.49
 
 ENHANCEMENTS:
 
-1. Enhance pyubx2.config_set() exception handling - addresses #173.
+1. Enhance val2bytes() helper method exception handling - addresses #173.
 
 ### RELEASE 1.2.48
 

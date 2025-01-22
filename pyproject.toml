@@ -1,13 +1,13 @@
 [build-system]
 requires = ["setuptools>=66.0.0", "wheel"]
-build-backend = "setuptools.build_meta:__legacy__"
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyubx2"
+dynamic = ["version"]
 authors = [{ name = "semuadmin", email = "semuadmin@semuconsulting.com" }]
 maintainers = [{ name = "semuadmin", email = "semuadmin@semuconsulting.com" }]
 description = "UBX protocol parser and generator"
-version = "1.2.49"
 license = { file = "LICENSE" }
 readme = "README.md"
 requires-python = ">=3.9"
@@ -33,7 +33,7 @@ classifiers = [
     "Topic :: Scientific/Engineering :: GIS",
 ]
 
-dependencies = ["pynmeagps >= 1.0.43", "pyrtcm >= 1.1.2"]
+dependencies = ["pynmeagps >= 1.0.44", "pyrtcm >= 1.1.4"]
 
 [project.urls]
 homepage = "https://github.com/semuconsulting/pyubx2"
@@ -53,6 +53,9 @@ test = [
     "Sphinx",
     "sphinx-rtd-theme",
 ]
+
+[tool.setuptools.dynamic]
+version = { attr = "pyubx2._version.__version__" }
 
 [tool.black]
 target-version = ['py39']

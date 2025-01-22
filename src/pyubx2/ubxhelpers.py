@@ -285,27 +285,18 @@ def val2bytes(val, att: str) -> bytes:
     except KeyError as err:
         raise ube.UBXTypeError(f"Unknown attribute type {att}") from err
 
-    atts = attsiz(att)
     if atttyp(att) == "X":  # byte
         valb = val
     elif atttyp(att) == "C":  # char
-        if isinstance(val, str):
-            valb = val.encode("utf-8", "backslashreplace")
-        else:  # byte
-            valb = val
-    elif atttyp(att) in ("E", "L", "U"):  # unsigned integer
-        valb = val.to_bytes(atts, byteorder="little", signed=False)
+        valb = val.encode("utf-8", "backslashreplace") if isinstance(val, str) else val
+    elif atttyp(att) in ("E", "I", "L", "U"):  # integer
+        valb = val.to_bytes(attsiz(att), byteorder="little", signed=atttyp(att) == "I")
+    elif atttyp(att) == "R":  # floating point
+        valb = struct.pack("<f" if attsiz(att) == 4 else "<d", float(val))
     elif atttyp(att) == "A":  # array of unsigned integers
-        atts = attsiz(att)
         valb = b""
-        for i in range(atts):
+        for i in range(attsiz(att)):
             valb += val[i].to_bytes(1, byteorder="little", signed=False)
-    elif atttyp(att) == "I":  # signed integer
-        valb = val.to_bytes(atts, byteorder="little", signed=True)
-    elif att == ubt.R4:  # single precision floating point
-        valb = struct.pack("<f", float(val))
-    elif att == ubt.R8:  # double precision floating point
-        valb = struct.pack("<d", float(val))
     return valb
 
 
@@ -325,19 +316,14 @@ def bytes2val(valb: bytes, att: str) -> object:
         val = valb.decode("utf-8", "backslashreplace")
     elif atttyp(att) in ("X", "C"):
         val = valb
-    elif atttyp(att) in ("E", "L", "U"):  # unsigned integer
-        val = int.from_bytes(valb, "little", signed=False)
+    elif atttyp(att) in ("E", "I", "L", "U"):  # integer
+        val = int.from_bytes(valb, byteorder="little", signed=atttyp(att) == "I")
+    elif atttyp(att) == "R":  # floating point
+        val = struct.unpack("<f" if attsiz(att) == 4 else "<d", valb)[0]
     elif atttyp(att) == "A":  # array of unsigned integers
-        atts = attsiz(att)
         val = []
-        for i in range(atts):
+        for i in range(attsiz(att)):
             val.append(valb[i])
-    elif atttyp(att) == "I":  # signed integer
-        val = int.from_bytes(valb, "little", signed=True)
-    elif att == ubt.R4:  # single precision floating point
-        val = struct.unpack("<f", valb)[0]
-    elif att == ubt.R8:  # double precision floating point
-        val = struct.unpack("<d", valb)[0]
     else:
         raise ube.UBXTypeError(f"Unknown attribute type {att}")
     return val
@@ -380,9 +366,7 @@ def msgclass2bytes(msgclass: int, msgid: int) -> bytes:
 
     """
 
-    msgclass = val2bytes(msgclass, ubt.U1)
-    msgid = val2bytes(msgid, ubt.U1)
-    return (msgclass, msgid)
+    return (val2bytes(msgclass, ubt.U1), val2bytes(msgid, ubt.U1))
 
 
 def msgstr2bytes(msgclass: str, msgid: str) -> bytes:
@@ -398,9 +382,10 @@ def msgstr2bytes(msgclass: str, msgid: str) -> bytes:
     """
 
     try:
-        clsid = key_from_val(ubt.UBX_CLASSES, msgclass)
-        msgid = key_from_val(ubt.UBX_MSGIDS, msgid)[1:2]
-        return (clsid, msgid)
+        return (
+            key_from_val(ubt.UBX_CLASSES, msgclass),
+            key_from_val(ubt.UBX_MSGIDS, msgid)[1:2],
+        )
     except KeyError as err:
         raise ube.UBXMessageError(
             f"Undefined message, class {msgclass}, id {msgid}"
