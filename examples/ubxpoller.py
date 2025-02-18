@@ -40,7 +40,6 @@ from pyubx2 import POLL, UBX_PAYLOADS_POLL, UBX_PROTOCOL, UBXMessage, UBXReader
 
 
 def io_data(
-    stream: object,
     ubr: UBXReader,
     readqueue: Queue,
     sendqueue: Queue,
@@ -56,22 +55,21 @@ def io_data(
     # pylint: disable=broad-exception-caught
 
     while not stop.is_set():
-        if stream.in_waiting:
-            try:
-                (raw_data, parsed_data) = ubr.read()
-                if parsed_data:
-                    readqueue.put((raw_data, parsed_data))
+        try:
+            (raw_data, parsed_data) = ubr.read()
+            if parsed_data:
+                readqueue.put((raw_data, parsed_data))
 
-                # refine this if outbound message rates exceed inbound
-                while not sendqueue.empty():
-                    data = sendqueue.get(False)
-                    if data is not None:
-                        ubr.datastream.write(data.serialize())
-                    sendqueue.task_done()
+            # refine this if outbound message rates exceed inbound
+            while not sendqueue.empty():
+                data = sendqueue.get(False)
+                if data is not None:
+                    ubr.datastream.write(data.serialize())
+                sendqueue.task_done()
 
-            except Exception as err:
-                print(f"\n\nSomething went wrong {err}\n\n")
-                continue
+        except Exception as err:
+            print(f"\n\nSomething went wrong - {err}\n\n")
+            continue
 
 
 def process_data(queue: Queue, stop: Event):
@@ -95,24 +93,22 @@ def main(**kwargs):
     port = kwargs.get("port", "/dev/ttyACM0")
     baudrate = int(kwargs.get("baudrate", 38400))
     timeout = float(kwargs.get("timeout", 0.1))
+    read_queue = Queue()
+    send_queue = Queue()
+    stop_event = Event()
 
     with Serial(port, baudrate, timeout=timeout) as stream:
         ubxreader = UBXReader(stream, protfilter=UBX_PROTOCOL)
-
-        read_queue = Queue()
-        send_queue = Queue()
-        stop_event = Event()
         stop_event.clear()
-
         io_thread = Thread(
             target=io_data,
             args=(
-                stream,
                 ubxreader,
                 read_queue,
                 send_queue,
                 stop_event,
             ),
+            daemon=True,
         )
         process_thread = Thread(
             target=process_data,
@@ -120,6 +116,7 @@ def main(**kwargs):
                 read_queue,
                 stop_event,
             ),
+            daemon=True,
         )
 
         print("\nStarting handler threads. Press Ctrl-C to terminate...")
