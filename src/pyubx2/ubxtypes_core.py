@@ -203,7 +203,7 @@ UBX_MSGIDS = {
     b"\x06\x11": "CFG-RXM",
     b"\x06\x16": "CFG-SBAS",
     b"\x06\x88": "CFG-SENIF",
-    b"\x06\x8D": "CFG-SLAS",
+    b"\x06\x8d": "CFG-SLAS",
     b"\x06\x62": "CFG-SMGR",
     b"\x06\x64": "CFG-SPT",
     b"\x06\x1d": "CFG-TMODE",  # obsolete M5/6

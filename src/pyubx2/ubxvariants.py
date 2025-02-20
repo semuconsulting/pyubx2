@@ -335,7 +335,7 @@ VARIANTS = {
         b"\x02\x59": get_rxmrlm_dict,  # RXM-RLM
         b"\x06\x17": get_cfgnmea_dict,  # CFG-NMEA
         b"\x01\x60": get_aopstatus_dict,  # NAV-AOPSTATUS
-        b"\x01\x3C": get_relposned_dict,  # NAV-RELPOSNED
+        b"\x01\x3c": get_relposned_dict,  # NAV-RELPOSNED
         b"\x27\x09": get_secsig_dict,  # SEC-SIG
     },
 }

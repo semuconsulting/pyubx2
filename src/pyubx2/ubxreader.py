@@ -9,7 +9,7 @@ Returns both the raw binary data (as bytes) and the parsed data
 
 - 'protfilter' governs which protocols (NMEA, UBX or RTCM3) are processed
 - 'quitonerror' governs how errors are handled
-- 'msgmode' indicates the type of UBX datastream (output GET, input SET, query POLL). 
+- 'msgmode' indicates the type of UBX datastream (output GET, input SET, query POLL).
   If msgmode is set to SETPOLL, input/query mode will be automatically detected by parser.
 
 Created on 2 Oct 2020
