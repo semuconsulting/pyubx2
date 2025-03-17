@@ -60,12 +60,9 @@ python3 -m pip install --upgrade pyubx2
 If required, `pyubx2` can also be installed into a virtual environment, e.g.:
 
 ```shell
-python3 -m pip install --user --upgrade virtualenv
-python3 -m virtualenv env
-source env/bin/activate (or env\Scripts\activate on Windows)
+python3 -m venv env
+source env/bin/activate # (or env\Scripts\activate on Windows)
 python3 -m pip install --upgrade pyubx2
-...
-deactivate
 ```
 
 For [Conda](https://docs.conda.io/en/latest/) users, `pyubx2` is also available from [conda forge](https://github.com/conda-forge/pyubx2-feedstock):
