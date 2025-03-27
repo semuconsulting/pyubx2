@@ -27,13 +27,12 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
-    "License :: OSI Approved :: BSD License",
     "Topic :: Utilities",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Scientific/Engineering :: GIS",
 ]
 
-dependencies = ["pynmeagps >= 1.0.46", "pyrtcm >= 1.1.4"]
+dependencies = ["pynmeagps >= 1.0.48", "pyrtcm >= 1.1.5"]
 
 [project.urls]
 homepage = "https://github.com/semuconsulting/pyubx2"
