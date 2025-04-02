@@ -1,5 +1,12 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.2.51
+
+CHANGES:
+
+1. Update minimum versions of pynmeagps (1.0.49) and pyrtcm (1.1.5) to ensure latest fixes and enhancements are included in NMEA and RTCM3 processing.
+1. No other functional changes to UBX processing.
+
 ### RELEASE 1.2.50
 
 FIXES:
