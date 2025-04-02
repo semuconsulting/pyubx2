@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=66.0.0", "wheel"]
+requires = ["setuptools>=75.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -41,7 +41,7 @@ repository = "https://github.com/semuconsulting/pyubx2"
 changelog = "https://github.com/semuconsulting/pyubx2/blob/master/RELEASE_NOTES.md"
 
 [project.optional-dependencies]
-deploy = ["build", "pip", "setuptools >= 66.0", "wheel"]
+deploy = ["build", "pip", "setuptools >= 75.0", "wheel"]
 test = [
     "bandit",
     "black",
