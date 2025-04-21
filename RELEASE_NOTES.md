@@ -1,5 +1,11 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.2.52
+
+CHANGES:
+
+1. Inherit SocketWrapper from pynmeagps.
+
 ### RELEASE 1.2.51
 
 CHANGES:
