@@ -528,3 +528,18 @@ SRCOFLSCHANGE = {
     7: "NavIC",
 }
 """Information source for the future leap second event, from UBX-NAV-TIMELS"""
+
+ESFALG_AUTOMNTALGON = {
+    0: ("AUTOOFF", "automatic alignment is not running"),
+    1: ("AUTOON", "automatic alignment is running"),
+}
+"""autoMntAlgOn from ESF-ALG"""
+
+ESFALG_STATUS = {
+    0: ("FIXEDUSED", "user-defined/fixed angles are used"),
+    1: ("ALIGNINGRP", "IMU-mount roll/pitch angles alignment is ongoing"),
+    2: ("ALIGNINGRPW", "IMU-mount roll/pitch/yaw angles alignment is ongoing"),
+    3: ("COARSEUSED", "coarse IMU-mount alignment are used"),
+    4: ("FINEUSED", "fine IMU-mount alignment are used"),
+}
+"""status from ESF-ALG"""

@@ -6,7 +6,8 @@ Created on 27 Sep 2020
 :license: BSD 3-Clause
 """
 
-from pynmeagps.nmeahelpers import (
+from pynmeagps import (
+    SocketWrapper,
     bearing,
     ecef2llh,
     haversine,
@@ -26,7 +27,6 @@ from pyubx2.exceptions import (
     UBXStreamError,
     UBXTypeError,
 )
-from pyubx2.socket_wrapper import SocketWrapper
 from pyubx2.ubxhelpers import *
 from pyubx2.ubxmessage import UBXMessage
 from pyubx2.ubxreader import UBXReader

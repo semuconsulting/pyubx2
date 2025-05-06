@@ -24,7 +24,7 @@ from socket import socket
 
 import pynmeagps.exceptions as nme
 import pyrtcm.exceptions as rte
-from pynmeagps import NMEA_HDR, NMEAReader
+from pynmeagps import NMEA_HDR, NMEAReader, SocketWrapper
 from pyrtcm import RTCMReader
 
 from pyubx2.exceptions import (
@@ -33,7 +33,6 @@ from pyubx2.exceptions import (
     UBXStreamError,
     UBXTypeError,
 )
-from pyubx2.socket_wrapper import SocketWrapper
 from pyubx2.ubxhelpers import bytes2val, calc_checksum, getinputmode, val2bytes
 from pyubx2.ubxmessage import UBXMessage
 from pyubx2.ubxtypes_core import (

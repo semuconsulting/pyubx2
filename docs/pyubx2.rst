@@ -12,14 +12,6 @@ pyubx2.exceptions module
    :show-inheritance:
    :undoc-members:
 
-pyubx2.socket\_wrapper module
------------------------------
-
-.. automodule:: pyubx2.socket_wrapper
-   :members:
-   :show-inheritance:
-   :undoc-members:
-
 pyubx2.ubxhelpers module
 ------------------------
 
