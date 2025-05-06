@@ -5,6 +5,8 @@
 CHANGES:
 
 1. Inherit SocketWrapper from pynmeagps.
+1. Update minimum pynmeagps version to 1.0.50 (adds GPFMI support).
+1. Add status decodes for ESF-ALG.
 
 ### RELEASE 1.2.51
 
