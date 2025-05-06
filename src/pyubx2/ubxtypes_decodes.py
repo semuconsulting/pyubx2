@@ -533,7 +533,7 @@ ESFALG_AUTOMNTALGON = {
     0: ("AUTOOFF", "automatic alignment is not running"),
     1: ("AUTOON", "automatic alignment is running"),
 }
-"""autoAlgMntOn from ESF-ALG"""
+"""autoMntAlgOn from ESF-ALG"""
 
 ESFALG_STATUS = {
     0: ("FIXEDUSED", "user-defined/fixed angles are used"),
