@@ -1,5 +1,12 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.2.53
+
+CHANGES:
+
+1. New ZED-X20P configuration database keys added.
+1. Update minimum pyrtcm version to 1.1.7.
+
 ### RELEASE 1.2.52
 
 CHANGES:
