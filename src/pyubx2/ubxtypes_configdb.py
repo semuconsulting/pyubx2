@@ -8,7 +8,7 @@ Format:
 
 Created on 30 Nov 2020
 
-Information sourced from u-blox Interface Specifications © 2013-2021, u-blox AG
+Information sourced from u-blox Interface Specifications © 2013-2025, u-blox AG
 
 :author: semuadmin
 """
@@ -1185,7 +1185,7 @@ UBX_CONFIG_DATABASE = {
     "CFG_SIGNAL_GPS_L1CA_ENA": (0x10310001, L),
     "CFG_SIGNAL_GPS_L2C_ENA": (0x10310003, L),
     "CFG_SIGNAL_GPS_L5_ENA": (0x10310004, L),
-    "CFG_SIGNAL_HEALTH_L5": (0x10320001, U1),  # UBX-21038688 - R03
+    "CFG_SIGNAL_HEALTH_L5": (0x10320001, L),  # UBX-21038688 - R03
     "CFG_SIGNAL_IMES_ENA": (0x10310023, L),
     "CFG_SIGNAL_IMES_L1_ENA": (0x10310011, L),
     "CFG_SIGNAL_NAVIC_ENA": (0x10310026, L),
