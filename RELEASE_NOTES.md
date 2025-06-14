@@ -1,5 +1,12 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.2.54
+
+CHANGES:
+
+1. Minor changes to `dop2str()` helper method.
+1. Minimum pyrtcm version updated to 1.1.8 (includes some exception handling enhancements).
+
 ### RELEASE 1.2.53
 
 CHANGES:

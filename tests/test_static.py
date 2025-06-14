@@ -152,7 +152,7 @@ class StaticTest(unittest.TestCase):
 
     def testKeyfromVal(self):
         res = key_from_val(UBX_CLASSES, "MON")
-        self.assertEqual(res, (b"\x0A"))
+        self.assertEqual(res, (b"\x0a"))
 
     def testCalcChecksum(self):
         res = calc_checksum(b"\x06\x01\x02\x00\xf0\x05")
@@ -198,9 +198,19 @@ class StaticTest(unittest.TestCase):
             self.assertEqual(res, fixs[i])
 
     def testdop2str(self):
-        dops = ["Ideal", "Excellent", "Good", "Moderate", "Fair", "Poor"]
+        dops = [
+            "N/A",
+            "Ideal",
+            "Ideal",
+            "Excellent",
+            "Excellent",
+            "Good",
+            "Moderate",
+            "Fair",
+            "Poor",
+        ]
         i = 0
-        for dop in (1, 2, 5, 10, 20, 30):
+        for dop in (0, 0.9, 1, 1.4, 2, 5, 10, 20, 30):
             res = dop2str(dop)
             self.assertEqual(res, dops[i])
             i += 1

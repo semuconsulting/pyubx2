@@ -192,7 +192,9 @@ def dop2str(dop: float) -> str:
 
     """
 
-    if dop == 1:
+    if dop == 0:
+        dops = "N/A"
+    elif dop <= 1:
         dops = "Ideal"
     elif dop <= 2:
         dops = "Excellent"
