@@ -3544,6 +3544,18 @@ UBX_PAYLOADS_GET = {
         ),
         "reserved0": U1,
         "jamNumCentFreqs": U1,
+        "group": (
+            "jamNumCentFreqs",
+            {
+                "jamStateCentFreq": (
+                    X4,
+                    {
+                        "centFreq": U23,
+                        "jammed": U1,
+                    },
+                ),
+            },
+        ),
     },
     "SEC-SIGLOG": {
         "version": U1,  # 0x00
