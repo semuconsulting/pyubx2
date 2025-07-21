@@ -1,5 +1,11 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.2.55
+
+FIXES:
+
+1. Correction to SEC-SIG v2 payload definition - Fixes #186.
+
 ### RELEASE 1.2.54
 
 FIXES:
