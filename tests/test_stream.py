@@ -292,6 +292,7 @@ class StreamTest(unittest.TestCase):
             "<UBX(SEC-OSNMA, version=3, headerAuthStatus=0, nmaStatus=0, chainInForce=0, CPKS=0, osnmaEnabled=0, numSVs=0, nmaHeaderUpdate=0, timSyncEnabled=0, timSyncStatus=0, timSyncReqDiff=0, reserved0=1, dsmAuthenticationStatus=0, hashFunction=0, macFunction=0, pubKeyId=0, macLookupTable=0, keySize=0, macSize=0, fromNVS=0, teslaKeyAuthStatus=1, wnSf=2254, towSf=203, chainId=0, authSVs=0, authNumTim=16, timingAuthResult=0, macAdkdType=0, pubKeySrc=0, merkleRootSrc=0, merkleRootVal=0, futureMerkleRootSrc=0, futureMerkleRootVal=0, pubKeyVal=0, futurePubKeyVal=0, futurePubKeySrc=0, futurePubKeyId=0)>",
             "<UBX(SEC-SIGLOG, version=1, numEvents=0, reserved0=437182005248)>",
             "<UBX(SEC-SIG, version=1, reserved0=0, jamDetEnabled=1, jammingState=2, reserved1=0, spfDetEnabled=1, spoofingState=3, reserved2=0)>",
+            "<UBX(SEC-SIG, version=2, jamDetEnabled=1, jammingState=2, spfDetEnabled=1, spoofingState=1, reserved0=0, jamNumCentFreqs=6, centFreq_01=1575420, jammed_01=1, centFreq_02=1561098, jammed_02=1, centFreq_03=1602000, jammed_03=0, centFreq_04=1227600, jammed_04=0, centFreq_05=1207140, jammed_05=0, centFreq_06=1246000, jammed_06=0)>",
         )
         i = 0
         with open(os.path.join(DIRNAME, "pygpsdata-SEC.log"), "rb") as stream:
@@ -300,7 +301,7 @@ class StreamTest(unittest.TestCase):
                 # print(f'"{parsed}",')
                 self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
                 i += 1
-            self.assertEqual(i, 7)
+            self.assertEqual(i, len(EXPECTED_RESULTS))
 
     def testCFGLOG(
         self,
