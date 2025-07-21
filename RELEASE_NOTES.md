@@ -2,6 +2,10 @@
 
 ### RELEASE 1.2.54
 
+FIXES:
+
+1. Fix SEC-SIG v2 payload definition (repeating group omitted) - Fixes #186.
+
 CHANGES:
 
 1. Minor changes to `dop2str()` helper method.
