@@ -3550,8 +3550,9 @@ UBX_PAYLOADS_GET = {
                 "jamStateCentFreq": (
                     X4,
                     {
-                        "centFreq": U23,
+                        "centFreq": U24,
                         "jammed": U1,
+                        "reserved1": U7,
                     },
                 ),
             },
