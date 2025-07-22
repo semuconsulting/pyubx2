@@ -1,19 +1,19 @@
 {
     // See https://go.microsoft.com/fwlink/?LinkId=733558
     // for the documentation about the tasks.json format
-    // Use the Install Build/Test Dependencies tasks to install the necessary toolchain.
+    // Use the Install Deploy Dependencies tasks to install the necessary toolchain.
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Install Dependencies",
+            "label": "Install Deploy Dependencies",
             "type": "process",
             "command": "${config:python.defaultInterpreterPath}",
             "args": [
                 "-m",
                 "pip",
                 "install",
-                "--upgrade",
-                "."
+                "--group",
+                "deploy"
             ],
             "problemMatcher": []
         },
