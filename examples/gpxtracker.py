@@ -134,7 +134,7 @@ class UBXTracker:
                                     ele=msg.alt,
                                     time=self.nmeatime2utc(msg.time),
                                 )
-                            elif msg.msgID in ("GNRMC", "GNGLL"):
+                            elif msg.msgID in ("RMC", "GLL"):
                                 self.write_gpx_trkpnt(outfile,
                                     msg.lat,
                                     msg.lon,
