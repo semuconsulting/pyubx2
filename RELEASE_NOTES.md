@@ -1,5 +1,15 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.2.56
+
+ENHANCEMENTS:
+
+1. Add support for CFG-OTP (set one-time programmable memory) message.
+
+FIXES:
+
+1. Remove duplicate CFG-SIGNAL keys from UBX_CONFIG_DATABASE
+
 ### RELEASE 1.2.55
 
 FIXES:

@@ -232,6 +232,15 @@ UBX_PAYLOADS_SET = {
         ),
     },
     "CFG-ODO": UBX_GET["CFG-ODO"],
+    "CFG-OTP": {
+        "cfgHeader": U12,
+        "group": (
+            "None",
+            {
+                "cfgData": U1,
+            },
+        ),
+    },
     "CFG-PM2": UBX_GET["CFG-PM2"],
     "CFG-PMS": UBX_GET["CFG-PMS"],
     "CFG-PRT": UBX_GET["CFG-PRT"],

@@ -192,6 +192,7 @@ UBX_MSGIDS = {
     b"\x06\x17": "CFG-NMEA",  # NB: 3 versions of this
     b"\x06\x22": "CFG-NVS",
     b"\x06\x1e": "CFG-ODO",
+    b"\x06\x41": "CFG-OTP",
     b"\x06\x32": "CFG-PM",  # obsolete M5/6
     b"\x06\x3b": "CFG-PM2",
     b"\x06\x86": "CFG-PMS",

@@ -23,8 +23,27 @@
                 "-m",
                 "venv",
                 "${config:venv}",
-                "--system-site-packages"
+                //"--system-site-packages"
             ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Run Local Version",
+            "type": "process",
+            "command": "${config:python.defaultInterpreterPath}",
+            "args": [
+                "-m",
+                "pygpsclient",
+                "--ntripcasteruser",
+                "semuadmin",
+                "--ntripcasterpassword",
+                "testpassword",
+                "--verbosity",
+                "3"
+            ],
+            "options": {
+                "cwd": "src"
+            },
             "problemMatcher": []
         },
         {
@@ -208,7 +227,7 @@
             "problemMatcher": []
         },
         {
-            "label": "Install to System",
+            "label": "Install Locally",
             "type": "process",
             "command": "${config:python.defaultInterpreterPath}",
             "args": [
@@ -217,58 +236,11 @@
                 "install",
                 "--upgrade",
                 "--force-reinstall",
-                "*.whl"
+                "--find-links=${workspaceFolder}/dist",
+                "${workspaceFolderBasename}",
+                // "--target",
+                // "${config:venv}/Lib/site-packages"
             ],
-            "windows": {
-                "command": "${config:python.defaultInterpreterPath}",
-                "args": [
-                    "-m",
-                    "pip",
-                    "install",
-                    "--upgrade",
-                    "--force-reinstall",
-                    "--find-links=${workspaceFolder}/dist",
-                    "${workspaceFolderBasename}"
-                ]
-            },
-            "options": {
-                "cwd": "dist"
-            },
-            "dependsOrder": "sequence",
-            "dependsOn": [
-                "Build",
-                "Sphinx HTML"
-            ],
-            "problemMatcher": []
-        },
-        {
-            "label": "Install to Venv",
-            "type": "process",
-            "command": "${config:python.defaultInterpreterPath}",
-            "args": [
-                "-m",
-                "pip",
-                "install",
-                "--upgrade",
-                "--force-reinstall",
-                "*.whl",
-                "--target",
-                "${env:UserProfile}/semuvenv/Lib/site-packages"
-            ],
-            "windows": {
-                "command": "${config:python.defaultInterpreterPath}",
-                "args": [
-                    "-m",
-                    "pip",
-                    "install",
-                    "--upgrade",
-                    "--force-reinstall",
-                    "--find-links=${workspaceFolder}/dist",
-                    "${workspaceFolderBasename}",
-                    "--target",
-                    "${config:venv}/Lib/site-packages"
-                ]
-            },
             "options": {
                 "cwd": "dist"
             },

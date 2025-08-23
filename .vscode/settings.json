@@ -4,7 +4,8 @@
     "editor.formatOnSave": true,
     "modulename": "${workspaceFolderBasename}",
     "distname": "${workspaceFolderBasename}",
-    "venv": "${env:UserProfile}/pygpsclient",
+    //"venv": "${env:UserProfile}/pygpsclient",
+    "venv": "${env:HOME}/pygpsclient",
     "python.testing.pytestArgs": [
         "tests"
     ],
