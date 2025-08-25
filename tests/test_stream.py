@@ -87,6 +87,7 @@ class StreamTest(unittest.TestCase):
             "<UBX(NAV-GEOFENCE, iTOW=11:34:59, version=0, status=0, numFences=0, combState=0)>",
             "<UBX(NAV-EOE, iTOW=11:34:59)>",
             "<UBX(NAV-TIMENAVIC, iTOW=19:09:01, NavICTow=241759, fNavICTow=97081, NavICWno=1188, leapS=18, NavICTowValid=1, NavICWnoValid=1, leapSValid=1, tAcc=3337)>",
+            "<UBX(NAV-TIMETRUSTED, version=1, refSys=0, trustedTimeValid=0, deltaTimeValid=0, reserved0=0, iTOW=19:19:31, iniWho=0, propWho=0, iniTow=0, propTow=0, iniTAcc=0, propTAcc=0, deltaS=0, deltaMs=0, reserved1=0)>",
         )
 
         i = 0
@@ -96,7 +97,7 @@ class StreamTest(unittest.TestCase):
                 # print(f'"{parsed}",')
                 self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
                 i += 1
-            self.assertEqual(i, 27)
+            self.assertEqual(i, len(EXPECTED_RESULTS))
 
     def testHNRLOG(
         self,
