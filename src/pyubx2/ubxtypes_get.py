@@ -1609,6 +1609,7 @@ UBX_PAYLOADS_GET = {
             {
                 "mem": U1,
                 "alloc": U1,
+                "outputPort": U3,
             },
         ),
         "reserved0": U1,
@@ -2160,7 +2161,7 @@ UBX_PAYLOADS_GET = {
         "combState": U1,
         "group": (  # repeating group * numFences
             "numFences",
-            {"state": U1, "reserved1": U1},
+            {"state": U1, "id": U1},
         ),
     },
     "NAV-HPPOSECEF": {
@@ -2478,6 +2479,9 @@ UBX_PAYLOADS_GET = {
             {
                 "invalidLlh": U1,
                 "lastCorrectionAge": U4,
+                "reserved1": U8,
+                "authTime": U1,
+                "nmaFixStatus": U1,
             },
         ),
         "reserved0": U4,  # NB this is incorrectly stated as U5 in older documentation
@@ -2586,6 +2590,9 @@ UBX_PAYLOADS_GET = {
                         "prCorrUsed": U1,
                         "crCorrUsed": U1,
                         "doCorrUsed": U1,
+                        "clasCorrUsed": U1,
+                        "lppCorrUsed": U1,
+                        "hasCorrUsed": U1,
                     },
                 ),
             },
@@ -2657,6 +2664,7 @@ UBX_PAYLOADS_GET = {
                         "prCorrUsed": U1,
                         "crCorrUsed": U1,
                         "doCorrUsed": U1,
+                        "authStatus": U1,
                     },
                 ),
                 "reserved1": U4,
@@ -2925,15 +2933,28 @@ UBX_PAYLOADS_GET = {
         ),
         "tAcc": U4,
     },
-    # nominal definition, excluded from public HPG 1.50 interface manual:
-    # "NAV-TIMETRUSTED": {
-    #     "group": (
-    #         "None",
-    #         {
-    #             "data": X1,
-    #         },
-    #     ),
-    # },
+    "NAV-TIMETRUSTED": {
+        "version": U1,
+        "refSys": U1,
+        "validFlags": (
+            X1,
+            {
+                "trustedTimeValid": U1,
+                "deltaTimeValid": U1,
+            },
+        ),
+        "reserved0": U1,
+        "iTOW": U4,
+        "iniWho": U2,
+        "propWho": U2,
+        "iniTow": U4,
+        "propTow": U4,
+        "iniTAcc": U4,
+        "propTAcc": U4,
+        "deltaS": I4,
+        "deltaMs": I4,
+        "reserved1": U4,
+    },
     "NAV-TIMEUTC": {
         "iTOW": U4,
         "tAcc": U4,
@@ -2950,7 +2971,7 @@ UBX_PAYLOADS_GET = {
                 "validTOW": U1,
                 "validWKN": U1,
                 "validUTC": U1,
-                "reserved0": U1,
+                "authStatus": U1,
                 "utcStandard": U4,
             },
         ),
