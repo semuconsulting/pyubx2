@@ -1609,6 +1609,7 @@ UBX_PAYLOADS_GET = {
             {
                 "mem": U1,
                 "alloc": U1,
+                "outputPort": U3,
             },
         ),
         "reserved0": U1,

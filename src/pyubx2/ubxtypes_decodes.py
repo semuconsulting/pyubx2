@@ -84,6 +84,7 @@ DYNMODEL = {
     10: "motorbike",  # (supported for protocol versions 19.20, and 35.10)
     11: "robotic lawn mower",  # (supported for protocol versions 33.21)
     12: "electric kick scooter",  # (supported for protocol versions 33.21, and 35.10)
+    13: "rail",  # trains and trams
 }
 """Dynamic model from UBX-CFG-NAV5"""
 
