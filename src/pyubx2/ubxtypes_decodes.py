@@ -24,6 +24,7 @@ GNSSLIST = {
 DGNSMODE = {
     2: "RTK float",
     3: "RTK fixed",
+    5: "RTK CAR",  # Conservative ambiguity resolution
 }
 """Differential correction mode from UBX-CFG-DGNSS"""
 
@@ -84,6 +85,7 @@ DYNMODEL = {
     10: "motorbike",  # (supported for protocol versions 19.20, and 35.10)
     11: "robotic lawn mower",  # (supported for protocol versions 33.21)
     12: "electric kick scooter",  # (supported for protocol versions 33.21, and 35.10)
+    13: "rail",  # trains and trams
 }
 """Dynamic model from UBX-CFG-NAV5"""
 
@@ -424,7 +426,11 @@ CORRSOURCE = {
     5: "RTCM3 SSR",
     6: "QZSS SLAS",
     7: "SPARTN",
-    8: "CLAS",
+    8: "CLAS",  # not used in HPG 2.00
+    9: "CLAS",
+    10: "LPP OSR",
+    11: "LPP SSR",
+    12: "GAL HAS",
 }
 """DGPS correction source from UBX-NAV-SIG"""
 
@@ -433,7 +439,8 @@ IONOMODEL = {
     1: "Klobuchar GPS",
     2: "SBAS",
     3: "Klobuchar BeiDou",
-    4: "Dual Frequency",
+    4: "Dual Frequency",  # not used in HPG 2.00
+    8: "Dual frequency",
 }
 """Ionospheric model type from UBX-NAV-SIG"""
 

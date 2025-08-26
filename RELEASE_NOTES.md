@@ -1,5 +1,12 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.2.57
+
+ENHANCEMENTS:
+
+1. NAV Payload definition updates for ZED-X20P HPG 2.00 (NAV-GEOFENCE, NAV-PVT, NAV-SAT, NAV-SIG, NAV-TIMETRUSTED).
+1. Add new configuration database keys and other minor updates for ZED-F9R HPS 1.40 - thanks to @djshake for contribution.
+
 ### RELEASE 1.2.56
 
 ENHANCEMENTS:
