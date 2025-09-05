@@ -2,9 +2,9 @@
 ubx_spatialite.py
 
 Simple example script illustrating how to write parsed UBX GNSS data to
-a sqlite3/spatialite database previously created in QGIS.
+a sqlite3/spatialite database (gnss.db) previously created in QGIS.
 
-gnssdata table in gnss.db has the following fields:
+Assumes gnssdata table in gnss.db has the following fields:
     pk integer
     geom POINT
     source text
