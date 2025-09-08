@@ -42,6 +42,8 @@ Contributions welcome - please refer to [CONTRIBUTING.MD](https://github.com/sem
 
 [Bug reports](https://github.com/semuconsulting/pyubx2/blob/master/.github/ISSUE_TEMPLATE/bug_report.md) and [Feature requests](https://github.com/semuconsulting/pyubx2/blob/master/.github/ISSUE_TEMPLATE/feature_request.md) - please use the templates provided. For general queries and advice, post a message to one of the [pyubx2 Discussions](https://github.com/semuconsulting/pyubx2/discussions) channels.
 
+![No Copilot](https://github.com/semuconsulting/PyGPSClient/blob/master/images/nocopilot100.png?raw=true)
+
 ---
 ## <a name="installation">Installation</a>
 
@@ -498,4 +500,4 @@ semuadmin@semuconsulting.com
 
 [![Sponsor](https://github.com/semuconsulting/pyubx2/blob/master/images/sponsor.png?raw=true)](https://buymeacoffee.com/semuconsulting)
 
-[![Freedom for Ukraine](https://github.com/semuadmin/sandpit/blob/main/src/sandpit/resources/ukraine200.jpg?raw=true)](https://u24.gov.ua/)
+[![Freedom for Ukraine](https://github.com/semuadmin/sandpit/blob/main/src/semuadmin_sandpit/resources/ukraine200.jpg?raw=true)](https://u24.gov.ua/)
