@@ -1,12 +1,23 @@
 """
 ubx_spatialite.py
 
-Simple example script illustrating how to write parsed UBX GNSS data to
-a sqlite3/spatialite database (gnss.db) previously created in QGIS.
+Simple example script illustrating how to create a
+sqlite3 database with the spatialite extension enabled
+and load geometry (lat/lon/height) data into it using pyubx2.
 
-Assumes gnssdata table in gnss.db has the following fields:
+*************************************************************
+NB: Although sqlite3 is a standard Python 3 library,
+the version of sqlite3 which comes as standard on most
+Unix-like platforms (Linux & MacOS) does NOT support
+the loading of extensions (e.g. mod_spatialite). It
+may be necessary to install or compile a special version
+of Python with the --enable-loadable-sqlite-extensions option
+set.
+*************************************************************
+
+gpsdata example table has the following fields:
     pk integer
-    geom POINT
+    geom POINTZ
     source text
     time integer
     fixtype integer
@@ -26,46 +37,103 @@ from os import environ, path
 
 from pyubx2 import ERR_LOG, UBX_PROTOCOL, UBXReader
 
-# input file containing binary UBX data
-INFILE = "pygpsdata-ubx.log"
-# path to spatialite database created using QGIS
-DBPATH = path.join("/home/myuser/Downloads/qgis", "gnss.db")
-# path to mod_spatialite.so (or .dll) module in QGIS binaries
-SLPATH = "/opt/QGIS_3.44.1/bin"
-# INSERT SQL statement
-SQLI1 = (
-    "INSERT INTO gnssdata (source, time, fixtype, difftype, dop, hacc, geom) "
-    "VALUES ('{}', {}, {}, {}, {}, {}, GeomFromText('POINT({} {})', 4326));"
+# path to input file containing binary UBX NAV-PVT data
+INFILE = "pygpsdata-NAVPVT.log"
+
+# path to spatialite database
+DB = "gnss.sqlite"
+DBPATH = path.join("/home/myuser/Downloads/maps", DB)
+TABLE = "gpsdata"
+
+# path to mod_spatialite module in QGIS binaries, if required
+# SLPATH = "C:/Program Files/QGIS 3.44.1/bin"
+# environ["PATH"] = SLPATH + ";" + environ["PATH"]
+
+SQLBEGIN = "BEGIN TRANSACTION;"
+SQLCOMMIT = "COMMIT;"
+
+# CREATE SQL statement with 3D POINT
+SQLC1 = (
+    "BEGIN TRANSACTION;"
+    "DROP TABLE IF EXISTS {table};"
+    "CREATE TABLE {table} (id INTEGER PRIMARY KEY, source TEXT, time INTEGER, fixtype INTEGER, difftype INTEGER, dop DECIMAL, hacc DECIMAL);"
+    "SELECT AddGeometryColumn('gpsdata', 'geom', 4326, 'POINT', 'XYZ');"
+    "SELECT CreateSpatialIndex('gpsdata', 'geom');"
+    "COMMIT;"
 )
 
-# ensure spatialite extension module is in PATH
-environ["PATH"] = SLPATH + ";" + environ["PATH"]
+# INSERT SQL statement with 2D POINT (lon, lat)
+SQLI12D = (
+    "INSERT INTO {table} (source, time, fixtype, difftype, dop, hacc, geom) "
+    "VALUES ('{source}', {time}, {fixtype}, {difftype}, {dop}, {hacc}, GeomFromText('POINT({lon} {lat})', 4326));"
+)
 
-# connect to the database
-con = sqlite3.connect(DBPATH)
-cur = con.cursor()
-# load spatialite extension to support spatial (geometry) attributes
-con.enable_load_extension(True)
-con.load_extension("mod_spatialite")
-# con.execute("SELECT InitSpatialMetaData();") # already done by QGIS
+# INSERT SQL statement with 3D POINT (lon, lat, height)
+SQLI3D = (
+    "INSERT INTO {table} (source, time, fixtype, difftype, dop, hacc, geom) "
+    "VALUES ('{source}', {time}, {fixtype}, {difftype}, {dop}, {hacc}, GeomFromText('POINTZ({lon} {lat} {height})', 4326));"
+)
 
-# iterate through UBX data log
-with open(INFILE, "rb") as stream:
-    ubr = UBXReader(stream, protfilter=UBX_PROTOCOL, quitonerror=ERR_LOG)
-    for raw, parsed in ubr:
-        if parsed.identity == "NAV-PVT":
-            sql = SQLI1.format(
-                parsed.identity,
-                parsed.iTOW,
-                parsed.fixType,
-                parsed.carrSoln,
-                parsed.pDOP,
-                parsed.hAcc,
-                parsed.lon,
-                parsed.lat,
-            )
-            print(sql)
-            cur.execute(sql)
 
-con.commit()
-con.close()
+def create_database(con, cur):
+    """
+    Create spatial database.
+    """
+
+    # load spatialite extension to support spatial (geometry) attributes
+    print("Enabling extension loading")
+    try:
+        con.enable_load_extension(True)
+    except AttributeError as err:
+        raise AttributeError(
+            "Your Python installation does not support sqlite3 extensions"
+        ) from err
+    print("Loading mod_spatialite extension")
+    con.load_extension("mod_spatialite")
+    print("Initialising spatial metadata (may take a few seconds)")
+    con.execute("SELECT InitSpatialMetaData();")
+    # create database table
+    print(f"Creating {TABLE} table")
+    cur.executescript(SQLC1.format(table=TABLE))
+
+
+def load_data(con, cur):
+    """
+    Load data into database.
+    """
+
+    # iterate through UBX data log
+    print(f"Loading data into {TABLE} from UBX data log")
+    i = 0
+    cur.execute(SQLBEGIN)
+    with open(INFILE, "rb") as stream:
+        ubr = UBXReader(stream, protfilter=UBX_PROTOCOL, quitonerror=ERR_LOG)
+        for raw, parsed in ubr:
+            if parsed.identity == "NAV-PVT":
+                sql = SQLI3D.format(
+                    table=TABLE,
+                    source=parsed.identity,
+                    time=parsed.iTOW,
+                    fixtype=parsed.fixType,
+                    difftype=parsed.carrSoln,
+                    dop=parsed.pDOP,
+                    hacc=parsed.hAcc,
+                    lon=parsed.lon,
+                    lat=parsed.lat,
+                    height=parsed.hMSL / 1000,  # meters
+                )
+                cur.execute(sql)
+                i += 1
+    cur.execute(SQLCOMMIT)
+    print(f"{i} records loaded into {TABLE}")
+
+
+if __name__ == "__main__":
+
+    # create & connect to the database
+    print(f"Connecting to database {DBPATH}")
+    with sqlite3.connect(DBPATH) as con:
+        cur = con.cursor()
+        create_database(con, cur)
+        load_data(con, cur)
+    print("Complete")
