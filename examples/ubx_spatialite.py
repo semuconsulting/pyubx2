@@ -3,10 +3,11 @@ ubx_spatialite.py
 
 Simple example script illustrating how to create a
 sqlite3 database with the spatialite extension enabled
-and load geometry (lat/lon/height) data into it using pyubx2.
+and load geometry (lat/lon/height) data from a binary
+UBX NAV-PVT data log into it using pyubx2.
 
 *************************************************************
-NB: Although sqlite3 is a standard Python 3 library,
+NB: Although sqlite3 is a native Python 3 module,
 the version of sqlite3 which comes as standard on most
 Unix-like platforms (Linux & MacOS) does NOT support
 the loading of extensions (e.g. mod_spatialite). It
@@ -38,7 +39,7 @@ from os import environ, path
 from pyubx2 import ERR_LOG, UBX_PROTOCOL, UBXReader
 
 # path to input file containing binary UBX NAV-PVT data
-INFILE = "pygpsdata-NAVPVT.log"
+INFILE = "pygpsdata_NAVPVT.log"
 
 # path to spatialite database
 DB = "gnss.sqlite"
@@ -60,12 +61,6 @@ SQLC1 = (
     "SELECT AddGeometryColumn('gpsdata', 'geom', 4326, 'POINT', 'XYZ');"
     "SELECT CreateSpatialIndex('gpsdata', 'geom');"
     "COMMIT;"
-)
-
-# INSERT SQL statement with 2D POINT (lon, lat)
-SQLI12D = (
-    "INSERT INTO {table} (source, time, fixtype, difftype, dop, hacc, geom) "
-    "VALUES ('{source}', {time}, {fixtype}, {difftype}, {dop}, {hacc}, GeomFromText('POINT({lon} {lat})', 4326));"
 )
 
 # INSERT SQL statement with 3D POINT (lon, lat, height)
