@@ -1,20 +1,27 @@
 """
 ubx_spatialite.py
 
-Simple example script illustrating how to create a
-sqlite3 database with the spatialite extension enabled
-and load geometry (lat/lon/height) data from a binary
-UBX NAV-PVT data log into it using pyubx2.
+Example script illustrating how to create a sqlite3
+database with the spatialite extension enabled and load
+geometry (lat/lon/height) data from a binary UBX NAV-PVT
+data log into it using pyubx2.
 
-*************************************************************
+***********************************************************
 NB: Although sqlite3 is a native Python 3 module,
-the version of sqlite3 which comes as standard on most
-Unix-like platforms (Linux & MacOS) does NOT support
-the loading of extensions (e.g. mod_spatialite). It
-may be necessary to install or compile a special version
-of Python with the --enable-loadable-sqlite-extensions option
+the version of this module which comes as standard on many
+Unix-like platforms (Linux & MacOS) does NOT support the
+loading of extensions (e.g. mod_spatialite) by default. It
+may be necessary to install or compile a special version of
+Python with the --enable-loadable-sqlite-extensions option
 set.
-*************************************************************
+
+To check that the sqlite3 database engine itself supports
+extensions, use the following sqlite3 CLI command:
+
+sqlite> .dbconfig
+
+and check for the entry 'load_extension on'.
+***********************************************************
 
 gpsdata example table has the following fields:
     pk integer
@@ -33,7 +40,7 @@ Created on 27 Jul 2023
 :license: BSD 3-Clause
 """
 
-import sqlite3
+import sqlite3  # NOTE caveat above
 from os import environ, path
 
 from pyubx2 import ERR_LOG, UBX_PROTOCOL, UBXReader
@@ -43,10 +50,10 @@ INFILE = "pygpsdata_NAVPVT.log"
 
 # path to spatialite database
 DB = "gnss.sqlite"
-DBPATH = path.join("/home/myuser/Downloads/maps", DB)
+DBPATH = path.join("/home/myuser/Downloads/qgis", DB)
 TABLE = "gpsdata"
 
-# path to mod_spatialite module in QGIS binaries, if required
+# path to mod_spatialite module, if required
 # SLPATH = "C:/Program Files/QGIS 3.44.1/bin"
 # environ["PATH"] = SLPATH + ";" + environ["PATH"]
 
@@ -55,18 +62,22 @@ SQLCOMMIT = "COMMIT;"
 
 # CREATE SQL statement with 3D POINT
 SQLC1 = (
-    "BEGIN TRANSACTION;"
-    "DROP TABLE IF EXISTS {table};"
-    "CREATE TABLE {table} (id INTEGER PRIMARY KEY, source TEXT, time INTEGER, fixtype INTEGER, difftype INTEGER, dop DECIMAL, hacc DECIMAL);"
-    "SELECT AddGeometryColumn('gpsdata', 'geom', 4326, 'POINT', 'XYZ');"
-    "SELECT CreateSpatialIndex('gpsdata', 'geom');"
-    "COMMIT;"
+    SQLBEGIN
+    + (
+        "DROP TABLE IF EXISTS {table};"
+        "CREATE TABLE {table} (id INTEGER PRIMARY KEY, source TEXT, "
+        "time INTEGER, fixtype INTEGER, difftype INTEGER, dop DECIMAL, hacc DECIMAL);"
+        "SELECT AddGeometryColumn('gpsdata', 'geom', 4326, 'POINT', 'XYZ');"
+        "SELECT CreateSpatialIndex('gpsdata', 'geom');"
+    )
+    + SQLCOMMIT
 )
 
 # INSERT SQL statement with 3D POINT (lon, lat, height)
 SQLI3D = (
     "INSERT INTO {table} (source, time, fixtype, difftype, dop, hacc, geom) "
-    "VALUES ('{source}', {time}, {fixtype}, {difftype}, {dop}, {hacc}, GeomFromText('POINTZ({lon} {lat} {height})', 4326));"
+    "VALUES ('{source}', {time}, {fixtype}, {difftype}, {dop}, {hacc}, "
+    "GeomFromText('POINTZ({lon} {lat} {height})', 4326));"
 )
 
 
@@ -81,7 +92,7 @@ def create_database(con, cur):
         con.enable_load_extension(True)
     except AttributeError as err:
         raise AttributeError(
-            "Your Python installation does not support sqlite3 extensions"
+            "Your Python installation does not currently support sqlite3 extensions"
         ) from err
     print("Loading mod_spatialite extension")
     con.load_extension("mod_spatialite")
@@ -92,7 +103,7 @@ def create_database(con, cur):
     cur.executescript(SQLC1.format(table=TABLE))
 
 
-def load_data(con, cur):
+def load_data(cur):
     """
     Load data into database.
     """
@@ -103,7 +114,7 @@ def load_data(con, cur):
     cur.execute(SQLBEGIN)
     with open(INFILE, "rb") as stream:
         ubr = UBXReader(stream, protfilter=UBX_PROTOCOL, quitonerror=ERR_LOG)
-        for raw, parsed in ubr:
+        for _, parsed in ubr:
             if parsed.identity == "NAV-PVT":
                 sql = SQLI3D.format(
                     table=TABLE,
@@ -127,8 +138,8 @@ if __name__ == "__main__":
 
     # create & connect to the database
     print(f"Connecting to database {DBPATH}")
-    with sqlite3.connect(DBPATH) as con:
-        cur = con.cursor()
-        create_database(con, cur)
-        load_data(con, cur)
+    with sqlite3.connect(DBPATH) as connection:
+        cursor = connection.cursor()
+        create_database(connection, cursor)
+        load_data(cursor)
     print("Complete")
