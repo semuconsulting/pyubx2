@@ -11,9 +11,11 @@ NB: Although sqlite3 is a native Python 3 module,
 the version of this module which comes as standard on many
 Unix-like platforms (Linux & MacOS) does NOT support the
 loading of extensions (e.g. mod_spatialite) by default. It
-may be necessary to install or compile a special version of
-Python with the --enable-loadable-sqlite-extensions option
-set.
+may be necessary to install (via Homebrew) or compile
+a custom version of Python with the
+--enable-loadable-sqlite-extensions option set, e.g.
+
+brew install python-tk@3.13 libspatialite
 
 To check that the sqlite3 database engine itself supports
 extensions, use the following sqlite3 CLI command:
@@ -46,11 +48,11 @@ from os import environ, path
 from pyubx2 import ERR_LOG, UBX_PROTOCOL, UBXReader
 
 # path to input file containing binary UBX NAV-PVT data
-INFILE = "pygpsdata_NAVPVT.log"
+INFILE = "/Users/steve/Library/CloudStorage/Dropbox/Development/workspace_vscode/pyubx2/references/logs/pygpsdata-ubxcartrip.log"
 
 # path to spatialite database
 DB = "gnss.sqlite"
-DBPATH = path.join("/home/myuser/Downloads/qgis", DB)
+DBPATH = path.join("/Users/steve/Downloads/qgis", DB)
 TABLE = "gpsdata"
 
 # path to mod_spatialite module, if required
