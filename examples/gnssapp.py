@@ -12,7 +12,7 @@ The app also implements basic methods needed by certain pygnssutils classes.
 Optional keyword arguments:
 
 - sendqueue - any data placed on this Queue will be sent to the receiver
-  (e.g. UBX commands/polls or NTRIP RTCM data). Data must be a tuple of 
+  (e.g. UBX commands/polls or NTRIP RTCM data). Data must be a tuple of
   (raw_data, parsed_data).
 - idonly - determines whether the app prints out the entire parsed message,
   or just the message identity.
@@ -22,10 +22,11 @@ Optional keyword arguments:
 
 Created on 27 Jul 2023
 
-:author: semuadmin
-:copyright: SEMU Consulting © 2023
+:author: semuadmin (Steve Smith)
+:copyright: semuadmin © 2023
 :license: BSD 3-Clause
 """
+
 # pylint: disable=invalid-name, too-many-instance-attributes
 
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser

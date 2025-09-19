@@ -5,7 +5,7 @@ Created on 26 Aug 2023
 
 Information sourced from public domain u-blox Interface Specifications © 2013-2021, u-blox AG
 
-:author: semuadmin
+:author: semuadmin (Steve Smith)
 """
 
 GNSSLIST = {

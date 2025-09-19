@@ -8,7 +8,7 @@ Created on 27 Sep 2020
 
 Information sourced from public domain u-blox Interface Specifications © 2013-2021, u-blox AG
 
-:author: semuadmin
+:author: semuadmin (Steve Smith)
 """
 
 # pylint: disable=too-many-lines, line-too-long

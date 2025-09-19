@@ -12,8 +12,8 @@ and pasting into the PyGPSClient ubxpresets file.
 
 Created on 26 Apr 2022
 
-:author: semuadmin
-:copyright: SEMU Consulting © 2022
+:author: semuadmin (Steve Smith)
+:copyright: semuadmin © 2022
 :license: BSD 3-Clause
 """
 
@@ -24,6 +24,7 @@ from pyubx2 import UBXMessage, val2sphp
 TMODE_SVIN = 1
 TMODE_FIXED = 2
 SHOW_PRESET = True  # hide or show PyGPSClient preset string
+
 
 def send_msg(serial_out: Serial, ubx: UBXMessage):
     """
@@ -138,7 +139,6 @@ if __name__ == "__main__":
     PORT_TYPE = "USB"  # choose from "USB", "UART1", "UART2"
     BAUD = 38400
     TIMEOUT = 5
-
 
     TMODE = TMODE_FIXED  # "TMODE_SVIN" or 1 = Survey-In, "TMODE_FIXED" or 2 = Fixed
     ACC_LIMIT = 200  # accuracy in mm

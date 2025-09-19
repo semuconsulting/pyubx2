@@ -7,8 +7,8 @@ message class, id and mode.
 
 Created on 20 May 2024
 
-:author: semuadmin
-:copyright: SEMU Consulting © 2020
+:author: semuadmin (Steve Smith)
+:copyright: semuadmin © 2020
 :license: BSD 3-Clause
 """
 

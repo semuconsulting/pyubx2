@@ -7,8 +7,8 @@ Sends arbitrary NMEA, UBX & RTCM3 messages to connected clients.
 
 Created on 26 Apr 2022
 
-:author: semuadmin
-:copyright: SEMU Consulting © 2022
+:author: semuadmin (Steve Smith)
+:copyright: semuadmin © 2022
 :license: BSD 3-Clause
 """
 

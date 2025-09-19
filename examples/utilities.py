@@ -6,7 +6,7 @@ Illustration of the various utility methods available in pyubx2
 Created on 14 Jan 2023
 
 @author: semuadmin
-:copyright: SEMU Consulting © 2022
+:copyright: semuadmin © 2022
 :license: BSD 3-Clause
 """
 

@@ -13,7 +13,7 @@ Created on 27 Sep 2020
 
 Information sourced from public domain u-blox Interface Specifications © 2013-2021, u-blox AG
 
-:author: semuadmin
+:author: semuadmin (Steve Smith)
 """
 
 from pyubx2.ubxtypes_core import U1, U2, U4

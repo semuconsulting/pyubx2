@@ -24,8 +24,8 @@ practical consequence here.
 
 Created on 07 Aug 2021
 
-:author: semuadmin
-:copyright: SEMU Consulting © 2021
+:author: semuadmin (Steve Smith)
+:copyright: semuadmin © 2021
 :license: BSD 3-Clause
 """
 

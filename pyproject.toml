@@ -34,7 +34,7 @@ classifiers = [
     "Topic :: Scientific/Engineering :: GIS",
 ]
 
-dependencies = ["pynmeagps >= 1.0.51", "pyrtcm >= 1.1.9"]
+dependencies = ["pynmeagps >= 1.0.53", "pyrtcm >= 1.1.9"]
 
 [project.urls]
 homepage = "https://github.com/semuconsulting/pyubx2"
@@ -44,6 +44,7 @@ changelog = "https://github.com/semuconsulting/pyubx2/blob/master/RELEASE_NOTES.
 
 [dependency-groups]
 build = [
+    "awscli",
     "build",
     "packaging>=24.2",
     "pip",

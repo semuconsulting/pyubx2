@@ -41,8 +41,8 @@ gnssdata example table has the following fields:
 
 Created on 27 Jul 2023
 
-:author: semuadmin
-:copyright: SEMU Consulting © 2023
+:author: semuadmin (Steve Smith)
+:copyright: semuadmin © 2023
 :license: BSD 3-Clause
 """
 
@@ -54,7 +54,6 @@ from sys import argv
 from pyubx2 import ERR_LOG, NMEA_PROTOCOL, UBX_PROTOCOL, UBXReader
 
 LEAPS = 18  # tow leapseconds adjustment
-DB = "gnss.sqlite"
 
 # path to mod_spatialite module, if required
 # SLPATH = "C:/Program Files/QGIS 3.44.1/bin"

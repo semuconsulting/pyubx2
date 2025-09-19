@@ -12,8 +12,8 @@ and two (L1, L2) frequency blocks respectively.
 
 Created on 19 Nov 2020
 
-:author: semuadmin
-:copyright: SEMU Consulting © 2020
+:author: semuadmin (Steve Smith)
+:copyright: semuadmin © 2020
 :license: BSD 3-Clause
 """
 

@@ -11,8 +11,9 @@ http://ncgia.ucsb.edu/units/u015/tables/table03.html
 
 Created on 16 Jan 2023
 
-:author: semuadmin
+:author: semuadmin (Steve Smith)
 """
+
 # pylint: disable=too-many-lines
 
 DATUMS = {

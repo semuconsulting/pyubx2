@@ -22,7 +22,7 @@ data can also be accessed directly via the REST API http://localhost:8080/gps.
 
 Created on 17 May 2021
 
-:author: semuadmin
+:author: semuadmin (Steve Smith)
 :license: (c) SEMU Consulting 2021 - BSD 3-Clause License
 """
 

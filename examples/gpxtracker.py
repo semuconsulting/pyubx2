@@ -18,8 +18,8 @@ Could have used minidom for XML but didn't seem worth it.
 
 Created on 27 Oct 2020
 
-:author: semuadmin
-:copyright: SEMU Consulting © 2020
+:author: semuadmin (Steve Smith)
+:copyright: semuadmin © 2020
 :license: BSD 3-Clause
 """
 
@@ -128,14 +128,16 @@ class UBXTracker:
                                 )
                         elif isinstance(msg, NMEAMessage):
                             if msg.msgID in ("GGA",):
-                                self.write_gpx_trkpnt(outfile,
+                                self.write_gpx_trkpnt(
+                                    outfile,
                                     msg.lat,
                                     msg.lon,
                                     ele=msg.alt,
                                     time=self.nmeatime2utc(msg.time),
                                 )
                             elif msg.msgID in ("RMC", "GLL"):
-                                self.write_gpx_trkpnt(outfile,
+                                self.write_gpx_trkpnt(
+                                    outfile,
                                     msg.lat,
                                     msg.lon,
                                     time=self.nmeatime2utc(msg.time),
@@ -235,10 +237,13 @@ def main():
 
     ap = ArgumentParser()
     ap.add_argument("-I", "--infile", required=True, help="Input gnss file", type=str)
-    ap.add_argument("-O", "--outpath", required=False, help="Output path",default=".", type=str)
+    ap.add_argument(
+        "-O", "--outpath", required=False, help="Output path", default=".", type=str
+    )
     args = ap.parse_args()
 
     UBXTracker(args.infile, args.outpath).run()
+
 
 if __name__ == "__main__":
 

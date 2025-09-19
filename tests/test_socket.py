@@ -6,7 +6,7 @@ Created on 11 May 2022
 
 *** NB: must be saved in UTF-8 format ***
 
-:author: semuadmin
+:author: semuadmin (Steve Smith)
 """
 
 import unittest
@@ -35,7 +35,7 @@ class DummySocket(socket):
             + b"$GNDTM,W84,,0.0,N,0.0,E,0.0,W84*71\r\n"
             + b"$GNRMC,103607.00,A,5327.03942,N,10214.42462,W,0.046,,060321,,,A,V*0E\r\n"
             + b"$GPRTE,2,1,c,0,PBRCPK,PBRTO,PTELGR,PPLAND,PYAMBU,PPFAIR,PWARRN,PMORTL,PLISMR*73\r\n"
-            + b"\xD3\x00\x13\x3E\xD7\xD3\x02\x02\x98\x0E\xDE\xEF\x34\xB4\xBD\x62\xAC\x09\x41\x98\x6F\x33\x36\x0B\x98"
+            + b"\xd3\x00\x13\x3e\xd7\xd3\x02\x02\x98\x0e\xde\xef\x34\xb4\xbd\x62\xac\x09\x41\x98\x6f\x33\x36\x0b\x98"
             + b"\xd3\x00\x13>\xd0\x00\x03\x8aX\xd9I<\x87/4\x10\x9d\x07\xd6\xafH Z\xd7\xf7"
             + b"\xd3\x00\x12B\x91\x81\xc9\x84\x00\x04B\xb8\x88\x008\x80\t\xd0F\x00(\xf0kf"
         )

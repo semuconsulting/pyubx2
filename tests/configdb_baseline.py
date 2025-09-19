@@ -8,7 +8,7 @@ Format:
 
 Created on 19 Apr 2021
 
-:author: semuadmin
+:author: semuadmin (Steve Smith)
 """
 
 from pyubx2.ubxtypes_core import (
