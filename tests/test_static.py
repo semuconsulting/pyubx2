@@ -170,10 +170,19 @@ class StaticTest(unittest.TestCase):
         res = str(itow2utc(387092000))
         self.assertEqual(res, "11:31:14")
 
+    def testitow2utcLEAP(self):
+        res = str(itow2utc(387092000, 16))
+        self.assertEqual(res, "11:31:16")
+
     def testutc2itow(self):
         dt = datetime(2024, 2, 8, 11, 31, 14)
         res = utc2itow(dt)
         self.assertEqual(res, (2300, 387092000))
+
+    def testutc2itowLEAP(self):
+        dt = datetime(2024, 2, 8, 11, 31, 14)
+        res = utc2itow(dt, 10)
+        self.assertEqual(res, (2300, 387084000))
 
     def testgnss2str(self):
         GNSS = {
@@ -265,7 +274,7 @@ class StaticTest(unittest.TestCase):
         self.assertEqual(res, 0)
 
     def testhextable(self):  # test hextable*( method)
-        EXPECTED_RESULT = "000: 2447 4e47 4c4c 2c35 3332 372e 3034 3331  | b'$GNGLL,5327.0431' |\n016: 392c 532c 3030 3231 342e 3431 3339 362c  | b'9,S,00214.41396,' |\n032: 452c 3232 3332 3332 2e30 302c 412c 412a  | b'E,223232.00,A,A*' |\n048: 3638 0d0a                                | b'68\\r\\n' |\n"
+        EXPECTED_RESULT = "000: 2447 4e47 4c4c 2c35 3332 372e 3034 3331  | b'$GNGLL,5327.0431'                                                 |\n016: 392c 532c 3030 3231 342e 3431 3339 362c  | b'9,S,00214.41396,'                                                 |\n032: 452c 3232 3332 3332 2e30 302c 412c 412a  | b'E,223232.00,A,A*'                                                 |\n048: 3638 0d0a                                | b'68\\r\\n'                                                           |\n"
         res = hextable(b"$GNGLL,5327.04319,S,00214.41396,E,223232.00,A,A*68\r\n", 8)
         self.assertEqual(res, EXPECTED_RESULT)
 
