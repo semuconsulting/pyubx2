@@ -8,7 +8,11 @@ Created on 27 Sep 2020
 
 from pynmeagps import (
     SocketWrapper,
+    area,
     bearing,
+    deg2dmm,
+    deg2dms,
+    dms2deg,
     ecef2llh,
     haversine,
     latlon2dmm,

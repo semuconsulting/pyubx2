@@ -71,56 +71,6 @@ def att2name(att: str) -> str:
     return att.split("_")[0]
 
 
-def calc_checksum(content: bytes) -> bytes:
-    """
-    Calculate checksum using 8-bit Fletcher's algorithm.
-
-    :param bytes content: message content, excluding header and checksum bytes
-    :return: checksum
-    :rtype: bytes
-
-    """
-
-    check_a = 0
-    check_b = 0
-
-    for char in content:
-        check_a += char
-        check_a &= 0xFF
-        check_b += check_a
-        check_b &= 0xFF
-
-    return bytes((check_a, check_b))
-
-
-def isvalid_checksum(message: bytes) -> bool:
-    """
-    Validate message checksum.
-
-    :param bytes message: message including header and checksum bytes
-    :return: checksum valid flag
-    :rtype: bool
-
-    """
-
-    lenm = len(message)
-    ckm = message[lenm - 2 : lenm]
-    return ckm == calc_checksum(message[2 : lenm - 2])
-
-
-def atttyp(att: str) -> str:
-    """
-    Helper function to return attribute type as string.
-
-    :param str: attribute type e.g. 'U002'
-    :return: type of attribute as string e.g. 'U'
-    :rtype: str
-
-    """
-
-    return att[0:1]
-
-
 def attsiz(att: str) -> int:
     """
     Helper function to return attribute size in bytes.
@@ -136,170 +86,17 @@ def attsiz(att: str) -> int:
     return int(att[1:4])
 
 
-def itow2utc(itow: int) -> datetime.time:
+def atttyp(att: str) -> str:
     """
-    Convert GPS Time Of Week to UTC time
+    Helper function to return attribute type as string.
 
-    :param int itow: GPS Time Of Week in milliseconds
-    :return: UTC time hh.mm.ss
-    :rtype: datetime.time
-
-    """
-
-    utc = EPOCH0 + timedelta(seconds=(itow / 1000) - LEAPOFFSET)
-    return utc.time()
-
-
-def utc2itow(utc: datetime) -> tuple:
-    """
-    Convert UTC datetime to GPS Week Number, Time Of Week
-
-    :param datetime utc: datetime
-    :return: GPS Week Number, Time of Week in milliseconds
-    :rtype: tuple
-
-    """
-
-    wno = int((utc - EPOCH0).total_seconds() / SIW)
-    sow = EPOCH0 + timedelta(seconds=wno * SIW)
-    itow = int(((utc - sow).total_seconds() + LEAPOFFSET) * 1000)
-    return wno, itow
-
-
-def gpsfix2str(fix: int) -> str:
-    """
-    Convert GPS fix integer to descriptive string.
-
-    :param int fix: GPS fix type (0-5)
-    :return: GPS fix type as string
+    :param str: attribute type e.g. 'U002'
+    :return: type of attribute as string e.g. 'U'
     :rtype: str
 
     """
 
-    try:
-        return FIXTYPE[fix]
-    except KeyError:
-        return str(fix)
-
-
-def dop2str(dop: float) -> str:
-    """
-    Convert Dilution of Precision float to descriptive string.
-
-    :param float dop: dilution of precision as float
-    :return: dilution of precision as string
-    :rtype: str
-
-    """
-
-    if dop == 0:
-        dops = "N/A"
-    elif dop <= 1:
-        dops = "Ideal"
-    elif dop <= 2:
-        dops = "Excellent"
-    elif dop <= 5:
-        dops = "Good"
-    elif dop <= 10:
-        dops = "Moderate"
-    elif dop <= 20:
-        dops = "Fair"
-    else:
-        dops = "Poor"
-    return dops
-
-
-def gnss2str(gnss_id: int) -> str:
-    """
-    Convert GNSS ID to descriptive string
-    ('GPS', 'GLONASS', etc.).
-
-    :param int gnss_id: GNSS identifier as integer (0-6)
-    :return: GNSS identifier as string
-    :rtype: str
-
-    """
-
-    try:
-        return GNSSLIST[gnss_id]
-    except KeyError:
-        return str(gnss_id)
-
-
-def key_from_val(dictionary: dict, value) -> str:
-    """
-    Helper method - get dictionary key corresponding to (unique) value.
-
-    :param dict dictionary: dictionary
-    :param object value: unique dictionary value
-    :return: dictionary key
-    :rtype: str
-    :raises: KeyError: if no key found for value
-
-    """
-
-    val = None
-    for key, val in dictionary.items():
-        if val == value:
-            return key
-    raise KeyError(f"No key found for value {value}")
-
-
-def get_bits(bitfield: bytes, bitmask: int) -> int:
-    """
-    Get integer value of specified (masked) bit(s) in a UBX bitfield (attribute type 'X')
-
-    e.g. to get value of bits 6,7 in bitfield b'\\\\x89' (binary 0b10001001)::
-
-        get_bits(b'\\x89', 0b11000000) = get_bits(b'\\x89', 192) = 2
-
-    :param bytes bitfield: bitfield byte(s)
-    :param int bitmask: bitmask as integer (= Σ(2**n), where n is the number of the bit)
-    :return: value of masked bit(s)
-    :rtype: int
-    """
-
-    i = 0
-    val = int(bitfield.hex(), 16)
-    while bitmask & 1 == 0:
-        bitmask = bitmask >> 1
-        i += 1
-    return val >> i & bitmask
-
-
-def val2bytes(val, att: str) -> bytes:
-    """
-    Convert value to bytes for given UBX attribute type.
-
-    :param object val: attribute value e.g. 25
-    :param str att: attribute type e.g. 'U004'
-    :return: attribute value as bytes
-    :rtype: bytes
-    :raises: UBXTypeError
-
-    """
-
-    try:
-        if not isinstance(val, ATTTYPE[atttyp(att)]):
-            raise TypeError(
-                f"Attribute type {att} value {val} must be {ATTTYPE[atttyp(att)]}, not {type(val)}"
-            )
-    except KeyError as err:
-        raise ube.UBXTypeError(f"Unknown attribute type {att}") from err
-
-    if atttyp(att) == "X":  # byte
-        valb = val
-    elif atttyp(att) == "C":  # char
-        valb = val.encode("utf-8", "backslashreplace") if isinstance(val, str) else val
-    elif atttyp(att) in ("E", "I", "L", "U"):  # integer
-        valb = val.to_bytes(attsiz(att), byteorder="little", signed=atttyp(att) == "I")
-    elif atttyp(att) == "R":  # floating point
-        valb = struct.pack("<f" if attsiz(att) == 4 else "<d", float(val))
-    elif atttyp(att) == "A":  # array of unsigned integers
-        valb = b""
-        for i in range(attsiz(att)):
-            valb += val[i].to_bytes(1, byteorder="little", signed=False)
-    return valb
+    return att[0:1]
 
 
 def bytes2val(valb: bytes, att: str) -> object:
@@ -331,30 +128,290 @@ def bytes2val(valb: bytes, att: str) -> object:
     return val
 
 
-def nomval(att: str) -> object:
+def calc_checksum(content: bytes) -> bytes:
     """
-    Get nominal value for given UBX attribute type.
+    Calculate checksum using 8-bit Fletcher's algorithm.
 
-    :param str att: attribute type e.g. 'U004'
-    :return: attribute value as int, float, str or bytes
-    :rtype: object
-    :raises: UBXTypeError
+    :param bytes content: message content, excluding header and checksum bytes
+    :return: checksum
+    :rtype: bytes
 
     """
 
-    if att == "CH":
-        val = ""
-    elif atttyp(att) in ("X", "C"):
-        val = b"\x00" * attsiz(att)
-    elif atttyp(att) == "R":
-        val = 0.0
-    elif atttyp(att) in ("E", "I", "L", "U"):
-        val = 0
-    elif atttyp(att) == "A":  # array of unsigned integers
-        val = [0] * attsiz(att)
+    check_a = 0
+    check_b = 0
+
+    for char in content:
+        check_a += char
+        check_a &= 0xFF
+        check_b += check_a
+        check_b &= 0xFF
+
+    return bytes((check_a, check_b))
+
+
+def cel2cart(elevation: float, azimuth: float) -> tuple:
+    """
+    Convert celestial coordinates (degrees) to Cartesian coordinates.
+
+    :param float elevation: elevation
+    :param float azimuth: azimuth
+    :return: cartesian x,y coordinates
+    :rtype: tuple
+    """
+
+    if not (isinstance(elevation, (float, int)) and isinstance(azimuth, (float, int))):
+        return (0, 0)
+    ele, azi = [c * pi / 180 for c in (elevation, azimuth)]
+    x = cos(azi) * cos(ele)
+    y = sin(azi) * cos(ele)
+    return (x, y)
+
+
+def cfgkey2name(keyid: int) -> tuple:
+    """
+    Return key name and data type for given
+    configuration database hexadecimal key.
+
+    :param int keyID: config key as integer e.g. 0x20930001
+    :return: tuple of (keyname, type)
+    :rtype: tuple: (str, str)
+    :raises: UBXMessageError
+
+    """
+
+    try:
+        val = None
+        for key, val in ubcdb.UBX_CONFIG_DATABASE.items():
+            (kid, typ) = val
+            if keyid == kid:
+                return (key, typ)
+
+        # undocumented configuration database key
+        # type is derived from keyID
+        key = f"CFG_{hex(keyid)}"
+        typ = f"X{ubcdb.UBX_CONFIG_STORSIZE[int(hex(keyid)[2:3])]:03d}"
+        return (key, typ)
+
+    except KeyError as err:
+        raise ube.UBXMessageError(
+            f"Invalid configuration database key {hex(keyid)}"
+        ) from err
+
+
+def cfgname2key(name: str) -> tuple:
+    """
+    Return hexadecimal key and data type for given
+    configuration database key name.
+
+    :param str name: config key as string e.g. "CFG_NMEA_PROTVER"
+    :return: tuple of (key, type)
+    :rtype: tuple: (int, str)
+    :raises: UBXMessageError
+
+    """
+    try:
+        return ubcdb.UBX_CONFIG_DATABASE[name]
+    except KeyError as err:
+        raise ube.UBXMessageError(
+            f"Undefined configuration database key {name}"
+        ) from err
+
+
+def dop2str(dop: float) -> str:
+    """
+    Convert Dilution of Precision float to descriptive string.
+
+    :param float dop: dilution of precision as float
+    :return: dilution of precision as string
+    :rtype: str
+
+    """
+
+    if dop == 0:
+        dops = "N/A"
+    elif dop <= 1:
+        dops = "Ideal"
+    elif dop <= 2:
+        dops = "Excellent"
+    elif dop <= 5:
+        dops = "Good"
+    elif dop <= 10:
+        dops = "Moderate"
+    elif dop <= 20:
+        dops = "Fair"
     else:
-        raise ube.UBXTypeError(f"Unknown attribute type {att}")
-    return val
+        dops = "Poor"
+    return dops
+
+
+def escapeall(val: bytes) -> str:
+    """
+    Escape all byte characters e.g. b'\\\\x73' rather than b`s`
+
+    :param bytes val: bytes
+    :return: string of escaped bytes
+    :rtype: str
+    """
+
+    return "b'{}'".format("".join(f"\\x{b:02x}" for b in val))
+
+
+def get_bits(bitfield: bytes, bitmask: int) -> int:
+    """
+    Get integer value of specified (masked) bit(s) in a UBX bitfield (attribute type 'X')
+
+    e.g. to get value of bits 6,7 in bitfield b'\\\\x89' (binary 0b10001001)::
+
+        get_bits(b'\\x89', 0b11000000) = get_bits(b'\\x89', 192) = 2
+
+    :param bytes bitfield: bitfield byte(s)
+    :param int bitmask: bitmask as integer (= Σ(2**n), where n is the number of the bit)
+    :return: value of masked bit(s)
+    :rtype: int
+    """
+
+    i = 0
+    val = int(bitfield.hex(), 16)
+    while bitmask & 1 == 0:
+        bitmask = bitmask >> 1
+        i += 1
+    return val >> i & bitmask
+
+
+def getinputmode(data: bytes) -> int:
+    """
+    Return input message mode (SET or POLL).
+
+    :param bytes data: raw UBX input message
+    :return: message mode (1 = SET, 2 = POLL)
+    :rtype: int
+    """
+
+    if (
+        len(data) == 8
+        or data[2:4] == b"\x06\x8b"  # CFG-VALGET
+        or (
+            data[2:4]
+            in (
+                b"\x06\x01",
+                b"\x06\x02",
+                b"\x06\x03",
+                b"\x06\x31",
+            )  # CFG-INF, CFG-MSG, CFG-PRT, CFG-TP5
+            and len(data) <= 10
+        )
+    ):
+        return POLL
+    return SET
+
+
+def gnss2str(gnss_id: int) -> str:
+    """
+    Convert GNSS ID to descriptive string
+    ('GPS', 'GLONASS', etc.).
+
+    :param int gnss_id: GNSS identifier as integer (0-6)
+    :return: GNSS identifier as string
+    :rtype: str
+
+    """
+
+    try:
+        return GNSSLIST[gnss_id]
+    except KeyError:
+        return str(gnss_id)
+
+
+def gpsfix2str(fix: int) -> str:
+    """
+    Convert GPS fix integer to descriptive string.
+
+    :param int fix: GPS fix type (0-5)
+    :return: GPS fix type as string
+    :rtype: str
+
+    """
+
+    try:
+        return FIXTYPE[fix]
+    except KeyError:
+        return str(fix)
+
+
+def hextable(raw: bytes, cols: int = 8) -> str:
+    """
+    Formats raw (binary) message in tabular hexadecimal format e.g.
+
+    000: 2447 4e47 5341 2c41 2c33 2c33 342c 3233 | b'$GNGSA,A,3,34,23' |
+
+    :param bytes raw: raw (binary) data
+    :param int cols: number of columns in hex table (8)
+    :return: table of hex data
+    :rtype: str
+    """
+
+    hextbl = ""
+    colw = cols * 4
+    rawh = raw.hex()
+    for i in range(0, len(rawh), colw):
+        rawl = rawh[i : i + colw].ljust(colw, " ")
+        hextbl += f"{int(i/2):03}: "
+        for col in range(0, colw, 4):
+            hextbl += f"{rawl[col : col + 4]} "
+        bfh = str(bytes.fromhex(rawl))
+        hextbl += f" | {bfh:<67} |\n"
+
+    return hextbl
+
+
+def isvalid_checksum(message: bytes) -> bool:
+    """
+    Validate message checksum.
+
+    :param bytes message: message including header and checksum bytes
+    :return: checksum valid flag
+    :rtype: bool
+
+    """
+
+    lenm = len(message)
+    ckm = message[lenm - 2 : lenm]
+    return ckm == calc_checksum(message[2 : lenm - 2])
+
+
+def itow2utc(itow: int, leaps: int = LEAPOFFSET) -> datetime.time:
+    """
+    Convert GPS Time Of Week to UTC time
+
+    :param int itow: GPS Time Of Week in milliseconds
+    :param int leaps: leapsecond offset
+    :return: UTC time hh.mm.ss
+    :rtype: datetime.time
+
+    """
+
+    utc = EPOCH0 + timedelta(seconds=(itow / 1000) - leaps)
+    return utc.time()
+
+
+def key_from_val(dictionary: dict, value) -> str:
+    """
+    Helper method - get dictionary key corresponding to (unique) value.
+
+    :param dict dictionary: dictionary
+    :param object value: unique dictionary value
+    :return: dictionary key
+    :rtype: str
+    :raises: KeyError: if no key found for value
+
+    """
+
+    val = None
+    for key, val in dictionary.items():
+        if val == value:
+            return key
+    raise KeyError(f"No key found for value {value}")
 
 
 def msgclass2bytes(msgclass: int, msgid: int) -> bytes:
@@ -394,175 +451,30 @@ def msgstr2bytes(msgclass: str, msgid: str) -> bytes:
         ) from err
 
 
-def cfgname2key(name: str) -> tuple:
+def nomval(att: str) -> object:
     """
-    Return hexadecimal key and data type for given
-    configuration database key name.
+    Get nominal value for given UBX attribute type.
 
-    :param str name: config key as string e.g. "CFG_NMEA_PROTVER"
-    :return: tuple of (key, type)
-    :rtype: tuple: (int, str)
-    :raises: UBXMessageError
-
-    """
-    try:
-        return ubcdb.UBX_CONFIG_DATABASE[name]
-    except KeyError as err:
-        raise ube.UBXMessageError(
-            f"Undefined configuration database key {name}"
-        ) from err
-
-
-def cfgkey2name(keyid: int) -> tuple:
-    """
-    Return key name and data type for given
-    configuration database hexadecimal key.
-
-    :param int keyID: config key as integer e.g. 0x20930001
-    :return: tuple of (keyname, type)
-    :rtype: tuple: (str, str)
-    :raises: UBXMessageError
+    :param str att: attribute type e.g. 'U004'
+    :return: attribute value as int, float, str or bytes
+    :rtype: object
+    :raises: UBXTypeError
 
     """
 
-    try:
-        val = None
-        for key, val in ubcdb.UBX_CONFIG_DATABASE.items():
-            (kid, typ) = val
-            if keyid == kid:
-                return (key, typ)
-
-        # undocumented configuration database key
-        # type is derived from keyID
-        key = f"CFG_{hex(keyid)}"
-        typ = f"X{ubcdb.UBX_CONFIG_STORSIZE[int(hex(keyid)[2:3])]:03d}"
-        return (key, typ)
-
-    except KeyError as err:
-        raise ube.UBXMessageError(
-            f"Invalid configuration database key {hex(keyid)}"
-        ) from err
-
-
-def protocol(raw: bytes) -> int:
-    """
-    Gets protocol of raw message.
-
-    :param bytes raw: raw (binary) message
-    :return: protocol type (1 = NMEA, 2 = UBX, 4 = RTCM3, 0 = unknown)
-    :rtype: int
-    """
-
-    p = raw[0:2]
-    if p == UBX_HDR:
-        return UBX_PROTOCOL
-    if p in NMEA_HDR:
-        return NMEA_PROTOCOL
-    if p[0] == 0xD3 and (p[1] & ~0x03) == 0:
-        return RTCM3_PROTOCOL
-    return 0
-
-
-def hextable(raw: bytes, cols: int = 8) -> str:
-    """
-    Formats raw (binary) message in tabular hexadecimal format e.g.
-
-    000: 2447 4e47 5341 2c41 2c33 2c33 342c 3233 | b'$GNGSA,A,3,34,23' |
-
-    :param bytes raw: raw (binary) data
-    :param int cols: number of columns in hex table (8)
-    :return: table of hex data
-    :rtype: str
-    """
-
-    hextbl = ""
-    colw = cols * 4
-    rawh = raw.hex()
-    for i in range(0, len(rawh), colw):
-        rawl = rawh[i : i + colw].ljust(colw, " ")
-        hextbl += f"{int(i/2):03}: "
-        for col in range(0, colw, 4):
-            hextbl += f"{rawl[col : col + 4]} "
-        hextbl += f" | {bytes.fromhex(rawl)} |\n"
-
-    return hextbl
-
-
-def cel2cart(elevation: float, azimuth: float) -> tuple:
-    """
-    Convert celestial coordinates (degrees) to Cartesian coordinates.
-
-    :param float elevation: elevation
-    :param float azimuth: azimuth
-    :return: cartesian x,y coordinates
-    :rtype: tuple
-    """
-
-    if not (isinstance(elevation, (float, int)) and isinstance(azimuth, (float, int))):
-        return (0, 0)
-    ele, azi = [c * pi / 180 for c in (elevation, azimuth)]
-    x = cos(azi) * cos(ele)
-    y = sin(azi) * cos(ele)
-    return (x, y)
-
-
-def escapeall(val: bytes) -> str:
-    """
-    Escape all byte characters e.g. b'\\\\x73' rather than b`s`
-
-    :param bytes val: bytes
-    :return: string of escaped bytes
-    :rtype: str
-    """
-
-    return "b'{}'".format("".join(f"\\x{b:02x}" for b in val))
-
-
-def val2sphp(val: float, scale: float = 1e-7) -> tuple:
-    """
-    Convert a float value into separate standard and high precisions components,
-    multiplied by a scaling factor to render them as integers, as required by some
-    CFG and NAV messages.
-
-    e.g. 48.123456789 becomes (481234567, 89)
-
-    :param float val: value as float
-    :param float scale: scaling factor e.g. 1e-7
-    :return: tuple of (standard precision, high precision)
-    :rtype: tuple
-    """
-
-    val = val / scale
-    val_sp = trunc(val)
-    val_hp = round((val - val_sp) * 100)
-    return val_sp, val_hp
-
-
-def getinputmode(data: bytes) -> int:
-    """
-    Return input message mode (SET or POLL).
-
-    :param bytes data: raw UBX input message
-    :return: message mode (1 = SET, 2 = POLL)
-    :rtype: int
-    """
-
-    if (
-        len(data) == 8
-        or data[2:4] == b"\x06\x8b"  # CFG-VALGET
-        or (
-            data[2:4]
-            in (
-                b"\x06\x01",
-                b"\x06\x02",
-                b"\x06\x03",
-                b"\x06\x31",
-            )  # CFG-INF, CFG-MSG, CFG-PRT, CFG-TP5
-            and len(data) <= 10
-        )
-    ):
-        return POLL
-    return SET
+    if att == "CH":
+        val = ""
+    elif atttyp(att) in ("X", "C"):
+        val = b"\x00" * attsiz(att)
+    elif atttyp(att) == "R":
+        val = 0.0
+    elif atttyp(att) in ("E", "I", "L", "U"):
+        val = 0
+    elif atttyp(att) == "A":  # array of unsigned integers
+        val = [0] * attsiz(att)
+    else:
+        raise ube.UBXTypeError(f"Unknown attribute type {att}")
+    return val
 
 
 def process_monver(msg: object) -> dict:
@@ -623,17 +535,75 @@ def process_monver(msg: object) -> dict:
     return verdata
 
 
-def val2twoscomp(val: int, att: str) -> int:
+def protocol(raw: bytes) -> int:
     """
-    Convert signed integer to two's complement binary representation.
+    Gets protocol of raw message.
 
-    :param int val: value
-    :param str att: attribute type e.g. "U024"
-    :return: two's complement representation of value
+    :param bytes raw: raw (binary) message
+    :return: protocol type (1 = NMEA, 2 = UBX, 4 = RTCM3, 0 = unknown)
     :rtype: int
     """
 
-    return val & pow(2, attsiz(att)) - 1
+    p = raw[0:2]
+    if p == UBX_HDR:
+        return UBX_PROTOCOL
+    if p in NMEA_HDR:
+        return NMEA_PROTOCOL
+    if p[0] == 0xD3 and (p[1] & ~0x03) == 0:
+        return RTCM3_PROTOCOL
+    return 0
+
+
+def utc2itow(utc: datetime, leaps: int = LEAPOFFSET) -> tuple:
+    """
+    Convert UTC datetime to GPS Week Number, Time Of Week
+
+    :param datetime utc: datetime
+    :param int leaps: leapsecond offset
+    :return: GPS Week Number, Time of Week in milliseconds
+    :rtype: tuple
+
+    """
+
+    wno = int((utc - EPOCH0).total_seconds() / SIW)
+    sow = EPOCH0 + timedelta(seconds=wno * SIW)
+    itow = int(((utc - sow).total_seconds() + leaps) * 1000)
+    return wno, itow
+
+
+def val2bytes(val, att: str) -> bytes:
+    """
+    Convert value to bytes for given UBX attribute type.
+
+    :param object val: attribute value e.g. 25
+    :param str att: attribute type e.g. 'U004'
+    :return: attribute value as bytes
+    :rtype: bytes
+    :raises: UBXTypeError
+
+    """
+
+    try:
+        if not isinstance(val, ATTTYPE[atttyp(att)]):
+            raise TypeError(
+                f"Attribute type {att} value {val} must be {ATTTYPE[atttyp(att)]}, not {type(val)}"
+            )
+    except KeyError as err:
+        raise ube.UBXTypeError(f"Unknown attribute type {att}") from err
+
+    if atttyp(att) == "X":  # byte
+        valb = val
+    elif atttyp(att) == "C":  # char
+        valb = val.encode("utf-8", "backslashreplace") if isinstance(val, str) else val
+    elif atttyp(att) in ("E", "I", "L", "U"):  # integer
+        valb = val.to_bytes(attsiz(att), byteorder="little", signed=atttyp(att) == "I")
+    elif atttyp(att) == "R":  # floating point
+        valb = struct.pack("<f" if attsiz(att) == 4 else "<d", float(val))
+    elif atttyp(att) == "A":  # array of unsigned integers
+        valb = b""
+        for i in range(attsiz(att)):
+            valb += val[i].to_bytes(1, byteorder="little", signed=False)
+    return valb
 
 
 def val2signmag(val: int, att: str) -> int:
@@ -649,3 +619,36 @@ def val2signmag(val: int, att: str) -> int:
     """
 
     return (abs(val) & pow(2, attsiz(att)) - 1) | ((1 if val < 0 else 0) << attsiz(att))
+
+
+def val2sphp(val: float, scale: float = 1e-7) -> tuple:
+    """
+    Convert a float value into separate standard and high precisions components,
+    multiplied by a scaling factor to render them as integers, as required by some
+    CFG and NAV messages.
+
+    e.g. 48.123456789 becomes (481234567, 89)
+
+    :param float val: value as float
+    :param float scale: scaling factor e.g. 1e-7
+    :return: tuple of (standard precision, high precision)
+    :rtype: tuple
+    """
+
+    val = val / scale
+    val_sp = trunc(val)
+    val_hp = round((val - val_sp) * 100)
+    return val_sp, val_hp
+
+
+def val2twoscomp(val: int, att: str) -> int:
+    """
+    Convert signed integer to two's complement binary representation.
+
+    :param int val: value
+    :param str att: attribute type e.g. "U024"
+    :return: two's complement representation of value
+    :rtype: int
+    """
+
+    return val & pow(2, attsiz(att)) - 1
