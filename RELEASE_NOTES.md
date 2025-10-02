@@ -2,6 +2,7 @@
 
 ### RELEASE 1.2.58
 
+1. Minimum pynmeagps version updated to 1.0.54 - incorporates additional support for proprietary Quectel NMEA sentences.
 1. Minor updates to `itow2utc()` helper methods to add leapsecond offset parameter (defaults to 18, valid from 2017).
 
 ### RELEASE 1.2.57
