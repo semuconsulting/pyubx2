@@ -6,7 +6,7 @@ If you're intending to make significant changes, please raise them in the [Discu
 
 Being one of our contributors, you agree and confirm that:
 
-* The work is all your own.
+* The work is all your own. For the avoidance of doubt, this means **no AI coding agents such as Copilot**.
 * Your work will be distributed under a BSD 3-Clause License once your pull request is merged.
 * You submitted work fulfils or mostly fulfils our coding conventions, styles and standards.
 
@@ -17,29 +17,21 @@ If you're adding or amending UBX payload definitions or configuration database k
 ## Coding conventions
 
 * This is open source software. Code should be as simple and transparent as possible. Favour clarity over brevity.
-* The code should be compatible with Python >= 3.9.
+* The code should be compatible with Python >= 3.10.
 * The core code should be as generic and reusable as possible. We endeavour to limit the amount of processing dedicated to specific UBX message types, though this is sometimes unavoidable.
 * Avoid external library dependencies unless there's a compelling reason not to.
 * We use and recommend [Visual Studio Code](https://code.visualstudio.com/) with the [Python Extension](https://marketplace.visualstudio.com/items?itemName=ms-python.python) for development and testing.
 * Code should be documented in accordance with [Sphinx](https://www.sphinx-doc.org/en/master/) docstring conventions.
-* Code should formatted using [black](https://pypi.org/project/black/) (>= 24.4).
-* We use and recommend [pylint](https://pypi.org/project/pylint/) (>=3.0.1) for code analysis.
-* We use and recommend [bandit](https://pypi.org/project/bandit/) (>=1.7.5) for security vulnerability analysis.
+* Code should formatted using [black](https://pypi.org/project/black/).
+* We use and recommend [pylint](https://pypi.org/project/pylint/) for code analysis.
+* We use and recommend [bandit](https://pypi.org/project/bandit/) for security vulnerability analysis.
 * Commits must be [signed](https://docs.github.com/en/authentication/managing-commit-signature-verification/signing-commits).
 
 ## Testing
 
-While we endeavour to test on as wide a variety of u-blox devices as possible, as a volunteer project we only have a limited number of devices available. We particularly welcome testing contributions relating to specialised devices (e.g. high precision HP, real-time kinematics RTK, automotive dead-reckoning ADR, etc.).
-
 We use python's native unittest framework for local unit testing, complemented by the GitHub Actions automated build and testing workflow. We endeavour to have >99% code coverage.
 
 Please write unitttest examples for new code you create and add them to the `/tests` folder following the naming convention `test_*.py`.
-
-We test on the following platforms using a variety of u-blox devices from Generation 7 throught Generation 10:
-* Windows 11
-* MacOS (Intel & Apple Silicon)
-* Linux (Ubuntu 22.04 LTS Jammy Jellyfish, 24.04 LTS Noble Numbat)
-* Raspberry Pi OS (32-bit & 64-bit)
 
 ## Submitting changes
 
