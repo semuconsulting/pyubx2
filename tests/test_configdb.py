@@ -4,14 +4,14 @@ Sanity check of configdb key definitions
 Does a simple comparison between the active ubxtypes_configdb key definitions and a
 baselined copy to check for inadvertant corruption.
 
-Created on 19 Apr 2021 
+Created on 19 Apr 2021
 
 @author: semuadmin
 """
 
 import unittest
 
-from pyubx2 import UBXMessage, SET, POLL, SET_LAYER_FLASH, TXN_NONE
+from pyubx2 import UBXMessage, SET, POLL, SET_LAYER_FLASH, TXN_NONE, SET_LAYER_BBR
 from pyubx2.ubxtypes_configdb import UBX_CONFIG_DATABASE
 from tests.configdb_baseline import UBX_CONFIG_DATABASE_BASELINE
 
@@ -72,6 +72,27 @@ class ConfigTest(unittest.TestCase):
         )
         # print(msg)
         self.assertEqual(str(msg), EXPECTED_RESULT)
+
+    def testHYPHENConfigSet(self):
+        EXPECTED_RESULT1 = "<UBX(CFG-VALSET, version=0, ram=0, bbr=1, flash=0, action=0, reserved0=0, CFG_MSGOUT_UBX_RXM_RAWX_UART1=1, CFG_MSGOUT_UBX_RXM_SFRBX_UART1=1)>"
+        EXPECTED_RESULT2 = "<UBX(CFG-VALGET, version=0, layer=2, position=0, keys_01=546374309, keys_02=546374194)>"
+        EXPECTED_RESULT3 = "<UBX(CFG-VALDEL, version=0, bbr=1, flash=0, action=0, reserved0=0, keys_01=546374309, keys_02=546374194)>"
+        layers = SET_LAYER_BBR  # battery-backed RAM (non-volatile)
+        transaction = TXN_NONE
+        cfgdata = [
+            ("CFG-MSGOUT-UBX_RXM_RAWX_UART1", 1),
+            ("CFG-MSGOUT-UBX_RXM_SFRBX_UART1", 1),
+        ]
+        msg = UBXMessage.config_set(layers, transaction, cfgdata)
+        # print(msg)
+        self.assertEqual(str(msg), EXPECTED_RESULT1)
+        cfgdata = [nam for (nam, val) in cfgdata]
+        msg = UBXMessage.config_poll(layers, transaction, cfgdata)
+        # print(msg)
+        self.assertEqual(str(msg), EXPECTED_RESULT2)
+        msg = UBXMessage.config_del(layers, transaction, cfgdata)
+        # print(msg)
+        self.assertEqual(str(msg), EXPECTED_RESULT3)
 
 
 if __name__ == "__main__":
