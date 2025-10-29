@@ -1,5 +1,11 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.2.59
+
+1. Add additional E6/L6 SIGID decodes.
+1. Update `str()` method to decode sigId where possible e.g. `L1_C/A`, `E1_C`. 
+1. Minor updates to static configuration database methods `config_set`, `config_get` & `config_del` to tolerate hyphens in configuration database key names e.g. “CFG-MSGOUT-UBX_RXM_RAWX_UART1” is treated as "CFG_MSGOUT_UBX_RXM_RAWX_UART1".
+
 ### RELEASE 1.2.58
 
 1. Minimum pynmeagps version updated to 1.0.54 - incorporates additional support for proprietary Quectel NMEA sentences.
