@@ -3346,6 +3346,11 @@ UBX_PAYLOADS_GET = {
             },
         ),
     },
+    # NB: the native 30-bit NAV dwrds are padded to 32-bits in RXM-SFRBX,
+    # BUT the padding treatment is different for L1, L2, L5 and L6 sigIds.
+    # The position of the TLM (telemetry) and HOW (handover) bits in dwrd_01
+    # will depend on sigId.
+    # https://portal.u-blox.com/s/question/0D52p00008HKD1kCAH/why-are-the-sfrbx-messages-words-32-bits-but-in-isgps200h-the-words-are-specified-as-being-30-bits-long
     "RXM-SFRBX": {
         "gnssId": U1,
         "svId": U1,

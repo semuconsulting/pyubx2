@@ -27,7 +27,7 @@ from pyubx2.ubxtypes_core import (
     UBX_HDR,
     UBX_PROTOCOL,
 )
-from pyubx2.ubxtypes_decodes import FIXTYPE, GNSSLIST
+from pyubx2.ubxtypes_decodes import FIXTYPE, GNSSLIST, SIGID
 
 EPOCH0 = datetime(1980, 1, 6)  # EPOCH start date
 LEAPOFFSET = 18  # leap year offset in seconds, valid as from 1/1/2017
@@ -204,12 +204,17 @@ def cfgname2key(name: str) -> tuple:
     Return hexadecimal key and data type for given
     configuration database key name.
 
+    NB: UBX_CONFIG_DATABASE uses underscores in key names,
+    whereas UBX documentation uses a mixture of hyphens
+    and underscores.
+
     :param str name: config key as string e.g. "CFG_NMEA_PROTVER"
     :return: tuple of (key, type)
     :rtype: tuple: (int, str)
     :raises: UBXMessageError
-
     """
+
+    name = name.replace("-", "_")
     try:
         return ubcdb.UBX_CONFIG_DATABASE[name]
     except KeyError as err:
@@ -552,6 +557,23 @@ def protocol(raw: bytes) -> int:
     if p[0] == 0xD3 and (p[1] & ~0x03) == 0:
         return RTCM3_PROTOCOL
     return 0
+
+
+def sigid2str(gnss_id: int, sig_id: int) -> str:
+    """
+    Convert GNSS ID and Signal ID to descriptive string
+    ('GPS L1C/A', etc.).
+
+    :param int gnss_id: GNSS identifier as integer (0-6)
+    :param int sig_id: Signal identifier as integer
+    :return: GNSS identifier as string
+    :rtype: str
+    """
+
+    try:
+        return SIGID[(gnss_id, sig_id)]
+    except KeyError:
+        return str(sig_id)
 
 
 def utc2itow(utc: datetime, leaps: int = LEAPOFFSET) -> tuple:

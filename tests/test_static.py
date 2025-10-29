@@ -38,6 +38,7 @@ from pyubx2.ubxhelpers import (
     msgstr2bytes,
     process_monver,
     protocol,
+    sigid2str,
     utc2itow,
     val2bytes,
     val2sphp,
@@ -199,6 +200,36 @@ class StaticTest(unittest.TestCase):
         for i in range(0, 9):
             res = gnss2str(i)
             self.assertEqual(res, GNSS[i])
+
+    def testsigid2str(self):
+        SIGIDS = [
+            (0, 0),
+            (0, 3),
+            (0, 6),
+            (2, 1),
+            (2, 4),
+            (3, 3),
+            (3, 7),
+            (6, 2),
+            (7, 0),
+            (0, 9),
+        ]
+        EXPECTED_RESULTS = [
+            "L1_C/A",
+            "L2_CL",
+            "L5_I",
+            "E1_B",
+            "E5_aQ",
+            "B2I_D2",
+            "B2_ap",
+            "L2_OF",
+            "L5_A",
+            "9",
+        ]
+        for i, (gnss, sig) in enumerate(SIGIDS):
+            res = sigid2str(gnss, sig)
+            # print(res)
+            self.assertEqual(res, EXPECTED_RESULTS[i])
 
     def testgps2str(self):
         fixs = ["NO FIX", "DR", "2D", "3D", "GPS + DR", "TIME ONLY", "6"]

@@ -27,6 +27,7 @@ from pyubx2.ubxhelpers import (
     msgclass2bytes,
     msgstr2bytes,
     nomval,
+    sigid2str,
     val2bytes,
 )
 from pyubx2.ubxtypes_core import (
@@ -536,6 +537,12 @@ class UBXMessage:
                     val = escapeall(val)
                 if att[0:6] == "gnssId":  # attribute is a GNSS ID
                     val = gnss2str(val)  # get string representation e.g. 'GPS'
+                if att[0:5] == "sigId":  # attribute is a Signal ID
+                    idx = att.split("_", 1)  # check for group index
+                    idxs = f"_{idx[1]}" if len(idx) > 1 else ""
+                    if hasattr(self, f"gnssId{idxs}"):
+                        # get string representation e.g. 'L1_C/A'
+                        val = sigid2str(getattr(self, f"gnssId{idxs}"), val)
                 if att == "iTOW":  # attribute is a GPS Time of Week
                     val = itow2utc(val)  # show time in UTC format
                 # if it's an ACK, we show what it's acknowledging in plain text
