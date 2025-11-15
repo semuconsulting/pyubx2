@@ -401,10 +401,15 @@ serialOut.write(msg3of3.serialize())
 
  - `latlon2dms` - converts decimal lat/lon to degrees, minutes, decimal seconds format e.g. "53°20′45.6″N", "2°32′46.68″W"
  - `latlon2dmm` - converts decimal lat/lon to degrees, decimal minutes format e.g. "53°20.76′N", "2°32.778′W"
+ - `dms2deg` - converts lat/lon in d.m(.s) string format to signed decimal degrees e.g. "51°20′45.6″S" -> -51.346
+ - `llh2iso6709` - converts lat/lon and altitude (hMSL) to ISO6709 format e.g. "+27.5916+086.5640+8850CRSWGS_84/"
  - `ecef2llh` - converts ECEF (X, Y, Z) coordinates to geodetic (lat, lon, ellipsoidal height) coordinates
  - `llh2ecef` - converts geodetic (lat, lon, ellipsoidal height) coordinates to ECEF (X, Y, Z) coordinates
- - `haversine` - finds spherical distance in km between two sets of (lat, lon) coordinates
+ - `haversine` - finds great circle distance in km between two sets of (lat, lon) coordinates
+ - `planar` - finds planar distance in m between two sets of (lat, lon) coordinates
  - `bearing` - finds bearing in degrees between two sets of (lat, lon) coordinates
+ - `area` - finds spherical area bounded by two sets of (lat, lon) coordinates
+ - `leapsecond` - find GPS UTC leapsecond offset for a given effective date
  - `cel2cart` - converts celestial coordinates (elevation, azimuth) to cartesian coordinations (X,Y)
 
 See [Sphinx documentation](https://www.semuconsulting.com/pyubx2/pyubx2.html#module-pyubx2.ubxhelpers) for details.
