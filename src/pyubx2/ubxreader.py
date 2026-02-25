@@ -21,11 +21,20 @@ Created on 2 Oct 2020
 
 from logging import getLogger
 from socket import socket
+from types import FunctionType, NoneType
+from typing import Literal
 
 import pynmeagps.exceptions as nme
 import pyrtcm.exceptions as rte
-from pynmeagps import NMEA_HDR, NMEAReader, SocketWrapper
-from pyrtcm import RTCMReader
+from pynmeagps import (
+    DEFAULT_BUFSIZE,
+    ENCODE_NONE,
+    NMEA_HDR,
+    NMEAMessage,
+    NMEAReader,
+    SocketWrapper,
+)
+from pyrtcm import RTCMMessage, RTCMReader
 
 from pyubx2.exceptions import (
     UBXMessageError,
@@ -59,37 +68,41 @@ class UBXReader:
     def __init__(
         self,
         datastream,
-        msgmode: int = GET,
+        msgmode: Literal[0, 1, 2] = GET,
         validate: int = VALCKSUM,
         protfilter: int = NMEA_PROTOCOL | UBX_PROTOCOL | RTCM3_PROTOCOL,
-        quitonerror: int = ERR_LOG,
-        parsebitfield: bool = True,
-        labelmsm: int = 1,
-        bufsize: int = 4096,
+        quitonerror: Literal[0, 1, 2] = ERR_LOG,
+        parsebitfield: Literal[0, 1, 2] = 1,
+        labelmsm: Literal[1, 2] = 1,
+        bufsize: int = DEFAULT_BUFSIZE,
         parsing: bool = True,
-        errorhandler: object = None,
+        errorhandler: FunctionType | NoneType = None,
+        encoding: int = ENCODE_NONE,
     ):
         """Constructor.
 
         :param datastream stream: input data stream
-        :param int msgmode: 0=GET, 1=SET, 2=POLL, 3=SETPOLL (0)
+        :param Literal[0,1,2] msgmode: 0=GET, 1=SET, 2=POLL, 3=SETPOLL (0)
         :param int validate: VALCKSUM (1) = Validate checksum,
             VALNONE (0) = ignore invalid checksum (1)
         :param int protfilter: NMEA_PROTOCOL (1), UBX_PROTOCOL (2), RTCM3_PROTOCOL (4),
             Can be OR'd (7)
-        :param int quitonerror: ERR_IGNORE (0) = ignore errors,  ERR_LOG (1) = log continue,
-            ERR_RAISE (2) = (re)raise (1)
-        :param bool parsebitfield: 1 = parse bitfields, 0 = leave as bytes (1)
-        :param int labelmsm: RTCM3 MSM label type 1 = RINEX, 2 = BAND (1)
+        :param Literal[0,1,2] quitonerror: ERR_IGNORE (0) = ignore errors,  
+            ERR_LOG (1) = log continue, ERR_RAISE (2) = (re)raise (1)
+        :param Literal[0,1,2] parsebitfield: 0 = parse bitfield as bytes, 1 = parse as \
+            individual bits, 2 = parse as bytes and bits (1)
+        :param Literal[1,2] labelmsm: RTCM3 MSM label type 1 = RINEX, 2 = BAND (1)
         :param int bufsize: socket recv buffer size (4096)
         :param bool parsing: True = parse data, False = don't parse data (output raw only) (True)
-        :param object errorhandler: error handling object or function (None)
+        :param FunctionType | NoneType errorhandler: error handling object or function (None)
+        :param int encoding: encoding for socket stream \
+            (0 = none, 1 = chunk, 2 = gzip, 4 = compress, 8 = deflate (can be OR'd)) (0)
         :raises: UBXStreamError (if mode is invalid)
         """
         # pylint: disable=too-many-arguments
 
         if isinstance(datastream, socket):
-            self._stream = SocketWrapper(datastream, bufsize=bufsize)
+            self._stream = SocketWrapper(datastream, encoding=encoding, bufsize=bufsize)
         else:
             self._stream = datastream
         self._protfilter = protfilter
@@ -112,22 +125,27 @@ class UBXReader:
 
         return self
 
-    def __next__(self) -> tuple:
+    def __next__(
+        self,
+    ) -> tuple[bytes | NoneType, UBXMessage | NMEAMessage | RTCMMessage | NoneType]:
         """
         Return next item in iteration.
 
-        :return: tuple of (raw_data as bytes, parsed_data as UBXMessage)
-        :rtype: tuple
+        :return: tuple of (raw_data as bytes, parsed_data as UBXMessage,
+            NMEAMessage or RTCMMessage)
+        :rtype: tuple[bytes | NoneType, UBXMessage | NMEAMessage | RTCMMessage | NoneType]
         :raises: StopIteration
 
         """
 
-        (raw_data, parsed_data) = self.read()
+        raw_data, parsed_data = self.read()
         if raw_data is None and parsed_data is None:
             raise StopIteration
         return (raw_data, parsed_data)
 
-    def read(self) -> tuple:
+    def read(
+        self,
+    ) -> tuple[bytes | NoneType, UBXMessage | NMEAMessage | RTCMMessage | NoneType]:
         """
         Read a single NMEA, UBX or RTCM3 message from the stream buffer
         and return both raw and parsed data.
@@ -135,11 +153,14 @@ class UBXReader:
         'protfilter' determines which protocols are parsed.
         'quitonerror' determines whether to raise, log or ignore parsing errors.
 
-        :return: tuple of (raw_data as bytes, parsed_data as UBXMessage, NMEAMessage or RTCMMessage)
-        :rtype: tuple
+        :return: tuple of (raw_data as bytes, parsed_data as UBXMessage,
+            NMEAMessage or RTCMMessage)
+        :rtype: tuple[bytes | NoneType, UBXMessage | NMEAMessage | RTCMMessage | NoneType]
         :raises: Exception (if invalid or unrecognised protocol in data stream)
         """
 
+        raw_data = None
+        parsed_data = None
         parsing = True
         while parsing:  # loop until end of valid message or EOF
             try:
@@ -154,7 +175,7 @@ class UBXReader:
                 bytehdr = byte1 + byte2
                 # if it's a UBX message (b'\xb5\x62')
                 if bytehdr == UBX_HDR:
-                    (raw_data, parsed_data) = self._parse_ubx(bytehdr)
+                    raw_data, parsed_data = self._parse_ubx(bytehdr)
                     # if protocol filter passes UBX, return message,
                     # otherwise discard and continue
                     if self._protfilter & UBX_PROTOCOL:
@@ -163,7 +184,7 @@ class UBXReader:
                         continue
                 # if it's an NMEA message (b'\x24\x..)
                 elif bytehdr in NMEA_HDR:
-                    (raw_data, parsed_data) = self._parse_nmea(bytehdr)
+                    raw_data, parsed_data = self._parse_nmea(bytehdr)
                     # if protocol filter passes NMEA, return message,
                     # otherwise discard and continue
                     if self._protfilter & NMEA_PROTOCOL:
@@ -173,7 +194,7 @@ class UBXReader:
                 # if it's a RTCM3 message
                 # (byte1 = 0xd3; byte2 = 0b000000**)
                 elif byte1 == b"\xd3" and (byte2[0] & ~0x03) == 0:
-                    (raw_data, parsed_data) = self._parse_rtcm3(bytehdr)
+                    raw_data, parsed_data = self._parse_rtcm3(bytehdr)
                     # if protocol filter passes RTCM, return message,
                     # otherwise discard and continue
                     if self._protfilter & RTCM3_PROTOCOL:
@@ -206,13 +227,13 @@ class UBXReader:
 
         return (raw_data, parsed_data)
 
-    def _parse_ubx(self, hdr: bytes) -> tuple:
+    def _parse_ubx(self, hdr: bytes) -> tuple[bytes | NoneType, UBXMessage | NoneType]:
         """
         Parse remainder of UBX message.
 
         :param bytes hdr: UBX header (b'\\xb5\\x62')
         :return: tuple of (raw_data as bytes, parsed_data as UBXMessage or None)
-        :rtype: tuple
+        :rtype: tuple[bytes | NoneType, UBXMessage | NoneType]
         """
 
         # read the rest of the UBX message from the buffer
@@ -237,13 +258,15 @@ class UBXReader:
             parsed_data = None
         return (raw_data, parsed_data)
 
-    def _parse_nmea(self, hdr: bytes) -> tuple:
+    def _parse_nmea(
+        self, hdr: bytes
+    ) -> tuple[bytes | NoneType, NMEAMessage | NoneType]:
         """
         Parse remainder of NMEA message (using pynmeagps library).
 
         :param bytes hdr: NMEA header (b'\\x24\\x..')
         :return: tuple of (raw_data as bytes, parsed_data as NMEAMessage or None)
-        :rtype: tuple
+        :rtype: tuple[bytes | NoneType, NMEAMessage | NoneType]
         """
 
         # read the rest of the NMEA message from the buffer
@@ -261,13 +284,15 @@ class UBXReader:
             parsed_data = None
         return (raw_data, parsed_data)
 
-    def _parse_rtcm3(self, hdr: bytes) -> tuple:
+    def _parse_rtcm3(
+        self, hdr: bytes
+    ) -> tuple[bytes | NoneType, RTCMMessage | NoneType]:
         """
         Parse any RTCM3 data in the stream (using pyrtcm library).
 
         :param bytes hdr: first 2 bytes of RTCM3 header
         :return: tuple of (raw_data as bytes, parsed_stub as RTCMMessage)
-        :rtype: tuple
+        :rtype: tuple[bytes | NoneType, RTCMMessage | NoneType]
         """
 
         hdr3 = self._read_bytes(1)
@@ -358,18 +383,19 @@ class UBXReader:
     @staticmethod
     def parse(
         message: bytes,
-        msgmode: int = GET,
+        msgmode: Literal[0, 1, 2] = GET,
         validate: int = VALCKSUM,
-        parsebitfield: bool = True,
-    ) -> object:
+        parsebitfield: Literal[0, 1, 2] = 1,
+    ) -> UBXMessage:
         """
         Parse UBX byte stream to UBXMessage object.
 
         :param bytes message: binary message to parse
-        :param int msgmode: GET (0), SET (1), POLL (2) (0)
+        :param Literal[0,1,2] msgmode: GET (0), SET (1), POLL (2) (0)
         :param int validate: VALCKSUM (1) = Validate checksum,
             VALNONE (0) = ignore invalid checksum (1)
-        :param bool parsebitfield: 1 = parse bitfields, 0 = leave as bytes (1)
+        :param Literal[0,1,2] parsebitfield: 0 = parse bitfield as bytes, 1 = parse as \
+            individual bits, 2 = parse as bytes and bits (1)
         :return: UBXMessage object
         :rtype: UBXMessage
         :raises: Exception (if data stream contains invalid data or unknown message type)

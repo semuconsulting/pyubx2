@@ -109,7 +109,7 @@ The constructor accepts the following optional keyword arguments:
 * `protfilter`: `NMEA_PROTOCOL` (1), `UBX_PROTOCOL` (2), `RTCM3_PROTOCOL` (4). Can be OR'd; default is `NMEA_PROTOCOL | UBX_PROTOCOL | RTCM3_PROTOCOL` (7)
 * `quitonerror`: `ERR_IGNORE` (0) = ignore errors, `ERR_LOG` (1) = log errors and continue (default), `ERR_RAISE` (2) = (re)raise errors and terminate
 * `validate`: `VALCKSUM` (0x01) = validate checksum (default), `VALNONE` (0x00) = ignore invalid checksum or length
-* `parsebitfield`: 1 = parse bitfields ('X' type properties) as individual bit flags, where defined (default), 0 = leave bitfields as byte sequences
+* `parsebitfield`: 0 = parse bitfield ('X' type attribute) as bytes, 1 = parse bitfield  as individual bit flags, 2 = parse bitfield as bytes and bit flags (1) 
 * `msgmode`: `GET` (0) (default), `SET` (1), `POLL` (2), `SETPOLL` (3) = automatically determine SET or POLL input mode
 
 Example -  Serial input. This example will output both UBX and NMEA messages but not RTCM3:
@@ -153,7 +153,7 @@ You can parse individual UBX messages using the static `UBXReader.parse(data)` f
 The `parse()` method accepts the following optional keyword arguments:
 
 * `validate`: VALCKSUM (0x01) = validate checksum (default), VALNONE (0x00) = ignore invalid checksum or length
-* `parsebitfield`: 1 = parse bitfields as individual bit flags, where defined (default), 0 = leave bitfields as byte sequences
+* `parsebitfield`: 0 = parse bitfield ('X' type attribute) as bytes, 1 = parse bitfield  as individual bit flags, 2 = parse bitfield as bytes and bit flags (1) 
 * `msgmode`: `GET` (0) (default), `SET` (1), `POLL` (2), `SETPOLL` (3) = automatically determine SET or POLL input mode
 
 Example - output (GET) message:
@@ -399,18 +399,21 @@ serialOut.write(msg3of3.serialize())
  
  `pyubx2` provides the following utility methods (via the `pynmeagps` library):
 
- - `latlon2dms` - converts decimal lat/lon to degrees, minutes, decimal seconds format e.g. "53°20′45.6″N", "2°32′46.68″W"
- - `latlon2dmm` - converts decimal lat/lon to degrees, decimal minutes format e.g. "53°20.76′N", "2°32.778′W"
- - `dms2deg` - converts lat/lon in d.m(.s) string format to signed decimal degrees e.g. "51°20′45.6″S" -> -51.346
- - `llh2iso6709` - converts lat/lon and altitude (hMSL) to ISO6709 format e.g. "+27.5916+086.5640+8850CRSWGS_84/"
- - `ecef2llh` - converts ECEF (X, Y, Z) coordinates to geodetic (lat, lon, ellipsoidal height) coordinates
- - `llh2ecef` - converts geodetic (lat, lon, ellipsoidal height) coordinates to ECEF (X, Y, Z) coordinates
- - `haversine` - finds great circle distance in km between two sets of (lat, lon) coordinates
- - `planar` - finds planar distance in m between two sets of (lat, lon) coordinates
- - `bearing` - finds bearing in degrees between two sets of (lat, lon) coordinates
  - `area` - finds spherical area bounded by two sets of (lat, lon) coordinates
- - `leapsecond` - find GPS UTC leapsecond offset for a given effective date
+ - `bearing` - finds bearing in degrees between two sets of (lat, lon) coordinates
  - `cel2cart` - converts celestial coordinates (elevation, azimuth) to cartesian coordinations (X,Y)
+ - `dms2deg` - converts lat/lon in d.m(.s) string format to signed decimal degrees e.g. "51°20′45.6″S" -> -51.346
+ - `ecef2llh` - converts ECEF (X, Y, Z) coordinates to geodetic (lat, lon, ellipsoidal height) coordinates
+ - `haversine` - finds great circle distance in km between two sets of (lat, lon) coordinates
+ - `latlon2dmm` - converts decimal lat/lon to degrees, decimal minutes format e.g. "53°20.76′N", "2°32.778′W"
+ - `latlon2dms` - converts decimal lat/lon to degrees, minutes, decimal seconds format e.g. "53°20′45.6″N", "2°32′46.68″W"
+ - `leapsecond` - find GPS UTC leapsecond offset for a given effective date
+ - `leapsecond` - find GPS UTC leapsecond offset for a given effective date
+ - `llh2ecef` - converts geodetic (lat, lon, ellipsoidal height) coordinates to ECEF (X, Y, Z) coordinates
+ - `llh2iso6709` - converts lat/lon and altitude (hMSL) to ISO6709 format e.g. "+27.5916+086.5640+8850CRSWGS_84/"
+ - `planar` - finds planar distance in m between two sets of (lat, lon) coordinates
+ - `utc2wnotow` - converts UTC datetime to GPS WNO (week number), TOW (time of week in milliseconds) and Leapsecond offset
+ - `wnotow2utc` - converts GPS WNO, TOW and Leapsecond offset to UTC datetime
 
 See [Sphinx documentation](https://www.semuconsulting.com/pyubx2/pyubx2.html#module-pyubx2.ubxhelpers) for details.
 
@@ -430,7 +433,6 @@ The following command line examples can be found in the `\examples` folder:
 1. `ubxserver.py` in the \examples\webserver folder illustrates a simple HTTP web server wrapper around `pyubx2.UBXreader`; it presents data from selected UBX messages as a web page http://localhost:8080 or a RESTful API http://localhost:8080/gps.
 1. `mon_span_spectrum.py` illustrates how to use `pyubx2` and `matplotlib` to plot a spectrum analysis graph from a UBX MON-SPAN message.
 1. `utilities.py` illustrates how to use various `pyubx2` utility methods.
-1. `benchmark.py` provides a simple performance benchmarking tool for the `pyubx2` parser.
 
 ---
 ## <a name="extensibility">Extensibility</a>
