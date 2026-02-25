@@ -211,7 +211,7 @@
             "problemMatcher": [],
             "dependsOrder": "sequence",
             "dependsOn": [
-                //"Activate Venv",
+                "Activate Venv",
                 "Build",
                 "Install", // have to install before running pylint
                 "Pylint",
@@ -275,15 +275,18 @@
             "problemMatcher": []
         },
         {
-            "label": "Run Installed Version",
+            "label": "Run from Source",
             "type": "shell",
-            "command": "${config:python.defaultInterpreterPath}",
+            "command": "python3",
             "args": [
                 "-m",
                 "pygpsclient",
                 //"--verbosity",
                 //"3"
             ],
+            "options": {
+                "cwd": "${workspaceFolder}/src"
+            },
             "problemMatcher": []
         },
     ]
