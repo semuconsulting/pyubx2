@@ -17,9 +17,12 @@ from pynmeagps import (
     haversine,
     latlon2dmm,
     latlon2dms,
+    leapsecond,
     llh2ecef,
     llh2iso6709,
     planar,
+    utc2wnotow,
+    wnotow2utc,
 )
 
 from pyubx2._version import __version__

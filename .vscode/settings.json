@@ -5,7 +5,7 @@
     // this venv, i.e.
     // "${userHome}/pygpsclient/bin/python3" on linux/macos
     // "${userHome}/pygpsclient/Scripts/python" on windows
-    "python.testing.pytestEnabled": true,
+    "python.testing.pytestEnabled": false,
     "python.terminal.activateEnvironment": true,
     "editor.formatOnSave": true,
     "modulename": "${workspaceFolderBasename}",
@@ -23,5 +23,12 @@
     "python-envs.defaultEnvManager": "ms-python.python:venv",
     "python-envs.pythonProjects": [],
     "python.defaultInterpreterPath": "${userHome}/pygpsclient/bin/python3",
-    "python.testing.unittestEnabled": false
+    "python.testing.unittestEnabled": true,
+    "python.testing.unittestArgs": [
+        "-v",
+        "-s",
+        "./tests",
+        "-p",
+        "test_*.py"
+    ]
 }

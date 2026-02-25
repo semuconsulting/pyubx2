@@ -13,6 +13,8 @@ Created on 26 Sep 2020
 # pylint: disable=invalid-name
 
 import struct
+from types import NoneType
+from typing import Literal
 
 from pyubx2.exceptions import UBXMessageError, UBXTypeError
 from pyubx2.ubxhelpers import (
@@ -60,10 +62,10 @@ class UBXMessage:
 
     def __init__(
         self,
-        ubxClass,
-        ubxID,
-        msgmode: int,
-        parsebitfield: bool = True,
+        ubxClass: str | int | bytes,
+        ubxID: str | int | bytes,
+        msgmode: Literal[0, 1, 2],
+        parsebitfield: Literal[0, 1, 2] = 1,
         **kwargs,
     ):
         """Constructor.
@@ -76,10 +78,11 @@ class UBXMessage:
         Otherwise, any named attributes will be assigned the value given, all others will
         be assigned a nominal value according to type.
 
-        :param object msgClass: message class as str, int or byte
-        :param object msgID: message ID as str, int or byte
-        :param int msgmode: message mode (0=GET, 1=SET, 2=POLL)
-        :param bool parsebitfield: parse bitfields ('X' type attributes) Y/N
+        :param str | int | bytes msgClass: message class as str, int or byte
+        :param str | int | bytes msgID: message ID as str, int or byte
+        :param Literal[0,1,2] msgmode: message mode (0=GET, 1=SET, 2=POLL)
+        :param Literal[0,1,2] parsebitfield: 0 = parse bitfield as bytes, 1 = parse as \
+            individual bits, 2 = parse as bytes and bits (1)
         :param kwargs: optional payload keyword arguments
         :raises: UBXMessageError
         """
@@ -90,7 +93,7 @@ class UBXMessage:
         self._payload = b""
         self._length = b""
         self._checksum = b""
-        self._parsebf = parsebitfield  # parsing bitfields Y/N?
+        self._parsebf = parsebitfield
 
         if msgmode not in (GET, SET, POLL):
             raise UBXMessageError(f"Invalid msgmode {msgmode} - must be 0, 1 or 2")
@@ -99,9 +102,9 @@ class UBXMessage:
         if isinstance(ubxClass, str) and isinstance(
             ubxID, str
         ):  # string e.g. 'CFG', 'CFG-PRT'
-            (self._ubxClass, self._ubxID) = msgstr2bytes(ubxClass, ubxID)
+            self._ubxClass, self._ubxID = msgstr2bytes(ubxClass, ubxID)
         elif isinstance(ubxClass, int) and isinstance(ubxID, int):  # int e.g. 6, 1
-            (self._ubxClass, self._ubxID) = msgclass2bytes(ubxClass, ubxID)
+            self._ubxClass, self._ubxID = msgclass2bytes(ubxClass, ubxID)
         else:  # bytes e.g. b'\x06', b'\x01'
             self._ubxClass = ubxClass
             self._ubxID = ubxID
@@ -122,6 +125,7 @@ class UBXMessage:
 
         offset = 0  # payload offset in bytes
         index = []  # array of (nested) group indices
+        anam = None
 
         try:
             if len(kwargs) == 0:  # if no kwargs, assume null payload
@@ -130,7 +134,7 @@ class UBXMessage:
                 self._payload = kwargs.get("payload", b"")
                 pdict = self._get_dict(**kwargs)  # get appropriate payload dict
                 for anam in pdict:  # process each attribute in dict
-                    (offset, index) = self._set_attribute(
+                    offset, index = self._set_attribute(
                         anam, pdict, offset, index, **kwargs
                     )
             self._do_len_checksum()
@@ -179,18 +183,18 @@ class UBXMessage:
         ):  # repeating group of attributes or subdefined bitfield
             numr, _ = adef
             if numr in (X1, X2, X4, X6, X8, X24):  # bitfield
-                if self._parsebf:  # if we're parsing bitfields
-                    (offset, index) = self._set_attribute_bitfield(
+                if self._parsebf in (1, 2):  # if we're parsing bitfields
+                    if self._parsebf == 2:  # parse as bytes and bits
+                        self._set_attribute_single(anam, numr, offset, index, **kwargs)
+                    offset, index = self._set_attribute_bitfield(
                         adef, offset, index, **kwargs
-                    )
-                else:  # treat bitfield as a single byte array
+                    )  # parse as bits
+                else:  # parse as bytes only
                     offset = self._set_attribute_single(
                         anam, numr, offset, index, **kwargs
                     )
             else:  # repeating group of attributes
-                (offset, index) = self._set_attribute_group(
-                    adef, offset, index, **kwargs
-                )
+                offset, index = self._set_attribute_group(adef, offset, index, **kwargs)
         else:  # single attribute
             offset = self._set_attribute_single(anam, adef, offset, index, **kwargs)
 
@@ -241,7 +245,7 @@ class UBXMessage:
             for i in range(gsiz):
                 index[-1] = i + 1
                 for key1 in gdict:
-                    (offset, index) = self._set_attribute(
+                    offset, index = self._set_attribute(
                         key1, gdict, offset, index, **kwargs
                     )
 
@@ -250,16 +254,19 @@ class UBXMessage:
         return (offset, index)
 
     def _set_attribute_single(
-        self, anam: str, adef: object, offset: int, index: list, **kwargs
+        self,
+        anam: str,
+        adef: str | tuple[str, float],
+        offset: int,
+        index: list,
+        **kwargs,
     ) -> int:
         """
         Set individual attribute value, applying scaling where appropriate.
 
         :param str anam: attribute keyword
-        EITHER
-        :param str adef: attribute definition string e.g. 'U002'
-        OR
-        :param list adef: if scaled, list of [attribute type string, scaling factor float]
+        :param str | tuple[str, float] adef: attribute definition string e.g. 'U002' and
+            optional scaling factor
         :param int offset: payload offset in bytes
         :param list index: repeating group index array
         :param kwargs: optional payload key/value pairs
@@ -343,7 +350,7 @@ class UBXMessage:
 
         # process each flag in bitfield
         for key, keyt in bdict.items():
-            (bitfield, bfoffset) = self._set_attribute_bits(
+            bitfield, bfoffset = self._set_attribute_bits(
                 bitfield, bfoffset, key, keyt, index, **kwargs
             )
 
@@ -421,7 +428,7 @@ class UBXMessage:
                 key = int.from_bytes(
                     self._payload[offset : offset + KEYLEN], "little", signed=False
                 )
-                (keyname, att) = cfgkey2name(key)
+                keyname, att = cfgkey2name(key)
                 atts = attsiz(att)
                 valb = self._payload[offset + KEYLEN : offset + KEYLEN + atts]
                 val = bytes2val(valb, att)
@@ -684,12 +691,12 @@ class UBXMessage:
         return bytes2val(self._length, U2)
 
     @property
-    def payload(self) -> bytes:
+    def payload(self) -> bytes | NoneType:
         """
         Payload getter - returns the raw payload bytes.
 
         :return: raw payload as bytes
-        :rtype: bytes
+        :rtype: bytes | NoneType
 
         """
 
@@ -708,7 +715,9 @@ class UBXMessage:
         return self._mode
 
     @staticmethod
-    def config_set(layers: int, transaction: int, cfgData: list) -> object:
+    def config_set(
+        layers: int, transaction: int, cfgData: list[tuple[int | str, object]]
+    ) -> bytes:
         """
         Construct CFG-VALSET message from an array of
         configuration database (key, value) tuples. Keys
@@ -718,7 +727,7 @@ class UBXMessage:
             SET_LAYER_BBR (2) = Battery Backed RAM, SETLAYER_FLASH (4) = Flash
         :param int transaction: TXN_NONE (0) = no txn, TXN _START (1) = start txn,
             TXN_ONGOING (2) = continue txn, TXT_COMMIT (3) = apply txn
-        :param list cfgData: list of up to 64 tuples (key, value)
+        :param list[tuple[int| str,object]] cfgData: list of up to 64 tuples (key, value)
         :return: UBXMessage CFG-VALSET
         :rtype: UBXMessage
         :raises: UBXMessageError
@@ -732,19 +741,19 @@ class UBXMessage:
             )
 
         version = val2bytes(0 if transaction == 0 else 1, U1)
-        layers = val2bytes(layers, U1)
-        transaction = val2bytes(transaction, U1)
-        payload = version + layers + transaction + b"\x00"
+        layersb = val2bytes(layers, U1)
+        transactionb = val2bytes(transaction, U1)
+        payload = version + layersb + transactionb + b"\x00"
         lis = b""
 
         for cfgItem in cfgData:
             att = ""
-            (key, val) = cfgItem
+            key, val = cfgItem
             if isinstance(key, str):  # if key is a string (keyname)
-                (kid, att) = cfgname2key(key)  # lookup keyID & attribute type
+                kid, att = cfgname2key(key)  # lookup keyID & attribute type
             else:
                 kid = key
-                (key, att) = cfgkey2name(key)  # lookup attribute type
+                key, att = cfgkey2name(key)  # lookup attribute type
             keyb = val2bytes(kid, U4)
             valb = val2bytes(val, att)
             lis = lis + keyb + valb
@@ -752,7 +761,7 @@ class UBXMessage:
         return UBXMessage("CFG", "CFG-VALSET", SET, payload=payload + lis)
 
     @staticmethod
-    def config_del(layers: int, transaction: int, keys: list) -> object:
+    def config_del(layers: int, transaction: int, keys: list[int | str]) -> bytes:
         """
         Construct CFG-VALDEL message from an array of
         configuration database keys. Keys can be in int (keyID)
@@ -762,7 +771,7 @@ class UBXMessage:
             SET_LAYER_FLASH (4) = Flash
         :param int transaction: TXN_NONE (0) = no txn, TXN _START (1) = start txn,
             TXN_ONGOING (2) = continue txn, TXT_COMMIT (3) = apply txn
-        :param list keys: array of up to 64 keys as int (keyID) or string (keyname)
+        :param list[int | str] keys: array of up to 64 keys as int (keyID) or string (keyname)
         :return: UBXMessage CFG-VALDEL
         :rtype: UBXMessage
         :raises: UBXMessageError
@@ -776,21 +785,21 @@ class UBXMessage:
             )
 
         version = val2bytes(0 if transaction == 0 else 1, U1)
-        layers = val2bytes(layers, U1)
-        transaction = val2bytes(transaction, U1)
-        payload = version + layers + transaction + b"\x00"
+        layersb = val2bytes(layers, U1)
+        transactionb = val2bytes(transaction, U1)
+        payload = version + layersb + transactionb + b"\x00"
         lis = b""
 
         for key in keys:
             if isinstance(key, str):  # if keyname as a string
-                (key, _) = cfgname2key(key)  # lookup keyID
+                key, _ = cfgname2key(key)  # lookup keyID
             keyb = val2bytes(key, U4)
             lis = lis + keyb
 
         return UBXMessage("CFG", "CFG-VALDEL", SET, payload=payload + lis)
 
     @staticmethod
-    def config_poll(layer: int, position: int, keys: list) -> object:
+    def config_poll(layer: int, position: int, keys: list[int | str]) -> bytes:
         """
         Construct CFG-VALGET message from an array of
         configuration database keys, which can be in int (keyID)
@@ -800,7 +809,7 @@ class UBXMessage:
             POLL_LAYER_BBR (1) = Battery-backed RAM, POLL_LAYER_FLASH (2) = Flash,
             POLL_LAYER_DEFAULT (7) = Default
         :param int position: number of keys to skip before returning result
-        :param list keys: array of up to 64 keys as int (keyID) or str (keyname)
+        :param list[int | str] keys: array of up to 64 keys as int (keyID) or str (keyname)
         :return: UBXMessage CFG-VALGET
         :rtype: UBXMessage
         :raises: UBXMessageError
@@ -814,14 +823,14 @@ class UBXMessage:
             )
 
         version = val2bytes(0, U1)
-        layer = val2bytes(layer, U1)
-        position = val2bytes(position, U2)
-        payload = version + layer + position
+        layerb = val2bytes(layer, U1)
+        positionb = val2bytes(position, U2)
+        payload = version + layerb + positionb
         lis = b""
 
         for key in keys:
             if isinstance(key, str):  # if keyname as a string
-                (key, _) = cfgname2key(key)  # lookup keyID
+                key, _ = cfgname2key(key)  # lookup keyID
             keyb = val2bytes(key, U4)
             lis = lis + keyb
 

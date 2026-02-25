@@ -1,5 +1,11 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.2.60
+
+1. Update minumum pynmeagps version to 1.1.2.
+1. Add UBXReader `encoding` argument for chunked encoded socket streams.
+1. Add a third value '2' to UBXReader and UBXMessage `parsebitfield` argument (*previously a simple boolean*); 0 = parse bitfield as bytes, 1 = parse bitfield as individual bits, 2 = parse bitfield as *both* bytes *and* bits (1)
+
 ### RELEASE 1.2.59
 
 1. Add additional E6/L6 SIGID decodes.

@@ -10,7 +10,7 @@ Created on 15 Dec 2020
 """
 
 import struct
-from datetime import datetime, timedelta
+from datetime import datetime, time, timedelta
 from math import cos, pi, sin, trunc
 
 from pynmeagps.nmeatypes_core import NMEA_HDR
@@ -46,12 +46,12 @@ def att2idx(att: str) -> object:
     """
 
     try:
-        att = att.split("_")
-        ln = len(att)
+        attl = att.split("_")
+        ln = len(attl)
         if ln == 2:  # one group level
-            return int(att[1])
+            return int(attl[1])
         if ln > 2:  # nested group level(s)
-            return tuple(int(att[i]) for i in range(1, ln))
+            return tuple(int(attl[i]) for i in range(1, ln))
         return 0  # not grouped
     except ValueError:
         return 0
@@ -183,7 +183,7 @@ def cfgkey2name(keyid: int) -> tuple:
     try:
         val = None
         for key, val in ubcdb.UBX_CONFIG_DATABASE.items():
-            (kid, typ) = val
+            kid, typ = val
             if keyid == kid:
                 return (key, typ)
 
@@ -385,7 +385,7 @@ def isvalid_checksum(message: bytes) -> bool:
     return ckm == calc_checksum(message[2 : lenm - 2])
 
 
-def itow2utc(itow: int, leaps: int = LEAPOFFSET) -> datetime.time:
+def itow2utc(itow: int, leaps: int = LEAPOFFSET) -> time:
     """
     Convert GPS Time Of Week to UTC time
 
@@ -400,40 +400,39 @@ def itow2utc(itow: int, leaps: int = LEAPOFFSET) -> datetime.time:
     return utc.time()
 
 
-def key_from_val(dictionary: dict, value) -> str:
+def key_from_val(dictionary: dict, value: object) -> bytes:
     """
     Helper method - get dictionary key corresponding to (unique) value.
 
     :param dict dictionary: dictionary
     :param object value: unique dictionary value
     :return: dictionary key
-    :rtype: str
+    :rtype: bytes
     :raises: KeyError: if no key found for value
 
     """
 
-    val = None
     for key, val in dictionary.items():
         if val == value:
             return key
     raise KeyError(f"No key found for value {value}")
 
 
-def msgclass2bytes(msgclass: int, msgid: int) -> bytes:
+def msgclass2bytes(msgclass: int, msgid: int) -> tuple[bytes, bytes]:
     """
     Convert message class/id integers to bytes.
 
     :param int msgClass: message class as integer e.g. 6
     :param int msgID: message ID as integer e.g. 1
     :return: message class as bytes e.g. b'/x06/x01'
-    :rtype: bytes
+    :rtype: tuple[bytes,bytes]
 
     """
 
     return (val2bytes(msgclass, ubt.U1), val2bytes(msgid, ubt.U1))
 
 
-def msgstr2bytes(msgclass: str, msgid: str) -> bytes:
+def msgstr2bytes(msgclass: str, msgid: str) -> tuple[bytes, bytes]:
     """
     Convert plain text UBX message class to bytes.
 
@@ -605,6 +604,7 @@ def val2bytes(val, att: str) -> bytes:
 
     """
 
+    valb = b""
     try:
         if not isinstance(val, ATTTYPE[atttyp(att)]):
             raise TypeError(

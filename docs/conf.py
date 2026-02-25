@@ -13,7 +13,13 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath("../src"))
+# get path to site-packages (source) folder within venv
+pypath = (
+    f"{os.path.expanduser("~")}/pygpsclient/lib/python"
+    f"{sys.version_info.major}.{sys.version_info.minor}/site-packages"
+)
+print(f"\n\033[1mUsing absolute path:\033[0m \033[95m{pypath}\033[0m\n")
+sys.path.insert(0, os.path.abspath(pypath))
 
 from pyubx2 import version as VERSION
 
@@ -53,7 +59,7 @@ html_title = "<project> v<version> documentation."
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ["_static"]
+# html_static_path = ["_static"]
 html_last_updated_fmt = "%b %d %Y"
 html_theme_options = {
     "logo_only": False,
