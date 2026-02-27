@@ -408,7 +408,6 @@ serialOut.write(msg3of3.serialize())
  - `latlon2dmm` - converts decimal lat/lon to degrees, decimal minutes format e.g. "53°20.76′N", "2°32.778′W"
  - `latlon2dms` - converts decimal lat/lon to degrees, minutes, decimal seconds format e.g. "53°20′45.6″N", "2°32′46.68″W"
  - `leapsecond` - find GPS UTC leapsecond offset for a given effective date
- - `leapsecond` - find GPS UTC leapsecond offset for a given effective date
  - `llh2ecef` - converts geodetic (lat, lon, ellipsoidal height) coordinates to ECEF (X, Y, Z) coordinates
  - `llh2iso6709` - converts lat/lon and altitude (hMSL) to ISO6709 format e.g. "+27.5916+086.5640+8850CRSWGS_84/"
  - `planar` - finds planar distance in m between two sets of (lat, lon) coordinates
