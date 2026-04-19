@@ -219,7 +219,7 @@ def main(**kwargs):
     """
 
     ipaddress = kwargs.get("ipaddress", "localhost")
-    ipport = kwargs.get("ipport", 8080)
+    ipport = int(kwargs.get("ipport", 8080))
     serport = kwargs.get("serport", "/dev/ttyACM0")
     baudrate = int(kwargs.get("baudrate", 38400))
     timeout = float(kwargs.get("timeout", 0.1))
