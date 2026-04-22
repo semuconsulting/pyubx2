@@ -891,6 +891,9 @@ UBX_PAYLOADS_SET = {
         ),  # repeating group * 5
         "reserved1": U3,
     },
+    "MGA-INI-ATT": UBX_GET["MGA-INI-ATT"],
+    "MGA-SF-INI": UBX_GET["MGA-SF-INI"],
+    "MGA-SF-INI2": UBX_GET["MGA-SF-INI2"],
     # ********************************************************************
     # Navigation Results Messages: i.e. Position, Speed, Time, Acceleration, Heading, DOP, SVs used.
     # Messages in the NAV class are used to output navigation data such as position, altitude and velocity in a

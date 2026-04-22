@@ -320,6 +320,7 @@ VARIANTS = {
         b"\x13\x03": get_mga_dict,  # MGA BDS
         b"\x13\x05": get_mga_dict,  # MGA QZSS
         b"\x13\x06": get_mga_dict,  # MGA GLO
+        b"\x13\x10": get_mga_dict,  # MGA SF
         b"\x13\x21": get_mga_dict,  # MGA FLASH
         b"\x13\x40": get_mga_dict,  # MGA INI
         b"\x02\x72": get_rxmpmp_dict,  # RXM-PMP
@@ -329,6 +330,7 @@ VARIANTS = {
     },
     GET: {
         b"\x0b\x32": get_alpsrv_dict,  # AID-ALPSRV
+        b"\x13\x10": get_mga_dict,  # MGA SF
         b"\x13\x21": get_mga_dict,  # MGA FLASH
         b"\x13\x60": get_mga_dict,  # MGA ACK NAK
         b"\x02\x72": get_rxmpmp_dict,  # RXM-PMP

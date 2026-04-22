@@ -54,6 +54,8 @@ from pyubx2.ubxtypes_core import (
     U24,
     U32,
     U64,
+    U90,
+    U462,
     X1,
     X2,
     X4,
@@ -1596,6 +1598,32 @@ UBX_PAYLOADS_GET = {
         "ack": U1,
         "reserved1": U1,
         "sequence": U2,
+    },
+    "MGA-INI-ATT": {
+        "type": U1,
+        "version": U1,
+        "age": U2,
+        "roll": [I4, SCAL5],
+        "pitch": [I4, SCAL5],
+        "heading": [I4, SCAL5],
+        "accRoll": [U4, SCAL5],
+        "accPitch": [U4, SCAL5],
+        "accHeading": [U4, SCAL5],
+    },
+    "MGA-SF-INI": {
+        "type": U1,
+        "version": U1,
+        "nValA": U1,
+        "nValB": U1,
+        "age": U2,
+        "reserved0": U90,
+        "group1": ("nValA", {"reserved1": U8}),  # repeating group nValA times
+        "group2": ("nValB", {"reserved2": U8}),  # repeating group nValB times
+    },
+    "MGA-SF-INI2": {
+        "type": U1,
+        "version": U1,
+        "reserved0": U462,
     },
     # ********************************************************************
     # Monitoring Messages: i.e. Communication Status, CPU Load, Stack Usage, Task Status.

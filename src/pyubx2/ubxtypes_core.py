@@ -87,6 +87,8 @@ U24 = "U024"  # Unsigned Int 24 bytes
 U32 = "U032"  # Unsigned Int 32 bytes
 U40 = "U040"  # Unsigned Int 40 bytes
 U64 = "U064"  # Unsigned Int 64 bytes
+U90 = "U090"  # Unsigned Int 90 bytes
+U462 = "U462"  # Unsigned Int 462 bytes
 X1 = "X001"  # Bitfield 1 byte
 X2 = "X002"  # Bitfield 2 bytes
 X4 = "X004"  # Bitfield 4 bytes
@@ -291,9 +293,13 @@ UBX_MSGIDS = {
     b"\x13\x40\x20": "MGA-INI-CLKD",
     b"\x13\x40\x21": "MGA-INI-FREQ",
     b"\x13\x40\x30": "MGA-INI-EOP",
+    b"\x13\x40\x40": "MGA-INI-ATT",
     b"\x13\x05\x01": "MGA-QZSS-EPH",
     b"\x13\x05\x02": "MGA-QZSS-ALM",
     b"\x13\x05\x04": "MGA-QZSS-HEALTH",
+    b"\x13\x10": "MGA-SF",
+    b"\x13\x10\x00": "MGA-SF-INI",
+    b"\x13\x10\x10": "MGA-SF-INI2",
     # ***************************************************************
     # Hardware Monitoring messages
     # ***************************************************************
