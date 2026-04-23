@@ -1,5 +1,9 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.3.0
+
+1. Add support for UBX MGA advanced calibration support commands - thanks to @ariansharifi for contribution.
+
 ### RELEASE 1.2.60
 
 1. Update minumum pynmeagps version to 1.1.2.
