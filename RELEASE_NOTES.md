@@ -2,7 +2,7 @@
 
 ### RELEASE 1.3.0
 
-1. Add support for UBX MGA advanced calibration support commands - thanks to @ariansharifi for contribution.
+1. Add support for UBX MGA advanced calibration support commands and polls (MGA-SF-INI, MGA-SF-INI2, MGA-INI-ATT, MGA-SF) - thanks to @ariansharifi for contribution.
 
 ### RELEASE 1.2.60
 
