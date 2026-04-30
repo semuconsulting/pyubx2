@@ -1599,17 +1599,6 @@ UBX_PAYLOADS_GET = {
         "reserved1": U1,
         "sequence": U2,
     },
-    "MGA-INI-ATT": {
-        "type": U1,
-        "version": U1,
-        "age": U2,
-        "roll": [I4, SCAL5],
-        "pitch": [I4, SCAL5],
-        "heading": [I4, SCAL5],
-        "accRoll": [U4, SCAL5],
-        "accPitch": [U4, SCAL5],
-        "accHeading": [U4, SCAL5],
-    },
     "MGA-SF-INI": {
         "type": U1,
         "version": U1,
@@ -1617,8 +1606,8 @@ UBX_PAYLOADS_GET = {
         "nValB": U1,
         "age": U2,
         "reserved0": U90,
-        "group1": ("nValA", {"reserved1": U8}),  # repeating group nValA times
-        "group2": ("nValB", {"reserved2": U8}),  # repeating group nValB times
+        "group1": ("nValA", {"valA": U8}),  # repeating group nValA times
+        "group2": ("nValB", {"valB": U8}),  # repeating group nValB times
     },
     "MGA-SF-INI2": {
         "type": U1,

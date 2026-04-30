@@ -21,6 +21,7 @@ from pyubx2.ubxtypes_core import (
     R8,
     SCAL1,
     SCAL2,
+    SCAL5,
     SCAL7,
     U1,
     U2,
@@ -891,7 +892,17 @@ UBX_PAYLOADS_SET = {
         ),  # repeating group * 5
         "reserved1": U3,
     },
-    "MGA-INI-ATT": UBX_GET["MGA-INI-ATT"],
+    "MGA-INI-ATT": {
+        "type": U1,
+        "version": U1,
+        "age": U2,
+        "roll": [I4, SCAL5],
+        "pitch": [I4, SCAL5],
+        "heading": [I4, SCAL5],
+        "accRoll": [U4, SCAL5],
+        "accPitch": [U4, SCAL5],
+        "accHeading": [U4, SCAL5],
+    },
     "MGA-SF-INI": UBX_GET["MGA-SF-INI"],
     "MGA-SF-INI2": UBX_GET["MGA-SF-INI2"],
     # ********************************************************************

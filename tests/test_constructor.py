@@ -7,6 +7,7 @@ Created on 21 Oct 2020
 
 @author: semuadmin
 """
+
 # pylint: disable=line-too-long, invalid-name, missing-docstring, no-member
 
 import unittest
@@ -344,6 +345,69 @@ class FillTest(unittest.TestCase):
         res1 = UBXMessage("CFG", "CFG-TP5", POLL, tpIdx=1)
         res2 = "<UBX(CFG-TP5, tpIdx=1)>"
         self.assertEqual(str(res1), res2)
+
+    def testMGA_SF(self):  # test CFG-TP5-TPX constructor
+        EXPECTED_RESULT = [
+            "<UBX(MGA-INI-ATT, type=64, version=1, age=3, roll=12.3456, pitch=23.4567, heading=34.5678, accRoll=1.23456, accPitch=2.34567, accHeading=3.45678)>",
+            "<UBX(MGA-SF-INI, type=0, version=0, nValA=2, nValB=3, age=4, reserved0=0, valA_01=11, valA_02=22, valB_01=111, valB_02=222, valB_03=333)>",
+            "<UBX(MGA-SF-INI2, type=16, version=0, reserved0=0)>",
+            "<UBX(MGA-SF)>",
+        ]
+        res = []
+        res.append(
+            UBXMessage(
+                "MGA",
+                "MGA-INI-ATT",
+                SET,
+                type=64,
+                version=1,
+                age=3,
+                roll=12.3456,
+                pitch=23.4567,
+                heading=34.5678,
+                accRoll=1.23456,
+                accPitch=2.34567,
+                accHeading=3.45678,
+            )
+        )
+        res.append(
+            UBXMessage(
+                "MGA",
+                "MGA-SF-INI",
+                SET,
+                type=0,
+                version=0,
+                nValA=2,
+                nValB=3,
+                age=4,
+                valA_01=11,
+                valA_02=22,
+                valB_01=111,
+                valB_02=222,
+                valB_03=333,
+            )
+        )
+        res.append(
+            UBXMessage(
+                "MGA",
+                "MGA-SF-INI2",
+                SET,
+                type=16,
+                version=0,
+            )
+        )
+        res.append(
+            UBXMessage(
+                "MGA",
+                "MGA-SF",
+                POLL,
+            )
+        )
+        with open("pygpsdata-mgasf.log", "wb") as output:
+            for i, msg in enumerate(res):
+                # print(f'"{msg}",')
+                self.assertEqual(str(res[i]), EXPECTED_RESULT[i])
+                output.write(msg.serialize())
 
 
 if __name__ == "__main__":
