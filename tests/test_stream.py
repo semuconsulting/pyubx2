@@ -24,6 +24,8 @@ from pyubx2 import (
     ERR_RAISE,
     ERR_LOG,
     ERR_IGNORE,
+    SET,
+    GET,
 )
 from pyrtcm.exceptions import RTCMParseError
 from pyubx2.exceptions import UBXParseError
@@ -673,7 +675,7 @@ class StreamTest(unittest.TestCase):
         with open(os.path.join(DIRNAME, "pygpsdata-BADEOF1.log"), "rb") as stream:
             ubr = UBXReader(stream)
             while raw is not None:
-                (raw, _) = ubr.read()
+                raw, _ = ubr.read()
                 i += 1
             self.assertEqual(i, 4)
 
@@ -683,7 +685,7 @@ class StreamTest(unittest.TestCase):
         with open(os.path.join(DIRNAME, "pygpsdata-BADEOF2.log"), "rb") as stream:
             ubr = UBXReader(stream)
             while raw is not None:
-                (raw, _) = ubr.read()
+                raw, _ = ubr.read()
                 i += 1
             self.assertEqual(i, 3)
 
@@ -693,7 +695,7 @@ class StreamTest(unittest.TestCase):
         with open(os.path.join(DIRNAME, "pygpsdata-BADEOF3.log"), "rb") as stream:
             ubr = UBXReader(stream)
             while raw is not None:
-                (raw, _) = ubr.read()
+                raw, _ = ubr.read()
                 i += 1
             self.assertEqual(i, 3)
 
@@ -703,7 +705,7 @@ class StreamTest(unittest.TestCase):
         with open(os.path.join(DIRNAME, "pygpsdata-BADNMEAEOF.log"), "rb") as stream:
             ubr = UBXReader(stream)
             while raw is not None:
-                (raw, parsed) = ubr.read()
+                raw, parsed = ubr.read()
                 i += 1
             self.assertEqual(i, 6)
 
@@ -730,6 +732,23 @@ class StreamTest(unittest.TestCase):
                     # print(res.replace("\\", "\\\\"))
                     self.assertEqual(res, EXPECTED_RESULTS[1])
             self.assertEqual(i, 188)
+
+    def testMGASF(
+        self,
+    ):  # test stream of UBX DEBUG messages
+        EXPECTED_RESULTS = [
+            "<UBX(MGA-INI-ATT, type=64, version=1, age=3, roll=12.34559, pitch=23.4567, heading=34.56779, accRoll=1.23456, accPitch=2.34567, accHeading=3.45678)>",
+            "<UBX(MGA-SF-INI, type=0, version=0, nValA=2, nValB=3, age=4, reserved0=0, valA_01=11, valA_02=22, valB_01=111, valB_02=222, valB_03=333)>",
+            "<UBX(MGA-SF-INI2, type=16, version=0, reserved0=0)>",
+        ]
+        i = 0
+        with open(os.path.join(DIRNAME, "pygpsdata-MGASF.log"), "rb") as stream:
+            ubr = UBXReader(stream, msgmode=SET)
+            for raw, parsed in ubr:
+                # print(f'"{parsed}",')
+                self.assertEqual(str(parsed), EXPECTED_RESULTS[i])
+                i += 1
+            self.assertEqual(i, len(EXPECTED_RESULTS))
 
 
 if __name__ == "__main__":

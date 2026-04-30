@@ -637,7 +637,7 @@ class UBXMessage:
         try:
             # all MGA messages except MGA-DBD need to be identified by the
             # 'type' attribute - the first byte of the payload
-            if self._ubxClass == b"\x13" and self._ubxID != b"\x80":
+            if self._ubxClass == b"\x13" and self._ubxID != b"\x80" and (self._payload):
                 umsg_name = UBX_MSGIDS[
                     self._ubxClass + self._ubxID + self._payload[0:1]
                 ]
