@@ -106,7 +106,7 @@ ATTTYPE = {
     "L": type(0),
     "R": (type(0), type(0.1)),
     "U": type(0),
-    "X": type(b"0"),
+    "X": (type(b"0"), type(bytearray(b"0"))),
 }
 """Permissible attribute types"""
 
