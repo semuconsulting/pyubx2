@@ -11,7 +11,7 @@ Created on 19 Apr 2021
 
 import unittest
 
-from pyubx2 import UBXMessage, SET, POLL, SET_LAYER_FLASH, TXN_NONE, SET_LAYER_BBR
+from pyubx2 import UBXMessage, SET, POLL, SET_LAYER_FLASH, TXN_NONE, SET_LAYER_BBR, SET_LAYER_RAM
 from pyubx2.ubxtypes_configdb import UBX_CONFIG_DATABASE
 from tests.configdb_baseline import UBX_CONFIG_DATABASE_BASELINE
 
@@ -93,6 +93,23 @@ class ConfigTest(unittest.TestCase):
         msg = UBXMessage.config_del(layers, transaction, cfgdata)
         # print(msg)
         self.assertEqual(str(msg), EXPECTED_RESULT3)
+
+    def testbytearray(self):
+        EXPECTED_RESULT1 = "<UBX(CFG-VALSET, version=0, ram=1, bbr=0, flash=0, action=0, reserved0=0, CFG_SBAS_PRNSCANMASK=b'\\x88\\xab\\x03\\x00')>"
+        layers = SET_LAYER_RAM  # volatile RAM
+        transaction = TXN_NONE
+        cfgdata = [
+            ("CFG_SBAS_PRNSCANMASK", b"\x88\xab\x03\x00"),
+        ]
+        msg = UBXMessage.config_set(layers, transaction, cfgdata)
+        #print(msg)
+        self.assertEqual(str(msg), EXPECTED_RESULT1)
+        cfgdata = [
+            ("CFG_SBAS_PRNSCANMASK", bytearray((0x88,0xab,0x03,0x00))),
+        ]
+        msg = UBXMessage.config_set(layers, transaction, cfgdata)
+        #print(msg)
+        self.assertEqual(str(msg), EXPECTED_RESULT1)
 
 
 if __name__ == "__main__":
