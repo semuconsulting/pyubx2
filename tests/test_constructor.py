@@ -403,11 +403,9 @@ class FillTest(unittest.TestCase):
                 POLL,
             )
         )
-        with open("pygpsdata-mgasf.log", "wb") as output:
-            for i, msg in enumerate(res):
-                # print(f'"{msg}",')
-                self.assertEqual(str(res[i]), EXPECTED_RESULT[i])
-                output.write(msg.serialize())
+        for i, msg in enumerate(res):
+            # print(f'"{msg}",')
+            self.assertEqual(str(res[i]), EXPECTED_RESULT[i])
 
 
 if __name__ == "__main__":
