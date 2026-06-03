@@ -327,6 +327,7 @@ UBX_MSGIDS = {
     b"\x01\x05": "NAV-ATT",
     b"\x01\x22": "NAV-CLOCK",
     b"\x01\x36": "NAV-COV",
+    b"\x01\x45": "NAV-DAHEADING",
     b"\x01\x31": "NAV-DGPS",
     b"\x01\x04": "NAV-DOP",
     b"\x01\x3d": "NAV-EELL",

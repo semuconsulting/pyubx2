@@ -1,5 +1,9 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.3.2
+
+1. Add support for undocumented UBX `NAV-DAHEADING` (0x01 0x45) message type.
+
 ### RELEASE 1.3.1
 
 1. Fix spurious type validation in 'X' CFG-VALGET attributes - Fixes #204.
