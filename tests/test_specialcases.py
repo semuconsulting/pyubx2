@@ -435,6 +435,23 @@ class SpecialTest(unittest.TestCase):
                 data_03=3,
             )
 
+    def testNAVDAHEADING(self):
+        EXPECTED_RESULT1 = "<UBX(NAV-DAHEADING, version=1, reserved0=0, refStationId=0, iTOW=00:02:51, relPosN=0.0, relPosE=0.0, relPosD=0.0, relPosLength=0.0, relPosHeading=0.0, reserved1=0, accN=0.0, accE=0.0, accD=0.0, accLength=0.0, accHeading=0.0, reserved2=0, gnssFixOK=0, diffSoln=0, relPosValid=0, carrSoln=0, isMoving=0, refPosMiss=0, refObsMiss=0, relPosHeadingValid=0, relPosNormalized=0)>"
+        RAW1 = b'\xb5\x62\x01\x45\x40\x00\x01\x00\x00\x00\x48\xe2\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xb3\x7d'
+        res1 = UBXReader.parse(RAW1)
+        # print(f'"{res1}"')
+        self.assertEqual(str(res1), EXPECTED_RESULT1)
+        EXPECTED_RESULT2 = "<UBX(NAV-DAHEADING, version=2, reserved0=0, iTOW=00:02:51, relPosN=0, relPosE=0, relPosD=0, relPosLength=0, relPosHeading=0.0, reserved1=0, accN=0.0, accE=0.0, accD=0.0, accLength=0.0, accHeading=0.0, reserved2=0, gnssFixOK=0, diffSoln=0, relPosValid=0, carrSoln=0, isMoving=0, relPosHeadingValid=0)>"
+        RAW2 = b'\xb5\x62\x01\x45\x3a\x00\x02\x00\x48\xe2\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xae\x75'
+        res2 = UBXReader.parse(RAW2)
+        # print(f'"{res2}"')
+        self.assertEqual(str(res2), EXPECTED_RESULT2)
+        msg1 = UBXMessage("NAV", "NAV-DAHEADING", GET, version=1)
+        self.assertEqual(msg1.identity, "NAV-DAHEADING")
+        msg2 = UBXMessage("NAV", "NAV-DAHEADING", GET, version=2)
+        self.assertEqual(msg2.identity, "NAV-DAHEADING")
+        with self.assertRaisesRegex(UBXMessageError, "NAV-DAHEADING GET message definitions must include version or payload keyword"):
+            msg = UBXMessage("NAV", "NAV-DAHEADING", GET, refStationId=1)
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']

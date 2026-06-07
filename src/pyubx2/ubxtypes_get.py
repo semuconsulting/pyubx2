@@ -2091,6 +2091,70 @@ UBX_PAYLOADS_GET = {
         "velCovED": R4,
         "velCovDD": R4,
     },
+    "NAV-DAHEADINGHP": {  # not publicly documented?
+        "version": U1,  # 0x01
+        "reserved0": U1,
+        "refStationId": U2,
+        "iTOW": U4,
+        "relPosN": I4,  # cm
+        "relPosE": I4,
+        "relPosD": I4,
+        "relPosLength": I4,
+        "relPosHeading": [I4, SCAL5],
+        "reserved1": U4,
+        "_HPrelPosN": [I1, SCAL2],  # added to relPOSN
+        "_HPrelPosE": [I1, SCAL2],  # added to relPOSE
+        "_HPrelPosD": [I1, SCAL2],  # added to relPOSD
+        "_HPrelPosLength": [I1, SCAL2],  # added to relPOSLength
+        "accN": [U4, SCAL1],
+        "accE": [U4, SCAL1],
+        "accD": [U4, SCAL1],
+        "accLength": [U4, SCAL1],
+        "accHeading": [U4, SCAL5],
+        "reserved2": U4,
+        "flags": (
+            X4,
+            {
+                "gnssFixOK": U1,
+                "diffSoln": U1,
+                "relPosValid": U1,
+                "carrSoln": U2,
+                "isMoving": U1,
+                "refPosMiss": U1,
+                "refObsMiss": U1,
+                "relPosHeadingValid": U1,
+                "relPosNormalized": U1,
+            },
+        ),
+    },
+    "NAV-DAHEADING": {  # not publicly documented?
+        "version": U1,  # 0x02
+        "reserved0": U1,
+        "iTOW": U4,
+        "relPosN": I4,  # cm
+        "relPosE": I4,
+        "relPosD": I4,
+        "relPosLength": I4,
+        "relPosHeading": [I4, SCAL5],
+        "reserved1": U4,
+        "accN": [U4, SCAL1],
+        "accE": [U4, SCAL1],
+        "accD": [U4, SCAL1],
+        "accLength": [U4, SCAL1],
+        "accHeading": [U4, SCAL5],
+        "reserved2": U4,
+        "flags": (
+            X4,
+            {
+                "gnssFixOK": U1,
+                "diffSoln": U1,
+                "relPosValid": U1,
+                "carrSoln": U2,
+                "isMoving": U1,
+                "relPosHeadingValid": U1,
+            },
+        ),
+    },
     "NAV-DGPS": {
         "iTOW": U4,
         "age": I4,

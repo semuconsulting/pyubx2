@@ -312,6 +312,29 @@ def get_alpsrv_dict(**kwargs) -> dict:
     return UBX_PAYLOADS_GET["AID-ALPSRV-REQ"]
 
 
+def get_daheading_dict(**kwargs) -> dict:
+    """
+    Select appropriate NAV-DAHEADING GET payload definition by checking
+    value of 'version' attribute (1st byte of payload).
+
+    :param kwargs: optional payload key/value pairs
+    :return: dictionary representing payload definition
+    :rtype: dict
+    """
+
+    if "version" in kwargs:
+        ver = val2bytes(kwargs["version"], U1)
+    elif "payload" in kwargs:
+        ver = kwargs["payload"][0:1]
+    else:
+        raise UBXMessageError(
+            "NAV-DAHEADING GET message definitions must include version or payload keyword"
+        )
+    if ver == b"\x02":
+        return UBX_PAYLOADS_GET["NAV-DAHEADING"]
+    return UBX_PAYLOADS_GET["NAV-DAHEADINGHP"]
+
+
 VARIANTS = {
     POLL: {b"\x06\x31": get_cfgtp5_dict},  # CFG-TP5
     SET: {
@@ -337,6 +360,7 @@ VARIANTS = {
         b"\x02\x59": get_rxmrlm_dict,  # RXM-RLM
         b"\x06\x17": get_cfgnmea_dict,  # CFG-NMEA
         b"\x01\x60": get_aopstatus_dict,  # NAV-AOPSTATUS
+        b"\x01\x45": get_daheading_dict,  # NAV-DAHEADING
         b"\x01\x3c": get_relposned_dict,  # NAV-RELPOSNED
         b"\x27\x09": get_secsig_dict,  # SEC-SIG
     },
