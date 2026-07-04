@@ -34,7 +34,7 @@ This is an independent project and we have no affiliation whatsoever with u-blox
 ![Contributors](https://img.shields.io/github/contributors/semuconsulting/pyubx2.svg)
 ![Open Issues](https://img.shields.io/github/issues-raw/semuconsulting/pyubx2)
 
-The library implements a comprehensive set of inbound (SET/POLL) and outbound (GET) messages for all current u-blox GPS/GNSS devices, but is readily [extensible](#extensibility). Refer to `UBX_MSGIDS` in [ubxtypes_core.py](https://github.com/semuconsulting/pyubx2/blob/master/src/pyubx2/ubxtypes_core.py) for the complete dictionary of messages currently supported. UBX protocol information sourced from public domain u-blox Interface Specifications © 2013-2025, u-blox AG.
+The library implements a comprehensive set of inbound (SET/POLL) and outbound (GET) messages for all current u-blox GPS/GNSS devices, but is readily [extensible](#extensibility). Refer to `UBX_MSGIDS` in [ubxtypes_core.py](https://github.com/semuconsulting/pyubx2/blob/master/src/pyubx2/ubxtypes_core.py) for the complete dictionary of messages currently supported. UBX protocol information sourced from public domain u-blox Interface Specifications © 2013-2026, u-blox AG.
 
 Sphinx API Documentation in HTML format is available at [https://www.semuconsulting.com/pyubx2/](https://www.semuconsulting.com/pyubx2/).
 
@@ -442,7 +442,7 @@ The UBX protocol is principally defined in the modules `ubxtypes_*.py` as a seri
 1. attribute names must be unique within each message class
 2. attribute types must be one of the valid types (I1, U2, X4, etc.)
 3. if the attribute is scaled, attribute type is list of [attribute type as string (I1, U2, etc.), scaling factor as float] e.g. {"lat": [I4, 1e-7]}
-4. repeating or bitfield groups must be defined as a tuple ('numr', {dict}), where:
+4. repeating or bitfield groups must be suffixed "_grp" or "_bit" and defined as a tuple ('numr', {dict}), where:
    'numr' is either:
      a. an integer representing a fixed number of repeats e.g. 32
      b. a string representing the name of a preceding attribute containing the number of repeats e.g. 'numCh'

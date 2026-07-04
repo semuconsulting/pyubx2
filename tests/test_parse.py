@@ -253,7 +253,7 @@ class ParseTest(unittest.TestCase):
         mon_span += b"\x42\xc3"
         res = UBXReader.parse(mon_span)
         self.assertEqual(
-            str(res), "<UBX(MON-SPAN, version=0, numRfBlocks=0, reserved0=513)>"
+            str(res), "<UBX(MON-SPAN, version=0, numRfBlocks=0, msgSource=1, reserved0=2)>"
         )
 
     def testMGAINI1(self):  # test parser of MGA-INI input message with kwargs

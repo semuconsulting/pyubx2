@@ -1,14 +1,13 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.3.4
+
+1. Minor performance improvements to parsing.
+1. Update support for ZED-X20D (https://content.u-blox.com/sites/default/files/documents/ZED-X20D_HDG200_RN_UBXDOC-304424225-21402.pdf):
+
 ### RELEASE 1.3.3
 
-1. Add new configuration database keys for ZED-X20P firmware HGP 2.10:
-
-    - "CFG_I2C_PULL_UPS_DISABLED": (0x1051000b, L),
-    - "CFG_NAVCOR_ENABLE_GAL_HAS": (0x100d0002, L),
-    - "CFG_NAVCOR_ENABLE_HOST": (0x100d0001, L),
-    - "CFG_RTCM_DF028_OUT": (0x30090010, U2),
-    - "CFG_SIGNAL_QZSS_L1CB_ENA": (0x10310039, L),
+1. Add new configuration database keys for ZED-X20P:
 
 ### RELEASE 1.3.2
 

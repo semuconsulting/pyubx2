@@ -11,7 +11,7 @@ NB: Attribute names must be unique within each message class/id
 
 Created on 27 Sep 2020
 
-Information sourced from public domain u-blox Interface Specifications © 2013-2021, u-blox AG
+Information sourced from public domain u-blox Interface Specifications © 2013-2026, u-blox AG
 
 :author: semuadmin (Steve Smith)
 """
@@ -21,7 +21,7 @@ from pyubx2.ubxtypes_core import U1, U2, U4
 UBX_PAYLOADS_POLL = {
     # AID messages are deprecated in favour of MGA messages in >=Gen8
     "AID-ALM": {
-        "group": (
+        "svid_grp": (
             "None",
             {
                 "svid": U1,
@@ -29,7 +29,7 @@ UBX_PAYLOADS_POLL = {
         ),
     },
     "AID-AOP": {
-        "group": (
+        "svid_grp": (
             "None",
             {
                 "svid": U1,
@@ -37,7 +37,7 @@ UBX_PAYLOADS_POLL = {
         ),
     },
     "AID-EPH": {
-        "group": (
+        "svid_grp": (
             "None",
             {
                 "svid": U1,
@@ -101,7 +101,7 @@ UBX_PAYLOADS_POLL = {
         "version": U1,
         "layer": U1,
         "position": U2,
-        "group": ("None", {"keys": U4}),  # repeating group
+        "key_grp": ("None", {"keys": U4}),  # repeating group
     },
     # *************************************************
     "ESF-ALG": {},
@@ -123,6 +123,7 @@ UBX_PAYLOADS_POLL = {
     "MON-IO": {},
     "MON-MSGPP": {},
     "MON-PATCH": {},
+    "MON-PT2": {},
     "MON-RF": {},
     "MON-RXBUF": {},
     "MON-SMGR": {},
@@ -134,6 +135,7 @@ UBX_PAYLOADS_POLL = {
     "NAV-ATT": {},
     "NAV-CLOCK": {},
     "NAV-COV": {},
+    "NAV-DAHEADING": {},
     "NAV-DGPS": {},
     "NAV-DOP": {},
     "NAV-EELL": {},

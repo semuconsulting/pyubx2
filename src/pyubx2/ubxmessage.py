@@ -33,8 +33,10 @@ from pyubx2.ubxhelpers import (
     val2bytes,
 )
 from pyubx2.ubxtypes_core import (
+    BITFIELD,
     CH,
     GET,
+    GROUP,
     POLL,
     SCALROUND,
     SET,
@@ -44,12 +46,6 @@ from pyubx2.ubxtypes_core import (
     UBX_CLASSES,
     UBX_HDR,
     UBX_MSGIDS,
-    X1,
-    X2,
-    X4,
-    X6,
-    X8,
-    X24,
 )
 from pyubx2.ubxtypes_get import UBX_PAYLOADS_GET
 from pyubx2.ubxtypes_poll import UBX_PAYLOADS_POLL
@@ -178,23 +174,22 @@ class UBXMessage:
         """
 
         adef = pdict[anam]  # get attribute definition
-        if isinstance(
-            adef, tuple
-        ):  # repeating group of attributes or subdefined bitfield
-            numr, _ = adef
-            if numr in (X1, X2, X4, X6, X8, X24):  # bitfield
-                if self._parsebf in (1, 2):  # if we're parsing bitfields
-                    if self._parsebf == 2:  # parse as bytes and bits
-                        self._set_attribute_single(anam, numr, offset, index, **kwargs)
-                    offset, index = self._set_attribute_bitfield(
-                        adef, offset, index, **kwargs
-                    )  # parse as bits
-                else:  # parse as bytes only
-                    offset = self._set_attribute_single(
-                        anam, numr, offset, index, **kwargs
+        if BITFIELD in anam:  # 'X' type bitfield
+            sdef, _ = adef
+            if self._parsebf in (1, 2):  # if we're parsing bitfields
+                if self._parsebf == 2:  # parse as bits and single attribute
+                    self._set_attribute_single(
+                        anam[0:-4], sdef, offset, index, **kwargs
                     )
-            else:  # repeating group of attributes
-                offset, index = self._set_attribute_group(adef, offset, index, **kwargs)
+                offset, index = self._set_attribute_bitfield(
+                    adef, offset, index, **kwargs
+                )
+            else:  # parse as single attribute only
+                offset = self._set_attribute_single(
+                    anam[0:-4], sdef, offset, index, **kwargs
+                )
+        elif GROUP in anam:  # repeating group
+            offset, index = self._set_attribute_group(adef, offset, index, **kwargs)
         else:  # single attribute
             offset = self._set_attribute_single(anam, adef, offset, index, **kwargs)
 
@@ -278,7 +273,7 @@ class UBXMessage:
 
         # if attribute is scaled
         ares = 1
-        if isinstance(adef, list):
+        if isinstance(adef, tuple):
             ares = adef[1]  # attribute resolution (i.e. scaling factor)
             adef = adef[0]  # attribute definition
 
