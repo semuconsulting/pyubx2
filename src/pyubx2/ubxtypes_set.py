@@ -6,7 +6,7 @@ THESE ARE THE PAYLOAD DEFINITIONS FOR _SET_ MESSAGES _TO_ THE RECEIVER
 
 Created on 27 Sep 2020
 
-Information sourced from public domain u-blox Interface Specifications © 2013-2021, u-blox AG
+Information sourced from public domain u-blox Interface Specifications © 2013-2026, u-blox AG
 
 :author: semuadmin (Steve Smith)
 """
@@ -14,15 +14,54 @@ Information sourced from public domain u-blox Interface Specifications © 2013-2
 # pylint: disable=too-many-lines, line-too-long
 
 from pyubx2.ubxtypes_core import (
+    E1_N1,
+    E1_N2,
+    E1_N5,
+    E1_N7,
     I1,
     I2,
     I4,
+    P2_N5,
+    P2_N6,
+    P2_N8,
+    P2_N9,
+    P2_N10,
+    P2_N11,
+    P2_N12,
+    P2_N14,
+    P2_N15,
+    P2_N16,
+    P2_N18,
+    P2_N19,
+    P2_N20,
+    P2_N21,
+    P2_N23,
+    P2_N24,
+    P2_N25,
+    P2_N27,
+    P2_N29,
+    P2_N30,
+    P2_N31,
+    P2_N33,
+    P2_N34,
+    P2_N35,
+    P2_N38,
+    P2_N40,
+    P2_N43,
+    P2_N46,
+    P2_N50,
+    P2_N51,
+    P2_N55,
+    P2_N59,
+    P2_N66,
+    P2_P3,
+    P2_P4,
+    P2_P11,
+    P2_P12,
+    P2_P14,
+    P2_P16,
     R4,
     R8,
-    SCAL1,
-    SCAL2,
-    SCAL5,
-    SCAL7,
     U1,
     U2,
     U3,
@@ -47,7 +86,7 @@ UBX_PAYLOADS_SET = {
     # AID messages are deprecated in favour of MGA messages in >=Gen8
     "AID-ALM": {"svid": U4, "week": U4, "optBlock": ("None", {"dwrd": U4})},
     "AID-ALP": {
-        "group": (
+        "alp_grp": (
             "None",
             {
                 "alpData": U2,
@@ -64,7 +103,7 @@ UBX_PAYLOADS_SET = {
         "id1": U1,
         "id2": U1,
         "id3": U4,
-        "group": (
+        "data_grp": (
             "dataSize",
             {
                 "data": U1,
@@ -75,7 +114,7 @@ UBX_PAYLOADS_SET = {
     "AID-EPH": {
         "svid": U4,
         "how": U4,
-        "optBlock": (
+        "sf_grp": (
             "None",
             {
                 "sf1d1": U4,
@@ -191,7 +230,7 @@ UBX_PAYLOADS_SET = {
     "CFG-NMEAv0": UBX_GET["CFG-NMEAv0"],
     "CFG-NMEAvX": UBX_GET["CFG-NMEAvX"],
     "CFG-NVS": {
-        "clearMask": (
+        "clearMask_bit": (
             X4,
             {
                 "reserved0": U12,
@@ -201,7 +240,7 @@ UBX_PAYLOADS_SET = {
                 "aop": U1,
             },
         ),
-        "saveMask": (
+        "saveMask_bit": (
             X4,
             {
                 "reserved3": U12,
@@ -211,7 +250,7 @@ UBX_PAYLOADS_SET = {
                 "aop": U1,
             },
         ),
-        "loadMask": (
+        "loadMask_bit": (
             X4,
             {
                 "reserved6": U12,
@@ -221,7 +260,7 @@ UBX_PAYLOADS_SET = {
                 "aop": U1,
             },
         ),
-        "deviceMask": (
+        "deviceMask_bit": (
             X1,
             {
                 "devBBR": U1,
@@ -235,7 +274,7 @@ UBX_PAYLOADS_SET = {
     "CFG-ODO": UBX_GET["CFG-ODO"],
     "CFG-OTP": {
         "cfgHeader": U12,
-        "group": (
+        "data_grp": (
             "None",
             {
                 "cfgData": U1,
@@ -249,7 +288,7 @@ UBX_PAYLOADS_SET = {
     "CFG-RATE": UBX_GET["CFG-RATE"],
     "CFG-RINV": UBX_GET["CFG-RINV"],
     "CFG-RST": {
-        "navBbrMask": (
+        "navBbrMask_bit": (
             X2,
             {
                 "eph": U1,
@@ -282,7 +321,7 @@ UBX_PAYLOADS_SET = {
     "CFG-USB": UBX_GET["CFG-USB"],
     "CFG-VALDEL": {
         "version": U1,  # = 0 no transaction, 1 with transaction
-        "layers": (
+        "layers_bit": (
             X1,
             {
                 "reserved1": U1,
@@ -290,18 +329,18 @@ UBX_PAYLOADS_SET = {
                 "flash": U1,
             },
         ),
-        "transaction": (  # if version = 1, else reserved
+        "transaction_bit": (  # if version = 1, else reserved
             X1,
             {
                 "action": U2,
             },
         ),
         "reserved0": U1,
-        "group": ("None", {"keys": U4}),  # repeating group
+        "key_grp": ("None", {"keys": U4}),  # repeating group
     },
     "CFG-VALSET": {
         "version": U1,  # = 0 no transaction, 1 with transaction
-        "layers": (
+        "layers_bit": (
             X1,
             {
                 "ram": U1,
@@ -309,14 +348,14 @@ UBX_PAYLOADS_SET = {
                 "flash": U1,
             },
         ),
-        "transaction": (  # if version = 1, else reserved
+        "transaction_bit": (  # if version = 1, else reserved
             X1,
             {
                 "action": U2,
             },
         ),
         "reserved0": U1,
-        "group": ("None", {"cfgData": U1}),  # repeating group
+        "data_grp": ("None", {"cfgData": U1}),  # repeating group
     },
     # ********************************************************************
     # External Sensor Fusion Messages: i.e. External Sensor Measurements and Status Information.
@@ -324,7 +363,7 @@ UBX_PAYLOADS_SET = {
     # if calibTtagValid = 1; last dataField = calibTtag, numMeas = num of dataFields excluding calibTtag
     "ESF-MEAS": {
         "timeTag": U4,
-        "flags": (
+        "flags_bit": (
             X2,
             {
                 "timeMarkSent": U2,
@@ -335,10 +374,10 @@ UBX_PAYLOADS_SET = {
             },
         ),
         "id": U2,
-        "group": (
+        "meas_grp": (
             "numMeas",
             {  # repeating group * numMeas
-                "data": (
+                "data_bit": (
                     X4,
                     {
                         "dataField": X24,
@@ -354,7 +393,7 @@ UBX_PAYLOADS_SET = {
     # Messages in the LOG class are used to configure and report status information of the logging feature.
     "LOG-CREATE": {
         "version": U1,
-        "logCfg": (
+        "logCfg_bit": (
             X1,
             {
                 "circular": U1,
@@ -384,7 +423,7 @@ UBX_PAYLOADS_SET = {
     },
     "LOG-RETRIEVEBATCH": {
         "version": U1,
-        "flags": (
+        "flags_bit": (
             X1,
             {
                 "sendMonFirst": U1,
@@ -392,7 +431,7 @@ UBX_PAYLOADS_SET = {
         ),
         "reserved0": U2,
     },
-    "LOG-STRING": {"group": ("None", {"bytes": U1})},  # repeating group
+    "LOG-STRING": {"byte_grp": ("None", {"bytes": U1})},  # repeating group
     # ********************************************************************
     # Multiple GNSS Assistance Messages: i.e. Assistance data for various GNSS.
     # Messages in the MGA class are used for GNSS aiding information from and to the receiver.
@@ -414,16 +453,16 @@ UBX_PAYLOADS_SET = {
         "svId": U1,
         "reserved0": U1,
         "Wna": U1,
-        "toa": [U1, 2**12],
-        "deltaI": [I2, 2**-19],
-        "sqrtA": [U4, 2**-11],
-        "e": [U4, 2**-21],
-        "omega": [I4, 2**-23],
-        "M0": [I4, 2**-23],
-        "Omega0": [I4, 2**-23],
-        "omegaDot": [I4, 2**-38],
-        "a0": [I2, 2**-20],
-        "a1": [I2, 2**-38],
+        "toa": (U1, P2_N12),
+        "deltaI": (I2, P2_N19),
+        "sqrtA": (U4, P2_N11),
+        "e": (U4, P2_N21),
+        "omega": (I4, P2_N23),
+        "M0": (I4, P2_N23),
+        "Omega0": (I4, P2_N23),
+        "omegaDot": (I4, P2_N38),
+        "a0": (I2, P2_N20),
+        "a1": (I2, P2_N38),
         "reserved1": U4,
     },
     "MGA-DBD": UBX_GET["MGA-DBD"],
@@ -434,36 +473,36 @@ UBX_PAYLOADS_SET = {
         "reserved0": U1,
         "SatH1": U1,
         "IODC": U1,
-        "a2": [I2, 2**-66],
-        "a1": [I4, 2**-50],
-        "a0": [I4, 2**-33],
-        "toc": [U4, 2**3],
-        "TGD1": [I2, SCAL1],
+        "a2": (I2, P2_N66),
+        "a1": (I4, P2_N50),
+        "a0": (I4, P2_N33),
+        "toc": (U4, P2_P3),
+        "TGD1": (I2, E1_N1),
         "URAI": U1,
         "IODE": U1,
-        "toe": [U4, 2**3],
-        "sqrtA": [U4, 2**-19],
-        "e": [U4, 2**-33],
-        "omega": [I4, 2**-31],
-        "Deltan": [I2, 2**-43],
-        "IDOT": [I2, 2**-43],
-        "M0": [I4, 2**-31],
-        "Omega0": [I4, 2**-31],
-        "OmegaDot": [I4, 2**-43],
-        "i0": [I4, 2**-31],
-        "Cuc": [I4, 2**-31],
-        "Cus": [I4, 2**-31],
-        "Crc": [I4, 2**-6],
-        "Crs": [I4, 2**-6],
-        "Cic": [I4, 2**-31],
-        "Cis": [I4, 2**-31],
+        "toe": (U4, P2_P3),
+        "sqrtA": (U4, P2_N19),
+        "e": (U4, P2_N33),
+        "omega": (I4, P2_N31),
+        "Deltan": (I2, P2_N43),
+        "IDOT": (I2, P2_N43),
+        "M0": (I4, P2_N31),
+        "Omega0": (I4, P2_N31),
+        "OmegaDot": (I4, P2_N43),
+        "i0": (I4, P2_N31),
+        "Cuc": (I4, P2_N31),
+        "Cus": (I4, P2_N31),
+        "Crc": (I4, P2_N6),
+        "Crs": (I4, P2_N6),
+        "Cic": (I4, P2_N31),
+        "Cis": (I4, P2_N31),
         "reserved1": U4,
     },
     "MGA-BDS-HEALTH": {
         "type": U1,  # 0x04
         "version": U1,
         "reserved0": U2,
-        "grouphealthcode": (
+        "healthcode_grp": (
             30,
             {
                 "healthCode": U2,
@@ -475,22 +514,22 @@ UBX_PAYLOADS_SET = {
         "type": U1,  # 0x06
         "version": U1,
         "reserved0": U2,
-        "alpha0": [I1, 2**-30],
-        "alpha1": [I1, 2**-27],
-        "alpha2": [I1, 2**-24],
-        "alpha3": [I1, 2**-24],
-        "beta0": [I1, 2**11],
-        "beta1": [I1, 2**14],
-        "beta2": [I1, 2**16],
-        "beta3": [I1, 2**16],
+        "alpha0": (I1, P2_N30),
+        "alpha1": (I1, P2_N27),
+        "alpha2": (I1, P2_N24),
+        "alpha3": (I1, P2_N24),
+        "beta0": (I1, P2_P11),
+        "beta1": (I1, P2_P14),
+        "beta2": (I1, P2_P16),
+        "beta3": (I1, P2_P16),
         "reserved1": U4,
     },
     "MGA-BDS-UTC": {
         "type": U1,  # 0x05
         "version": U1,
         "reserved0": U2,
-        "a0UTC": [I4, 2**-30],
-        "a1UTC": [I4, 2**-50],
+        "a0UTC": (I4, P2_N30),
+        "a1UTC": (I4, P2_N50),
         "dtLS": I1,
         "reserved1": U1,
         "wnRec": U1,
@@ -504,7 +543,7 @@ UBX_PAYLOADS_SET = {
         "version": U1,
         "sequence": U2,
         "size": U2,
-        "group": ("size", {"data": U1}),  # repeating group * size
+        "data_grp": ("size", {"data": U1}),  # repeating group * size
     },
     "MGA-FLASH-STOP": {"type": U1, "version": U1},
     "MGA-GAL-ALM": {
@@ -514,16 +553,16 @@ UBX_PAYLOADS_SET = {
         "reserved0": U1,
         "ioda": U1,
         "almWNa": U1,
-        "toa": [U2, 600],
-        "deltaSqrtA": [I2, 2**-9],
-        "e": [U2, 2**-16],
-        "deltaI": [I2, 2**-14],
-        "omega0": [I2, 2**-15],
-        "omegaDot": [I2, 2**-33],
-        "omega": [I2, 2**-15],
-        "m0": [I2, 2**-15],
-        "af0": [I2, 2**-19],
-        "af1": [I2, 2**-38],
+        "toa": (U2, 600),
+        "deltaSqrtA": (I2, P2_N9),
+        "e": (U2, P2_N16),
+        "deltaI": (I2, P2_N14),
+        "omega0": (I2, P2_N15),
+        "omegaDot": (I2, P2_N33),
+        "omega": (I2, P2_N15),
+        "m0": (I2, P2_N15),
+        "af0": (I2, P2_N19),
+        "af1": (I2, P2_N38),
         "healthE1B": U1,
         "healthE5b": U1,
         "reserved1": U4,
@@ -534,27 +573,27 @@ UBX_PAYLOADS_SET = {
         "svId": U1,
         "reserved0": U1,
         "iodNav": U2,
-        "deltaN": [I2, 2**-43],
-        "m0": [I4, 2**-31],
-        "e": [U4, 2**-33],
-        "sqrtA": [U4, 2**-19],
-        "omega0": [I4, 2**-31],
-        "i0": [I4, 2**-31],
-        "omega": [I4, 2**-31],
-        "omegaDot": [I4, 2**-43],
-        "iDot": [I2, 2**-43],
-        "cuc": [I2, 2**-29],
-        "cus": [I2, 2**-29],
-        "crc": [I2, 2**-5],
-        "crs": [I2, 2**-5],
-        "cic": [I2, 2**-29],
-        "cis": [I2, 2**-29],
-        "toe": [U2, 60],
-        "af0": [I4, 2**-34],
-        "af1": [I4, 2**-46],
-        "af2": [I1, 2**-59],
+        "deltaN": (I2, P2_N43),
+        "m0": (I4, P2_N31),
+        "e": (U4, P2_N33),
+        "sqrtA": (U4, P2_N19),
+        "omega0": (I4, P2_N31),
+        "i0": (I4, P2_N31),
+        "omega": (I4, P2_N31),
+        "omegaDot": (I4, P2_N43),
+        "iDot": (I2, P2_N43),
+        "cuc": (I2, P2_N29),
+        "cus": (I2, P2_N29),
+        "crc": (I2, P2_N5),
+        "crs": (I2, P2_N5),
+        "cic": (I2, P2_N29),
+        "cis": (I2, P2_N29),
+        "toe": (U2, 60),
+        "af0": (I4, P2_N34),
+        "af1": (I4, P2_N46),
+        "af2": (I1, P2_N59),
         "sisaIndexE1E5b": U1,
-        "toc": [U2, 60],
+        "toc": (U2, 60),
         "bgdE1E5b": I2,
         "reserved1": U2,
         "healthE1B": U1,
@@ -567,9 +606,9 @@ UBX_PAYLOADS_SET = {
         "type": U1,
         "version": U1,
         "reserved0": U2,
-        "a0G": [I2, 2**-35],
-        "a1G": [I2, 2**-51],
-        "t0G": [U1, 3600],
+        "a0G": (I2, P2_N35),
+        "a1G": (I2, P2_N51),
+        "t0G": (U1, 3600),
         "wn0G": U1,
         "reserved1": U2,
     },
@@ -577,10 +616,10 @@ UBX_PAYLOADS_SET = {
         "type": U1,
         "version": U1,
         "reserved0": U2,
-        "a0": [I4, 2**-30],
-        "a1": [I4, 2**-50],
+        "a0": (I4, P2_N30),
+        "a1": (I4, P2_N50),
         "dtLS": I1,
-        "tot": [U1, 3600],
+        "tot": (U1, 3600),
         "wnt": U1,
         "wnLSF": U1,
         "dN": U1,
@@ -595,13 +634,13 @@ UBX_PAYLOADS_SET = {
         "N": U2,
         "M": U1,
         "C": U1,
-        "tau": [I2, 2**-18],
-        "epsilon": [U2, 2**-20],
-        "lambda": [I4, 2**-20],
-        "deltaI": [I4, 2**-20],
-        "tLambda": [U4, 2**-5],
-        "deltaT": [I4, 2**-9],
-        "deltaDT": [I1, 2**-14],
+        "tau": (I2, P2_N18),
+        "epsilon": (U2, P2_N20),
+        "lambda": (I4, P2_N20),
+        "deltaI": (I4, P2_N20),
+        "tLambda": (U4, P2_N5),
+        "deltaT": (I4, P2_N9),
+        "deltaDT": (I1, P2_N14),
         "H": I1,
         "omega": I2,
         "reserved1": U4,
@@ -615,30 +654,30 @@ UBX_PAYLOADS_SET = {
         "B": U1,
         "M": U1,
         "H": I1,
-        "x": [I4, 2**-11],
-        "y": [I4, 2**-11],
-        "z": [I4, 2**-11],
-        "dx": [I4, 2**-20],
-        "dy": [I4, 2**-20],
-        "dz": [I4, 2**-20],
-        "ddx": [I1, 2**-30],
-        "ddy": [I1, 2**-30],
-        "ddz": [I1, 2**-30],
-        "tb": [U1, 15],
-        "gamma": [I2, 2**-40],
+        "x": (I4, P2_N11),
+        "y": (I4, P2_N11),
+        "z": (I4, P2_N11),
+        "dx": (I4, P2_N20),
+        "dy": (I4, P2_N20),
+        "dz": (I4, P2_N20),
+        "ddx": (I1, P2_N30),
+        "ddy": (I1, P2_N30),
+        "ddz": (I1, P2_N30),
+        "tb": (U1, 15),
+        "gamma": (I2, P2_N40),
         "E": U1,
-        "deltaTau": [I1, 2**-30],
-        "tau": [I4, 2**-30],
+        "deltaTau": (I1, P2_N30),
+        "tau": (I4, P2_N30),
         "reserved1": U4,
     },
     "MGA-GLO-TIMEOFFSET": {
         "type": U1,
         "version": U1,
         "N": U2,
-        "tauC": [I4, 2**-27],
-        "tauGps": [I4, 2**-31],
-        "B1": [I2, 2**-10],
-        "B2": [I2, 2**-16],
+        "tauC": (I4, P2_N27),
+        "tauGps": (I4, P2_N31),
+        "B1": (I2, P2_N10),
+        "B2": (I2, P2_N16),
         "reserved0": U4,
     },
     "MGA-GPS-ALM": {
@@ -646,17 +685,17 @@ UBX_PAYLOADS_SET = {
         "version": U1,
         "svId": U1,
         "svHealth": U1,
-        "e": [U2, 2**-21],
+        "e": (U2, P2_N21),
         "almWNa": U1,
-        "toa": [U1, 2**12],
-        "deltaI": [I2, 2**-19],
-        "omegaDot": [I2, 2**-38],
-        "sqrtA": [U4, 2**-11],
-        "omega0": [I4, 2**-23],
-        "omega": [I4, 2**-23],
-        "m0": [I4, 2**-23],
-        "af0": [I2, 2**-20],
-        "af1": [I2, 2**-38],
+        "toa": (U1, P2_P12),
+        "deltaI": (I2, P2_N19),
+        "omegaDot": (I2, P2_N38),
+        "sqrtA": (U4, P2_N11),
+        "omega0": (I4, P2_N23),
+        "omega": (I4, P2_N23),
+        "m0": (I4, P2_N23),
+        "af0": (I2, P2_N20),
+        "af1": (I2, P2_N38),
         "reserved0": U4,
     },
     "MGA-GPS-EPH": {
@@ -667,36 +706,36 @@ UBX_PAYLOADS_SET = {
         "fitInterval": U1,
         "uraIndex": U1,
         "svHealth": U1,
-        "tgd": [I1, 2**-31],
+        "tgd": (I1, P2_N31),
         "iodc": U2,
-        "toc": [U2, 2**4],
+        "toc": (U2, P2_P4),
         "reserved1": U1,
-        "af2": [I1, 2**-55],
-        "af1": [I2, 2**-43],
-        "af0": [I4, 2**-31],
-        "crs": [I2, 2**-5],
-        "deltaN": [I2, 2**-43],
-        "m0": [I4, 2**-31],
-        "cuc": [I2, 2**-29],
-        "cus": [I2, 2**-29],
-        "e": [U4, 2**-33],
-        "sqrtA": [U4, 2**-19],
-        "toe": [U2, 2**4],
-        "cic": [I2, 2**-29],
-        "omega0": [I4, 2**-31],
-        "cis": [I2, 2**-29],
-        "crc": [I2, 2**-5],
-        "i0": [I4, 2**-31],
-        "omega": [I4, 2**-31],
-        "omegaDot": [I4, 2**-43],
-        "idot": [I2, 2**-43],
+        "af2": (I1, P2_N55),
+        "af1": (I2, P2_N43),
+        "af0": (I4, P2_N31),
+        "crs": (I2, P2_N5),
+        "deltaN": (I2, P2_N43),
+        "m0": (I4, P2_N31),
+        "cuc": (I2, P2_N29),
+        "cus": (I2, P2_N29),
+        "e": (U4, P2_N33),
+        "sqrtA": (U4, P2_N19),
+        "toe": (U2, P2_P4),
+        "cic": (I2, P2_N29),
+        "omega0": (I4, P2_N31),
+        "cis": (I2, P2_N29),
+        "crc": (I2, P2_N5),
+        "i0": (I4, P2_N31),
+        "omega": (I4, P2_N31),
+        "omegaDot": (I4, P2_N43),
+        "idot": (I2, P2_N43),
         "reserved2": U2,
     },
     "MGA-GPS-HEALTH": {
         "type": U1,
         "version": U1,
         "reserved0": U2,
-        "grouphealthcode": (
+        "healthcode_grp": (
             32,
             {
                 "healthCode": U1,
@@ -708,24 +747,24 @@ UBX_PAYLOADS_SET = {
         "type": U1,
         "version": U1,
         "reserved0": U2,
-        "ionoAlpha0": [I1, 2**-30],
-        "ionoAlpha1": [I1, 2**-27],
-        "ionoAlpha2": [I1, 2**-24],
-        "ionoAlpha3": [I1, 2**-24],
-        "ionoBeta0": [I1, 2**11],
-        "ionoBeta1": [I1, 2**14],
-        "ionoBeta2": [I1, 2**16],
-        "ionoBeta3": [I1, 2**16],
+        "ionoAlpha0": (I1, P2_N30),
+        "ionoAlpha1": (I1, P2_N27),
+        "ionoAlpha2": (I1, P2_N24),
+        "ionoAlpha3": (I1, P2_N24),
+        "ionoBeta0": (I1, P2_P11),
+        "ionoBeta1": (I1, P2_P14),
+        "ionoBeta2": (I1, P2_P16),
+        "ionoBeta3": (I1, P2_P16),
         "reserved1": U4,
     },
     "MGA-GPS-UTC": {
         "type": U1,
         "version": U1,
         "reserved0": U2,
-        "utcA0": [I4, 2**-30],
-        "utcA1": [I4, 2**-50],
+        "utcA0": (I4, P2_N30),
+        "utcA1": (I4, P2_N50),
         "utcDtLS": I1,
-        "utcTot": [U1, 2**12],
+        "utcTot": (U1, P2_P12),
         "utcWNt": U1,
         "utcWNlsf": U1,
         "utcDn": U1,
@@ -745,34 +784,34 @@ UBX_PAYLOADS_SET = {
         "reserved0": U2,
         "d2kRef": U2,
         "d2kMax": U2,
-        "xpP0": [I4, 2**-30],
-        "xpP1": [I4, 2**-30],
-        "ypP0": [I4, 2**-30],
-        "ypP1": [I4, 2**-30],
-        "dUT1": [I4, 2**-25],
-        "ddUT1": [I4, 2**-30],
+        "xpP0": (I4, P2_N30),
+        "xpP1": (I4, P2_N30),
+        "ypP0": (I4, P2_N30),
+        "ypP1": (I4, P2_N30),
+        "dUT1": (I4, P2_N25),
+        "ddUT1": (I4, P2_N30),
         "reserved1": U40,
     },
     "MGA-INI-FREQ": {
         "type": U1,
         "version": U1,
         "reserved0": U1,
-        "flags": (
+        "flags_bit": (
             X1,
             {
                 "source": U4,
                 "fall": U1,
             },
         ),
-        "freq": [I4, SCAL2],
+        "freq": (I4, E1_N2),
         "freqAcc": U4,
     },
     "MGA-INI-POS-LLH": {
         "type": U1,
         "version": U1,
         "reserved0": U2,
-        "lat": [I4, SCAL7],
-        "lon": [I4, SCAL7],
+        "lat": (I4, E1_N7),
+        "lon": (I4, E1_N7),
         "alt": I4,
         "posAcc": U4,
     },
@@ -788,7 +827,7 @@ UBX_PAYLOADS_SET = {
     "MGA-INI-TIME-GNSS": {
         "type": U1,
         "version": U1,
-        "ref": (
+        "ref_bit": (
             X1,
             {
                 "source": U4,
@@ -808,7 +847,7 @@ UBX_PAYLOADS_SET = {
     "MGA-INI-TIME-UTC": {
         "type": U1,
         "version": U1,
-        "ref": (
+        "ref_bit": (
             X1,
             {
                 "source": U4,
@@ -834,17 +873,17 @@ UBX_PAYLOADS_SET = {
         "version": U1,
         "svId": U1,
         "svHealth": U1,
-        "e": [U2, 2**-21],
+        "e": (U2, P2_N21),
         "almWNa": U1,
-        "toa": [U1, 2**12],
-        "deltaI": [I2, 2**-19],
-        "omegaDot": [I2, 2**-38],
-        "sqrtA": [U4, 2**-11],
-        "omega0": [I4, 2**-23],
-        "omega": [I4, 2**-23],
-        "m0": [I4, 2**-23],
-        "af0": [I2, 2**-20],
-        "af1": [I2, 2**-38],
+        "toa": (U1, P2_P12),
+        "deltaI": (I2, P2_N19),
+        "omegaDot": (I2, P2_N38),
+        "sqrtA": (U4, P2_N11),
+        "omega0": (I4, P2_N23),
+        "omega": (I4, P2_N23),
+        "m0": (I4, P2_N23),
+        "af0": (I2, P2_N20),
+        "af1": (I2, P2_N38),
         "reserved0": U4,
     },
     "MGA-QZSS-EPH": {
@@ -855,36 +894,36 @@ UBX_PAYLOADS_SET = {
         "fitInterval": U1,
         "uraIndex": U1,
         "svHealth": U1,
-        "tgd": [I1, 2**-31],
+        "tgd": (I1, P2_N31),
         "iodc": U2,
-        "toc": [U2, 2**4],
+        "toc": (U2, P2_P4),
         "reserved1": U1,
-        "af2": [I1, 2**-55],
-        "af1": [I2, 2**-43],
-        "af0": [I4, 2**-31],
-        "crs": [I2, 2**-5],
-        "deltaN": [I2, 2**-43],
-        "m0": [I4, 2**-31],
-        "cuc": [I2, 2**-29],
-        "cus": [I2, 2**-29],
-        "e": [U4, 2**-33],
-        "sqrtA": [U4, 2**-19],
-        "toe": [U2, 2**4],
-        "cic": [I2, 2**-29],
-        "omega0": [I4, 2**-31],
-        "cis": [I2, 2**-29],
-        "crc": [I2, 2**-5],
-        "i0": [I4, 2**-31],
-        "omega": [I4, 2**-31],
-        "omegaDot": [I4, 2**-43],
-        "idot": [I2, 2**-43],
+        "af2": (I1, P2_N55),
+        "af1": (I2, P2_N43),
+        "af0": (I4, P2_N31),
+        "crs": (I2, P2_N5),
+        "deltaN": (I2, P2_N43),
+        "m0": (I4, P2_N31),
+        "cuc": (I2, P2_N29),
+        "cus": (I2, P2_N29),
+        "e": (U4, P2_N33),
+        "sqrtA": (U4, P2_N19),
+        "toe": (U2, P2_P4),
+        "cic": (I2, P2_N29),
+        "omega0": (I4, P2_N31),
+        "cis": (I2, P2_N29),
+        "crc": (I2, P2_N5),
+        "i0": (I4, P2_N31),
+        "omega": (I4, P2_N31),
+        "omegaDot": (I4, P2_N43),
+        "idot": (I2, P2_N43),
         "reserved2": U2,
     },
     "MGA-QZSS-HEALTH": {
         "type": U1,
         "version": U1,
         "reserved0": U2,
-        "grouphealthcode": (
+        "healthcode_grp": (
             5,
             {
                 "healthCode": U1,
@@ -896,12 +935,12 @@ UBX_PAYLOADS_SET = {
         "type": U1,
         "version": U1,
         "age": U2,
-        "roll": [I4, SCAL5],
-        "pitch": [I4, SCAL5],
-        "heading": [I4, SCAL5],
-        "accRoll": [U4, SCAL5],
-        "accPitch": [U4, SCAL5],
-        "accHeading": [U4, SCAL5],
+        "roll": (I4, E1_N5),
+        "pitch": (I4, E1_N5),
+        "heading": (I4, E1_N5),
+        "accRoll": (U4, E1_N5),
+        "accPitch": (U4, E1_N5),
+        "accHeading": (U4, E1_N5),
     },
     "MGA-SF-INI": UBX_GET["MGA-SF-INI"],
     "MGA-SF-INI2": UBX_GET["MGA-SF-INI2"],
@@ -919,7 +958,7 @@ UBX_PAYLOADS_SET = {
     "RXM-PMP-V1": UBX_GET["RXM-PMP-V1"],
     "RXM-PMREQ-S": {
         "duration": U4,
-        "flags": (
+        "flags_bit": (
             X4,
             {
                 "reserved1": U1,
@@ -931,7 +970,7 @@ UBX_PAYLOADS_SET = {
         "version": U1,  # 0x00
         "reserved0": U3,
         "duration": U4,
-        "flags": (
+        "flags_bit": (
             X4,
             {
                 "reserved1": U1,
@@ -939,7 +978,7 @@ UBX_PAYLOADS_SET = {
                 "force": U1,
             },
         ),
-        "wakeupSources": (
+        "wakeupSources_bit": (
             X4,
             {
                 "reserved2": U3,
@@ -962,7 +1001,7 @@ UBX_PAYLOADS_SET = {
         "oscId": U1,
         "flags": U1,
         "reserved1": U1,
-        "value": [I4, 2**-8],
+        "value": (I4, P2_N8),
     },
     "TIM-SMEAS": UBX_GET["TIM-SMEAS"],
     "TIM-VCOCAL-V0": {  # stop calibration

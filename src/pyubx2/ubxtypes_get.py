@@ -6,7 +6,7 @@ THESE ARE THE PAYLOAD DEFINITIONS FOR _GET_ MESSAGES _FROM_ THE RECEIVER
 
 Created on 27 Sep 2020
 
-Information sourced from public domain u-blox Interface Specifications © 2013-2021, u-blox AG
+Information sourced from public domain u-blox Interface Specifications © 2013-2026, u-blox AG
 
 :author: semuadmin (Steve Smith)
 """
@@ -22,19 +22,26 @@ from pyubx2.ubxtypes_core import (
     C30,
     C32,
     CH,
+    E1_N1,
+    E1_N2,
+    E1_N3,
+    E1_N4,
+    E1_N5,
+    E1_N6,
+    E1_N7,
+    E1_N9,
     I1,
     I2,
     I4,
+    P2_N6,
+    P2_N8,
+    P2_N12,
+    P2_N16,
+    P2_N21,
+    P2_N24,
+    P2_N32,
     R4,
     R8,
-    SCAL1,
-    SCAL2,
-    SCAL3,
-    SCAL4,
-    SCAL5,
-    SCAL6,
-    SCAL7,
-    SCAL9,
     U1,
     U2,
     U3,
@@ -46,12 +53,14 @@ from pyubx2.ubxtypes_core import (
     U9,
     U10,
     U12,
+    U14,
     U15,
     U16,
     U20,
     U22,
     U23,
     U24,
+    U27,
     U32,
     U64,
     U90,
@@ -74,7 +83,7 @@ UBX_PAYLOADS_GET = {
     "AID-EPH": {
         "svid": U4,
         "how": U4,
-        "optBlock": (
+        "sf_grp": (
             "None",
             {
                 "sf1d1": U4,
@@ -172,7 +181,7 @@ UBX_PAYLOADS_GET = {
         "ofs": U2,
         "size": U2,
         "fileId": U2,
-        "group": (
+        "data_grp": (
             "size",
             {
                 "data": U2,
@@ -185,7 +194,7 @@ UBX_PAYLOADS_GET = {
     # messages in the CFG class sent to the receiver are either acknowledged (with message UBX-ACK-ACK) if
     # processed successfully or rejected (with message UBX-ACK-NAK) if processing unsuccessfully.
     "CFG-ANT": {
-        "flags": (
+        "flags_bit": (
             X2,
             {
                 "svcs": U1,
@@ -195,7 +204,7 @@ UBX_PAYLOADS_GET = {
                 "recovery": U1,
             },
         ),
-        "pins": (
+        "pins_bit": (
             X2,
             {
                 "pinSwitch": U5,
@@ -207,7 +216,7 @@ UBX_PAYLOADS_GET = {
     },
     "CFG-BATCH": {
         "version": U1,
-        "flags": (
+        "flags_bit": (
             X1,
             {
                 "enable": U1,
@@ -228,7 +237,7 @@ UBX_PAYLOADS_GET = {
         "clearMask": X4,
         "saveMask": X4,
         "loadMask": X4,
-        "deviceMask": (
+        "deviceMask_bit": (
             X1,
             {
                 "devBBR": U1,
@@ -260,26 +269,26 @@ UBX_PAYLOADS_GET = {
         "version": U1,
         "numOsc": U1,
         "reserved1": U2,
-        "group": (
+        "osc_grp": (
             "numOsc",
             {  # repeating group * numOsc
                 "oscId": U1,
                 "reserved2": U1,
-                "flags": (
+                "flags_bit": (
                     X2,
                     {
                         "isCalibrated": U1,
                         "controlIf": U4,
                     },
                 ),
-                "freq": [U4, 0.25],
+                "freq": (U4, 0.25),
                 "phaseOffset": I4,
-                "withTemp": [U4, 2**-8],
-                "withAge": [U4, 2**-8],
+                "withTemp": (U4, P2_N8),
+                "withAge": (U4, P2_N8),
                 "timeToTemp": U2,
                 "reserved3": U2,
-                "gainVco": [I4, 2**-16],
-                "gainUncertainty": [U1, 2**-8],
+                "gainVco": (I4, P2_N16),
+                "gainUncertainty": (U1, P2_N8),
                 "reserved4": U3,
             },
         ),
@@ -287,7 +296,7 @@ UBX_PAYLOADS_GET = {
     "CFG-DYNSEED": {"version": U1, "reserved1": U3, "seedHi": U4, "seedLo": U4},
     "CFG-EKF": {
         "disableEkf": U1,
-        "actionFLags": (
+        "actionFlags_bit": (
             X1,
             {
                 "reserved0": U1,
@@ -300,14 +309,14 @@ UBX_PAYLOADS_GET = {
                 "dir": U1,
             },
         ),
-        "configFlags": (
+        "configFlags_bit": (
             X1,
             {
                 "pulsesPerM": U1,
                 "userSerWt": U1,
             },
         ),
-        "inverseFlags": (
+        "inverseFlags_bit": (
             X1,
             {
                 "invDir": U1,
@@ -318,42 +327,42 @@ UBX_PAYLOADS_GET = {
         "nomPPDist": U2,
         "nomZero": U2,
         "nomSens": U1,
-        "rmsTemp": [U1, SCAL1],
+        "rmsTemp": (U1, E1_N1),
         "tempUpdate": U2,
     },
     "CFG-ESFALG": {
-        "bitfield": (
+        "bitfield_bit": (
             X4,
             {
                 "version": U8,
                 "doAutoMntAlg": U1,
             },
         ),
-        "yaw": [U4, SCAL2],
-        "pitch": [I2, SCAL2],
-        "roll": [I2, SCAL2],
+        "yaw": (U4, E1_N2),
+        "pitch": (I2, E1_N2),
+        "roll": (I2, E1_N2),
     },
     "CFG-ESFA": {
         "version": U1,
         "reserved1": U9,
-        "accelRmsThdl": [U1, 2**-6],
+        "accelRmsThdl": (U1, P2_N6),
         "frequency": U1,
         "latency": U2,
-        "accuracy": [U2, SCAL4],
+        "accuracy": (U2, E1_N4),
         "reserved2": U4,
     },
     "CFG-ESFG": {
         "version": U1,
         "reserved1": U7,
         "tcTableSaveRate": U2,
-        "gyroRmsThdl": [U1, 2**-8],
+        "gyroRmsThdl": (U1, P2_N8),
         "frequency": U1,
         "latency": U2,
-        "accuracy": [U2, SCAL3],
+        "accuracy": (U2, E1_N3),
         "reserved2": U4,
     },
     "CFG-ESFGWT": {
-        "flags": (
+        "flags_bit": (
             X2,
             {
                 "reserved0": U12,
@@ -363,10 +372,10 @@ UBX_PAYLOADS_GET = {
             },
         ),
         "id": U2,
-        "wtFactor": [U4, SCAL6],
+        "wtFactor": (U4, E1_N6),
         "reserved1": U4,
-        "wtQuantError": [U4, SCAL6],
-        "timeTagFactor": [U4, SCAL6],
+        "wtQuantError": (U4, E1_N6),
+        "timeTagFactor": (U4, E1_N6),
         "wtCountMax": U4,
         "timeTagMax": U4,
         "wtLatency": U2,
@@ -379,7 +388,7 @@ UBX_PAYLOADS_GET = {
     },
     "CFG-ESFWT": {
         "version": U1,
-        "flags1": (
+        "flags1_bit": (
             X1,
             {
                 "combineTicks": U1,
@@ -389,7 +398,7 @@ UBX_PAYLOADS_GET = {
                 "useWtPin": U1,
             },
         ),
-        "flags2": (
+        "flags2_bit": (
             X1,
             {
                 "autoWtCountMaxOff": U1,
@@ -399,12 +408,12 @@ UBX_PAYLOADS_GET = {
             },
         ),
         "reserved1": U1,
-        "wtFactor": [U4, SCAL6],
-        "wtQuantError": [U4, SCAL6],
+        "wtFactor": (U4, E1_N6),
+        "wtQuantError": (U4, E1_N6),
         "wtCountMax": U4,
         "wtLatency": U2,
         "wtFrequency": U1,
-        "flags3": (
+        "flags3_bit": (
             X1,
             {
                 "reserved3": U4,
@@ -418,22 +427,22 @@ UBX_PAYLOADS_GET = {
         "version": U1,
         "numSources": U1,
         "reserved1": U2,
-        "group": (
+        "source_grp": (
             "numSources",
             {  # repeating group * numSources
                 "extInt": U1,
                 "sourceType": U1,
-                "flags": (
+                "flags_bit": (
                     X2,
                     {
                         "polarity": U1,
                         "gnssUtc": U1,
                     },
                 ),
-                "freq": [U4, 0.25],
+                "freq": (U4, 0.25),
                 "reserved2": U4,
-                "withTemp": [U4, 2**-8],
-                "withAge": [U4, 2**-8],
+                "withTemp": (U4, P2_N8),
+                "withAge": (U4, P2_N8),
                 "timeToTemp": U2,
                 "maxDevLifeTim": U2,
                 "offset": I4,
@@ -448,10 +457,13 @@ UBX_PAYLOADS_GET = {
         "reserved1": U2,
         "seedHi": U4,
         "seedLo": U4,
-        "group": ("length", {"classId": U1, "msgId": U1}),  # repeating group * length
+        "seed_grp": (
+            "length",
+            {"classId": U1, "msgId": U1},
+        ),  # repeating group * length
     },
     "CFG-FXN": {
-        "flags": (
+        "flags_bit": (
             X4,
             {
                 "reserved0": U1,
@@ -479,12 +491,12 @@ UBX_PAYLOADS_GET = {
         "pinPolarity": U1,
         "pin": U1,
         "reserved1": U1,
-        "group": (
+        "fence_grp": (
             "numFences",
             {
-                "lat": [I4, SCAL7],
-                "lon": [I4, SCAL7],
-                "radius": [U4, SCAL2],
+                "lat": (I4, E1_N7),
+                "lon": (I4, E1_N7),
+                "radius": (U4, E1_N2),
             },  # repeating group * numFences
         ),
     },
@@ -493,14 +505,14 @@ UBX_PAYLOADS_GET = {
         "numTrkChHw": U1,
         "numTrkChUse": U1,
         "numConfigBlocks": U1,
-        "group": (
+        "block_grp": (
             "numConfigBlocks",
             {  # repeating group * numConfigBlocks
                 "gnssId": U1,
                 "resTrkCh": U1,
                 "maxTrkCh": U1,
                 "reserved0": U1,
-                "flags": (
+                "flags_bit": (
                     X4,
                     {
                         "enable": U1,
@@ -520,10 +532,10 @@ UBX_PAYLOADS_GET = {
     "CFG-INF": {
         "protocolID": U1,
         "reserved0": U3,
-        "infMaskGroup": (
+        "infMask_grp": (
             6,
             {
-                "infMsgMask": (
+                "infMsgMask_bit": (
                     X1,
                     {
                         "enableError": U1,
@@ -537,7 +549,7 @@ UBX_PAYLOADS_GET = {
         ),
     },
     "CFG-ITFM": {
-        "config": (
+        "config_bit": (
             X4,
             {
                 "bbThreshold": U4,
@@ -546,7 +558,7 @@ UBX_PAYLOADS_GET = {
                 "enable": U1,
             },
         ),
-        "config2": (
+        "config2_bit": (
             X4,
             {
                 "generalBits": U12,
@@ -557,7 +569,7 @@ UBX_PAYLOADS_GET = {
     },
     "CFG-LOGFILTER": {
         "version": U1,
-        "flags": (
+        "flags_bit": (
             X1,
             {
                 "recordEnabled": U1,
@@ -581,7 +593,7 @@ UBX_PAYLOADS_GET = {
         "reserved": U1,
     },
     "CFG-NAV5": {
-        "mask": (
+        "mask_bit": (
             X2,
             {
                 "dyn": U1,
@@ -599,12 +611,12 @@ UBX_PAYLOADS_GET = {
         ),
         "dynModel": U1,
         "fixMode": U1,
-        "fixedAlt": [I4, SCAL2],
-        "fixedAltVar": [U4, SCAL4],
+        "fixedAlt": (I4, E1_N2),
+        "fixedAltVar": (U4, E1_N4),
         "minElev": I1,
         "drLimit": U1,
-        "pDop": [U2, SCAL1],
-        "tDop": [U2, SCAL1],
+        "pDop": (U2, E1_N1),
+        "tDop": (U2, E1_N1),
         "pAcc": U2,
         "tAcc": U2,
         "staticHoldThresh": U1,
@@ -618,7 +630,7 @@ UBX_PAYLOADS_GET = {
     },
     "CFG-NAVX5": {
         "version": U2,
-        "mask1": (
+        "mask1_bit": (
             X2,
             {
                 "reserved9": U2,
@@ -634,7 +646,7 @@ UBX_PAYLOADS_GET = {
                 "aop": U1,
             },
         ),
-        "mask2": (
+        "mask2_bit": (
             X4,
             {
                 "reserved13": U6,
@@ -664,7 +676,7 @@ UBX_PAYLOADS_GET = {
         "useAdr": U1,
     },
     "CFG-NMEAvX": {  # deprecated length 4
-        "filter": (
+        "filter_bit": (
             X1,
             {
                 "posFilt": U1,
@@ -677,7 +689,7 @@ UBX_PAYLOADS_GET = {
         ),
         "nmeaVersion": U1,
         "numSV": U1,
-        "flags": (
+        "flags_bit": (
             X1,
             {
                 "compat": U1,
@@ -688,7 +700,7 @@ UBX_PAYLOADS_GET = {
         ),
     },
     "CFG-NMEAv0": {  # v0 deprecated length 12
-        "filter": (
+        "filter_bit": (
             X1,
             {
                 "posFilt": U1,
@@ -701,7 +713,7 @@ UBX_PAYLOADS_GET = {
         ),
         "nmeaVersion": U1,
         "numSV": U1,
-        "flags": (
+        "flags_bit": (
             X1,
             {
                 "compat": U1,
@@ -710,7 +722,7 @@ UBX_PAYLOADS_GET = {
                 "highPrec": U1,
             },
         ),
-        "gnssToFilter": (
+        "gnssToFilter_bit": (
             X4,
             {
                 "gps": U1,
@@ -728,7 +740,7 @@ UBX_PAYLOADS_GET = {
         "version": U1,
     },
     "CFG-NMEA": {  # preferred version length 20
-        "filter": (
+        "filter_bit": (
             X1,
             {
                 "posFilt": U1,
@@ -741,7 +753,7 @@ UBX_PAYLOADS_GET = {
         ),
         "nmeaVersion": U1,
         "numSV": U1,
-        "flags": (
+        "flags_bit": (
             X1,
             {
                 "compat": U1,
@@ -750,7 +762,7 @@ UBX_PAYLOADS_GET = {
                 "highPrec": U1,
             },
         ),
-        "gnssToFilter": (
+        "gnssToFilter_bit": (
             X4,
             {
                 "gps": U1,
@@ -772,7 +784,7 @@ UBX_PAYLOADS_GET = {
     "CFG-ODO": {
         "version": U1,
         "reserved0": U3,
-        "flags": (
+        "flags_bit": (
             X1,
             {
                 "useODO": U1,
@@ -781,14 +793,14 @@ UBX_PAYLOADS_GET = {
                 "outLPCog": U1,
             },
         ),
-        "odoCfg": (
+        "odoCfg_bit": (
             X1,
             {
                 "profile": U3,
             },
         ),
         "reserved1": U6,
-        "cogMaxSpeed": [U1, SCAL1],
+        "cogMaxSpeed": (U1, E1_N1),
         "cogMaxPosAcc": U1,
         "reserved2": U2,
         "velLpGain": U1,
@@ -800,7 +812,7 @@ UBX_PAYLOADS_GET = {
         "reserved1": U1,
         "reserved2": U1,
         "reserved3": U1,
-        "flags": (
+        "flags_bit": (
             X4,
             {
                 "reserved4": U2,
@@ -826,7 +838,7 @@ UBX_PAYLOADS_GET = {
         "reserved0": U1,
         "maxStartupStateDur": U1,
         "reserved1": U1,
-        "flags": (
+        "flags_bit": (
             X4,
             {
                 "reserved3": U1,
@@ -862,7 +874,7 @@ UBX_PAYLOADS_GET = {
     "CFG-PRT": {
         "portID": U1,
         "reserved0": U1,
-        "txReady": (
+        "txReady_bit": (
             X2,
             {
                 "enable": U1,
@@ -871,7 +883,7 @@ UBX_PAYLOADS_GET = {
                 "thres": U9,
             },
         ),
-        "UARTmode": (
+        "UARTmode_bit": (
             X4,
             {
                 "reserved2": U6,
@@ -882,7 +894,7 @@ UBX_PAYLOADS_GET = {
             },
         ),
         "baudRate": U4,
-        "inProtoMask": (
+        "inProtoMask_bit": (
             X2,
             {
                 "inUBX": U1,
@@ -892,7 +904,7 @@ UBX_PAYLOADS_GET = {
                 "inRTCM3": U1,
             },
         ),
-        "outProtoMask": (
+        "outProtoMask_bit": (
             X2,
             {
                 "outUBX": U1,
@@ -901,7 +913,7 @@ UBX_PAYLOADS_GET = {
                 "outRTCM3": U1,
             },
         ),
-        "flags": (
+        "flags_bit": (
             X2,
             {
                 "reserved6": U1,
@@ -913,25 +925,25 @@ UBX_PAYLOADS_GET = {
     "CFG-PWR": {"version": U1, "reserved1": U3, "state": U4},
     "CFG-RATE": {"measRate": U2, "navRate": U2, "timeRef": U2},
     "CFG-RINV": {
-        "flags": (
+        "flags_bit": (
             X1,
             {
                 "dump": U1,
                 "binary": U1,
             },
         ),
-        "group": ("None", {"data": U1}),
+        "data_grp": ("None", {"data": U1}),
     },  # repeating group
     "CFG-RXM": {"reserved0": U1, "lpMode": U1},
     "CFG-SBAS": {
-        "mode": (
+        "mode_bit": (
             X1,
             {
                 "enabled": U1,
                 "test": U1,
             },
         ),
-        "usage": (
+        "usage_bit": (
             X1,
             {
                 "range": U1,
@@ -940,7 +952,7 @@ UBX_PAYLOADS_GET = {
             },
         ),
         "maxSBAS": U1,
-        "scanmode2": (
+        "scanmode2_bit": (
             X1,
             {
                 "PRN152": U1,
@@ -952,7 +964,7 @@ UBX_PAYLOADS_GET = {
                 "PRN158": U1,
             },
         ),
-        "scanmode1": (
+        "scanmode1_bit": (
             X4,
             {
                 "PRN120": U1,
@@ -993,7 +1005,7 @@ UBX_PAYLOADS_GET = {
     "CFG-SENIF": {
         "type": U1,
         "version": U1,
-        "flags": (
+        "flags_bit": (
             X2,
             {
                 "senConn": U1,
@@ -1002,7 +1014,7 @@ UBX_PAYLOADS_GET = {
         "pioConf": X2,
     },
     "CFG-SLAS": {
-        "mode": (
+        "mode_bit": (
             X1,
             {
                 "enabled": U1,
@@ -1020,7 +1032,7 @@ UBX_PAYLOADS_GET = {
         "reserved1": U2,
         "freqTolerance": U2,
         "timeTolerance": U2,
-        "messageCfg": (
+        "messageCfg_bit": (
             X2,
             {
                 "measInternal": U1,
@@ -1030,7 +1042,7 @@ UBX_PAYLOADS_GET = {
             },
         ),
         "maxSlewRate": U2,
-        "flags": (
+        "flags_bit": (
             X4,
             {
                 "disableInternal": U1,
@@ -1069,7 +1081,7 @@ UBX_PAYLOADS_GET = {
     "CFG-TMODE2": {
         "timeMode": U1,
         "reserved1": U1,
-        "flags": (
+        "flags_bit": (
             X2,
             {
                 "lla": U1,
@@ -1086,7 +1098,7 @@ UBX_PAYLOADS_GET = {
     "CFG-TMODE3": {
         "version": U1,
         "reserved0": U1,
-        "flags": (
+        "flags_bit": (
             X2,
             {
                 "rcvrMode": U8,
@@ -1110,7 +1122,7 @@ UBX_PAYLOADS_GET = {
         "length": U4,
         "status": I1,
         "timeRef": U1,
-        "flags": (
+        "flags_bit": (
             X1,
             {
                 "syncMode": U1,
@@ -1132,7 +1144,7 @@ UBX_PAYLOADS_GET = {
         "pulseLenRatio": U4,
         "pulseLenRatioLock": U4,
         "userConfigDelay": I4,
-        "flags": (
+        "flags_bit": (
             X4,
             {
                 "active": U1,
@@ -1149,7 +1161,7 @@ UBX_PAYLOADS_GET = {
     },
     "CFG-TXSLOT": {
         "version": U1,
-        "enable": (
+        "enable_bit": (
             X1,
             {
                 "enableDDC": U1,
@@ -1171,7 +1183,7 @@ UBX_PAYLOADS_GET = {
         "reserved0": U2,
         "reserved1": U2,
         "powerConsumption": U2,
-        "flags": (
+        "flags_bit": (
             X2,
             {
                 "reEnum": U1,
@@ -1186,7 +1198,7 @@ UBX_PAYLOADS_GET = {
         "version": U1,
         "layer": U1,
         "position": U2,
-        "group": ("None", {"cfgData": U1}),  # repeating group
+        "data_grp": ("None", {"cfgData": U1}),  # repeating group
     },
     # ********************************************************************
     # External Sensor Fusion Messages: i.e. External Sensor Measurements and Status Information.
@@ -1194,14 +1206,14 @@ UBX_PAYLOADS_GET = {
     "ESF-ALG": {
         "iTOW": U4,
         "version": U1,
-        "flags": (
+        "flags_bit": (
             X1,
             {
                 "autoMntAlgOn": U1,
                 "status": U3,
             },
         ),
-        "error": (
+        "error_bit": (
             X1,
             {
                 "tiltAlgError": U1,
@@ -1210,16 +1222,16 @@ UBX_PAYLOADS_GET = {
             },
         ),
         "reserved0": U1,
-        "yaw": [U4, SCAL2],
-        "pitch": [I2, SCAL2],
-        "roll": [I2, SCAL2],
+        "yaw": (U4, E1_N2),
+        "pitch": (I2, E1_N2),
+        "roll": (I2, E1_N2),
     },
     "ESF-CAL": {
         "sTtag": U4,
         "version": U1,
         "reserved0": U3,
         "reserved1": U4,
-        "group": (  # variable by size repeating group
+        "data_grp": (  # variable by size repeating group
             "None",
             {
                 "data": (
@@ -1233,7 +1245,7 @@ UBX_PAYLOADS_GET = {
         ),
     },
     "ESF-INS": {
-        "bitfield0": (
+        "flags_bit": (
             X4,
             {
                 "version": U8,
@@ -1247,17 +1259,17 @@ UBX_PAYLOADS_GET = {
         ),
         "reserved0": U4,
         "iTOW": U4,
-        "xAngRate": [I4, SCAL3],
-        "yAngRate": [I4, SCAL3],
-        "zAngRate": [I4, SCAL3],
-        "xAccel": [I4, SCAL2],
-        "yAccel": [I4, SCAL2],
-        "zAccel": [I4, SCAL2],
+        "xAngRate": (I4, E1_N3),
+        "yAngRate": (I4, E1_N3),
+        "zAngRate": (I4, E1_N3),
+        "xAccel": (I4, E1_N2),
+        "yAccel": (I4, E1_N2),
+        "zAccel": (I4, E1_N2),
     },
     # if calibTtagValid = 1; last dataField = calibTtag, numMeas = num of dataFields excluding calibTtag
     "ESF-MEAS": {
         "timeTag": U4,
-        "flags": (
+        "flags_bit": (
             X2,
             {
                 "timeMarkSent": U2,
@@ -1268,10 +1280,10 @@ UBX_PAYLOADS_GET = {
             },
         ),
         "id": U2,
-        "group": (
+        "data_grp": (
             "None",
             {  # repeating group * numMeas
-                "data": (
+                "data_bit": (
                     X4,
                     {
                         "dataField": X24,
@@ -1283,7 +1295,7 @@ UBX_PAYLOADS_GET = {
     },
     "ESF-RAW": {
         "reserved1": U4,
-        "group": (
+        "data_grp": (
             "None",
             {  # repeating group
                 "data": X4,
@@ -1294,7 +1306,7 @@ UBX_PAYLOADS_GET = {
     "ESF-STATUS": {
         "iTOW": U4,
         "version": U1,
-        "initStatus1": (
+        "initStatus1_bit": (
             X1,
             {
                 "wtInitStatus": U2,
@@ -1302,7 +1314,7 @@ UBX_PAYLOADS_GET = {
                 "insInitStatus": U3,
             },
         ),
-        "initStatus2": (
+        "initStatus2_bit": (
             X1,
             {
                 "imuInitStatus": U2,
@@ -1312,10 +1324,10 @@ UBX_PAYLOADS_GET = {
         "fusionMode": U1,
         "reserved1": U2,
         "numSens": U1,
-        "group": (
+        "sens_grp": (
             "numSens",
             {  # repeating group * numSens
-                "sensStatus1": (
+                "sensStatus1_bit": (
                     X1,
                     {
                         "type": U6,
@@ -1323,7 +1335,7 @@ UBX_PAYLOADS_GET = {
                         "ready": U1,
                     },
                 ),
-                "sensStatus2": (
+                "sensStatus2_bit": (
                     X1,
                     {
                         "calibStatus": U2,
@@ -1331,7 +1343,7 @@ UBX_PAYLOADS_GET = {
                     },
                 ),
                 "freq": U1,
-                "faults": (
+                "faults_bit": (
                     X1,
                     {
                         "badMeas": U1,
@@ -1351,15 +1363,15 @@ UBX_PAYLOADS_GET = {
         "iTOW": U4,
         "version": U1,
         "reserved1": U3,
-        "roll": [I4, SCAL5],
-        "pitch": [I4, SCAL5],
-        "heading": [I4, SCAL5],
-        "accRoll": [U4, SCAL5],
-        "accPitch": [U4, SCAL5],
-        "accHeading": [U4, SCAL5],
+        "roll": (I4, E1_N5),
+        "pitch": (I4, E1_N5),
+        "heading": (I4, E1_N5),
+        "accRoll": (U4, E1_N5),
+        "accPitch": (U4, E1_N5),
+        "accHeading": (U4, E1_N5),
     },
     "HNR-INS": {
-        "bitfield0": (
+        "flags_bit": (
             X4,
             {
                 "version": U8,
@@ -1373,12 +1385,12 @@ UBX_PAYLOADS_GET = {
         ),
         "reserved1": U4,
         "iTOW": U4,
-        "xAngRate": [I4, SCAL3],
-        "yAngRate": [I4, SCAL3],
-        "zAngRate": [I4, SCAL3],
-        "xAccel": [I4, SCAL2],
-        "yAccel": [I4, SCAL2],
-        "zAccel": [I4, SCAL2],
+        "xAngRate": (I4, E1_N3),
+        "yAngRate": (I4, E1_N3),
+        "zAngRate": (I4, E1_N3),
+        "xAccel": (I4, E1_N2),
+        "yAccel": (I4, E1_N2),
+        "zAccel": (I4, E1_N2),
     },
     "HNR-PVT": {
         "iTOW": U4,
@@ -1388,7 +1400,7 @@ UBX_PAYLOADS_GET = {
         "hour": U1,
         "min": U1,
         "second": U1,
-        "valid": (
+        "valid_bit": (
             X1,
             {
                 "validDate": U1,
@@ -1398,7 +1410,7 @@ UBX_PAYLOADS_GET = {
         ),
         "nano": I4,
         "gpsFix": U1,
-        "flags": (
+        "flags_bit": (
             X1,
             {
                 "GPSfixOK": U1,
@@ -1409,18 +1421,18 @@ UBX_PAYLOADS_GET = {
             },
         ),
         "reserved1": U2,
-        "lon": [I4, SCAL7],
-        "lat": [I4, SCAL7],
+        "lon": (I4, E1_N7),
+        "lat": (I4, E1_N7),
         "height": I4,
         "hMSL": I4,
         "gSpeed": I4,
         "speed": I4,
-        "headMot": [I4, SCAL5],
-        "headVeh": [I4, SCAL5],
+        "headMot": (I4, E1_N5),
+        "headVeh": (I4, E1_N5),
         "hAcc": U4,
         "vAcc": U4,
         "sAcc": U4,
-        "headAcc": [U4, SCAL5],
+        "headAcc": (U4, E1_N5),
         "reserved2": U4,
     },
     # ********************************************************************
@@ -1437,7 +1449,7 @@ UBX_PAYLOADS_GET = {
     # Messages in the LOG class are used to configure and report status information of the logging feature.
     "LOG-BATCH": {
         "version": U1,
-        "contentValid": (
+        "contentValid_bit": (
             X1,
             {
                 "extraPvt": U1,
@@ -1452,7 +1464,7 @@ UBX_PAYLOADS_GET = {
         "hour": U1,
         "min": U1,
         "sec": U1,
-        "valid": (
+        "valid_bit": (
             X1,
             {
                 "validDate": U1,
@@ -1462,7 +1474,7 @@ UBX_PAYLOADS_GET = {
         "tAcc": U4,
         "fracSec": I4,
         "fixType": U1,
-        "flags": (
+        "flags_bit": (
             X1,
             {
                 "gnssFixOK": U1,
@@ -1472,8 +1484,8 @@ UBX_PAYLOADS_GET = {
         ),
         "flags2": X1,  # no definition for these bitflags
         "numSV": U1,
-        "lon": [I4, SCAL7],
-        "lat": [I4, SCAL7],
+        "lon": (I4, E1_N7),
+        "lat": (I4, E1_N7),
         "height": I4,
         "hMSL": I4,
         "hAcc": U4,
@@ -1482,10 +1494,10 @@ UBX_PAYLOADS_GET = {
         "velE": I4,
         "velD": I4,
         "gSpeed": I4,
-        "headMot": [I4, SCAL5],
+        "headMot": (I4, E1_N5),
         "sAcc": U4,
-        "headAcc": [U4, SCAL5],
-        "pDOP": [U2, SCAL2],
+        "headAcc": (U4, E1_N5),
+        "pDOP": (U2, E1_N2),
         "reserved0": U2,
         "distance": U4,
         "totalDistance": U4,
@@ -1515,7 +1527,7 @@ UBX_PAYLOADS_GET = {
         "newestMinute": U1,
         "newestSecond": U1,
         "reserved3": U1,
-        "status": (
+        "status_bit": (
             X1,
             {
                 "reserved5": U3,
@@ -1528,12 +1540,12 @@ UBX_PAYLOADS_GET = {
     },
     "LOG-RETRIEVEPOS": {
         "entryIndex": U4,
-        "lon": [I4, SCAL7],
-        "lat": [I4, SCAL7],
+        "lon": (I4, E1_N7),
+        "lat": (I4, E1_N7),
         "hMSL": I4,
         "hAcc": U4,
         "gSpeed": U4,
-        "heading": [U4, SCAL5],
+        "heading": (U4, E1_N5),
         "version": U1,
         "fixType": U1,
         "year": U2,
@@ -1572,7 +1584,7 @@ UBX_PAYLOADS_GET = {
         "second": U1,
         "reserved1": U1,
         "byteCount": U2,
-        "group": ("byteCount", {"bytes": U1}),  # repeating group * byteCount
+        "byte_grp": ("byteCount", {"bytes": U1}),  # repeating group * byteCount
     },
     # ********************************************************************
     # Multiple GNSS Assistance Messages: i.e. Assistance data for various GNSS.
@@ -1591,7 +1603,10 @@ UBX_PAYLOADS_GET = {
         "msgId": U1,
         "msgPayloadStart": U4,
     },
-    "MGA-DBD": {"reserved1": U12, "group": ("None", {"data": U1})},  # repeating group
+    "MGA-DBD": {
+        "reserved1": U12,
+        "data_grp": ("None", {"data": U1}),
+    },  # repeating group
     "MGA-FLASH-ACK": {
         "type": U1,
         "version": U1,
@@ -1606,8 +1621,8 @@ UBX_PAYLOADS_GET = {
         "nValB": U1,
         "age": U2,
         "reserved0": U90,
-        "group1": ("nValA", {"valA": U8}),  # repeating group nValA times
-        "group2": ("nValB", {"valB": U8}),  # repeating group nValB times
+        "valA_grp": ("nValA", {"valA": U8}),  # repeating group nValA times
+        "valB_grp": ("nValB", {"valB": U8}),  # repeating group nValB times
     },
     "MGA-SF-INI2": {
         "type": U1,
@@ -1621,7 +1636,7 @@ UBX_PAYLOADS_GET = {
     "MON-COMMS": {
         "version": U1,
         "nPorts": U1,
-        "txErrors": (
+        "txErrors_bit": (
             X1,
             {
                 "mem": U1,
@@ -1630,13 +1645,13 @@ UBX_PAYLOADS_GET = {
             },
         ),
         "reserved0": U1,
-        "protgroup": (
+        "prot_grp": (
             4,
             {  # repeating group * 4
                 "protIds": U1,
             },
         ),
-        "portsgroup": (
+        "ports_grp": (
             "nPorts",
             {  # repeating group * nPorts
                 "portId": U2,
@@ -1649,7 +1664,7 @@ UBX_PAYLOADS_GET = {
                 "rxUsage": U1,
                 "rxPeakUsage": U1,
                 "overrunErrs": U2,
-                "msggroup": (
+                "msg_grp": (
                     4,
                     {
                         "msgs": U2,
@@ -1662,7 +1677,7 @@ UBX_PAYLOADS_GET = {
     },
     "MON-GNSS": {
         "version": U1,
-        "supported": (
+        "supported_bit": (
             X1,
             {
                 "GPSSup": U1,
@@ -1671,7 +1686,7 @@ UBX_PAYLOADS_GET = {
                 "GalileoSup": U1,
             },
         ),
-        "defaultGnss": (
+        "defaultGnss_bit": (
             X1,
             {
                 "GPSDef": U1,
@@ -1680,7 +1695,7 @@ UBX_PAYLOADS_GET = {
                 "GalileoDef": U1,
             },
         ),
-        "enabled": (
+        "enabled_bit": (
             X1,
             {
                 "GPSEna": U1,
@@ -1701,7 +1716,7 @@ UBX_PAYLOADS_GET = {
         "agcCnt": U2,
         "aStatus": U1,
         "aPower": U1,
-        "flags": (
+        "flags_bit": (
             X1,
             {
                 "rtcCalib": U1,
@@ -1712,7 +1727,7 @@ UBX_PAYLOADS_GET = {
         ),
         "reserved0": U1,
         "usedMask": X4,
-        "groupVP": (
+        "VP_grp": (
             17,
             {
                 "VP": X1,
@@ -1739,7 +1754,7 @@ UBX_PAYLOADS_GET = {
     "MON-HW3": {
         "version": U1,
         "nPins": U1,
-        "flags": (
+        "flags_bit": (
             X1,
             {
                 "rtcCalib": U1,
@@ -1749,11 +1764,11 @@ UBX_PAYLOADS_GET = {
         ),
         "hwVersion": C10,
         "reserved0": U9,
-        "pingroup": (  # repeating group * nPins
+        "pin_grp": (  # repeating group * nPins
             "nPins",
             {
                 "pinId": U2,
-                "pinMask": (
+                "pinMask_bit": (
                     X2,
                     {
                         "periphPIO": U1,
@@ -1783,43 +1798,43 @@ UBX_PAYLOADS_GET = {
         "reserved1": U2,
     },
     "MON-MSGPP": {
-        "groupmsg1": (
+        "msg1_grp": (
             8,
             {
                 "msg1": U2,
             },
         ),  # repeating group * 8
-        "groupmsg2": (
+        "msg2_grp": (
             8,
             {
                 "msg2": U2,
             },
         ),  # repeating group * 8
-        "groupmsg3": (
+        "msg3_grp": (
             8,
             {
                 "msg3": U2,
             },
         ),  # repeating group * 8
-        "groupmsg4": (
+        "msg4_grp": (
             8,
             {
                 "msg4": U2,
             },
         ),  # repeating group * 8
-        "groupmsg5": (
+        "msg5_grp": (
             8,
             {
                 "msg5": U2,
             },
         ),  # repeating group * 8
-        "groupmsg6": (
+        "msg6_grp": (
             8,
             {
                 "msg6": U2,
             },
         ),  # repeating group * 8
-        "groupskipped": (
+        "skipped_grp": (
             6,
             {
                 "skipped": U4,
@@ -1829,10 +1844,10 @@ UBX_PAYLOADS_GET = {
     "MON-PATCH": {
         "version": U2,
         "nEntries": U2,
-        "group": (  # repeating group * nEntries
+        "entry_grp": (  # repeating group * nEntries
             "nEntries",
             {
-                "patchInfo": (
+                "patchInfo_bit": (
                     X4,
                     {
                         "activated": U1,
@@ -1845,15 +1860,66 @@ UBX_PAYLOADS_GET = {
             },
         ),
     },
+    "MON-PT2": {
+        "version": U1,
+        "testMode": U1,
+        "numRfChn": U1,
+        "numSvSigDesc": U1,
+        "testRunTime": U4,
+        "clkDriftAid": I4,
+        "clkDriftTrk": I4,
+        "rtcFreq": U4,
+        "postStatus": U4,
+        "rfchan_grp": (
+            "numRfChn",
+            {
+                "rfPga": U1,
+                "reserved0": U27,
+            },
+        ),
+        "svsig_grp": (
+            "numSvSigDesc",
+            {
+                "gnssId": U1,
+                "svId": U1,
+                "sigId": U1,
+                "accsId": U1,
+                "cnoMin": (U2, P2_N8),
+                "cnoMax": (U2, P2_N8),
+                "reserved1": U14,
+                "carrPhDevMax": (U1, P2_N8),
+                "signalInfo_bit": (
+                    X1,
+                    {
+                        "ifChnIdValid": U1,
+                        "ifChnId": U3,
+                    },
+                ),
+                "codeLockSuccess": U1,
+                "phaseLockSuccess": U1,
+                "minCodeLock": U2,
+                "maxCodeLock": U2,
+                "minPhaseLock": U2,
+                "maxPhaseLock": U2,
+                "reserved2": U2,
+            },
+        ),
+    },
     "MON-RF": {
         "version": U1,
         "nBlocks": U1,
-        "reserved0": U2,
-        "group": (  # repeating group * nBlocks
+        "recInf_bit": (
+            X1,
+            {
+                "msgSource": U2,
+            },
+        ),
+        "reserved0": U1,
+        "block_grp": (  # repeating group * nBlocks
             "nBlocks",
             {
                 "blockId": U1,
-                "flags": (
+                "flags_bit": (
                     X1,
                     {
                         "jammingState": U2,
@@ -1875,19 +1941,19 @@ UBX_PAYLOADS_GET = {
         ),
     },
     "MON-RXBUF": {
-        "groupPending": (
+        "pending_grp": (
             6,
             {
                 "pending": U2,
             },
         ),  # repeating group * 6
-        "groupUsage": (
+        "usage_grp": (
             6,
             {
                 "usage": U1,
             },
         ),  # repeating group * 6
-        "groupPeakUsage": (
+        "peakUsage_grp": (
             6,
             {
                 "peakUsage": U1,
@@ -1895,7 +1961,7 @@ UBX_PAYLOADS_GET = {
         ),  # repeating group * 6
     },
     "MON-RXR": {
-        "flags": (
+        "flags_bit": (
             X1,
             {
                 "awake": U1,
@@ -1906,7 +1972,7 @@ UBX_PAYLOADS_GET = {
         "version": U1,
         "reserved1": U3,
         "iTOW": U4,
-        "intOsc": (
+        "intOsc_bit": (
             X2,
             {
                 "intOscState": U4,
@@ -1914,7 +1980,7 @@ UBX_PAYLOADS_GET = {
                 "intOscDisc": U1,
             },
         ),
-        "extOsc": (
+        "extOsc_bit": (
             X2,
             {
                 "extOscState": U4,
@@ -1923,13 +1989,13 @@ UBX_PAYLOADS_GET = {
             },
         ),
         "discSrc": U1,
-        "gnss": (
+        "gnss_bit": (
             X1,
             {
                 "gnssAvail": U1,
             },
         ),
-        "extInt0": (
+        "extInt0_bit": (
             X1,
             {
                 "extInt0Avail": U1,
@@ -1937,7 +2003,7 @@ UBX_PAYLOADS_GET = {
                 "extInt0FeedBack": U1,
             },
         ),
-        "extInt1": (
+        "extInt1_bit": (
             X1,
             {
                 "extInt1Avail": U1,
@@ -1949,8 +2015,14 @@ UBX_PAYLOADS_GET = {
     "MON-SPAN": {
         "version": U1,
         "numRfBlocks": U1,
-        "reserved0": U2,
-        "group": (  # repeating group * numRfBlocks
+        "recInf_bit": (
+            X1,
+            {
+                "msgSource": U2,
+            },
+        ),
+        "reserved0": U1,
+        "rfblock_grp": (  # repeating group * numRfBlocks
             "numRfBlocks",
             {
                 "spectrum": A256,  # parsed as array of 256 integers
@@ -1967,7 +2039,7 @@ UBX_PAYLOADS_GET = {
         "numSensor": U1,
         "numRes": U1,
         "reserved0": U1,
-        "groupSensor": (  # repeating group * numSensor
+        "sensor_grp": (  # repeating group * numSensor
             "numSensor",
             {
                 "sensorId": U1,
@@ -1976,7 +2048,7 @@ UBX_PAYLOADS_GET = {
                 "drvFileName": U1,
             },
         ),
-        "groupRes": (  # repeating group * numRes
+        "res_grp": (  # repeating group * numRes
             "numRes",
             {
                 "sensorIdRes": U2,
@@ -2004,19 +2076,19 @@ UBX_PAYLOADS_GET = {
         "reserved0": U5,
     },
     "MON-TXBUF": {
-        "groupPending": (  # repeating group * 6
+        "pending_grp": (  # repeating group * 6
             6,
             {
                 "pending": U2,
             },
         ),
-        "groupUsage": (  # repeating group * 6
+        "usage_grp": (  # repeating group * 6
             6,
             {
                 "usage": U1,
             },
         ),
-        "groupPeakUsage": (  # repeating group * 6
+        "peakUsage_grp": (  # repeating group * 6
             6,
             {
                 "peakUsage": U1,
@@ -2024,7 +2096,7 @@ UBX_PAYLOADS_GET = {
         ),
         "tUsage": U1,
         "tPeakUsage": U1,
-        "errors": (
+        "errors_bit": (
             X1,
             {
                 "limit": U6,
@@ -2037,7 +2109,7 @@ UBX_PAYLOADS_GET = {
     "MON-VER": {
         "swVersion": C30,
         "hwVersion": C10,
-        "group": ("None", {"extension": C30}),  # repeating group
+        "ext_grp": ("None", {"extension": C30}),  # repeating group
     },
     # ********************************************************************
     # Navigation Results Messages: i.e. Position, Speed, Time, Acceleration, Heading, DOP, SVs used.
@@ -2064,12 +2136,12 @@ UBX_PAYLOADS_GET = {
         "iTOW": U4,
         "version": U1,
         "reserved0": U3,
-        "roll": [I4, SCAL5],
-        "pitch": [I4, SCAL5],
-        "heading": [I4, SCAL5],
-        "accRoll": [U4, SCAL5],
-        "accPitch": [U4, SCAL5],
-        "accHeading": [U4, SCAL5],
+        "roll": (I4, E1_N5),
+        "pitch": (I4, E1_N5),
+        "heading": (I4, E1_N5),
+        "accRoll": (U4, E1_N5),
+        "accPitch": (U4, E1_N5),
+        "accHeading": (U4, E1_N5),
     },
     "NAV-CLOCK": {"iTOW": U4, "clkB": I4, "clkD": I4, "tAcc": U4, "fAcc": U4},
     "NAV-COV": {
@@ -2091,8 +2163,8 @@ UBX_PAYLOADS_GET = {
         "velCovED": R4,
         "velCovDD": R4,
     },
-    "NAV-DAHEADINGHP": {  # not publicly documented?
-        "version": U1,  # 0x01
+    "NAV-DAHEADINGHP": {
+        "version": U1,  # 0x01 this is the version implemented on X20D
         "reserved0": U1,
         "refStationId": U2,
         "iTOW": U4,
@@ -2100,19 +2172,19 @@ UBX_PAYLOADS_GET = {
         "relPosE": I4,
         "relPosD": I4,
         "relPosLength": I4,
-        "relPosHeading": [I4, SCAL5],
+        "relPosHeading": (I4, E1_N5),
         "reserved1": U4,
-        "_HPrelPosN": [I1, SCAL2],  # added to relPOSN
-        "_HPrelPosE": [I1, SCAL2],  # added to relPOSE
-        "_HPrelPosD": [I1, SCAL2],  # added to relPOSD
-        "_HPrelPosLength": [I1, SCAL2],  # added to relPOSLength
-        "accN": [U4, SCAL1],
-        "accE": [U4, SCAL1],
-        "accD": [U4, SCAL1],
-        "accLength": [U4, SCAL1],
-        "accHeading": [U4, SCAL5],
+        "_HPrelPosN": (I1, E1_N2),  # added to relPOSN
+        "_HPrelPosE": (I1, E1_N2),  # added to relPOSE
+        "_HPrelPosD": (I1, E1_N2),  # added to relPOSD
+        "_HPrelPosLength": (I1, E1_N2),  # added to relPOSLength
+        "accN": (U4, E1_N1),
+        "accE": (U4, E1_N1),
+        "accD": (U4, E1_N1),
+        "accLength": (U4, E1_N1),
+        "accHeading": (U4, E1_N5),
         "reserved2": U4,
-        "flags": (
+        "flags_bit": (
             X4,
             {
                 "gnssFixOK": U1,
@@ -2127,7 +2199,7 @@ UBX_PAYLOADS_GET = {
             },
         ),
     },
-    "NAV-DAHEADING": {  # not publicly documented?
+    "NAV-DAHEADING": {
         "version": U1,  # 0x02
         "reserved0": U1,
         "iTOW": U4,
@@ -2135,15 +2207,15 @@ UBX_PAYLOADS_GET = {
         "relPosE": I4,
         "relPosD": I4,
         "relPosLength": I4,
-        "relPosHeading": [I4, SCAL5],
+        "relPosHeading": (I4, E1_N5),
         "reserved1": U4,
-        "accN": [U4, SCAL1],
-        "accE": [U4, SCAL1],
-        "accD": [U4, SCAL1],
-        "accLength": [U4, SCAL1],
-        "accHeading": [U4, SCAL5],
+        "accN": (U4, E1_N1),
+        "accE": (U4, E1_N1),
+        "accD": (U4, E1_N1),
+        "accLength": (U4, E1_N1),
+        "accHeading": (U4, E1_N5),
         "reserved2": U4,
-        "flags": (
+        "flags_bit": (
             X4,
             {
                 "gnssFixOK": U1,
@@ -2163,11 +2235,11 @@ UBX_PAYLOADS_GET = {
         "numCh": U1,
         "status": U1,
         "reserved1": U2,
-        "channels": (  # repeating group * numCh
+        "channel_grp": (  # repeating group * numCh
             "numCh",
             {
                 "svid": U1,
-                "flags": (
+                "flags_bit": (
                     X1,
                     {
                         "channel": U4,
@@ -2182,29 +2254,29 @@ UBX_PAYLOADS_GET = {
     },
     "NAV-DOP": {
         "iTOW": U4,
-        "gDOP": [U2, SCAL2],
-        "pDOP": [U2, SCAL2],
-        "tDOP": [U2, SCAL2],
-        "vDOP": [U2, SCAL2],
-        "hDOP": [U2, SCAL2],
-        "nDOP": [U2, SCAL2],
-        "eDOP": [U2, SCAL2],
+        "gDOP": (U2, E1_N2),
+        "pDOP": (U2, E1_N2),
+        "tDOP": (U2, E1_N2),
+        "vDOP": (U2, E1_N2),
+        "hDOP": (U2, E1_N2),
+        "nDOP": (U2, E1_N2),
+        "eDOP": (U2, E1_N2),
     },
     "NAV-EELL": {
         "iTOW": U4,
         "version": U1,
         "reserved0": U1,
-        "errEllipseOrient": [U2, SCAL2],
+        "errEllipseOrient": (U2, E1_N2),
         "errEllipseMajor": U4,
         "errEllipseMinor": U4,
     },
     "NAV-EKFSTATUS": {
         "pulses": I4,
         "period": I4,
-        "gyroMean": [U4, SCAL2],
-        "temperature": [I2, 2**-8],
+        "gyroMean": (U4, E1_N2),
+        "temperature": (I2, P2_N8),
         "direction": I1,
-        "calibStatus": (
+        "calibStatus_bit": (
             X1,
             {
                 "calibTacho": U2,
@@ -2212,13 +2284,13 @@ UBX_PAYLOADS_GET = {
                 "calibGyroB": U2,
             },
         ),
-        "pulseScale": [I4, SCAL5],
-        "gyroBias": [I4, SCAL5],
-        "gyroScale": [I4, SCAL5],
-        "accPulseScale": [I4, SCAL4],
-        "accGyroBias": [I4, SCAL4],
-        "accGyroScale": [I4, SCAL4],
-        "measUsed": (
+        "pulseScale": (I4, E1_N5),
+        "gyroBias": (I4, E1_N5),
+        "gyroScale": (I4, E1_N5),
+        "accPulseScale": (I4, E1_N4),
+        "accGyroBias": (I4, E1_N4),
+        "accGyroScale": (I4, E1_N4),
+        "measUsed_bit": (
             X1,
             {
                 "pulse": U1,
@@ -2240,7 +2312,7 @@ UBX_PAYLOADS_GET = {
         "status": U1,
         "numFences": U1,
         "combState": U1,
-        "group": (  # repeating group * numFences
+        "fence_grp": (  # repeating group * numFences
             "numFences",
             {"state": U1, "id": U1},
         ),
@@ -2252,43 +2324,43 @@ UBX_PAYLOADS_GET = {
         "ecefX": I4,  # cm
         "ecefY": I4,  # cm
         "ecefZ": I4,  # cm
-        "_HPecefX": [I1, SCAL2],  # added to ecefX
-        "_HPecefY": [I1, SCAL2],  # added to ecefY
-        "_HPecefZ": [I1, SCAL2],  # added to ecefZ
-        "flags": (
+        "_HPecefX": (I1, E1_N2),  # added to ecefX
+        "_HPecefY": (I1, E1_N2),  # added to ecefY
+        "_HPecefZ": (I1, E1_N2),  # added to ecefZ
+        "flags_bit": (
             X1,
             {
                 "invalidEcef": U1,
             },
         ),
-        "pAcc": [U4, SCAL1],
+        "pAcc": (U4, E1_N1),
     },
     "NAV-HPPOSLLH": {
         "version": U1,
         "reserved0": U2,
-        "flags": (
+        "flags_bit": (
             X1,
             {
                 "invalidLlh": U1,
             },
         ),
         "iTOW": U4,
-        "lon": [I4, SCAL7],
-        "lat": [I4, SCAL7],
+        "lon": (I4, E1_N7),
+        "lat": (I4, E1_N7),
         "height": I4,  # mm
         "hMSL": I4,  # mm
-        "_HPlon": [I1, SCAL9],  # added to lon
-        "_HPlat": [I1, SCAL9],  # added to lat
-        "_HPheight": [I1, SCAL1],  # added to height
-        "_HPhMSL": [I1, SCAL1],  # added to hMSL
-        "hAcc": [U4, SCAL1],
-        "vAcc": [U4, SCAL1],
+        "_HPlon": (I1, E1_N9),  # added to lon
+        "_HPlat": (I1, E1_N9),  # added to lat
+        "_HPheight": (I1, E1_N1),  # added to height
+        "_HPhMSL": (I1, E1_N1),  # added to hMSL
+        "hAcc": (U4, E1_N1),
+        "vAcc": (U4, E1_N1),
     },
     "NAV-NMI": {
         "iTOW": U4,
         "version": U1,
         "reserved1": U4,
-        "gpsNmiFlags": (
+        "gpsNmiFlags_bit": (
             X1,
             {
                 "wnoCheckedGPS": U1,
@@ -2297,7 +2369,7 @@ UBX_PAYLOADS_GET = {
                 "UTCORefInvalidGPS": U1,
             },
         ),
-        "gpsLsFlags": (
+        "gpsLsFlags_bit": (
             X1,
             {
                 "lsValGPS": U1,
@@ -2307,14 +2379,14 @@ UBX_PAYLOADS_GET = {
                 "recNowGPS": U1,
             },
         ),
-        "galNmiFlags": (
+        "galNmiFlags_bit": (
             X1,
             {
                 "wnoCheckedGAL": U1,
                 "wnoInvalidGAL": U1,
             },
         ),
-        "galLsFlags": (
+        "galLsFlags_bit": (
             X1,
             {
                 "lsValGAL": U1,
@@ -2324,14 +2396,14 @@ UBX_PAYLOADS_GET = {
                 "recNowGAL": U1,
             },
         ),
-        "bdsNmiFlags": (
+        "bdsNmiFlags_bit": (
             X1,
             {
                 "wnoCheckedBDS": U1,
                 "wnoInvalidBDS": U1,
             },
         ),
-        "bdsLsFlags": (
+        "bdsLsFlags_bit": (
             X1,
             {
                 "lsValBDS": U1,
@@ -2341,7 +2413,7 @@ UBX_PAYLOADS_GET = {
                 "recNowBDS": U1,
             },
         ),
-        "gloNmiFlags": (
+        "gloNmiFlags_bit": (
             X1,
             {
                 "wnoCheckedGLO": U1,
@@ -2362,33 +2434,33 @@ UBX_PAYLOADS_GET = {
         "version": U1,
         "numSv": U1,
         "reserved0": U2,
-        "group": (  # repeating group * numSv
+        "sv_grp": (  # repeating group * numSv
             "numSv",
             {
                 "gnssId": U1,
                 "svId": U1,
-                "svFlag": (
+                "svFlag_bit": (
                     X1,
                     {
                         "health": U2,
                         "visibility": U2,
                     },
                 ),
-                "eph": (
+                "eph_bit": (
                     X1,
                     {
                         "ephUsability": U5,
                         "ephSource": U3,
                     },
                 ),
-                "alm": (
+                "alm_bit": (
                     X1,
                     {
                         "almUsability": U5,
                         "almSource": U3,
                     },
                 ),
-                "otherOrb": (
+                "otherOrb_bit": (
                     X1,
                     {
                         "anoAopUsability": U5,
@@ -2423,8 +2495,8 @@ UBX_PAYLOADS_GET = {
     "NAV-POSECEF": {"iTOW": U4, "ecefX": I4, "ecefY": I4, "ecefZ": I4, "pAcc": U4},
     "NAV-POSLLH": {
         "iTOW": U4,
-        "lon": [I4, SCAL7],
-        "lat": [I4, SCAL7],
+        "lon": (I4, E1_N7),
+        "lat": (I4, E1_N7),
         "height": I4,
         "hMSL": I4,
         "hAcc": U4,
@@ -2433,7 +2505,7 @@ UBX_PAYLOADS_GET = {
     "NAV-PVAT": {
         "iTOW": U4,
         "version": U1,
-        "valid": (
+        "valid_bit": (
             X1,
             {
                 "validDate": U1,
@@ -2453,7 +2525,7 @@ UBX_PAYLOADS_GET = {
         "tAcc": U4,
         "nano": I4,
         "fixType": U1,
-        "flags": (
+        "flags_bit": (
             X1,
             {
                 "gnssFixOK": U1,
@@ -2465,7 +2537,7 @@ UBX_PAYLOADS_GET = {
                 "carrSoln": U2,
             },
         ),
-        "flags2": (
+        "flags2_bit": (
             X1,
             {
                 "reserved5": U5,
@@ -2475,8 +2547,8 @@ UBX_PAYLOADS_GET = {
             },
         ),
         "numSV": U1,
-        "lon": [I4, SCAL7],
-        "lat": [I4, SCAL7],
+        "lon": (I4, E1_N7),
+        "lat": (I4, E1_N7),
         "height": I4,
         "hMSL": I4,
         "hAcc": U4,
@@ -2486,16 +2558,16 @@ UBX_PAYLOADS_GET = {
         "velD": I4,
         "gSpeed": I4,
         "sAcc": U4,
-        "vehRoll": [I4, SCAL5],
-        "vehPitch": [I4, SCAL5],
-        "vehHeading": [I4, SCAL5],
-        "motHeading": [I4, SCAL5],
-        "accRoll": [U2, SCAL2],
-        "accPitch": [U2, SCAL2],
-        "accHeading": [U2, SCAL2],
-        "magDec": [I2, SCAL2],
-        "magAcc": [U2, SCAL2],
-        "errEllipseOrient": [U2, SCAL2],
+        "vehRoll": (I4, E1_N5),
+        "vehPitch": (I4, E1_N5),
+        "vehHeading": (I4, E1_N5),
+        "motHeading": (I4, E1_N5),
+        "accRoll": (U2, E1_N2),
+        "accPitch": (U2, E1_N2),
+        "accHeading": (U2, E1_N2),
+        "magDec": (I2, E1_N2),
+        "magAcc": (U2, E1_N2),
+        "errEllipseOrient": (U2, E1_N2),
         "errEllipseMajor": U4,
         "errEllipseMinor": U4,
         "reserved2": U4,
@@ -2509,7 +2581,7 @@ UBX_PAYLOADS_GET = {
         "hour": U1,
         "min": U1,
         "second": U1,
-        "valid": (
+        "valid_bit": (
             X1,
             {
                 "validDate": U1,
@@ -2521,7 +2593,7 @@ UBX_PAYLOADS_GET = {
         "tAcc": U4,
         "nano": I4,
         "fixType": U1,
-        "flags": (
+        "flags_bit": (
             X1,
             {
                 "gnssFixOk": U1,
@@ -2531,7 +2603,7 @@ UBX_PAYLOADS_GET = {
                 "carrSoln": U2,
             },
         ),
-        "flags2": (
+        "flags2_bit": (
             X1,
             {
                 "reserved": U5,
@@ -2541,8 +2613,8 @@ UBX_PAYLOADS_GET = {
             },
         ),
         "numSV": U1,
-        "lon": [I4, SCAL7],
-        "lat": [I4, SCAL7],
+        "lon": (I4, E1_N7),
+        "lat": (I4, E1_N7),
         "height": I4,
         "hMSL": I4,
         "hAcc": U4,
@@ -2551,11 +2623,11 @@ UBX_PAYLOADS_GET = {
         "velE": I4,
         "velD": I4,
         "gSpeed": I4,
-        "headMot": [I4, SCAL5],
+        "headMot": (I4, E1_N5),
         "sAcc": U4,
-        "headAcc": [U4, SCAL5],
-        "pDOP": [U2, SCAL2],
-        "flags3": (
+        "headAcc": (U4, E1_N5),
+        "pDOP": (U2, E1_N2),
+        "flags3_bit": (
             X2,
             {
                 "invalidLlh": U1,
@@ -2566,9 +2638,9 @@ UBX_PAYLOADS_GET = {
             },
         ),
         "reserved0": U4,  # NB this is incorrectly stated as U5 in older documentation
-        "headVeh": [I4, SCAL5],
-        "magDec": [I2, SCAL2],
-        "magAcc": [U2, SCAL2],
+        "headVeh": (I4, E1_N5),
+        "magDec": (I2, E1_N2),
+        "magAcc": (U2, E1_N2),
     },
     "NAV-RELPOSNED-V0": {
         "version": U1,  # 0x00
@@ -2578,14 +2650,14 @@ UBX_PAYLOADS_GET = {
         "relPosN": I4,  # cm
         "relPosE": I4,
         "relPosD": I4,
-        "_HPrelPosN": [I1, SCAL2],  # added to relPosN
-        "_HPrelPosE": [I1, SCAL2],  # added to relPosE
-        "_HPrelPosD": [I1, SCAL2],  # added to relPosD
+        "_HPrelPosN": (I1, E1_N2),  # added to relPosN
+        "_HPrelPosE": (I1, E1_N2),  # added to relPosE
+        "_HPrelPosD": (I1, E1_N2),  # added to relPosD
         "reserved2": U1,
-        "accN": [U4, SCAL1],
-        "accE": [U4, SCAL1],
-        "accD": [U4, SCAL1],
-        "flags": (
+        "accN": (U4, E1_N1),
+        "accE": (U4, E1_N1),
+        "accD": (U4, E1_N1),
+        "flags_bit": (
             X4,
             {
                 "gnssFixOK": U1,
@@ -2609,19 +2681,19 @@ UBX_PAYLOADS_GET = {
         "relPosE": I4,
         "relPosD": I4,
         "relPosLength": I4,
-        "relPosHeading": [I4, SCAL5],
+        "relPosHeading": (I4, E1_N5),
         "reserved1": U4,
-        "_HPrelPosN": [I1, SCAL2],  # added to relPosN
-        "_HPrelPosE": [I1, SCAL2],  # added to relPosE
-        "_HPrelPosD": [I1, SCAL2],  # added to relPosD
-        "_HPrelPosLength": [I1, SCAL2],  # added to relPosLength
-        "accN": [U4, SCAL1],
-        "accE": [U4, SCAL1],
-        "accD": [U4, SCAL1],
-        "accLength": [U4, SCAL1],
-        "accHeading": [U4, SCAL5],
+        "_HPrelPosN": (I1, E1_N2),  # added to relPosN
+        "_HPrelPosE": (I1, E1_N2),  # added to relPosE
+        "_HPrelPosD": (I1, E1_N2),  # added to relPosD
+        "_HPrelPosLength": (I1, E1_N2),  # added to relPosLength
+        "accN": (U4, E1_N1),
+        "accE": (U4, E1_N1),
+        "accD": (U4, E1_N1),
+        "accLength": (U4, E1_N1),
+        "accHeading": (U4, E1_N5),
         "reserved2": U4,
-        "flags": (
+        "flags_bit": (
             X4,
             {
                 "gnssFixOK": U1,
@@ -2641,7 +2713,7 @@ UBX_PAYLOADS_GET = {
         "version": U1,
         "numSvs": U1,
         "reserved0": U2,
-        "group": (  # repeating group * numSvs
+        "sv_grp": (  # repeating group * numSvs
             "numSvs",
             {
                 "gnssId": U1,
@@ -2649,8 +2721,8 @@ UBX_PAYLOADS_GET = {
                 "cno": U1,
                 "elev": I1,
                 "azim": I2,
-                "prRes": [I2, SCAL1],
-                "flags": (
+                "prRes": (I2, E1_N1),
+                "flags_bit": (
                     X4,
                     {
                         "qualityInd": U3,
@@ -2684,7 +2756,7 @@ UBX_PAYLOADS_GET = {
         "geo": U1,
         "mode": U1,
         "sys": I1,
-        "service": (
+        "service_bit": (
             X1,
             {
                 "Ranging": U1,
@@ -2695,14 +2767,14 @@ UBX_PAYLOADS_GET = {
             },
         ),
         "cnt": U1,
-        "statusFlags": (
+        "statusFlags_bit": (
             X1,
             {
                 "integrityUsed": U2,
             },
         ),
         "reserved1": U2,
-        "channels": (  # repeating group * cnt
+        "channel_grp": (  # repeating group * cnt
             "cnt",
             {
                 "svid": U1,
@@ -2722,19 +2794,19 @@ UBX_PAYLOADS_GET = {
         "version": U1,
         "numSigs": U1,
         "reserved0": U2,
-        "group": (
+        "sig_grp": (
             "numSigs",
             {  # repeating group * numSigs
                 "gnssId": U1,
                 "svId": U1,
                 "sigId": U1,
                 "freqId": U1,
-                "prRes": [I2, SCAL1],
+                "prRes": (I2, E1_N1),
                 "cno": U1,
                 "qualityInd": U1,
                 "corrSource": U1,
                 "ionoModel": U1,
-                "sigFlags": (
+                "sigFlags_bit": (
                     X2,
                     {
                         "health": U2,
@@ -2756,11 +2828,11 @@ UBX_PAYLOADS_GET = {
         "iTOW": U4,
         "version": U1,
         "reserved0": U3,
-        "gmsLon": [I4, SCAL3],
-        "gmsLat": [I4, SCAL3],
+        "gmsLon": (I4, E1_N3),
+        "gmsLat": (I4, E1_N3),
         "gmsCode": U1,
         "qzssSvId": U1,
-        "serviceFlags": (
+        "serviceFlags_bit": (
             X1,
             {
                 "gmsAvailable": U1,
@@ -2769,7 +2841,7 @@ UBX_PAYLOADS_GET = {
             },
         ),
         "cnt": U1,
-        "group": (  # repeating group * cnt
+        "cnt_grp": (  # repeating group * cnt
             "cnt",
             {
                 "gnssID": U1,
@@ -2785,7 +2857,7 @@ UBX_PAYLOADS_GET = {
         "fTOW": I4,
         "week": I2,
         "gpsFix": U1,
-        "flags": (
+        "flags_bit": (
             X1,
             {
                 "gpsfixOK": U1,
@@ -2802,7 +2874,7 @@ UBX_PAYLOADS_GET = {
         "ecefVY": I4,
         "ecefVZ": I4,
         "sAcc": U4,
-        "pDOP": [U2, SCAL2],
+        "pDOP": (U2, E1_N2),
         "reserved1": U1,
         "numSV": U1,
         "reserved2": U4,
@@ -2810,7 +2882,7 @@ UBX_PAYLOADS_GET = {
     "NAV-STATUS": {
         "iTOW": U4,
         "gpsFix": U1,
-        "flags": (
+        "flags_bit": (
             X1,
             {
                 "gpsFixOk": U1,
@@ -2819,7 +2891,7 @@ UBX_PAYLOADS_GET = {
                 "towSet": U1,
             },
         ),
-        "fixStat": (
+        "fixStat_bit": (
             X1,
             {
                 "diffCorr": U1,
@@ -2828,7 +2900,7 @@ UBX_PAYLOADS_GET = {
                 "mapMatching": U2,
             },
         ),
-        "flags2": (
+        "flags2_bit": (
             X1,
             {
                 "psmState": U2,
@@ -2862,19 +2934,19 @@ UBX_PAYLOADS_GET = {
     "NAV-SVINFO": {  # deprecated - use NAV-SAT
         "iTOW": U4,
         "numCh": U1,
-        "globalFlags": (
+        "globalFlags_bit": (
             X1,
             {
                 "chipGen": U3,
             },
         ),
         "reserved1": U2,
-        "channels": (
+        "channel_grp": (
             "numCh",
             {  # repeating group * numCh
                 "chn": U1,
                 "svid": U1,
-                "flags": (
+                "flags_bit": (
                     X1,
                     {
                         "svUsed": U1,
@@ -2887,7 +2959,7 @@ UBX_PAYLOADS_GET = {
                         "smoothed": U1,
                     },
                 ),
-                "quality": (
+                "quality_bit": (
                     X1,
                     {
                         "qualityInd": U4,
@@ -2906,7 +2978,7 @@ UBX_PAYLOADS_GET = {
         "fSOW": I4,
         "week": I2,
         "leapS": I1,
-        "valid": (
+        "valid_bit": (
             X1,
             {
                 "sowValid": U1,
@@ -2922,7 +2994,7 @@ UBX_PAYLOADS_GET = {
         "fGalTow": I4,
         "galWno": I2,
         "leapS": I1,
-        "valid": (
+        "valid_bit": (
             X1,
             {
                 "galTowValid": U1,
@@ -2938,7 +3010,7 @@ UBX_PAYLOADS_GET = {
         "fTOD": I4,
         "Nt": U2,
         "N4": U1,
-        "valid": (
+        "valid_bit": (
             X1,
             {
                 "todValid": U1,
@@ -2952,7 +3024,7 @@ UBX_PAYLOADS_GET = {
         "fTOW": I4,
         "week": I2,
         "leapS": I1,
-        "valid": (
+        "valid_bit": (
             X1,
             {
                 "towValid": U1,
@@ -2974,7 +3046,7 @@ UBX_PAYLOADS_GET = {
         "dateOfLsGpsWn": U2,
         "dateOfLsGpsDn": U2,
         "reserved1": U3,
-        "valid": (
+        "valid_bit": (
             X1,
             {
                 "validCurrLs": U1,
@@ -2988,7 +3060,7 @@ UBX_PAYLOADS_GET = {
         "fNavICTow": I4,
         "NavICWno": I2,
         "leapS": I1,
-        "valid": (
+        "valid_bit": (
             X1,
             {
                 "NavICTowValid": U1,
@@ -3004,7 +3076,7 @@ UBX_PAYLOADS_GET = {
         "fQzssTow": I4,
         "qzssWno": I2,
         "leapS": I1,
-        "valid": (
+        "valid_bit": (
             X1,
             {
                 "qzssTowValid": U1,
@@ -3017,7 +3089,7 @@ UBX_PAYLOADS_GET = {
     "NAV-TIMETRUSTED": {
         "version": U1,
         "refSys": U1,
-        "validFlags": (
+        "validFlags_bit": (
             X1,
             {
                 "trustedTimeValid": U1,
@@ -3046,7 +3118,7 @@ UBX_PAYLOADS_GET = {
         "hour": U1,
         "min": U1,
         "sec": U1,
-        "validflags": (
+        "validflags_bit": (
             X1,
             {
                 "validTOW": U1,
@@ -3065,9 +3137,9 @@ UBX_PAYLOADS_GET = {
         "velD": I4,
         "speed": U4,
         "gSpeed": U4,
-        "heading": [I4, SCAL5],
+        "heading": (I4, E1_N5),
         "sAcc": U4,
-        "cAcc": [U4, SCAL5],
+        "cAcc": (U4, E1_N5),
     },
     # ********************************************************************
     #
@@ -3081,7 +3153,7 @@ UBX_PAYLOADS_GET = {
     "RXM-ALM": {
         "svid": U4,
         "week": U4,
-        "group": (
+        "dwrd_grp": (
             8,
             {
                 "dwrd": U4,
@@ -3090,9 +3162,9 @@ UBX_PAYLOADS_GET = {
     },
     "RXM-COR": {
         "version": U1,
-        "ebno": [U1, 0.125],
+        "ebno": (U1, 0.125),
         "reserved0": U2,
-        "statusInfo": (
+        "statusInfo_bit": (
             X4,
             {
                 "protocol": U5,
@@ -3112,7 +3184,7 @@ UBX_PAYLOADS_GET = {
     "RXM-EPH": {
         "svid": U4,
         "how": U4,
-        "group": (
+        "sf_grp": (
             8,
             {
                 "sf1d": U4,
@@ -3125,7 +3197,7 @@ UBX_PAYLOADS_GET = {
         "numTx": U1,
         "version": U1,
         "reserved1": U2,
-        "group": (
+        "tx_grp": (
             "numTx",
             {  # repeating group * numTx
                 "reserved2": U1,
@@ -3133,22 +3205,22 @@ UBX_PAYLOADS_GET = {
                 "reserved3": U3,
                 "cno": U1,
                 "reserved4": U2,
-                "doppler": [I4, 2**-12],
-                "position1_1": (
+                "doppler": (I4, P2_N12),
+                "position1_1_bit": (
                     X4,
                     {
                         "pos1Floor": U8,
                         "pos1Lat": U23,  # signed, scaled 180 / 2^23
                     },
                 ),
-                "position1_2": (
+                "position1_2_bit": (
                     X4,
                     {
                         "pos1Lon": U24,  # signed, scaled 360 / 2^24
                         "pos1Valid": U1,
                     },
                 ),
-                "position2_1": (
+                "position2_1_bit": (
                     X4,
                     {
                         "pos2Floor": U8,
@@ -3157,9 +3229,9 @@ UBX_PAYLOADS_GET = {
                         "pos2Valid": U1,
                     },
                 ),
-                "lat": [I4, 180 * 2**-24],
-                "lon": [I4, 360 * 2**-32],
-                "shortIdFrame": (
+                "lat": (I4, 180 * P2_N24),
+                "lon": (I4, 360 * P2_N32),
+                "shortIdFrame_bit": (
                     X4,
                     {
                         "shortId": U12,
@@ -3168,7 +3240,7 @@ UBX_PAYLOADS_GET = {
                     },
                 ),
                 "mediumIdLSB": U4,
-                "mediumId_2": (
+                "mediumId_2_bit": (
                     X4,
                     {
                         "mediumIdMSB": U1,
@@ -3180,7 +3252,7 @@ UBX_PAYLOADS_GET = {
         ),
     },
     "RXM-MEAS20": {
-        "group": (
+        "pay_grp": (
             "None",
             {
                 "payload": U1,
@@ -3188,7 +3260,7 @@ UBX_PAYLOADS_GET = {
         )
     },
     "RXM-MEAS50": {
-        "group": (
+        "pay_grp": (
             "None",
             {
                 "payload": U1,
@@ -3196,7 +3268,7 @@ UBX_PAYLOADS_GET = {
         )
     },
     "RXM-MEASC12": {
-        "group": (
+        "pay_grp": (
             "None",
             {
                 "payload": U1,
@@ -3204,7 +3276,7 @@ UBX_PAYLOADS_GET = {
         )
     },
     "RXM-MEASD12": {
-        "group": (
+        "pay_grp": (
             "None",
             {
                 "payload": U1,
@@ -3219,31 +3291,31 @@ UBX_PAYLOADS_GET = {
         "bdsTOW": U4,
         "reserved1": U4,
         "qzssTOW": U4,
-        "gpsTOWacc": [U2, 0.0625],
-        "gloTOWacc": [U2, 0.0625],
-        "bdsTOWacc": [U2, 0.0625],
+        "gpsTOWacc": (U2, 0.0625),
+        "gloTOWacc": (U2, 0.0625),
+        "bdsTOWacc": (U2, 0.0625),
         "reserved2": U2,
-        "qzssTOWacc": [U2, 0.0625],
+        "qzssTOWacc": (U2, 0.0625),
         "numSv": U1,
-        "flags": (
+        "flags_bit": (
             X1,
             {
                 "towSet": U2,
             },
         ),
         "reserved3": U8,
-        "group": (
+        "sv_grp": (
             "numSv",
             {  # repeating group * numSv
                 "gnssId": U1,
                 "svId": U1,
                 "cNo": U1,
                 "mpathIndic": U1,
-                "dopplerMS": [I4, 0.04],
-                "dopplerHz": [I4, 0.2],
+                "dopplerMS": (I4, 0.04),
+                "dopplerHz": (I4, 0.2),
                 "wholeChips": U2,
                 "fracChips": U2,
-                "codePhase": [U4, 2**-21],
+                "codePhase": (U4, P2_N21),
                 "intCodePhase": U1,
                 "pseuRangeRMSErr": U1,
                 "reserved4": U2,
@@ -3259,14 +3331,14 @@ UBX_PAYLOADS_GET = {
         "serviceIdentifier": U2,
         "spare": U1,
         "uniqueWordBitErrors": U1,
-        "groupUserData": (
+        "userData_grp": (
             504,
             {
                 "userData": U1,
             },
         ),  # repeating group * 504
         "fecBits": U2,
-        "ebno": [U1, 0.125],
+        "ebno": (U1, 0.125),
         "reserved1": U1,
     },
     "RXM-PMP-V1": {
@@ -3280,9 +3352,9 @@ UBX_PAYLOADS_GET = {
         "spare": U1,
         "uniqueWordBitErrors": U1,
         "fecBits": U2,
-        "ebno": [U1, 0.125],
+        "ebno": (U1, 0.125),
         "reserved1": U1,
-        "groupUserData": (
+        "userData_grp": (
             "numBytesUserData",
             {  # repeating group * numBytesUserData
                 "userData": U1,
@@ -3292,11 +3364,11 @@ UBX_PAYLOADS_GET = {
     "RXM-QZSSL6": {
         "version": U1,
         "svId": U1,
-        "cno": [U2, 2**-8],
+        "cno": (U2, P2_N8),
         "timeTag": U4,
         "groupDelay": U1,
         "bitErrCorr": U1,
-        "chInfo": (
+        "chInfo_bit": (
             X2,
             {
                 "reserved1": U8,
@@ -3315,7 +3387,7 @@ UBX_PAYLOADS_GET = {
         "week": I2,
         "numSV": U1,
         "reserved1": U1,
-        "group": (
+        "sv_grp": (
             "numSV",
             {  # repeating group * numSV
                 "cpMes": R8,
@@ -3333,15 +3405,17 @@ UBX_PAYLOADS_GET = {
         "week": U2,
         "leapS": I1,
         "numMeas": U1,
-        "recStat": (
+        "recStat_bit": (
             X1,
             {
                 "leapSec": U1,
                 "clkReset": U1,
+                "reserved4": U4,
+                "msgSource": U2,
             },
         ),
         "reserved1": U3,
-        "group": (
+        "meas_grp": (
             "numMeas",
             {  # repeating group * numMeas
                 "prMes": R8,
@@ -3353,25 +3427,25 @@ UBX_PAYLOADS_GET = {
                 "freqId": U1,
                 "locktime": U2,
                 "cno": U1,
-                "prStdev": (
+                "prStdev_bit": (
                     X1,  # scaling = 0.01*2^-n
                     {
                         "prStd": U4,
                     },
                 ),
-                "cpStdev": (
+                "cpStdev_bit": (
                     X1,  # scaling = 0.004
                     {
                         "cpStd": U4,
                     },
                 ),
-                "doStdev": (
+                "doStdev_bit": (
                     X1,  # scaling = 0.002*2^n
                     {
                         "doStd": U4,
                     },
                 ),
-                "trkStat": (
+                "trkStat_bit": (
                     X1,
                     {
                         "prValid": U1,
@@ -3406,7 +3480,7 @@ UBX_PAYLOADS_GET = {
     },
     "RXM-RTCM": {
         "version": U1,  # 0x02
-        "flags": (
+        "flags_bit": (
             X1,
             {
                 "crcFailed": U1,
@@ -3420,18 +3494,13 @@ UBX_PAYLOADS_GET = {
     "RXM-SFRB": {
         "chn": U1,
         "svid": U1,
-        "group": (
+        "dwrd_grp": (
             10,
             {
                 "dwrd": X4,
             },
         ),
     },
-    # NB: the native 30-bit NAV dwrds are padded to 32-bits in RXM-SFRBX,
-    # BUT the padding treatment is different for L1, L2, L5 and L6 sigIds.
-    # The position of the TLM (telemetry) and HOW (handover) bits in dwrd_01
-    # will depend on sigId.
-    # https://portal.u-blox.com/s/question/0D52p00008HKD1kCAH/why-are-the-sfrbx-messages-words-32-bits-but-in-isgps200h-the-words-are-specified-as-being-30-bits-long
     "RXM-SFRBX": {
         "gnssId": U1,
         "svId": U1,
@@ -3441,11 +3510,11 @@ UBX_PAYLOADS_GET = {
         "chn": U1,
         "version": U1,
         "reserved0": U1,
-        "navdata": ("numWords", {"dwrd": U4}),  # repeating group * numWords
+        "navdata_grp": ("numWords", {"dwrd": U4}),  # repeating group * numWords
     },
     "RXM-SPARTN": {
         "version": U1,
-        "flags": (
+        "flags_bit": (
             X1,
             {
                 "reserved1": U1,
@@ -3460,7 +3529,7 @@ UBX_PAYLOADS_GET = {
         "version": U1,
         "numKeys": U1,
         "reserved0": U2,
-        "group1": (  # repeating group * numKeys
+        "key1_grp": (  # repeating group * numKeys
             "numKeys",
             {
                 "encryptAlgorithm": U1,  # according to UBX-22008160-R02
@@ -3469,7 +3538,7 @@ UBX_PAYLOADS_GET = {
                 "validFromTow": U4,
             },
         ),
-        "group2": (  # repeating group * (numKeys * keyLengthBytes)
+        "key2_grp": (  # repeating group * (numKeys * keyLengthBytes)
             "None",
             {
                 "key": U1,
@@ -3481,11 +3550,11 @@ UBX_PAYLOADS_GET = {
         "week": I2,
         "numVis": U1,
         "numSV": U1,
-        "group": (  # repeating group * numSv
+        "sv_grp": (  # repeating group * numSv
             "numSV",
             {
                 "svid": U1,
-                "svFlag": (
+                "svFlag_bit": (
                     X1,
                     {
                         "ura": U4,
@@ -3497,7 +3566,7 @@ UBX_PAYLOADS_GET = {
                 ),
                 "azim": I2,
                 "elev": I1,
-                "age": (
+                "age_bit": (
                     X1,
                     {
                         "almAge": U4,
@@ -3512,10 +3581,10 @@ UBX_PAYLOADS_GET = {
         "numMeas": U1,
         "reserved0": U2,
         "reserved1": U4,
-        "group": (
+        "meas_grp": (
             "numMeas",
             {
-                "edgeInfo": (
+                "edgeInfo_bit": (
                     X4,
                     {
                         "channel": U4,
@@ -3536,7 +3605,7 @@ UBX_PAYLOADS_GET = {
     # Messages in the SEC class are used for security features of the receiver.
     "SEC-OSNMA": {
         "version": U1,  # 0x02
-        "nmaHeader": (
+        "nmaHeader_bit": (
             X1,
             {
                 "headerAuthStatus": U1,
@@ -3545,7 +3614,7 @@ UBX_PAYLOADS_GET = {
                 "CPKS": U3,
             },
         ),
-        "osnmaMonitoring": (
+        "osnmaMonitoring_bit": (
             X1,
             {
                 "osnmaEnabled": U1,
@@ -3553,7 +3622,7 @@ UBX_PAYLOADS_GET = {
                 "nmaHeaderUpdate": U2,
             },
         ),
-        "timeSyncReq": (
+        "timeSyncReq_bit": (
             X1,
             {
                 "timSyncEnabled": U1,
@@ -3562,7 +3631,7 @@ UBX_PAYLOADS_GET = {
             },
         ),
         "reserved0": U4,
-        "dsmAuthentication": (
+        "dsmAuthentication_bit": (
             X4,
             {
                 "dsmAuthenticationStatus": U6,
@@ -3575,7 +3644,7 @@ UBX_PAYLOADS_GET = {
                 "fromNVS": U1,
             },
         ),
-        "teslaKey": (
+        "teslaKey_bit": (
             X4,
             {
                 "teslaKeyAuthStatus": U3,
@@ -3584,7 +3653,7 @@ UBX_PAYLOADS_GET = {
                 "chainId": U2,
             },
         ),
-        "generalAndTiming": (
+        "generalAndTiming_bit": (
             X4,
             {
                 "authSVs": U6,
@@ -3602,10 +3671,10 @@ UBX_PAYLOADS_GET = {
                 "futurePubKeyId": U4,
             },
         ),
-        "authSVgroup": (
+        "authSV_grp": (
             "authSVs",  # repeating group * authSVs
             {
-                "bitfield1": (
+                "bitfield1_bit": (
                     X2,
                     {
                         "IODE": U10,
@@ -3621,7 +3690,7 @@ UBX_PAYLOADS_GET = {
     "SEC-SIG-V1": {
         "version": U1,  # 0x01
         "reserved0": U3,
-        "jamFlags": (
+        "jamFlags_bit": (
             X1,
             {
                 "jamDetEnabled": U1,
@@ -3629,7 +3698,7 @@ UBX_PAYLOADS_GET = {
             },
         ),
         "reserved1": U3,
-        "spfFlags": (
+        "spfFlags_bit": (
             X1,
             {
                 "spfDetEnabled": U1,
@@ -3640,7 +3709,7 @@ UBX_PAYLOADS_GET = {
     },
     "SEC-SIG-V2": {
         "version": U1,  # 0x02
-        "sigSecFlags": (
+        "sigSecFlags_bit": (
             X1,
             {
                 "jamDetEnabled": U1,
@@ -3651,10 +3720,10 @@ UBX_PAYLOADS_GET = {
         ),
         "reserved0": U1,
         "jamNumCentFreqs": U1,
-        "group": (
+        "famFreq_grp": (
             "jamNumCentFreqs",
             {
-                "jamStateCentFreq": (
+                "jamStateCentFreq_bit": (
                     X4,
                     {
                         "centFreq": U24,
@@ -3669,7 +3738,7 @@ UBX_PAYLOADS_GET = {
         "version": U1,  # 0x00
         "numEvents": U1,
         "reserved0": U6,
-        "group": (
+        "event_grp": (
             "numEvents",
             {
                 "timeElapsed": U4,
@@ -3698,11 +3767,11 @@ UBX_PAYLOADS_GET = {
         "version": U1,
         "reserved1": U3,
         "iTOW": U4,
-        "intDeltaFreq": [I4, 2**-8],
-        "intDeltaFreqU": [U4, 2**-8],
+        "intDeltaFreq": (I4, P2_N8),
+        "intDeltaFreqU": (U4, P2_N8),
         "intRaw": U4,
-        "extDeltaFreq": [I4, 2**-8],
-        "extDeltaFreqU": [U4, 2**-8],
+        "extDeltaFreq": (I4, P2_N8),
+        "extDeltaFreqU": (U4, P2_N8),
         "extRaw": U4,
     },
     "TIM-SMEAS": {
@@ -3711,24 +3780,24 @@ UBX_PAYLOADS_GET = {
         "reserved1": U2,
         "iTOW": U4,
         "reserved2": U4,
-        "group": (  # repeating group * numMeas
+        "meas_grp": (  # repeating group * numMeas
             "numMeas",
             {
                 "sourceId": U1,
-                "flags": (
+                "flags_bit": (
                     X1,
                     {
                         "freqValid": U1,
                         "phaseValid": U1,
                     },
                 ),
-                "phaseOffsetFrac": [I1, 2**-8],
-                "phaseUncFrac": [U1, 2**-8],
+                "phaseOffsetFrac": (I1, P2_N8),
+                "phaseUncFrac": (U1, P2_N8),
                 "phaseOffset": I4,
                 "phaseUnc": U4,
                 "reserved3": U4,
-                "freqOffset": [I4, 2**-8],
-                "freqUnc": [U4, 2**-8],
+                "freqOffset": (I4, P2_N8),
+                "freqUnc": (U4, P2_N8),
             },
         ),
     },
@@ -3745,7 +3814,7 @@ UBX_PAYLOADS_GET = {
     },
     "TIM-TM2": {
         "ch": U1,
-        "flags": (
+        "flags_bit": (
             X1,
             {
                 "mode": U1,
@@ -3770,7 +3839,7 @@ UBX_PAYLOADS_GET = {
         "version": U1,  # 0x00
         "gnssId": U1,
         "reserved11": U2,
-        "flags": (
+        "flags_bit": (
             X4,
             {
                 "leapNow": U1,
@@ -3800,17 +3869,17 @@ UBX_PAYLOADS_GET = {
         "TOW": U4,
         "gnssOffset": I4,
         "gnssUncertainty": U4,
-        "intOscOffset": [I4, 2**-8],
-        "intOscUncertainty": [U4, 2**-8],
-        "extOscOffset": [I4, 2**-8],
-        "extOscUncertainty": [U4, 2**-8],
+        "intOscOffset": (I4, P2_N8),
+        "intOscUncertainty": (U4, P2_N8),
+        "extOscOffset": (I4, P2_N8),
+        "extOscUncertainty": (U4, P2_N8),
     },
     "TIM-TP": {
         "towMS": U4,
-        "towSubMS": [U4, 2**-32],
+        "towSubMS": (U4, P2_N32),
         "qErr": I4,
         "week": U2,
-        "flags": (
+        "flags_bit": (
             X1,
             {
                 "timeBase": U1,
@@ -3820,7 +3889,7 @@ UBX_PAYLOADS_GET = {
                 "TpNotLocked": U1,  # deprecated bit flag
             },
         ),
-        "refinfo": (
+        "refinfo_bit": (
             X1,
             {
                 "timeRefGnss": U4,
@@ -3833,8 +3902,8 @@ UBX_PAYLOADS_GET = {
         "version": U1,
         "oscId": U1,
         "reserved1": U3,
-        "gainUncertainty": [U2, 2**-16],
-        "gainVco": [I4, 2**-16],
+        "gainUncertainty": (U2, P2_N16),
+        "gainVco": (I4, P2_N16),
     },
     "TIM-VRFY": {
         "itow": I4,
@@ -3842,7 +3911,7 @@ UBX_PAYLOADS_GET = {
         "deltaMs": I4,
         "deltaNs": I4,
         "wno": U2,
-        "flags": (
+        "flags_bit": (
             X1,
             {
                 "src": U3,
@@ -3863,7 +3932,7 @@ UBX_PAYLOADS_GET = {
     # UBX nominal payload definition, used as fallback where no documented
     # payload definition is available.
     "UBX-NOMINAL": {
-        "group": (
+        "data_grp": (
             "None",
             {
                 "data": X1,

@@ -36,15 +36,55 @@ ERR_IGNORE = 0
 """Ignore errors"""
 
 # scaling factor constants
-SCAL9 = 1e-9  # 0.000000001
-SCAL8 = 1e-8  # 0.00000001
-SCAL7 = 1e-7  # 0.0000001
-SCAL6 = 1e-6  # 0.000001
-SCAL5 = 1e-5  # 0.00001
-SCAL4 = 1e-4  # 0.0001
-SCAL3 = 1e-3  # 0.001
-SCAL2 = 1e-2  # 0.01
-SCAL1 = 1e-1  # 0.1
+E1_N1 = 1e-1  # 0.1
+E1_N2 = 1e-2  # 0.01
+E1_N3 = 1e-3  # 0.001
+E1_N4 = 1e-4  # 0.0001
+E1_N5 = 1e-5  # 0.00001
+E1_N6 = 1e-6  # 0.000001
+E1_N7 = 1e-7  # 0.0000001
+E1_N8 = 1e-8  # 0.00000001
+E1_N9 = 1e-9  # 0.000000001
+P2_N5 = 0.03125  # 2**-5
+P2_N6 = 0.015625  # 2**-6
+P2_N8 = 0.00390625  # 2**-8
+P2_N9 = 0.001953125  # 2**-9
+P2_N10 = 0.0009765625  # 2**-10
+P2_N11 = 0.00048828125  # 2**-11
+P2_N12 = 0.000244140625  # 2**-12
+P2_N14 = 6.103515625e-05  # 2**-14
+P2_N15 = 3.0517578125e-05  # 2**-15
+P2_N16 = 1.52587890625e-05  # 2**-16
+P2_N18 = 3.814697265625e-06  # 2**-18
+P2_N19 = 1.9073486328125e-06  # 2**-19
+P2_N20 = 9.5367431640625e-07  # 2**-20
+P2_N21 = 4.76837158203125e-07  # 2**-21
+P2_N23 = 1.1920928955078125e-07  # 2**-23
+P2_N24 = 5.960464477539063e-08  # 2**-24
+P2_N25 = 2.9802322387695312e-08  # 2**-25
+P2_N27 = 7.450580596923828e-09  # 2**-27
+P2_N29 = 1.862645149230957e-09  # 2**-29
+P2_N30 = 9.313225746154785e-10  # 2**-30
+P2_N31 = 4.656612873077393e-10  # 2**-31
+P2_N32 = 2.3283064365386963e-10  # 2**-32
+P2_N33 = 1.1641532182693481e-10  # 2**-33
+P2_N34 = 5.820766091346741e-11  # 2**-34
+P2_N35 = 2.9103830456733704e-11  # 2**-35
+P2_N38 = 3.637978807091713e-12  # 2**-38
+P2_N40 = 9.094947017729282e-13  # 2**-40
+P2_N43 = 1.1368683772161603e-13  # 2**-43
+P2_N46 = 1.4210854715202004e-14  # 2**-46
+P2_N50 = 8.881784197001252e-16  # 2**-50
+P2_N51 = 4.440892098500626e-16  # 2**-51
+P2_N55 = 2.7755575615628914e-17  # 2**-55
+P2_N59 = 1.734723475976807e-18  # 2**-59
+P2_N66 = 1.3552527156068805e-20  # 2**-66
+P2_P3 = 8  # 2**3
+P2_P4 = 16  # 2**4
+P2_P11 = 2048  # 2**11
+P2_P12 = 4096  # 2**12
+P2_P14 = 16384  # 2**14
+P2_P16 = 65536  # 2**16
 SCALROUND = 12  # number of dp to round scaled attributes to
 
 # **************************************************
@@ -78,12 +118,14 @@ U9 = "U009"  # Unsigned Int 9 bytes
 U10 = "U010"  # Unsigned Int 10 bytes
 U11 = "U011"  # Unsigned Int 11 bytes
 U12 = "U012"  # Unsigned Int 12 bytes
+U14 = "U014"  # Unsigned Int 14 bytes
 U15 = "U015"  # Unsigned Int 15 bytes
 U16 = "U016"  # Unsigned Int 16 bytes
 U20 = "U020"  # Unsigned Int 20 bytes
 U22 = "U022"  # Unsigned Int 22 bytes
 U23 = "U023"  # Unsigned Int 23 bytes
 U24 = "U024"  # Unsigned Int 24 bytes
+U27 = "U027"  # Unsigned Int 27 bytes
 U32 = "U032"  # Unsigned Int 32 bytes
 U40 = "U040"  # Unsigned Int 40 bytes
 U64 = "U064"  # Unsigned Int 64 bytes
@@ -97,6 +139,9 @@ X8 = "X008"  # Bitfield 8 bytes
 X24 = "X024"  # Bitfield 24 bytes
 R4 = "R004"  # Float (IEEE 754) Single Precision 4 bytes
 R8 = "R008"  # Float (IEEE 754) Double Precision 8 bytes
+
+BITFIELD = "_bit"
+GROUP = "_grp"
 
 ATTTYPE = {
     "A": type([0, 1]),
@@ -311,6 +356,7 @@ UBX_MSGIDS = {
     b"\x0a\x02": "MON-IO",  # deprecated, use MON-COMMS
     b"\x0a\x06": "MON-MSGPP",  # deprecated, use MON-COMMS
     b"\x0a\x27": "MON-PATCH",
+    b"\x0a\x2b": "MON-PT2",
     b"\x0a\x38": "MON-RF",
     b"\x0a\x07": "MON-RXBUF",  # deprecated, use MON-COMMS
     b"\x0a\x21": "MON-RXR",
