@@ -2165,8 +2165,7 @@ UBX_PAYLOADS_GET = {
     },
     "NAV-DAHEADINGHP": {
         "version": U1,  # 0x01 this was is the version implemented on pre-production X20D
-        "reserved0": U1,
-        "refStationId": U2,
+        "reserved0": U3,
         "iTOW": U4,
         "relPosN": I4,  # cm
         "relPosE": I4,

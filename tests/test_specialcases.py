@@ -436,16 +436,16 @@ class SpecialTest(unittest.TestCase):
             )
 
     def testNAVDAHEADING(self):
-        EXPECTED_RESULT1 = "<UBX(NAV-DAHEADING, version=1, reserved0=0, refStationId=0, iTOW=00:02:51, relPosN=0.0, relPosE=0.0, relPosD=0.0, relPosLength=0.0, relPosHeading=0.0, reserved1=0, accN=0.0, accE=0.0, accD=0.0, accLength=0.0, accHeading=0.0, reserved2=0, gnssFixOK=0, diffSoln=0, relPosValid=0, carrSoln=0, isMoving=0, refPosMiss=0, refObsMiss=0, relPosHeadingValid=0, relPosNormalized=0)>"
-        RAW1 = b'\xb5\x62\x01\x45\x40\x00\x01\x00\x00\x00\x48\xe2\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xb3\x7d'
+        EXPECTED_RESULT1 = "<UBX(NAV-DAHEADING, version=1, reserved0=0, iTOW=07:30:46, relPosN=-78.58, relPosE=5.9, relPosD=9.51, relPosLength=79.37, relPosHeading=175.70826, reserved1=0, accN=10.0, accE=14.0, accD=20.0, accLength=10.2, accHeading=1.01422, reserved2=0, gnssFixOK=1, diffSoln=1, relPosValid=1, carrSoln=2, isMoving=1, refPosMiss=0, refObsMiss=0, relPosHeadingValid=1, relPosNormalized=0)>"
+        RAW1 = b'\xb5\x62\x01\x45\x40\x00\x01\x00\x00\x00\xc0\xc2\x5c\x1b\xb2\xff\xff\xff\x05\x00\x00\x00\x09\x00\x00\x00\x4f\x00\x00\x00\x0a\x1c\x0c\x01\x00\x00\x00\x00\xc6\x5a\x33\x25\x64\x00\x00\x00\x8c\x00\x00\x00\xc8\x00\x00\x00\x66\x00\x00\x00\x2e\x8c\x01\x00\x00\x00\x00\x00\x37\x01\x00\x00\x48\xf1'
         res1 = UBXReader.parse(RAW1)
         # print(f'"{res1}"')
         self.assertEqual(str(res1), EXPECTED_RESULT1)
-        EXPECTED_RESULT2 = "<UBX(NAV-DAHEADING, version=2, reserved0=0, refStationId=0, iTOW=07:16:17, relPosN=-80.46, relPosE=2.43, relPosD=5.61, relPosLength=80.69, relPosHeading=178.27196, reserved1=0, accN=15.6, accE=19.7, accD=32.5, accLength=15.8, accHeading=1.39926, reserved2=0, gnssFixOK=1, diffSoln=1, relPosValid=1, carrSoln=2, relPosHeadingValid=1)>"
-        RAW2 = b'\xb5\x62\x01\x45\x40\x00\x01\x00\x00\x00\x78\xce\x5c\x1b\xb0\xff\xff\xff\x09\x00\x00\x00\x0f\x00\x00\x00\x52\x00\x00\x00\x62\x9e\x08\x01\x00\x00\x00\x00\xb1\x20\x5a\x57\x64\x00\x00\x00\x8e\x00\x00\x00\xce\x00\x00\x00\x6a\x00\x00\x00\xc7\x84\x01\x00\x00\x00\x00\x00\x37\x01\x00\x00\x94\x21'
+        EXPECTED_RESULT2 = "<UBX(NAV-DAHEADING, version=2, reserved0=0, iTOW=06:25:22, relPosN=-785, relPosE=59, relPosD=95, relPosLength=794, relPosHeading=175.70825, reserved1=0, accN=10, accE=14, accD=20, accLength=102, accHeading=1.01421, reserved2=0, gnssFixOK=1, diffSoln=1, relPosValid=1, carrSoln=2, relPosHeadingValid=0)>"
+        RAW2 = b'\xb5\x62\x01\x45\x3c\x00\x02\x00\x00\x00\xa0\x72\x87\x06\xef\xfc\xff\xff\x3b\x00\x00\x00\x5f\x00\x00\x00\x1a\x03\x00\x00\x09\x1c\x0c\x01\x00\x00\x00\x00\x0a\x00\x00\x00\x0e\x00\x00\x00\x14\x00\x00\x00\x66\x00\x00\x00\x2d\x8c\x01\x00\x00\x00\x00\x00\x17\x00\x00\x00\x58\x66'
         res2 = UBXReader.parse(RAW2)
-        print(f'"{res2}"')
-        # self.assertEqual(str(res2), EXPECTED_RESULT2)
+        # print(f'"{res2}"')
+        self.assertEqual(str(res2), EXPECTED_RESULT2)
         msg1 = UBXMessage("NAV", "NAV-DAHEADING", GET, version=1)
         self.assertEqual(msg1.identity, "NAV-DAHEADING")
         msg2 = UBXMessage("NAV", "NAV-DAHEADING", GET, version=2)
