@@ -1,5 +1,9 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.3.5
+
+1. Update NAV-DAHEADING v2 message definition for production firmware HDG 2.00 Interface Specification. **NOTE HOWEVER** that at time of writing (10/07/2026), the production firmware still appears to be outputting NAV-DAHEADING v1.
+
 ### RELEASE 1.3.4
 
 1. Minor performance improvements to parsing.

@@ -2164,7 +2164,7 @@ UBX_PAYLOADS_GET = {
         "velCovDD": R4,
     },
     "NAV-DAHEADINGHP": {
-        "version": U1,  # 0x01 this is the version implemented on X20D
+        "version": U1,  # 0x01 this was is the version implemented on pre-production X20D
         "reserved0": U1,
         "refStationId": U2,
         "iTOW": U4,
@@ -2201,18 +2201,18 @@ UBX_PAYLOADS_GET = {
     },
     "NAV-DAHEADING": {
         "version": U1,  # 0x02
-        "reserved0": U1,
+        "reserved0": U3,
         "iTOW": U4,
-        "relPosN": I4,  # cm
+        "relPosN": I4,  # mm
         "relPosE": I4,
         "relPosD": I4,
         "relPosLength": I4,
         "relPosHeading": (I4, E1_N5),
         "reserved1": U4,
-        "accN": (U4, E1_N1),
-        "accE": (U4, E1_N1),
-        "accD": (U4, E1_N1),
-        "accLength": (U4, E1_N1),
+        "accN": U4,  # mm
+        "accE": U4,
+        "accD": U4,
+        "accLength": U4,
         "accHeading": (U4, E1_N5),
         "reserved2": U4,
         "flags_bit": (
@@ -2222,7 +2222,7 @@ UBX_PAYLOADS_GET = {
                 "diffSoln": U1,
                 "relPosValid": U1,
                 "carrSoln": U2,
-                "isMoving": U1,
+                "reserved3": U1,
                 "relPosHeadingValid": U1,
             },
         ),
