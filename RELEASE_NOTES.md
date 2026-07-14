@@ -1,5 +1,45 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.3.6
+
+1. Add `msgfilter` argument to UBXReader to allow user to filter output by one or more message identities. If set, only filtered raw messages will be parsed (e.g. UBX `0x0107` *(must be integer)*, NMEA `"GNGSA"` or RTCM `1077`); the remainder will be `None`. Default is "" (no filter). If you're only interested in specific messages, this can significantly improve parsing speed for a given datastream.
+
+    ```
+    from pyubx2 import UBXReader
+
+    with open("ubxdata.log",'rb') as stream:
+       ubr = UBXReader(stream, msgfilter=(0x0107,0x0104)) # NAV-PVT, NAV-DOP
+       for raw, parsed in ubr:
+          if parsed is not None:
+             print(parsed)
+    ```
+    ```
+    <UBX(NAV-DOP, iTOW=16:31:54, gDOP=1.17, pDOP=1.04, tDOP=0.54, vDOP=0.89, hDOP=0.53, nDOP=0.39, eDOP=0.36)>
+    <UBX(NAV-PVT, iTOW=16:31:55, year=2024, month=8, day=23, hour=16, min
+    ...
+    ```
+1. Enhance `parsing` argument to UBXReader - permissible values:
+   - `PARSE_NONE` (0) - No message parsing, raw output only. Parsed data is `None`.
+   - `PARSE_FULL` (1) - Full parsing of all message attributes (the default). Parsed data is a `UBXMessage`, `NMEAMessage` or `RTCMMessage` object.
+   - `PARSE_META` (2) - Parse only basic metadata from messages (protocol, identity and length). Parsed data is a formatted `str` object. Significantly faster than full parsing, but individual data attributes will no longer be available.
+
+    ```
+    from pyubx2 import UBXReader, PARSE_META
+
+    with open("ubxdata.log",'rb') as stream:
+       ubr = UBXReader(stream, parsing=PARSE_META)
+       for raw, parsed in ubr:
+          if parsed is not None:
+             print(parsed)
+    ```
+    ```
+    <UBX(0x0107, length=100, data=b'\xb5b\x01\x07\\\x00(\ ... )>
+    <RTCM(1042, length=70, data=b'\xd3\x00@A(\x87\x98\x1e ... )>
+    ...
+    ```
+
+**FYI** See also [pygnssutils.GNSSReader](https://github.com/semuconsulting/pygnssutils#gnssreader), which offers similar functionality to UBXReader but for a wider range of GNSS protocols, and outputs a generic `GNSSMessage` object (*rather than a `str` object*) when `parsing=PARSE_META`.
+
 ### RELEASE 1.3.5
 
 1. Update NAV-DAHEADING v2 message definition for production firmware HDG 2.00 Interface Specification.

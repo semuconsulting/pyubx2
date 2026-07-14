@@ -144,6 +144,25 @@ class StreamTest(unittest.TestCase):
                 i += 1
             self.assertEqual(i, len(EXPECTED_RESULTS))
 
+    def testNAVLOG2_filteredmeta(
+        self,
+    ):  # test stream of UBX NAV messages with parsebitfield = 2
+        EXPECTED_RESULTS = (
+            "<UBX(0x0107, length=100, ",
+            "<UBX(0x0135, length=532, ",
+            "<UBX(0x0104, length=26, ",
+        )
+        i = 0
+        with open(os.path.join(DIRNAME, "pygpsdata-NAV.log"), "rb") as stream:
+            ubr = UBXReader(stream, parsebitfield=2,parsing=2,msgfilter=(0x0107,0x0135,0x0104))
+            for raw, parsed in ubr:
+                if parsed is not None:
+                    d = parsed.split("data=",1)[0]
+                    #print(f'"{d}",')
+                    self.assertEqual(d, EXPECTED_RESULTS[i])
+                    i += 1
+            self.assertEqual(i, len(EXPECTED_RESULTS))
+
     def testHNRLOG(
         self,
     ):  # test stream of UBX HNR messages
@@ -459,6 +478,25 @@ class StreamTest(unittest.TestCase):
                 i += 1
             self.assertEqual(i, 10)
             # sys.stdout = stdout_saved
+
+    def testMIXEDRTCM_filteredmeta(
+        self,
+    ):  # test stream of UBX NAV messages with parsebitfield = 2
+        EXPECTED_RESULTS = (
+            "<RTCM(1077, length=275, ",
+            "<UBX(0x0107, length=100, ",
+            "<NMEA(GNRMC, length=70, ",
+        )
+        i = 0
+        with open(os.path.join(DIRNAME, "pygpsdata-MIXED-RTCM3.log"), "rb") as stream:
+            ubr = UBXReader(stream, protfilter=7,parsing=2,msgfilter=(1077,"GNRMC",0x0107))
+            for raw, parsed in ubr:
+                if parsed is not None:
+                    d = parsed.split("data=",1)[0]
+                    # print(f'"{d}",')
+                    self.assertEqual(d, EXPECTED_RESULTS[i])
+                    i += 1
+            self.assertEqual(i, len(EXPECTED_RESULTS))
 
     def testMIXEDRTCM2(
         self,
