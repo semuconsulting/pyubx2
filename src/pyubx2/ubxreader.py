@@ -8,6 +8,8 @@ Returns both the raw binary data (as bytes) and the parsed data
 (as a UBXMessage, NMEAMessage or RTCMMessage object).
 
 - 'protfilter' governs which protocols (NMEA, UBX or RTCM3) are processed
+- 'msgfilter' governs which individual message types are processed.
+- `parsing` governs whether payloads are fully or partially parsed.
 - 'quitonerror' governs how errors are handled
 - 'msgmode' indicates the type of UBX datastream (output GET, input SET, query POLL).
   If msgmode is set to SETPOLL, input/query mode will be automatically detected by parser.
@@ -42,13 +44,21 @@ from pyubx2.exceptions import (
     UBXStreamError,
     UBXTypeError,
 )
-from pyubx2.ubxhelpers import bytes2val, calc_checksum, getinputmode, val2bytes
+from pyubx2.ubxhelpers import (
+    bytes2val,
+    calc_checksum,
+    escapeall,
+    getinputmode,
+    val2bytes,
+)
 from pyubx2.ubxmessage import UBXMessage
 from pyubx2.ubxtypes_core import (
     ERR_LOG,
     ERR_RAISE,
     GET,
     NMEA_PROTOCOL,
+    PARSE_FULL,
+    PARSE_META,
     POLL,
     RTCM3_PROTOCOL,
     SET,
@@ -75,9 +85,10 @@ class UBXReader:
         parsebitfield: Literal[0, 1, 2] = 1,
         labelmsm: Literal[1, 2] = 1,
         bufsize: int = DEFAULT_BUFSIZE,
-        parsing: bool = True,
+        parsing: Literal[0, 1, 2] = PARSE_FULL,
         errorhandler: FunctionType | NoneType = None,
         encoding: int = ENCODE_NONE,
+        msgfilter: tuple | int | str = "",
     ):
         """Constructor.
 
@@ -93,10 +104,13 @@ class UBXReader:
             individual bits, 2 = parse as bytes and bits (1)
         :param Literal[1,2] labelmsm: RTCM3 MSM label type 1 = RINEX, 2 = BAND (1)
         :param int bufsize: socket recv buffer size (4096)
-        :param bool parsing: True = parse data, False = don't parse data (output raw only) (True)
+        :param Literal[0,1,2] parsing: PARSE_NONE (0) = no parsing (raw only), \
+            PARSE_FULL (1) = full parsing, PARSE_META (2) = parse metadata only (1)
         :param FunctionType | NoneType errorhandler: error handling object or function (None)
         :param int encoding: encoding for socket stream \
             (0 = none, 1 = chunk, 2 = gzip, 4 = compress, 8 = deflate (can be OR'd)) (0)
+        :param tuple | int | str msgfilter: parsed message filter ("" = ALL) \
+            UBX identity must be entered as integer e.g. 0x0107
         :raises: UBXStreamError (if mode is invalid)
         """
         # pylint: disable=too-many-arguments
@@ -106,6 +120,10 @@ class UBXReader:
         else:
             self._stream = datastream
         self._protfilter = protfilter
+        self._msgfilter = (
+            (msgfilter,) if not isinstance(msgfilter, tuple) else msgfilter
+        )
+        self._filtermsg = self._msgfilter not in ((), ("",))
         self._quitonerror = quitonerror
         self._errorhandler = errorhandler
         self._validate = validate
@@ -227,19 +245,22 @@ class UBXReader:
 
         return (raw_data, parsed_data)
 
-    def _parse_ubx(self, hdr: bytes) -> tuple[bytes | NoneType, UBXMessage | NoneType]:
+    def _parse_ubx(
+        self, hdr: bytes
+    ) -> tuple[bytes | NoneType, UBXMessage | str | NoneType]:
         """
         Parse remainder of UBX message.
 
         :param bytes hdr: UBX header (b'\\xb5\\x62')
         :return: tuple of (raw_data as bytes, parsed_data as UBXMessage or None)
-        :rtype: tuple[bytes | NoneType, UBXMessage | NoneType]
+        :rtype: tuple[bytes | NoneType, UBXMessage | str | NoneType]
         """
 
         # read the rest of the UBX message from the buffer
         byten = self._read_bytes(4)
         clsid = byten[0:1]
         msgid = byten[1:2]
+        msgidi = int.from_bytes(clsid + msgid, "big")
         lenb = byten[2:4]
         leni = int.from_bytes(lenb, "little", signed=False)
         byten = self._read_bytes(leni + 2)
@@ -247,69 +268,81 @@ class UBXReader:
         cksum = byten[leni : leni + 2]
         raw_data = hdr + clsid + msgid + lenb + plb + cksum
         # only parse if we need to (filter passes UBX)
-        if (self._protfilter & UBX_PROTOCOL) and self._parsing:
-            parsed_data = self.parse(
-                raw_data,
-                validate=self._validate,
-                msgmode=self._msgmode,
-                parsebitfield=self._parsebf,
-            )
-        else:
-            parsed_data = None
+        parsed_data = None
+        if self._protfilter & UBX_PROTOCOL and (
+            not self._filtermsg or msgidi in self._msgfilter
+        ):
+            if self._parsing == PARSE_FULL:
+                parsed_data = UBXReader.parse(
+                    raw_data,
+                    validate=self._validate,
+                    msgmode=self._msgmode,
+                    parsebitfield=self._parsebf,
+                )
+            elif self._parsing == PARSE_META:
+                parsed_data = f"<UBX(0x{msgidi:04x}, length={len(raw_data)}, data={escapeall(raw_data)}"
         return (raw_data, parsed_data)
 
     def _parse_nmea(
         self, hdr: bytes
-    ) -> tuple[bytes | NoneType, NMEAMessage | NoneType]:
+    ) -> tuple[bytes | NoneType, NMEAMessage | str | NoneType]:
         """
         Parse remainder of NMEA message (using pynmeagps library).
 
         :param bytes hdr: NMEA header (b'\\x24\\x..')
         :return: tuple of (raw_data as bytes, parsed_data as NMEAMessage or None)
-        :rtype: tuple[bytes | NoneType, NMEAMessage | NoneType]
+        :rtype: tuple[bytes | NoneType, NMEAMessage | str | NoneType]
         """
 
         # read the rest of the NMEA message from the buffer
         byten = self._read_line()  # NMEA protocol is CRLF-terminated
         raw_data = hdr + byten
+        msgids = raw_data[1:].decode().split(",", 1)[0]
         # only parse if we need to (filter passes NMEA)
-        if (self._protfilter & NMEA_PROTOCOL) and self._parsing:
-            # invoke pynmeagps parser
-            parsed_data = NMEAReader.parse(
-                raw_data,
-                validate=self._validate,
-                msgmode=self._msgmode,
-            )
-        else:
-            parsed_data = None
+        parsed_data = None
+        if self._protfilter & NMEA_PROTOCOL and (
+            not self._filtermsg or msgids in self._msgfilter
+        ):
+            if self._parsing == PARSE_FULL:
+                parsed_data = NMEAReader.parse(
+                    raw_data,
+                    validate=self._validate,
+                    msgmode=self._msgmode,
+                )
+            elif self._parsing == PARSE_META:
+                parsed_data = f"<NMEA({msgids}, length={len(raw_data)}, data={raw_data}"
         return (raw_data, parsed_data)
 
     def _parse_rtcm3(
         self, hdr: bytes
-    ) -> tuple[bytes | NoneType, RTCMMessage | NoneType]:
+    ) -> tuple[bytes | NoneType, RTCMMessage | str | NoneType]:
         """
         Parse any RTCM3 data in the stream (using pyrtcm library).
 
         :param bytes hdr: first 2 bytes of RTCM3 header
         :return: tuple of (raw_data as bytes, parsed_stub as RTCMMessage)
-        :rtype: tuple[bytes | NoneType, RTCMMessage | NoneType]
+        :rtype: tuple[bytes | NoneType, RTCMMessage | str | NoneType]
         """
 
         hdr3 = self._read_bytes(1)
         size = hdr3[0] | (hdr[1] << 8)
         payload = self._read_bytes(size)
+        msgidi = ((int.from_bytes(payload[0:2], "big")) >> 4) & 0xFFF
         crc = self._read_bytes(3)
         raw_data = hdr + hdr3 + payload + crc
         # only parse if we need to (filter passes RTCM)
-        if (self._protfilter & RTCM3_PROTOCOL) and self._parsing:
-            # invoke pyrtcm parser
-            parsed_data = RTCMReader.parse(
-                raw_data,
-                validate=self._validate,
-                labelmsm=self._labelmsm,
-            )
-        else:
-            parsed_data = None
+        parsed_data = None
+        if self._protfilter & RTCM3_PROTOCOL and (
+            not self._filtermsg or msgidi in self._msgfilter
+        ):
+            if self._parsing == PARSE_FULL:
+                parsed_data = RTCMReader.parse(
+                    raw_data,
+                    validate=self._validate,
+                    labelmsm=self._labelmsm,
+                )
+            elif self._parsing == PARSE_META:
+                parsed_data = f"<RTCM({msgidi}, length={len(raw_data)}, data={raw_data}"
         return (raw_data, parsed_data)
 
     def _read_bytes(self, size: int) -> bytes:

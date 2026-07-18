@@ -28,6 +28,12 @@ UBX_PROTOCOL = 2
 """UBX Protocol"""
 RTCM3_PROTOCOL = 4
 """RTCM3 Protocol"""
+PARSE_NONE = 0
+"""No Parsing, raw output only"""
+PARSE_FULL = 1
+"""Full parsing of all attributes"""
+PARSE_META = 2
+"""Parse metadata only"""
 ERR_RAISE = 2
 """Raise error and quit"""
 ERR_LOG = 1
