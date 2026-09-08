@@ -5,8 +5,11 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "pyubx2"
 dynamic = ["version"]
-authors = [{ name = "Steve Smith", email = "semuadmin@semuconsulting.com" }]
-maintainers = [{ name = "Steve Smith", email = "semuadmin@semuconsulting.com" }]
+authors = [{ name = "Steve Smith" }, { email = "semuadmin@semuconsulting.com" }]
+maintainers = [
+    { name = "Steve Smith" },
+    { email = "semuadmin@semuconsulting.com" },
+]
 description = "UBX protocol parser and generator"
 license = "BSD-3-Clause"
 license-files = ["LICENSE"]
