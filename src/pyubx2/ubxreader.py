@@ -150,6 +150,8 @@ class UBXReader:
             **{bytes([0xD3, b2]): (RTCM3_PROTOCOL, self._parse_rtcm3) for b2 in range(4)},
         }
 
+    self._valid_sync = {hdr[:1] for hdr in self._message_parsers}
+
     def __iter__(self):
         """Iterator."""
 
@@ -194,6 +196,10 @@ class UBXReader:
                 if len(bytehdr) < 2:
                     bytehdr += self._read_bytes(2-len(bytehdr))
                 
+                if bytehdr[0:1] not in VALID_SYNC:
+                    bytehdr = bytehdr[1:2]
+                    continue
+                    
                 matched_parser = self._message_parsers.get(bytehdr)
                 if matched_parser is None: 
                     bytehdr = bytehdr[1:2]
@@ -223,16 +229,11 @@ class UBXReader:
         """
 
         # read the rest of the UBX message from the buffer
-        byten = self._read_bytes(4)
-        clsid = byten[0:1]
-        msgid = byten[1:2]
-        msgidi = int.from_bytes(clsid + msgid, "big")
-        lenb = byten[2:4]
-        leni = int.from_bytes(lenb, "little", signed=False)
-        byten = self._read_bytes(leni + 2)
-        plb = byten[0:leni]
-        cksum = byten[leni : leni + 2]
-        raw_data = hdr + clsid + msgid + lenb + plb + cksum
+        msgidi_n_size = self._read_bytes(4)
+        msgidi = int.from_bytes(byten[0:2], "big")
+        size = int.from_bytes(header_n_size[2:4], "little", signed=False)
+        payload_n_checksum = self._read_bytes(data_size + 2)
+        raw_data = hdr + byten + payload_n_checksum
         # only parse if we need to (filter passes UBX)
         parsed_data = None
         
@@ -319,14 +320,19 @@ class UBXReader:
         """
 
         data = self._stream.read(size)
-        if len(data) == 0:  # EOF
+
+        if len(data) == size: # Fastest path on correct data
+            return data
+
+        if not data:  # EOF Check
             raise EOFError()
-        if 0 < len(data) < size:  # truncated stream
-            raise UBXStreamError(
-                "Serial stream terminated unexpectedly. "
-                f"{size} bytes requested, {len(data)} bytes returned."
-            )
-        return data
+
+        # Must be truncated
+        raise UBXStreamError(
+            "Serial stream terminated unexpectedly. "
+            f"{size} bytes requested, {len(data)} bytes returned."
+        )
+
 
     def _read_line(self) -> bytes:
         """
