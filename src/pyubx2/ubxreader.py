@@ -262,7 +262,7 @@ class UBXReader:
         # read the rest of the NMEA message from the buffer
         byten = self._read_line()  # NMEA protocol is CRLF-terminated
         raw_data = hdr + byten
-        msgids = raw_data[1:].decode(errors="replace").split(",", 1)[0]
+        msgids = raw_data[1:].split(b",", 1)[0].decode("ascii", errors="replace")
         # only parse if we need to (filter passes NMEA)
         parsed_data = None
         
