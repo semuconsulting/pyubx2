@@ -73,7 +73,19 @@ class UBXReader:
     """
     UBXReader class.
     """
-    
+    _PARSE_ERROR = (
+        UBXMessageError, UBXTypeError, UBXParseError, UBXStreamError,
+        nme.NMEAMessageError, nme.NMEATypeError, nme.NMEAParseError, nme.NMEAStreamError,
+        rte.RTCMMessageError, rte.RTCMParseError, rte.RTCMStreamError, rte.RTCMTypeError,
+    )
+
+    _message_parsers = {
+        UBX_HDR: (UBX_PROTOCOL, "_parse_ubx"),
+        **{hdr: (NMEA_PROTOCOL, "_parse_nmea") for hdr in NMEA_HDR},
+        **{bytes([0xD3, b2]): (RTCM3_PROTOCOL, "_parse_rtcm3") for b2 in range(4)},
+    }
+
+    _valid_sync = {hdr[:1] for hdr in _message_parsers}
 
     def __init__(
         self,
@@ -138,20 +150,6 @@ class UBXReader:
                 f"Invalid stream mode {self._msgmode} - must be 0, 1, 2 or 3"
             )
 
-        self._PARSE_ERROR = (
-            UBXMessageError, UBXTypeError, UBXParseError, UBXStreamError,
-            nme.NMEAMessageError, nme.NMEATypeError, nme.NMEAParseError, nme.NMEAStreamError,
-            rte.RTCMMessageError, rte.RTCMParseError, rte.RTCMStreamError, rte.RTCMTypeError,
-        )
-        # Add all NMEA 2-byte headers and every possible RTCM3 header
-        self._message_parsers = {
-            UBX_HDR: (UBX_PROTOCOL, self._parse_ubx),
-            **{hdr: (NMEA_PROTOCOL, self._parse_nmea) for hdr in NMEA_HDR},
-            **{bytes([0xD3, b2]): (RTCM3_PROTOCOL, self._parse_rtcm3) for b2 in range(4)},
-        }
-
-        self._valid_sync = {hdr[:1] for hdr in self._message_parsers}
-
     def __iter__(self):
         """Iterator."""
 
@@ -190,7 +188,7 @@ class UBXReader:
         :rtype: tuple[bytes | None, UBXMessage | NMEAMessage | RTCMMessage | None]
         :raises: Exception (if invalid or unrecognised protocol in data stream)
         """
-        bytehdr = b""
+        byte1 = b""
         while True:  # loop until end of valid message or EOF
             try:
                 if not byte1: byte1 = self._read_bytes(1)
@@ -209,8 +207,9 @@ class UBXReader:
                     continue
                 
                 byte1 = b"" #match found reset byte1
-                protocol_flag, parser = matched_parser
-                raw_data, parsed_data = parser(hdr)
+                protocol_flag, parser_name = matched_parser
+                parser = getattr(self, parser_name) 
+                raw_data, parsed_data = parser(bytehdr)
                 
                 # Valid message, but hit the great filter
                 if self._protfilter & protocol_flag:
