@@ -110,7 +110,7 @@ class UBXReader:
             VALNONE (0) = ignore invalid checksum (1)
         :param int protfilter: NMEA_PROTOCOL (1), UBX_PROTOCOL (2), RTCM3_PROTOCOL (4),
             Can be OR'd (7)
-        :param Literal[0,1,2] quitonerror: ERR_IGNORE (0) = ignore errors,  
+        :param Literal[0,1,2] quitonerror: ERR_IGNORE (0) = ignore errors,
             ERR_LOG (1) = log continue, ERR_RAISE (2) = (re)raise (1)
         :param Literal[0,1,2] parsebitfield: 0 = parse bitfield as bytes, 1 = parse as \
             individual bits, 2 = parse as bytes and bits (1)
@@ -192,7 +192,7 @@ class UBXReader:
         while True:  # loop until end of valid message or EOF
             try:
                 if not byte1: byte1 = self._read_bytes(1)
-                
+
                 if byte1 not in self._valid_sync:
                     byte1 = b"" # Reset and try next byte
                     continue
@@ -201,23 +201,25 @@ class UBXReader:
                 bytehdr = byte1 + byte2
 
                 matched_parser = self._message_parsers.get(bytehdr)
-                if not matched_parser: 
+                if not matched_parser:
+                    # Consider skipping bad header matches completely
+                    self._do_error(UBXParseError(f"Unknown protocol header {bytehdr}."))
                     # Failed 2-byte match. Byte 2 might be a new valid sync byte.
                     byte1 = byte2
                     continue
-                
+
                 byte1 = b"" #match found reset byte1
                 protocol_flag, parser_name = matched_parser
-                parser = getattr(self, parser_name) 
+                parser = getattr(self, parser_name)
                 raw_data, parsed_data = parser(bytehdr)
-                
+
                 # Valid message, but hit the great filter
                 if self._protfilter & protocol_flag:
                     return raw_data, parsed_data
             except EOFError:
                 return (None, None)
             except self._PARSE_ERROR as err:
-                self._do_error(err) 
+                self._do_error(err)
                 byte1 = b"" # Not strictly necessary but eh
 
     def _parse_ubx(
@@ -237,7 +239,7 @@ class UBXReader:
         size = int.from_bytes(byten[2:4], "little", signed=False)
         payload_n_checksum = self._read_bytes(size + 2)
         raw_data = hdr + byten + payload_n_checksum
-        
+
         return self._dispatch_parse(
             msg_id=msgidi,
             raw_data=raw_data,
@@ -268,7 +270,7 @@ class UBXReader:
 
         msg_end = raw_data.find(b",", 1)
         msgids = raw_data[1:msg_end].decode("ascii", errors="replace") if msg_end != -1 else ""
-        
+
         return self._dispatch_parse(
             msg_id=msgids,
             raw_data=raw_data,
@@ -291,10 +293,10 @@ class UBXReader:
         hdr3 = self._read_bytes(1)
         size = int.from_bytes(hdr + hdr3, "big") & 0x3FF
         payload_and_crc = self._read_bytes(size + 3)  # Payload + 3-byte CRC
-        
+
         raw_data = hdr + hdr3 + payload_and_crc
         msgidi = int.from_bytes(payload_and_crc[:2], "big") >> 4
-        
+
         return self._dispatch_parse(
             msg_id=msgidi,
             raw_data=raw_data,
@@ -322,7 +324,7 @@ class UBXReader:
         if self._parsing == PARSE_META:
             display_id = formatted_id if formatted_id is not None else msg_id
             fmt_data = escapeall(raw_data) if proto_name == "UBX" else raw_data
-            return raw_data, f"<{proto_name}({display_id}), length={len(raw_data)}, data={fmt_data}>"
+            return raw_data, f"<{proto_name}({display_id}, length={len(raw_data)}, data={fmt_data}>"
 
         return raw_data, None
 
@@ -341,7 +343,7 @@ class UBXReader:
         if len(data) == size: # Fastest path on correct data
             return data
 
-        if len(data) == 0:  
+        if len(data) == 0:
             raise EOFError()
 
         # Must be truncated
@@ -439,7 +441,7 @@ class UBXReader:
             leni = len(payload)
         ckm = message[lenm - 2 : lenm]
         ckv = calc_checksum(message[2 : lenm - 2])
-        
+
         if validate & VALCKSUM:
             if hdr != UBX_HDR:
                 raise UBXParseError(
