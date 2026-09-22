@@ -202,7 +202,7 @@ class UBXReader:
                 
                 hdr, bytehdr = bytehdr, b"" # copy and reset header before attempting parsing
                 protocol_flag, parser = matched_parser
-                raw_data, parsed_data = parser(bytehdr)
+                raw_data, parsed_data = parser(hdr)
                 
                 # Valid message, but hit the great filter
                 if self._protfilter & protocol_flag:
