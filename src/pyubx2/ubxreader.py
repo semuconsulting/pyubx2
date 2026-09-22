@@ -23,7 +23,7 @@ Created on 2 Oct 2020
 
 from logging import getLogger
 from socket import socket
-from typing import Literal, Callable
+from typing import Literal, Callable, Any
 
 import pynmeagps.exceptions as nme
 import pyrtcm.exceptions as rte
@@ -193,19 +193,22 @@ class UBXReader:
         bytehdr = b""
         while True:  # loop until end of valid message or EOF
             try:
-                if len(bytehdr) < 2:
-                    bytehdr += self._read_bytes(2-len(bytehdr))
+                if not byte1: byte1 = self._read_bytes(1)
                 
-                if bytehdr[0:1] not in self._valid_sync:
-                    bytehdr = bytehdr[1:2]
+                if byte1 not in self._valid_sync:
+                    byte1 = b"" # Reset and try next byte
                     continue
+
+                byte2 = self._read_bytes(1)
+                bytehdr = byte1 + byte2
 
                 matched_parser = self._message_parsers.get(bytehdr)
                 if not matched_parser: 
-                    bytehdr = bytehdr[1:2]
+                    # Failed 2-byte match. Byte 2 might be a new valid sync byte.
+                    byte1 = byte2
                     continue
                 
-                hdr, bytehdr = bytehdr, b"" # copy and reset header before attempting parsing
+                byte1 = b"" #match found reset byte1
                 protocol_flag, parser = matched_parser
                 raw_data, parsed_data = parser(hdr)
                 
@@ -216,6 +219,7 @@ class UBXReader:
                 return (None, None)
             except self._PARSE_ERROR as err:
                 self._do_error(err) 
+                byte1 = b"" # Not strictly necessary but eh
 
     def _parse_ubx(
         self, hdr: bytes
@@ -262,7 +266,9 @@ class UBXReader:
         # read the rest of the NMEA message from the buffer
         byten = self._read_line()
         raw_data = hdr + byten
-        msgids = raw_data[1:].split(b",", 1)[0].decode("ascii", errors="replace")
+
+        msg_end = raw_data.find(b",", 1)
+        msgids = raw_data[1:msg_end].decode("ascii", errors="replace") if msg_end != -1 else ""
         
         return self._dispatch_parse(
             msg_id=msgids,
@@ -336,7 +342,7 @@ class UBXReader:
         if len(data) == size: # Fastest path on correct data
             return data
 
-        if not data:  # EOF Check
+        if len(data) == 0:  
             raise EOFError()
 
         # Must be truncated
@@ -433,10 +439,8 @@ class UBXReader:
             payload = message[6 : lenm - 2]
             leni = len(payload)
         ckm = message[lenm - 2 : lenm]
-        if payload is not None:
-            ckv = calc_checksum(clsid + msgid + lenb + payload)
-        else:
-            ckv = calc_checksum(clsid + msgid + lenb)
+        ckv = calc_checksum(message[2 : lenm - 2])
+        
         if validate & VALCKSUM:
             if hdr != UBX_HDR:
                 raise UBXParseError(
