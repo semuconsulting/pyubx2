@@ -78,7 +78,7 @@ class UBXReader:
     def __init__(
         self,
         datastream,
-        msgmode: Literal[0, 1, 2] = GET,
+        msgmode: Literal[0, 1, 2, 3] = GET,
         validate: int = VALCKSUM,
         protfilter: int = NMEA_PROTOCOL | UBX_PROTOCOL | RTCM3_PROTOCOL,
         quitonerror: Literal[0, 1, 2] = ERR_LOG,
@@ -235,9 +235,8 @@ class UBXReader:
         raw_data = hdr + clsid + msgid + lenb + plb + cksum
         # only parse if we need to (filter passes UBX)
         parsed_data = None
-        if self._protfilter & UBX_PROTOCOL and (
-            not self._filtermsg or msgidi in self._msgfilter
-        ):
+        
+        if not self._filtermsg or msgidi in self._msgfilter:
             if self._parsing == PARSE_FULL:
                 parsed_data = UBXReader.parse(
                     raw_data,
@@ -246,7 +245,7 @@ class UBXReader:
                     parsebitfield=self._parsebf,
                 )
             elif self._parsing == PARSE_META:
-                parsed_data = f"<UBX(0x{msgidi:04x}, length={len(raw_data)}, data={escapeall(raw_data)}"
+                parsed_data = f"<UBX(0x{msgidi:04x}, length={len(raw_data)}, data={escapeall(raw_data)}>"
         return (raw_data, parsed_data)
 
     def _parse_nmea(
@@ -263,12 +262,11 @@ class UBXReader:
         # read the rest of the NMEA message from the buffer
         byten = self._read_line()  # NMEA protocol is CRLF-terminated
         raw_data = hdr + byten
-        msgids = raw_data[1:].decode().split(",", 1)[0]
+        msgids = raw_data[1:].decode(errors="replace").split(",", 1)[0]
         # only parse if we need to (filter passes NMEA)
         parsed_data = None
-        if self._protfilter & NMEA_PROTOCOL and (
-            not self._filtermsg or msgids in self._msgfilter
-        ):
+        
+        if not self._filtermsg or msgids in self._msgfilter:
             if self._parsing == PARSE_FULL:
                 parsed_data = NMEAReader.parse(
                     raw_data,
@@ -276,7 +274,7 @@ class UBXReader:
                     msgmode=self._msgmode,
                 )
             elif self._parsing == PARSE_META:
-                parsed_data = f"<NMEA({msgids}, length={len(raw_data)}, data={raw_data}"
+                parsed_data = f"<NMEA({msgids}, length={len(raw_data)}, data={raw_data}>"
         return (raw_data, parsed_data)
 
     def _parse_rtcm3(
@@ -298,9 +296,8 @@ class UBXReader:
         raw_data = hdr + hdr3 + payload + crc
         # only parse if we need to (filter passes RTCM)
         parsed_data = None
-        if self._protfilter & RTCM3_PROTOCOL and (
-            not self._filtermsg or msgidi in self._msgfilter
-        ):
+        
+        if not self._filtermsg or msgidi in self._msgfilter:
             if self._parsing == PARSE_FULL:
                 parsed_data = RTCMReader.parse(
                     raw_data,
@@ -308,7 +305,7 @@ class UBXReader:
                     labelmsm=self._labelmsm,
                 )
             elif self._parsing == PARSE_META:
-                parsed_data = f"<RTCM({msgidi}, length={len(raw_data)}, data={raw_data}"
+                parsed_data = f"<RTCM({msgidi}, length={len(raw_data)}, data={raw_data}>"
         return (raw_data, parsed_data)
 
     def _read_bytes(self, size: int) -> bytes:
