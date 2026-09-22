@@ -74,6 +74,11 @@ class UBXReader:
     """
     UBXReader class.
     """
+    _PARSE_ERROR = (
+        UBXMessageError, UBXTypeError, UBXParseError, UBXStreamError,
+        nme.NMEAMessageError, nme.NMEATypeError, nme.NMEAParseError, nme.NMEAStreamError,
+        rte.RTCMMessageError, rte.RTCMParseError, rte.RTCMStreamError, rte.RTCMTypeError,
+    )
 
     def __init__(
         self,
@@ -138,6 +143,13 @@ class UBXReader:
                 f"Invalid stream mode {self._msgmode} - must be 0, 1, 2 or 3"
             )
 
+        # Add all NMEA 2-byte headers and every possible RTCM3 header
+         self._message_parsers = {
+            UBX_HDR: (UBX_PROTOCOL, self._parse_ubx),
+            **{hdr: (NMEA_PROTOCOL, self._parse_nmea) for hdr in NMEA_HDR},
+            **{bytes([0xD3, b2]): (RTCM3_PROTOCOL, self._parse_rtcm3) for b2 in range(4)},
+        }
+
     def __iter__(self):
         """Iterator."""
 
@@ -176,53 +188,26 @@ class UBXReader:
         :rtype: tuple[bytes | NoneType, UBXMessage | NMEAMessage | RTCMMessage | NoneType]
         :raises: Exception (if invalid or unrecognised protocol in data stream)
         """
-
-        raw_data = None
-        parsed_data = None
-        parsing = True
-        while parsing:  # loop until end of valid message or EOF
+        bytehdr = b""
+        while True:  # loop until end of valid message or EOF
             try:
+                if len(bytehdr) < 2:
+                    bytehdr += self._read_bytes(2-len(bytehdr))
+                
+              matched_parser = self._message_parser.get(bytehdr)
+              if matched_parser is None: 
+                bytehdr = bytehdr[1:2]
+                continue
+                
+              protocol_flag, parser = matched_parser
+              raw_data, parsed_data = parser(bytehdr)
+          
+              if self._protfilter & protocol_flag:
+                return raw_data, parsed_data
 
-                raw_data = None
-                parsed_data = None
-                byte1 = self._read_bytes(1)  # read the first byte
-                # if not UBX, NMEA or RTCM3, discard and continue
-                if byte1 not in (b"\xb5", b"\x24", b"\xd3"):
-                    continue
-                byte2 = self._read_bytes(1)
-                bytehdr = byte1 + byte2
-                # if it's a UBX message (b'\xb5\x62')
-                if bytehdr == UBX_HDR:
-                    raw_data, parsed_data = self._parse_ubx(bytehdr)
-                    # if protocol filter passes UBX, return message,
-                    # otherwise discard and continue
-                    if self._protfilter & UBX_PROTOCOL:
-                        parsing = False
-                    else:
-                        continue
-                # if it's an NMEA message (b'\x24\x..)
-                elif bytehdr in NMEA_HDR:
-                    raw_data, parsed_data = self._parse_nmea(bytehdr)
-                    # if protocol filter passes NMEA, return message,
-                    # otherwise discard and continue
-                    if self._protfilter & NMEA_PROTOCOL:
-                        parsing = False
-                    else:
-                        continue
-                # if it's a RTCM3 message
-                # (byte1 = 0xd3; byte2 = 0b000000**)
-                elif byte1 == b"\xd3" and (byte2[0] & ~0x03) == 0:
-                    raw_data, parsed_data = self._parse_rtcm3(bytehdr)
-                    # if protocol filter passes RTCM, return message,
-                    # otherwise discard and continue
-                    if self._protfilter & RTCM3_PROTOCOL:
-                        parsing = False
-                    else:
-                        continue
-                # unrecognised protocol header
-                else:
-                    raise UBXParseError(f"Unknown protocol header {bytehdr}.")
-
+              # Valid message, but hit the great filter
+              bytehdr = b""
+              continue
             except EOFError:
                 return (None, None)
             except (
@@ -241,6 +226,7 @@ class UBXReader:
             ) as err:
                 if self._quitonerror:
                     self._do_error(err)
+                bytehdr = b""
                 continue
 
         return (raw_data, parsed_data)
@@ -272,7 +258,7 @@ class UBXReader:
         if self._protfilter & UBX_PROTOCOL and (
             not self._filtermsg or msgidi in self._msgfilter
         ):
-            if self._parsing == PARSE_FULL:
+            if self._ == PARSE_FULL:
                 parsed_data = UBXReader.parse(
                     raw_data,
                     validate=self._validate,
