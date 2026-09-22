@@ -23,8 +23,7 @@ Created on 2 Oct 2020
 
 from logging import getLogger
 from socket import socket
-from types import FunctionType, NoneType
-from typing import Literal
+from typing import Literal, Callable
 
 import pynmeagps.exceptions as nme
 import pyrtcm.exceptions as rte
@@ -87,7 +86,7 @@ class UBXReader:
         labelmsm: Literal[1, 2] = 1,
         bufsize: int = DEFAULT_BUFSIZE,
         parsing: Literal[0, 1, 2] = PARSE_FULL,
-        errorhandler: FunctionType | NoneType = None,
+        errorhandler: Callable | None = None,
         encoding: int = ENCODE_NONE,
         msgfilter: tuple | int | str = "",
     ):
@@ -107,7 +106,7 @@ class UBXReader:
         :param int bufsize: socket recv buffer size (4096)
         :param Literal[0,1,2] parsing: PARSE_NONE (0) = no parsing (raw only), \
             PARSE_FULL (1) = full parsing, PARSE_META (2) = parse metadata only (1)
-        :param FunctionType | NoneType errorhandler: error handling object or function (None)
+        :param Callable | None errorhandler: error handling object or function (None)
         :param int encoding: encoding for socket stream \
             (0 = none, 1 = chunk, 2 = gzip, 4 = compress, 8 = deflate (can be OR'd)) (0)
         :param tuple | int | str msgfilter: parsed message filter ("" = ALL) \
@@ -158,13 +157,13 @@ class UBXReader:
 
     def __next__(
         self,
-    ) -> tuple[bytes | NoneType, UBXMessage | NMEAMessage | RTCMMessage | NoneType]:
+    ) -> tuple[bytes | None, UBXMessage | NMEAMessage | RTCMMessage | None]:
         """
         Return next item in iteration.
 
         :return: tuple of (raw_data as bytes, parsed_data as UBXMessage,
             NMEAMessage or RTCMMessage)
-        :rtype: tuple[bytes | NoneType, UBXMessage | NMEAMessage | RTCMMessage | NoneType]
+        :rtype: tuple[bytes | None, UBXMessage | NMEAMessage | RTCMMessage | None]
         :raises: StopIteration
 
         """
@@ -176,7 +175,7 @@ class UBXReader:
 
     def read(
         self,
-    ) -> tuple[bytes | NoneType, UBXMessage | NMEAMessage | RTCMMessage | NoneType]:
+    ) -> tuple[bytes | None, UBXMessage | NMEAMessage | RTCMMessage | None]:
         """
         Read a single NMEA, UBX or RTCM3 message from the stream buffer
         and return both raw and parsed data.
@@ -186,7 +185,7 @@ class UBXReader:
 
         :return: tuple of (raw_data as bytes, parsed_data as UBXMessage,
             NMEAMessage or RTCMMessage)
-        :rtype: tuple[bytes | NoneType, UBXMessage | NMEAMessage | RTCMMessage | NoneType]
+        :rtype: tuple[bytes | None, UBXMessage | NMEAMessage | RTCMMessage | None]
         :raises: Exception (if invalid or unrecognised protocol in data stream)
         """
         bytehdr = b""
@@ -214,13 +213,13 @@ class UBXReader:
 
     def _parse_ubx(
         self, hdr: bytes
-    ) -> tuple[bytes | NoneType, UBXMessage | str | NoneType]:
+    ) -> tuple[bytes | None, UBXMessage | str | None]:
         """
         Parse remainder of UBX message.
 
         :param bytes hdr: UBX header (b'\\xb5\\x62')
         :return: tuple of (raw_data as bytes, parsed_data as UBXMessage or None)
-        :rtype: tuple[bytes | NoneType, UBXMessage | str | NoneType]
+        :rtype: tuple[bytes | None, UBXMessage | str | None]
         """
 
         # read the rest of the UBX message from the buffer
@@ -252,13 +251,13 @@ class UBXReader:
 
     def _parse_nmea(
         self, hdr: bytes
-    ) -> tuple[bytes | NoneType, NMEAMessage | str | NoneType]:
+    ) -> tuple[bytes | None, NMEAMessage | str | None]:
         """
         Parse remainder of NMEA message (using pynmeagps library).
 
         :param bytes hdr: NMEA header (b'\\x24\\x..')
         :return: tuple of (raw_data as bytes, parsed_data as NMEAMessage or None)
-        :rtype: tuple[bytes | NoneType, NMEAMessage | str | NoneType]
+        :rtype: tuple[bytes | None, NMEAMessage | str | None]
         """
 
         # read the rest of the NMEA message from the buffer
@@ -282,13 +281,13 @@ class UBXReader:
 
     def _parse_rtcm3(
         self, hdr: bytes
-    ) -> tuple[bytes | NoneType, RTCMMessage | str | NoneType]:
+    ) -> tuple[bytes | None, RTCMMessage | str | None]:
         """
         Parse any RTCM3 data in the stream (using pyrtcm library).
 
         :param bytes hdr: first 2 bytes of RTCM3 header
         :return: tuple of (raw_data as bytes, parsed_stub as RTCMMessage)
-        :rtype: tuple[bytes | NoneType, RTCMMessage | str | NoneType]
+        :rtype: tuple[bytes | None, RTCMMessage | str | None]
         """
 
         hdr3 = self._read_bytes(1)
