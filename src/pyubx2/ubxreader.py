@@ -150,7 +150,7 @@ class UBXReader:
             **{bytes([0xD3, b2]): (RTCM3_PROTOCOL, self._parse_rtcm3) for b2 in range(4)},
         }
 
-    self._valid_sync = {hdr[:1] for hdr in self._message_parsers}
+        self._valid_sync = {hdr[:1] for hdr in self._message_parsers}
 
     def __iter__(self):
         """Iterator."""
@@ -196,12 +196,12 @@ class UBXReader:
                 if len(bytehdr) < 2:
                     bytehdr += self._read_bytes(2-len(bytehdr))
                 
-                if bytehdr[0:1] not in VALID_SYNC:
+                if bytehdr[0:1] not in self._valid_sync:
                     bytehdr = bytehdr[1:2]
                     continue
-                    
+
                 matched_parser = self._message_parsers.get(bytehdr)
-                if matched_parser is None: 
+                if not matched_parser: 
                     bytehdr = bytehdr[1:2]
                     continue
                 
@@ -229,12 +229,11 @@ class UBXReader:
         """
 
         # read the rest of the UBX message from the buffer
-        msgidi_n_size = self._read_bytes(4)
+        byten = self._read_bytes(4)
         msgidi = int.from_bytes(byten[0:2], "big")
-        size = int.from_bytes(header_n_size[2:4], "little", signed=False)
-        payload_n_checksum = self._read_bytes(data_size + 2)
+        size = int.from_bytes(byten[2:4], "little", signed=False)
+        payload_n_checksum = self._read_bytes(size + 2)
         raw_data = hdr + byten + payload_n_checksum
-        # only parse if we need to (filter passes UBX)
         parsed_data = None
         
         if not self._filtermsg or msgidi in self._msgfilter:
@@ -261,10 +260,9 @@ class UBXReader:
         """
 
         # read the rest of the NMEA message from the buffer
-        byten = self._read_line()  # NMEA protocol is CRLF-terminated
+        byten = self._read_line()
         raw_data = hdr + byten
         msgids = raw_data[1:].split(b",", 1)[0].decode("ascii", errors="replace")
-        # only parse if we need to (filter passes NMEA)
         parsed_data = None
         
         if not self._filtermsg or msgids in self._msgfilter:
@@ -295,7 +293,6 @@ class UBXReader:
         msgidi = ((int.from_bytes(payload[0:2], "big")) >> 4) & 0xFFF
         crc = self._read_bytes(3)
         raw_data = hdr + hdr3 + payload + crc
-        # only parse if we need to (filter passes RTCM)
         parsed_data = None
         
         if not self._filtermsg or msgidi in self._msgfilter:
