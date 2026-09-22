@@ -234,19 +234,19 @@ class UBXReader:
         size = int.from_bytes(byten[2:4], "little", signed=False)
         payload_n_checksum = self._read_bytes(size + 2)
         raw_data = hdr + byten + payload_n_checksum
-        parsed_data = None
         
-        if not self._filtermsg or msgidi in self._msgfilter:
-            if self._parsing == PARSE_FULL:
-                parsed_data = UBXReader.parse(
-                    raw_data,
-                    validate=self._validate,
-                    msgmode=self._msgmode,
-                    parsebitfield=self._parsebf,
-                )
-            elif self._parsing == PARSE_META:
-                parsed_data = f"<UBX(0x{msgidi:04x}, length={len(raw_data)}, data={escapeall(raw_data)}>"
-        return (raw_data, parsed_data)
+        return self._dispatch_parse(
+            msg_id=msgidi,
+            raw_data=raw_data,
+            parse_fn=UBXReader.parse,
+            parse_kwargs={
+                "validate": self._validate,
+                "msgmode": self._msgmode,
+                "parsebitfield": self._parsebf,
+            },
+            proto_name="UBX",
+            formatted_id=f"0x{msgidi:04x}",
+        )
 
     def _parse_nmea(
         self, hdr: bytes
@@ -263,18 +263,14 @@ class UBXReader:
         byten = self._read_line()
         raw_data = hdr + byten
         msgids = raw_data[1:].split(b",", 1)[0].decode("ascii", errors="replace")
-        parsed_data = None
         
-        if not self._filtermsg or msgids in self._msgfilter:
-            if self._parsing == PARSE_FULL:
-                parsed_data = NMEAReader.parse(
-                    raw_data,
-                    validate=self._validate,
-                    msgmode=self._msgmode,
-                )
-            elif self._parsing == PARSE_META:
-                parsed_data = f"<NMEA({msgids}, length={len(raw_data)}, data={raw_data}>"
-        return (raw_data, parsed_data)
+        return self._dispatch_parse(
+            msg_id=msgids,
+            raw_data=raw_data,
+            parse_fn=NMEAReader.parse,
+            parse_kwargs={"validate": self._validate, "msgmode": self._msgmode},
+            proto_name="NMEA",
+        )
 
     def _parse_rtcm3(
         self, hdr: bytes
@@ -288,23 +284,42 @@ class UBXReader:
         """
 
         hdr3 = self._read_bytes(1)
-        size = hdr3[0] | (hdr[1] << 8)
-        payload = self._read_bytes(size)
-        msgidi = ((int.from_bytes(payload[0:2], "big")) >> 4) & 0xFFF
-        crc = self._read_bytes(3)
-        raw_data = hdr + hdr3 + payload + crc
-        parsed_data = None
+        size = int.from_bytes(hdr + hdr3, "big") & 0x3FF
+        payload_and_crc = self._read_bytes(size + 3)  # Payload + 3-byte CRC
         
-        if not self._filtermsg or msgidi in self._msgfilter:
-            if self._parsing == PARSE_FULL:
-                parsed_data = RTCMReader.parse(
-                    raw_data,
-                    validate=self._validate,
-                    labelmsm=self._labelmsm,
-                )
-            elif self._parsing == PARSE_META:
-                parsed_data = f"<RTCM({msgidi}, length={len(raw_data)}, data={raw_data}>"
-        return (raw_data, parsed_data)
+        raw_data = hdr + hdr3 + payload_and_crc
+        msgidi = int.from_bytes(payload_and_crc[:2], "big") >> 4
+        
+        return self._dispatch_parse(
+            msg_id=msgidi,
+            raw_data=raw_data,
+            parse_fn=RTCMReader.parse,
+            parse_kwargs={"validate": self._validate, "labelmsm": self._labelmsm},
+            proto_name="RTCM",
+        )
+
+    def _dispatch_parse(
+        self,
+        msg_id: int | str,
+        raw_data: bytes,
+        parse_fn: Callable,
+        parse_kwargs: dict[str, Any],
+        proto_name: str,
+        formatted_id: str | None = None,
+    ) -> tuple[bytes, object | str | None]:
+        """Helper to apply filters and invoke full or metadata-only parsing."""
+        if self._filtermsg and msg_id not in self._msgfilter:
+            return raw_data, None
+
+        if self._parsing == PARSE_FULL:
+            return raw_data, parse_fn(raw_data, **parse_kwargs)
+
+        if self._parsing == PARSE_META:
+            display_id = formatted_id if formatted_id is not None else msg_id
+            fmt_data = escapeall(raw_data) if proto_name == "UBX" else raw_data
+            return raw_data, f"<{proto_name}({display_id}), length={len(raw_data)}, data={fmt_data}>"
+
+        return raw_data, None
 
     def _read_bytes(self, size: int) -> bytes:
         """
