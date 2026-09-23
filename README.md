@@ -42,14 +42,14 @@ Contributions _**from human beings**_ welcome - please refer to [CONTRIBUTING.MD
 
 [Bug reports](https://github.com/semuconsulting/pyubx2/blob/master/.github/ISSUE_TEMPLATE/bug_report.md) and [Feature requests](https://github.com/semuconsulting/pyubx2/blob/master/.github/ISSUE_TEMPLATE/feature_request.md) - please use the templates provided. For general queries and advice, post a message to one of the [pyubx2 Discussions](https://github.com/semuconsulting/pyubx2/discussions) channels.
 
-![No Copilot](https://github.com/semuconsulting/PyGPSClient/blob/master/images/nocopilot100.png?raw=true)
+![No Copilot](https://github.com/semuconsulting/PyGPSClient/blob/main/images/nocopilot100.png?raw=true)
 
 ---
 ## <a name="installation">Installation</a>
 
 ![Python version](https://img.shields.io/pypi/pyversions/pyubx2.svg?style=flat)
 [![PyPI version](https://img.shields.io/pypi/v/pyubx2.svg?style=flat)](https://pypi.org/project/pyubx2/)
-[![PyPI downloads](https://github.com/semuconsulting/pygpsclient/blob/master/images/clickpy_top10.svg?raw=true)](https://clickpy.clickhouse.com/dashboard/pyubx2)
+[![PyPI downloads](https://github.com/semuconsulting/pygpsclient/blob/main/images/clickpy_top10.svg?raw=true)](https://clickpy.clickhouse.com/dashboard/pyubx2)
 
 `pyubx2` is compatible with Python>=3.10. In the following, `python3` & `pip` refer to the Python 3 executables. You may need to substitute `python` for `python3`, depending on your particular environment (*on Windows it's generally `python`*).
 
