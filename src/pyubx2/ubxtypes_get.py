@@ -1860,6 +1860,28 @@ UBX_PAYLOADS_GET = {
             },
         ),
     },
+    "MON-PMP": {
+        "version": U1,  # 0x00 for this version
+        "nEntries": U1,
+        "reserved0": U2,
+        "pmp_grp": (
+            "nEntries",
+            {
+                "reserved1": U4,
+                "status_bit": (
+                    X4,
+                    {
+                        "locked": U1,
+                        "frameSync": U1,
+                    },
+                ),
+                "reserved2": U8,
+                "cno": U1,
+                "cnoFrac": (U1, P2_N8),
+                "reserved3": U2,
+            },
+        ),
+    },
     "MON-PT2": {
         "version": U1,
         "testMode": U1,
