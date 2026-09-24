@@ -476,16 +476,16 @@ By default, u-center 21.09 records a series of configuration messages (CFG-VALGE
 ---
 ## <a name="cli">Command Line Utility</a>
 
-A command line utility `gnssdump` is available via the `pygnssutils` package. This is capable of reading and parsing NMEA, UBX and RTCM3 data from a variety of input sources (e.g. serial, socket and file) and outputting to a variety of media in a variety of formats. See https://github.com/semuconsulting/pygnssutils for further details.
+A command line utility `gnssstreamer` is available via the `pygnssutils` package. This is capable of reading and parsing NMEA, UBX and RTCM3 data from a variety of input sources (e.g. serial, socket and file) and outputting to a variety of media in a variety of formats. See https://github.com/semuconsulting/pygnssutils for further details.
 
 To install `pygnssutils`:
 ```
 python3 -m pip install --upgrade pygnssutils
 ```
 
-For help with the `gnssdump` utility, type:
+For help with the `gnssstreamer` utility, type:
 ```
-gnssdump -h
+gnssstreamer -h
 ```
 
 ---
