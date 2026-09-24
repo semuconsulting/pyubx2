@@ -34,7 +34,7 @@ This is an independent project and we have no affiliation whatsoever with u-blox
 ![Contributors](https://img.shields.io/github/contributors/semuconsulting/pyubx2.svg)
 ![Open Issues](https://img.shields.io/github/issues-raw/semuconsulting/pyubx2)
 
-The library implements a comprehensive set of inbound (SET/POLL) and outbound (GET) messages for all current u-blox GPS/GNSS devices, but is readily [extensible](#extensibility). Refer to `UBX_MSGIDS` in [ubxtypes_core.py](https://github.com/semuconsulting/pyubx2/blob/master/src/pyubx2/ubxtypes_core.py) for the complete dictionary of messages currently supported. UBX protocol information sourced from public domain u-blox Interface Specifications © 2013-2026, u-blox AG.
+The library implements a comprehensive set of inbound (SET/POLL) and outbound (GET) messages for all current u-blox GPS/GNSS devices, but is readily [extensible](#extensibility). Refer to `UBX_MSGIDS` in [ubxtypes_core.py](https://github.com/semuconsulting/pyubx2/blob/master/src/pyubx2/ubxtypes_core.py#L200) for the complete dictionary of messages currently supported. UBX protocol information sourced from public domain u-blox Interface Specifications © 2013-2026, u-blox AG.
 
 Sphinx API Documentation in HTML format is available at [https://www.semuconsulting.com/pyubx2/](https://www.semuconsulting.com/pyubx2/).
 
@@ -289,31 +289,31 @@ b'\xb5b\x06\x01\x08\x00\xf0\x01\x00\x01\x00\x01\x00\x00\x022'
 
 **CFG-VALSET, CFG-VALDEL and CFG-VALGET message types**
 
-Generation 9 of the UBX protocol (*23.01 or greater, e.g. NEO-M9N, ZED-F9P*) introduced the concept of a device configuration interface with configurable parameters being set or unset (del) in the designated memory layer(s) via the CFG-VALSET and CFG-VALDEL message types, or queried via the CFG-VALGET message type. *Legacy CFG configuration message types continue to be supported in earlier devices but are deprecated on Generation 9 devices and removed altogether on Generation 10 (ZED-X20P, etc.)*.
+Generation 9 of the UBX protocol (*23.01 or later, e.g. NEO-M9, ZED-F9, NEO-M10, ZED-X20*) introduced the concept of a device configuration interface with configurable parameters being set or unset in the designated memory layer(s) via the CFG-VALSET and CFG-VALDEL message types, or queried via the CFG-VALGET message type. *Legacy CFG configuration message types continue to be supported in earlier devices but are deprecated on Generation 9 devices and removed altogether on Generation 10 (ZED-X20, etc.)*.
 
 Optionally, batches of CFG-VALSET and CFG-VALDEL messages can be applied transactionally, with the combined configuration only being committed at the end of the transaction.
 
-Individual configuration parameters are designated by keys, which may be in string (keyname) or hexadecimal integer (keyID) format. Keynames and their corresponding hexadecimal keyIDs and data types are defined in [ubxtypes_configdb.py](https://github.com/semuconsulting/pyubx2/blob/master/src/pyubx2/ubxtypes_configdb.py) as `UBX_CONFIG_DATABASE`. Two helper methods are available to convert keyname to keyID and vice versa - `cfgname2key()` and `cfgkey2name()`.
+Individual configuration parameters are designated by keys, which may be in string (keyname) or hexadecimal integer (keyID) format. Keynames and their corresponding hexadecimal keyIDs and data types are defined in [ubxtypes_configdb.py](https://github.com/semuconsulting/pyubx2/blob/master/src/pyubx2/ubxtypes_configdb.py#L80) as `UBX_CONFIG_DATABASE`. Two helper methods are available to convert keyname to keyID and vice versa - `cfgname2key()` and `cfgkey2name()`.
 
-Dedicated static methods are provided to create these message types - `UBXMessage.config_set()`, `UBXMessage.config_del()` and `UBXMessage.config_poll()`. The following examples assume an output serial stream has been created as `serialOut`.
+Dedicated static methods are provided to create these message types - `UBXMessage.config_set()`, `UBXMessage.config_del()` and `UBXMessage.config_poll()`.
 
 **UBXMessage.config_set() (CFG-VALSET)**
 
 Sets up to 64 parameters in the designated memory layer(s).
 
-Parameters:
+Arguments:
 
 1. layers - `SET_LAYER_RAM` (1) = Volatile RAM, `SET_LAYER_BBR` (2) = Battery-Backed RAM (BBR), `SET_LAYER_FLASH` (4) = External Flash (may be OR'd)
 1. transaction - `TXN_NONE` (0) = None, `TXN_START` (1) = Start, `TXN_ONGOING` (2) = Ongoing, `TXN_COMMIT` (3) = Commit
-1. cfgData - an array of up to 64 (key, value) tuples. Keys can be in either 
-keyID (int) or keyname (str) format
+1. cfgData - an array of up to 64 (key, value) tuples. Keys can be in either keyID (int) or keyname (str) format
 
 ```python
+from serial import Serial
 from pyubx2 import UBXMessage, SET_LAYER_RAM, TXN_NONE
-layers = SET_LAYER_RAM
-transaction = TXN_NONE
+serialOut = Serial("/dev/ttyACM0", 38400, timeout=3)
+
 cfgData = [("CFG_UART1_BAUDRATE", 9600), (0x40520001, 115200)]
-msg = UBXMessage.config_set(layers, transaction, cfgData)
+msg = UBXMessage.config_set(SET_LAYER_RAM, TXN_NONE, cfgData)
 print(msg)
 serialOut.write(msg.serialize())
 ```
@@ -325,18 +325,19 @@ serialOut.write(msg.serialize())
 
 Unsets (deletes) up to 64 parameter settings in the designated non-volatile memory layer(s).
 
-Parameters:
+Arguments:
 
 1. layers - `SET_LAYER_BBR` (2) = Battery-Backed RAM (BBR), `SET_LAYER_FLASH` (4) = External Flash (may be OR'd)
 1. transaction - `TXN_NONE` (0) = None, `TXN_START` (1) = Start, `TXN_ONGOING` (2) = Ongoing, `TXN_COMMIT` (3) = Commit
 1. keys - an array of up to 64 keys in either keyID (int) or keyname (str) format
 
 ```python
+from serial import Serial
 from pyubx2 import UBXMessage, SET_LAYER_FLASH, TXN_NONE
-layers = SET_LAYER_FLASH
-transaction = TXN_NONE
+serialOut = Serial("/dev/ttyACM0", 38400, timeout=3)
+
 keys = ["CFG_UART1_BAUDRATE", 0x40520001]
-msg = UBXMessage.config_del(layers, transaction, keys)
+msg = UBXMessage.config_del(SET_LAYER_FLASH, TXN_NONE, keys)
 print(msg)
 serialOut.write(msg.serialize())
 ```
@@ -348,7 +349,7 @@ serialOut.write(msg.serialize())
 
 Polls up to 64 parameters from the designated memory layer.
 
-Parameters:
+Arguments:
 
 1. layer - `POLL_LAYER_RAM` (0) = Volatile RAM, `POLL_LAYER_BBR` (1) = Battery-Backed RAM (BBR), `POLL_LAYER_FLASH` (2) = External Flash, `POLL_LAYER_DEFAULT` (7) = Default (readonly)
 1. position - unsigned integer representing number of items to be skipped before returning result
@@ -357,11 +358,12 @@ Parameters:
 wildcards - see example below and UBX device interface specification for details.
 
 ```python
-from pyubx2 import UBXMessage,  POLL_LAYER_BBR
-layer = POLL_LAYER_BBR
-position = 0
+from serial import Serial
+from pyubx2 import UBXMessage, POLL_LAYER_BBR
+serialOut = Serial("/dev/ttyACM0", 38400, timeout=3)
+
 keys = ["CFG_UART1_BAUDRATE", 0x40520001]
-msg = UBXMessage.config_poll(layer, position, keys)
+msg = UBXMessage.config_poll(POLL_LAYER_BBR, 0, keys)
 print(msg)
 serialOut.write(msg.serialize())
 ```
@@ -372,21 +374,15 @@ serialOut.write(msg.serialize())
 Wild card queries can be performed by setting bits 0..15 of the keyID to `0xffff` e.g. to retrieve all CFG_MSGOUT parameters (keyID `0x2091*`) :
 
 ```python
+from serial import Serial
 from pyubx2 import UBXMessage, POLL_LAYER_BBR
-layer = POLL_LAYER_BBR
-position = 0 # retrieve first 64 results
+serialOut = Serial("/dev/ttyACM0", 38400, timeout=3)
+
 keys = [0x2091ffff]
-msg1of3 = UBXMessage.config_poll(layer, position, keys)
-print(msg1of3)
-serialOut.write(msg1of3.serialize())
-position = 64 # retrieve next 64 results
-msg2of3 = UBXMessage.config_poll(layer, position, keys)
-print(msg2of3)
-serialOut.write(msg2of3.serialize())
-position = 128 # retrieve next 64 results
-msg3of3 = UBXMessage.config_poll(layer, position, keys)
-print(msg3of3)
-serialOut.write(msg3of3.serialize())
+for position in range(0,192,64): # get first 3 batches of 64 poll responses
+    msg = UBXMessage.config_poll(POLL_LAYER_BBR, position, keys)
+    print(msg)
+    serialOut.write(msg.serialize())
 ```
 ```
 <UBX(CFG-VALGET, version=0, layer=1, position=0, keys_01=546439167)>
@@ -464,13 +460,13 @@ These are usually due to corruption of the serial data stream, either because th
 - Check that no other process is attempting to use the same serial port, including daemon processes like gpsd.
 #### 2. `Serial Permission` errors. 
 These are usually caused by inadequate user privileges or contention with another process. 
-- On Linux platforms, check that the user is a member of the `tty` and/or `dialout` groups.
+- On Linux platforms, check that the user is a member of the [relevant serial (tty) group](https://github.com/semuconsulting/PyGPSClient/blob/main/INSTALLATION.md#userpriv) (normally `dialout` on Debian or `uucp`on Arch).
 - Check that no other process is attempting to use the same serial port, including daemon processes like gpsd.
 #### 3. `UnicodeDecode` errors.
 - If reading UBX data from a log file, check that the file.open() procedure is using the `rb` (read binary) setting e.g.
 `stream = open('ubxdatalog.log', 'rb')`.
 #### 4. Spurious `CFG-VALGET`, `DBG`, `TRK`, `TUN` and `SEC` data in *.ubx files recorded in u-center.
-By default, u-center 21.09 records a series of configuration messages (CFG-VALGET) containing undocumented configuration database keys. In addition, clicking the 'debug' option results in a large number of undocumented DBG, TRK, TUN and SEC message classes. As of version v1.2.15, `pyubx2` is capable of parsing these undocumented message classes (to a nominal payload definition), but they are really only of relevance to u-blox technical support. If you are *not* intending to send the recordings to u-blox;
+By default, u-center records a series of configuration messages (CFG-VALGET) containing undocumented configuration database keys. In addition, clicking the 'debug' option results in a large number of undocumented DBG, TRK, TUN and SEC message classes. As of version v1.2.15, `pyubx2` is capable of parsing these undocumented message classes (to a nominal payload definition), but they are really only of relevance to u-blox technical support. If you are *not* intending to send the recordings to u-blox;
 - When recording GNSS output data in u-center, select 'No' when prompted to 'Add Receiver Configuration' to the recording, and avoid the 'debug' option.
 
 ---
