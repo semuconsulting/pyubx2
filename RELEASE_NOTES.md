@@ -1,5 +1,23 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.3.7
+
+1. Add support for ZED-X20 firmware HPG 2.11 
+   - https://www.u-blox.com/sites/default/files/documents/u-blox-X20-HPG-2.11_InterfaceDescription_UBXDOC-304424225-21617.pdf
+   - https://www.u-blox.com/sites/default/files/documents/HPG211_RN_UBXDOC-304424225-21629.pdf
+   - new message type MON-PMP (monitor L-band point-to-multipoint carrier/noise i.e. SPARTN UBX-RXM-PMP)
+   - new configuration database items:
+     - "CFG_MSGOUT_UBX_MON_PMP_I2C": (0x20910322, U1),
+	  - "CFG_MSGOUT_UBX_MON_PMP_SPI": (0x20910326, U1),
+	  - "CFG_MSGOUT_UBX_MON_PMP_UART1": (0x20910323, U1),
+	  - "CFG_MSGOUT_UBX_MON_PMP_UART2": (0x20910324, U1),
+	  - "CFG_MSGOUT_UBX_MON_PMP_USB": (0x20910325, U1),
+	  - "CFG_RTCM_MSM_OUT_RANGERATE_SIGN": (0x10090011, L),
+	  - "CFG_SIGNAL_LBAND_ENA": (0x1031002a, L),
+	  - "CFG_SIGNAL_LBAND_PMP_ENA": (0x1031002f, L),
+   - **NB**: CFG-NAVCOR-ENABLE_HOST removed (Host-provided corrections are now always enabled)
+   - **NB**: Galileo HAS and OSNMA cannot be enabled at the same time
+
 ### RELEASE 1.3.6
 
 1. Add `msgfilter` argument to UBXReader to allow user to filter output by one or more message identities. If set, only filtered raw messages will be parsed (e.g. UBX `0x0107` *(must be integer)*, NMEA `"GNGSA"` or RTCM `1077`); the remainder will be `None`. Default is "" (no filter). If you're only interested in specific messages, this can significantly improve parsing speed for a given datastream.

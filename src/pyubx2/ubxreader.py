@@ -280,7 +280,10 @@ class UBXReader:
                     parsebitfield=self._parsebf,
                 )
             elif self._parsing == PARSE_META:
-                parsed_data = f"<UBX(0x{msgidi:04x}, length={len(raw_data)}, data={escapeall(raw_data)}"
+                parsed_data = (
+                    f"<UBX(0x{msgidi:04x}, length={len(raw_data)}, "
+                    f"data={escapeall(raw_data)}"
+                )
         return (raw_data, parsed_data)
 
     def _parse_nmea(

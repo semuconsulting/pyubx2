@@ -123,6 +123,7 @@ UBX_PAYLOADS_POLL = {
     "MON-IO": {},
     "MON-MSGPP": {},
     "MON-PATCH": {},
+    "MON-PMP": {},
     "MON-PT2": {},
     "MON-RF": {},
     "MON-RXBUF": {},

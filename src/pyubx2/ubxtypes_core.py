@@ -362,6 +362,7 @@ UBX_MSGIDS = {
     b"\x0a\x02": "MON-IO",  # deprecated, use MON-COMMS
     b"\x0a\x06": "MON-MSGPP",  # deprecated, use MON-COMMS
     b"\x0a\x27": "MON-PATCH",
+    b"\x0a\x35": "MON-PMP",
     b"\x0a\x2b": "MON-PT2",
     b"\x0a\x38": "MON-RF",
     b"\x0a\x07": "MON-RXBUF",  # deprecated, use MON-COMMS
