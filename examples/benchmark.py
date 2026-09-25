@@ -1,7 +1,7 @@
 """
 pyubx2 Performance benchmarking utility
 
-Usage (kwargs optional): python3 benchmark.py cycles=10000
+Usage (args optional): python3 benchmark.py cycles=1000 bars=50
 
 Created on 5 Nov 2021
 
@@ -72,56 +72,58 @@ UBXMESSAGES = (
 )
 
 
-def progbar(i: int, lim: int, inc: int = 20):
+def progbar(i: int, lim: int, bars: int = 50):
     """
     Display progress bar on console.
 
     :param int i: iteration
     :param int lim: max iterations
-    :param int inc: bar increments (20)
+    :param int bars: progress bar segments
     """
 
     i = min(i, lim)
-    pct = int(i * inc / lim)
-    if not i % int(lim / inc):
+    pct = int(i * bars / lim)
+    if not i % int(lim / bars):
         print(
-            f"{int(pct*100/inc):02}% " + "\u2593" * pct + "\u2591" * (inc - pct),
+            f"{(pct*100/bars):02.0f}% " + "\u2593" * pct + "\u2591" * (bars - pct),
             end="\r",
         )
 
 
-def benchmark(**kwargs) -> float:
+def benchmark(cycles: int = 1000, bars: int = 50) -> tuple[float, float]:
     """
     pyrtcm Performance benchmark test.
 
-    :param int cycles: (kwarg) number of test cycles (10,000)
-    :returns: benchmark as transactions/second
-    :rtype: float
+    :param int cycles: number of test cycles
+    :param int bars: progress bar segments
+    :return: txns/second, kb/second
+    :rtype: tuple(float,float)
     :raises: UBXStreamError
     """
 
-    cyc = int(kwargs.get("cycles", 10000))
+    cycles = int(cycles)
+    bars = int(bars)
     txnc = len(UBXMESSAGES)
-    txnt = txnc * cyc
+    txnt = txnc * cycles
 
     print(
         f"\nOperating system: {osver()}",
         f"\nPython version: {python_version()}",
         f"\npyubx2 version: {ubxver}",
-        f"\nTest cycles: {cyc:,}",
+        f"\nTest cycles: {cycles:,}",
         f"\nTxn per cycle: {txnc:,}",
     )
 
     msglen = 0
     start = process_time_ns()
     print(f"\nBenchmark test started at {start}")
-    for i in range(cyc):
-        progbar(i, cyc)
+    for i in range(cycles):
+        progbar(i, cycles, bars)
         for msg in UBXMESSAGES:
             msglen += len(msg)
             _ = UBXReader.parse(msg)
     end = process_time_ns()
-    print(f"Benchmark test ended at {end}.")
+    print(f"{f"Benchmark test ended at {end}":<{bars+5}}")
     duration = end - start
     txs = round(txnt * 1e9 / duration, 2)
     kbs = round(msglen * 1e9 / duration / 2**10, 2)
