@@ -9,7 +9,7 @@ Returns both the raw binary data (as bytes) and the parsed data
 
 - 'protfilter' governs which protocols (NMEA, UBX or RTCM3) are processed
 - 'msgfilter' governs which individual message types are processed.
-- `parsing` governs whether payloads are fully or partially parsed.
+- `parsing` governs whether individual payloads are parsed.
 - 'quitonerror' governs how errors are handled
 - 'msgmode' indicates the type of UBX datastream (output GET, input SET, query POLL).
   If msgmode is set to SETPOLL, input/query mode will be automatically detected by parser.
@@ -179,8 +179,7 @@ class UBXReader:
 
         raw_data = None
         parsed_data = None
-        parsing = True
-        while parsing:  # loop until end of valid message or EOF
+        while True:  # loop until end of valid message or EOF
             try:
 
                 raw_data = None
@@ -197,31 +196,26 @@ class UBXReader:
                     # if protocol filter passes UBX, return message,
                     # otherwise discard and continue
                     if self._protfilter & UBX_PROTOCOL:
-                        parsing = False
-                    else:
-                        continue
+                        break
+                    continue
                 # if it's an NMEA message (b'\x24\x..)
-                elif bytehdr in NMEA_HDR:
+                if bytehdr in NMEA_HDR:
                     raw_data, parsed_data = self._parse_nmea(bytehdr)
                     # if protocol filter passes NMEA, return message,
                     # otherwise discard and continue
                     if self._protfilter & NMEA_PROTOCOL:
-                        parsing = False
-                    else:
-                        continue
+                        break
+                    continue
                 # if it's a RTCM3 message
                 # (byte1 = 0xd3; byte2 = 0b000000**)
-                elif byte1 == b"\xd3" and (byte2[0] & ~0x03) == 0:
+                if byte1 == b"\xd3" and (byte2[0] & ~0x03) == 0:
                     raw_data, parsed_data = self._parse_rtcm3(bytehdr)
                     # if protocol filter passes RTCM, return message,
                     # otherwise discard and continue
                     if self._protfilter & RTCM3_PROTOCOL:
-                        parsing = False
-                    else:
-                        continue
-                # unrecognised protocol header
-                else:
-                    raise UBXParseError(f"Unknown protocol header {bytehdr}.")
+                        break
+                    continue
+                raise UBXParseError(f"Unknown protocol header {bytehdr}.")
 
             except EOFError:
                 return (None, None)
