@@ -2,6 +2,7 @@
 
 ### RELEASE 1.3.8
 
+1. 46 new F11-M11 SPG 7 configuration database items (mainly CFG-GEOFENCE parameters)
 1. Minor internal code enhancements (pylint advisories) in ubxreader.py
 1. Python 3.15.0-rc.2 added to build and test workflows.
 
