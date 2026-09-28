@@ -104,7 +104,7 @@ disable = """
 
 [tool.pytest.ini_options]
 minversion = "7.0"
-addopts = "--cov --cov-report html --cov-fail-under 97"
+addopts = "--cov --cov-report html --cov-fail-under 98"
 pythonpath = ["src"]
 testpaths = ["tests"]
 
@@ -115,7 +115,7 @@ source = ["src"]
 source = ["src"]
 
 [tool.coverage.report]
-fail_under = 97
+fail_under = 98
 
 [tool.coverage.html]
 directory = "htmlcov"
