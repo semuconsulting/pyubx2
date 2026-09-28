@@ -1,4 +1,4 @@
-name: pygnssutils
+name: pyubx2
 
 on:
   push:
