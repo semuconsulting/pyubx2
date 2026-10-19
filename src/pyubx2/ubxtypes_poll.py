@@ -16,13 +16,13 @@ Information sourced from public domain u-blox Interface Specifications © 2013-2
 :author: semuadmin (Steve Smith)
 """
 
-from pyubx2.ubxtypes_core import U1, U2, U4
+from pyubx2.ubxtypes_core import U1, U2, U4, VARIABLE
 
 UBX_PAYLOADS_POLL = {
     # AID messages are deprecated in favour of MGA messages in >=Gen8
     "AID-ALM": {
         "svid_grp": (
-            "None",
+            VARIABLE,
             {
                 "svid": U1,
             },
@@ -30,7 +30,7 @@ UBX_PAYLOADS_POLL = {
     },
     "AID-AOP": {
         "svid_grp": (
-            "None",
+            VARIABLE,
             {
                 "svid": U1,
             },
@@ -38,7 +38,7 @@ UBX_PAYLOADS_POLL = {
     },
     "AID-EPH": {
         "svid_grp": (
-            "None",
+            VARIABLE,
             {
                 "svid": U1,
             },
@@ -101,7 +101,7 @@ UBX_PAYLOADS_POLL = {
         "version": U1,
         "layer": U1,
         "position": U2,
-        "key_grp": ("None", {"keys": U4}),  # repeating group
+        "key_grp": (VARIABLE, {"keys": U4}),  # repeating group
     },
     # *************************************************
     "ESF-ALG": {},

@@ -12,13 +12,24 @@ Created on 5 Nov 2021
 
 # pylint: disable=line-too-long
 
-from sys import argv
+import os
+import sys
+from io import BytesIO
 from time import process_time_ns
 from platform import version as osver, python_version
-from pyubx2.ubxreader import UBXReader
-from pyubx2._version import __version__ as ubxver
+from pyubx2.ubxreader import UBXReader as reader
+from pyubx2._version import __version__ as pgmver
 
-UBXMESSAGES = (
+# get path to site-packages (source) folder within venv
+pypath = (
+    f"{os.path.expanduser('~')}/pygpsclient/lib/python"
+    f"{sys.version_info.major}.{sys.version_info.minor}/site-packages"
+)
+sys.path.insert(0, os.path.abspath(pypath))
+
+CYAN = "\033[1m\033[36m"
+NORM = "\033[0m"
+TESTDATA = (
     b"\xb5b\x01\x03\x10\x00\x08\xb5b!\x03\xdf\x00\x088[\x00\x00+\xba\x9e\x00T\xe5",
     b'\xb5b\x01\x01\x14\x00\x08\xb5b!"\xe7\xab\x16\x19\xf3\x1c\xff\x16\xf8f\x1e\xff\x00\x00\x00\xd8F',
     b"\xb5b\x01\x02\x1c\x00\x08\xb5b!\xd9(\xaa\xfe\xdc\xee\xdb\x1f0d\x01\x00\xcd\xa6\x00\x00\xd3\x05\x00\x00\x11\x08\x00\x00\xc5:",
@@ -70,66 +81,73 @@ UBXMESSAGES = (
     b"\xb5b\x01$\x14\x00\x08\xb5b!\xe7\x8b\x08\x00#{\xfa\xff>\x03\x04\x07\x05\x00\x00\x00\xdb1",
     b"\xb5b\x01%\x14\x00\x08\xb5b!\xf5\x8b\x08\x00I{\xfa\xff\x8a\x04\x12\x07\x04\x00\x00\x00j\xa7",
 )
+msgb = b""
+for msg in TESTDATA:
+    msgb += msg
+BYTESTREAM = msgb
 
 
-def progbar(i: int, lim: int, bars: int = 50):
+def progbar(i: int, lim: int, inc: int = 50):
     """
     Display progress bar on console.
 
     :param int i: iteration
     :param int lim: max iterations
-    :param int bars: progress bar segments
+    :param int inc: bar increments (50)
     """
 
     i = min(i, lim)
-    pct = int(i * bars / lim)
-    if not i % int(lim / bars):
+    pct = int(i * inc / lim)
+    if not i % int(lim / inc):
         print(
-            f"{(pct*100/bars):02.0f}% " + "\u2593" * pct + "\u2591" * (bars - pct),
+            f"{int(pct*100/inc):02}% " + "\u2593" * pct + "\u2591" * (inc - pct),
             end="\r",
         )
 
 
-def benchmark(cycles: int = 1000, bars: int = 50) -> tuple[float, float]:
+
+def benchmark(**kwargs) -> tuple[float,float]:
     """
     pyrtcm Performance benchmark test.
 
-    :param int cycles: number of test cycles
-    :param int bars: progress bar segments
-    :return: txns/second, kb/second
-    :rtype: tuple(float,float)
-    :raises: UBXStreamError
+    :param int cycles: (kwarg) number of test cycles (10,000)
+    :returns: benchmark as transactions/second
+    :rtype: tuple[float,float]
+    :raises: SBFStreamError
     """
 
-    cycles = int(cycles)
-    bars = int(bars)
-    txnc = len(UBXMESSAGES)
-    txnt = txnc * cycles
+    cyc = int(kwargs.get("cycles", 5000))
+    txnc = len(TESTDATA)
+    txnt = txnc * cyc
 
     print(
-        f"\nOperating system: {osver()}",
-        f"\nPython version: {python_version()}",
-        f"\npyubx2 version: {ubxver}",
-        f"\nTest cycles: {cycles:,}",
-        f"\nTxn per cycle: {txnc:,}",
+        f"\nAbsolute path: {CYAN}{pypath}{NORM}",
+        f"\nOperating system: {CYAN}{osver()}{NORM}",
+        f"\nPython version: {CYAN}{python_version()}{NORM}",
+        f"\nProgram version: {CYAN}{pgmver}{NORM}",
+        f"\nTest cycles: {CYAN}{cyc:,}{NORM}",
+        f"\nTxn per cycle: {CYAN}{txnc:,}{NORM}",
     )
 
-    msglen = 0
     start = process_time_ns()
+    bars = 50
     print(f"\nBenchmark test started at {start}")
-    for i in range(cycles):
-        progbar(i, cycles, bars)
-        for msg in UBXMESSAGES:
-            msglen += len(msg)
-            _ = UBXReader.parse(msg)
+    for i in range(cyc):
+        progbar(i, cyc, bars)
+        stream = BytesIO(BYTESTREAM)
+        sbr = reader(stream, parsing=1)
+        for _, _ in sbr:
+            pass
     end = process_time_ns()
-    print(f"{f"Benchmark test ended at {end}":<{bars+5}}")
+    print(f"Benchmark test ended at {end}{' ' * (bars-20)}")
     duration = end - start
+    msglen = len(BYTESTREAM) * cyc
     txs = round(txnt * 1e9 / duration, 2)
     kbs = round(msglen * 1e9 / duration / 2**10, 2)
 
     print(
-        f"\n{txnt:,} messages processed in {duration/1e9:,.3f} seconds = {txs:,.2f} txns/second, {kbs:,.2f} kB/second.\n"
+        f"\n{txnt:,} messages processed in {duration/1e9:,.3f} seconds = "
+        f"{CYAN}{txs:,.2f}{NORM} txns/second, {CYAN}{kbs:,.2f}{NORM} kB/second ({CYAN}{kbs*8000:,.0f}{NORM} baud).\n"
     )
 
     return txs, kbs
@@ -142,7 +160,7 @@ def main():
     args as benchmark() method
     """
 
-    benchmark(**dict(arg.split("=") for arg in argv[1:]))
+    benchmark(**dict(arg.split("=") for arg in sys.argv[1:]))
 
 
 if __name__ == "__main__":

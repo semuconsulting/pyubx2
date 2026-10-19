@@ -1,5 +1,11 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.3.9
+
+1. Interval refactoring to accommodate scaling of individual bitfield attributes.
+1. Update docstrings and type hints.
+1. No functional changes.
+
 ### RELEASE 1.3.8
 
 1. 46 new F11-M11 SPG 7 configuration database items (mainly CFG-GEOFENCE parameters)

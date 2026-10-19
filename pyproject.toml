@@ -37,7 +37,7 @@ classifiers = [
     "Topic :: Scientific/Engineering :: GIS",
 ]
 
-dependencies = ["pynmeagps >= 1.1.7", "pyrtcm >= 1.2.0"]
+dependencies = ["pynmeagps >= 1.1.8", "pyrtcm >= 1.2.1"]
 
 [project.urls]
 homepage = "https://github.com/semuconsulting/pyubx2"
@@ -50,7 +50,7 @@ build = [
     "awscli",
     "build",
     "packaging>=24.2",
-    "pip",
+    "pip>25.1",
     "setuptools>=75.0.0",
     "twine>=6.1.0",
     "wheel",

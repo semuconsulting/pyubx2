@@ -10,10 +10,9 @@ Created on 26 Sep 2020
 :license: BSD 3-Clause
 """
 
-# pylint: disable=invalid-name
+# pylint: disable=invalid-name, too-many-instance-attributes
 
 import struct
-from types import NoneType
 from typing import Literal
 
 from pyubx2.exceptions import UBXMessageError, UBXTypeError
@@ -46,6 +45,7 @@ from pyubx2.ubxtypes_core import (
     UBX_CLASSES,
     UBX_HDR,
     UBX_MSGIDS,
+    VARIABLE,
 )
 from pyubx2.ubxtypes_get import UBX_PAYLOADS_GET
 from pyubx2.ubxtypes_poll import UBX_PAYLOADS_POLL
@@ -89,6 +89,8 @@ class UBXMessage:
         self._payload = b""
         self._length = b""
         self._checksum = b""
+        self._offset = 0
+        self._index = []
         self._parsebf = parsebitfield
 
         if msgmode not in (GET, SET, POLL):
@@ -101,7 +103,9 @@ class UBXMessage:
             self._ubxClass, self._ubxID = msgstr2bytes(ubxClass, ubxID)
         elif isinstance(ubxClass, int) and isinstance(ubxID, int):  # int e.g. 6, 1
             self._ubxClass, self._ubxID = msgclass2bytes(ubxClass, ubxID)
-        else:  # bytes e.g. b'\x06', b'\x01'
+        elif isinstance(ubxClass, bytes) and isinstance(
+            ubxID, bytes
+        ):  # bytes e.g. b'\x06', b'\x01'
             self._ubxClass = ubxClass
             self._ubxID = ubxID
 
@@ -116,23 +120,18 @@ class UBXMessage:
 
         :param kwargs: optional payload key/value pairs
         :raises: UBXTypeError
-
         """
 
-        offset = 0  # payload offset in bytes
-        index = []  # array of (nested) group indices
         anam = None
 
         try:
             if len(kwargs) == 0:  # if no kwargs, assume null payload
-                self._payload = None
+                self._payload = b""
             else:
                 self._payload = kwargs.get("payload", b"")
                 pdict = self._get_dict(**kwargs)  # get appropriate payload dict
-                for anam in pdict:  # process each attribute in dict
-                    offset, index = self._set_attribute(
-                        anam, pdict, offset, index, **kwargs
-                    )
+                for anam, adef in pdict.items():  # process each attribute in dict
+                    self._set_attribute(anam, adef, **kwargs)
             self._do_len_checksum()
 
         except (
@@ -157,60 +156,38 @@ class UBXMessage:
                 )
             ) from err
 
-    def _set_attribute(
-        self, anam: str, pdict: dict, offset: int, index: list, **kwargs
-    ) -> tuple:
+    def _set_attribute(self, anam: str, adef: str | tuple[str, dict], **kwargs):
         """
         Recursive routine to set individual or grouped payload attributes.
 
         :param str anam: attribute name
-        :param dict pdict: dict representing payload definition
-        :param int offset: payload offset in bytes
-        :param list index: repeating group index array
+        :param str | tuple[str, dict] adef: attribute definition
         :param kwargs: optional payload key/value pairs
-        :return: (offset, index[])
-        :rtype: tuple
-
         """
 
-        adef = pdict[anam]  # get attribute definition
-        if BITFIELD in anam:  # 'X' type bitfield
+        anamsfx = anam[-4:]
+        if anamsfx == BITFIELD:  # 'X' type bitfield
             sdef, _ = adef
             if self._parsebf in (1, 2):  # if we're parsing bitfields
                 if self._parsebf == 2:  # parse as bits and single attribute
-                    self._set_attribute_single(
-                        anam[0:-4], sdef, offset, index, **kwargs
-                    )
-                offset, index = self._set_attribute_bitfield(
-                    adef, offset, index, **kwargs
-                )
+                    self._set_attribute_single(anam[0:-4], sdef, offset=False, **kwargs)
+                self._set_attribute_bitfield(adef, **kwargs)
             else:  # parse as single attribute only
-                offset = self._set_attribute_single(
-                    anam[0:-4], sdef, offset, index, **kwargs
-                )
-        elif GROUP in anam:  # repeating group
-            offset, index = self._set_attribute_group(adef, offset, index, **kwargs)
+                self._set_attribute_single(anam[0:-4], sdef, **kwargs)
+        elif anamsfx == GROUP:  # repeating group
+            self._set_attribute_group(adef, **kwargs)
         else:  # single attribute
-            offset = self._set_attribute_single(anam, adef, offset, index, **kwargs)
+            self._set_attribute_single(anam, adef, **kwargs)
 
-        return (offset, index)
-
-    def _set_attribute_group(
-        self, adef: tuple, offset: int, index: list, **kwargs
-    ) -> tuple:
+    def _set_attribute_group(self, adef: tuple[str | int, dict], **kwargs):
         """
         Process (nested) group of attributes.
 
-        :param tuple adef: attribute definition - tuple of (num repeats, attribute dict)
-        :param int offset: payload offset in bytes
-        :param list index: repeating group index array
+        :param tuple[str, dict] adef: attribute definition - tuple of (num repeats, attribute dict)
         :param kwargs: optional payload key/value pairs
-        :return: (offset, index[])
-        :rtype: tuple
-
         """
 
-        index.append(0)  # add a (nested) group index
+        self._index.append(0)  # add a (nested) group index
         anam, gdict = adef  # attribute signifying group size, group dictionary
         # if CFG-VALGET or CFG-VALSET message, use dedicated method to
         # parse as configuration key value pairs
@@ -218,13 +195,13 @@ class UBXMessage:
             (self._ubxID == b"\x8b" and self._mode == GET)
             or (self._ubxID == b"\x8a" and self._mode == SET)
         ):
-            self._set_attribute_cfgval(offset, **kwargs)
+            self._set_attribute_cfgval(self._offset, **kwargs)
         else:
             # derive or retrieve number of items in group
             if isinstance(anam, int):  # fixed number of repeats
                 gsiz = anam
-            elif anam == "None":  # number of repeats 'variable by size'
-                gsiz = self._calc_num_repeats(gdict, self._payload, offset, 0)
+            elif anam == VARIABLE:  # number of repeats 'variable by size'
+                gsiz = self._calc_num_repeats(gdict, self._payload, self._offset, 0)
             else:  # number of repeats is defined in named attribute
                 gsiz = getattr(self, anam)
                 # special handling for ESF-MEAS message types
@@ -238,36 +215,26 @@ class UBXMessage:
             # recursively process each group attribute,
             # incrementing the payload offset and index as we go
             for i in range(gsiz):
-                index[-1] = i + 1
-                for key1 in gdict:
-                    offset, index = self._set_attribute(
-                        key1, gdict, offset, index, **kwargs
-                    )
+                self._index[-1] = i + 1
+                for anam1, adef1 in gdict.items():
+                    self._set_attribute(anam1, adef1, **kwargs)
 
-        index.pop()  # remove this (nested) group index
-
-        return (offset, index)
+        self._index.pop()  # remove this (nested) group index
 
     def _set_attribute_single(
         self,
         anam: str,
         adef: str | tuple[str, float],
-        offset: int,
-        index: list,
+        offset: bool = True,
         **kwargs,
-    ) -> int:
+    ):
         """
         Set individual attribute value, applying scaling where appropriate.
 
         :param str anam: attribute keyword
-        :param str | tuple[str, float] adef: attribute definition string e.g. 'U002' and
-            optional scaling factor
-        :param int offset: payload offset in bytes
-        :param list index: repeating group index array
+        :param str | tuple[str, float] adef: attribute definition
+        :param bool offset: update payload offset Y/N (needed for parsebitfield=2)
         :param kwargs: optional payload key/value pairs
-        :return: offset
-        :rtype: int
-
         """
         # pylint: disable=no-member
 
@@ -279,7 +246,7 @@ class UBXMessage:
 
         # if attribute is part of a (nested) repeating group, suffix name with index
         anami = anam
-        for i in index:  # one index for each nested level
+        for i in self._index:  # one index for each nested level
             if i > 0:
                 anami += f"_{i:02d}"
 
@@ -292,7 +259,7 @@ class UBXMessage:
         # if payload keyword has been provided,
         # use the appropriate offset of the payload
         if "payload" in kwargs:
-            valb = self._payload[offset : offset + asiz]
+            valb = self._payload[self._offset : self._offset + asiz]
             if ares == 1:
                 val = bytes2val(valb, adef)
             else:
@@ -314,21 +281,15 @@ class UBXMessage:
         else:
             setattr(self, anami, val)
 
-        return offset + asiz
+        if offset:
+            self._offset += asiz
 
-    def _set_attribute_bitfield(
-        self, atyp: str, offset: int, index: list, **kwargs
-    ) -> tuple:
+    def _set_attribute_bitfield(self, atyp: tuple[str, dict], **kwargs):
         """
         Parse bitfield attribute (type 'X').
 
-        :param str atyp: attribute type e.g. 'X002'
-        :param int offset: payload offset in bytes
-        :param list index: repeating group index array
+        :param tuple[str,dict] atyp: attribute type e.g. ('X002': {...})
         :param kwargs: optional payload key/value pairs
-        :return: (offset, index[])
-        :rtype: tuple
-
         """
         # pylint: disable=no-member
 
@@ -339,59 +300,69 @@ class UBXMessage:
         # if payload keyword has been provided,
         # use the appropriate offset of the payload
         if "payload" in kwargs:
-            bitfield = int.from_bytes(self._payload[offset : offset + bsiz], "little")
+            bitfield = int.from_bytes(
+                self._payload[self._offset : self._offset + bsiz], "little"
+            )
         else:
             bitfield = 0
 
         # process each flag in bitfield
         for key, keyt in bdict.items():
             bitfield, bfoffset = self._set_attribute_bits(
-                bitfield, bfoffset, key, keyt, index, **kwargs
+                bitfield, bfoffset, key, keyt, **kwargs
             )
 
         # update payload
         if "payload" not in kwargs:
             self._payload += bitfield.to_bytes(bsiz, "little")
 
-        return (offset + bsiz, index)
+        self._offset += bsiz
 
     def _set_attribute_bits(
         self,
         bitfield: int,
         bfoffset: int,
         key: str,
-        keyt: str,
-        index: list,
+        keyt: str | tuple[str, float],
         **kwargs,
-    ) -> tuple:
+    ) -> tuple[int, int]:
         """
         Set individual bit flag from bitfield.
 
         :param int bitfield: bitfield
         :param int bfoffset: bitfield offset in bits
         :param str key: attribute key name
-        :param str keyt: key type e.g. 'U001'
-        :param list index: repeating group index array
+        :param str | tuple[str,float] keyt: key type e.g. 'U001'
         :param kwargs: optional payload key/value pairs
         :return: (bitfield, bfoffset)
-        :rtype: tuple
-
+        :rtype: tuple[int,int]
         """
         # pylint: disable=no-member
 
         # if attribute is part of a (nested) repeating group, suffix name with index
         keyr = key
-        for i in index:  # one index for each nested level
+        for i in self._index:  # one index for each nested level
             if i > 0:
                 keyr += f"_{i:02d}"
+
+        # if attribute is scaled
+        ares = 1
+        if isinstance(keyt, tuple):
+            ares = keyt[1]  # attribute resolution (i.e. scaling factor)
+            keyt = keyt[0]  # attribute definition
 
         atts = attsiz(keyt)  # determine flag size in bits
 
         if "payload" in kwargs:
             val = (bitfield >> bfoffset) & ((1 << atts) - 1)
+            if ares != 1:
+                val = round(val * ares, SCALROUND)
         else:
             val = kwargs.get(keyr, 0)
-            bitfield = bitfield | (val << bfoffset)
+            val2 = val
+            if ares != 1:
+                val2 = int(val2 / ares)
+            bitfield = bitfield | (val2 << bfoffset)
 
         if key[0:8] != "reserved":  # don't bother to set reserved bits
             setattr(self, keyr, val)
@@ -436,12 +407,12 @@ class UBXMessage:
 
     def _do_len_checksum(self):
         """
-        Calculate and format payload length and checksum as bytes."""
+        Calculate and format payload length and checksum as bytes.
+        """
 
-        payload = b"" if self._payload is None else self._payload
-        self._length = val2bytes(len(payload), U2)
+        self._length = val2bytes(len(self._payload), U2)
         self._checksum = calc_checksum(
-            self._ubxClass + self._ubxID + self._length + payload
+            self._ubxClass + self._ubxID + self._length + self._payload
         )
 
     def _get_dict(self, **kwargs) -> dict:
@@ -521,7 +492,7 @@ class UBXMessage:
         msgid = None
 
         umsg_name = self.identity
-        if self.payload is None:
+        if self._payload == b"":
             return f"<UBX({umsg_name})>"
         if self.identity[-7:] == "NOMINAL":
             return f"<UBX({umsg_name}, payload={escapeall(self._payload)})>"
@@ -576,7 +547,7 @@ class UBXMessage:
 
         """
 
-        if self._payload is None:
+        if self._payload == b"":
             return f"UBXMessage({self._ubxClass}, {self._ubxID}, {self._mode})"
         return f"UBXMessage({self._ubxClass}, {self._ubxID}, {self._mode}, payload={self._payload})"
 
@@ -686,12 +657,12 @@ class UBXMessage:
         return bytes2val(self._length, U2)
 
     @property
-    def payload(self) -> bytes | NoneType:
+    def payload(self) -> bytes:
         """
         Payload getter - returns the raw payload bytes.
 
         :return: raw payload as bytes
-        :rtype: bytes | NoneType
+        :rtype: bytes
 
         """
 
@@ -712,7 +683,7 @@ class UBXMessage:
     @staticmethod
     def config_set(
         layers: int, transaction: int, cfgData: list[tuple[int | str, object]]
-    ) -> bytes:
+    ) -> "UBXMessage":  # PEP 484 forward references
         """
         Construct CFG-VALSET message from an array of
         configuration database (key, value) tuples. Keys
@@ -756,7 +727,9 @@ class UBXMessage:
         return UBXMessage("CFG", "CFG-VALSET", SET, payload=payload + lis)
 
     @staticmethod
-    def config_del(layers: int, transaction: int, keys: list[int | str]) -> bytes:
+    def config_del(
+        layers: int, transaction: int, keys: list[int | str]
+    ) -> "UBXMessage":  # PEP 484 forward references
         """
         Construct CFG-VALDEL message from an array of
         configuration database keys. Keys can be in int (keyID)
@@ -794,7 +767,9 @@ class UBXMessage:
         return UBXMessage("CFG", "CFG-VALDEL", SET, payload=payload + lis)
 
     @staticmethod
-    def config_poll(layer: int, position: int, keys: list[int | str]) -> bytes:
+    def config_poll(
+        layer: int, position: int, keys: list[int | str]
+    ) -> "UBXMessage":  # PEP 484 forward references
         """
         Construct CFG-VALGET message from an array of
         configuration database keys, which can be in int (keyID)

@@ -12,6 +12,7 @@ Created on 15 Dec 2020
 import struct
 from datetime import datetime, time, timedelta
 from math import cos, pi, sin, trunc
+from typing import Any
 
 from pynmeagps.nmeatypes_core import NMEA_HDR
 
@@ -99,14 +100,14 @@ def atttyp(att: str) -> str:
     return att[0:1]
 
 
-def bytes2val(valb: bytes, att: str) -> object:
+def bytes2val(valb: bytes, att: str) -> Any:
     """
     Convert bytes to value for given UBX attribute type.
 
     :param bytes valb: attribute value in byte format e.g. b'\\\\x19\\\\x00\\\\x00\\\\x00'
     :param str att: attribute type e.g. 'U004'
     :return: attribute value as int, float, str or bytes
-    :rtype: object
+    :rtype: Any
     :raises: UBXTypeError
 
     """
@@ -592,11 +593,11 @@ def utc2itow(utc: datetime, leaps: int = LEAPOFFSET) -> tuple:
     return wno, itow
 
 
-def val2bytes(val, att: str) -> bytes:
+def val2bytes(val: Any, att: str) -> bytes:
     """
     Convert value to bytes for given UBX attribute type.
 
-    :param object val: attribute value e.g. 25
+    :param Any val: attribute value e.g. 25
     :param str att: attribute type e.g. 'U004'
     :return: attribute value as bytes
     :rtype: bytes

@@ -73,6 +73,7 @@ from pyubx2.ubxtypes_core import (
     U12,
     U40,
     U64,
+    VARIABLE,
     X1,
     X2,
     X4,
@@ -84,10 +85,10 @@ UBX_PAYLOADS_SET = {
     # AssistNow Aiding Messages: i.e. Ephemeris, Almanac, other A-GPS data input.
     # Messages in the AID class are used to send GPS aiding data to the receiver
     # AID messages are deprecated in favour of MGA messages in >=Gen8
-    "AID-ALM": {"svid": U4, "week": U4, "optBlock": ("None", {"dwrd": U4})},
+    "AID-ALM": {"svid": U4, "week": U4, "optBlock": (VARIABLE, {"dwrd": U4})},
     "AID-ALP": {
         "alp_grp": (
-            "None",
+            VARIABLE,
             {
                 "alpData": U2,
             },
@@ -115,7 +116,7 @@ UBX_PAYLOADS_SET = {
         "svid": U4,
         "how": U4,
         "sf_grp": (
-            "None",
+            VARIABLE,
             {
                 "sf1d1": U4,
                 "sf1d2": U4,
@@ -275,7 +276,7 @@ UBX_PAYLOADS_SET = {
     "CFG-OTP": {
         "cfgHeader": U12,
         "data_grp": (
-            "None",
+            VARIABLE,
             {
                 "cfgData": U1,
             },
@@ -336,7 +337,7 @@ UBX_PAYLOADS_SET = {
             },
         ),
         "reserved0": U1,
-        "key_grp": ("None", {"keys": U4}),  # repeating group
+        "key_grp": (VARIABLE, {"keys": U4}),  # repeating group
     },
     "CFG-VALSET": {
         "version": U1,  # = 0 no transaction, 1 with transaction
@@ -355,7 +356,7 @@ UBX_PAYLOADS_SET = {
             },
         ),
         "reserved0": U1,
-        "data_grp": ("None", {"cfgData": U1}),  # repeating group
+        "data_grp": (VARIABLE, {"cfgData": U1}),  # repeating group
     },
     # ********************************************************************
     # External Sensor Fusion Messages: i.e. External Sensor Measurements and Status Information.
@@ -431,7 +432,7 @@ UBX_PAYLOADS_SET = {
         ),
         "reserved0": U2,
     },
-    "LOG-STRING": {"byte_grp": ("None", {"bytes": U1})},  # repeating group
+    "LOG-STRING": {"byte_grp": (VARIABLE, {"bytes": U1})},  # repeating group
     # ********************************************************************
     # Multiple GNSS Assistance Messages: i.e. Assistance data for various GNSS.
     # Messages in the MGA class are used for GNSS aiding information from and to the receiver.

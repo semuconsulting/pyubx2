@@ -163,7 +163,9 @@ class UBXReader:
 
     def read(
         self,
-    ) -> tuple[bytes | NoneType, UBXMessage | NMEAMessage | RTCMMessage | NoneType]:
+    ) -> tuple[
+        bytes | NoneType, UBXMessage | NMEAMessage | RTCMMessage | str | NoneType
+    ]:
         """
         Read a single NMEA, UBX or RTCM3 message from the stream buffer
         and return both raw and parsed data.
@@ -173,7 +175,7 @@ class UBXReader:
 
         :return: tuple of (raw_data as bytes, parsed_data as UBXMessage,
             NMEAMessage or RTCMMessage)
-        :rtype: tuple[bytes | NoneType, UBXMessage | NMEAMessage | RTCMMessage | NoneType]
+        :rtype: tuple[bytes | NoneType, UBXMessage | NMEAMessage | RTCMMessage | str | NoneType]
         :raises: Exception (if invalid or unrecognised protocol in data stream)
         """
 
