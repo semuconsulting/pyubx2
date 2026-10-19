@@ -65,6 +65,7 @@ from pyubx2.ubxtypes_core import (
     U64,
     U90,
     U462,
+    VARIABLE,
     X1,
     X2,
     X4,
@@ -78,13 +79,13 @@ UBX_PAYLOADS_GET = {
     # AssistNow Aiding Messages: i.e. Ephemeris, Almanac, other A-GPS data input.
     # Messages in the AID class are used to send GPS aiding data to the receiver
     # AID messages are deprecated in favour of MGA messages in >=Gen8
-    "AID-ALM": {"svid": U4, "week": U4, "optBlock": ("None", {"dwrd": U4})},
+    "AID-ALM": {"svid": U4, "week": U4, "optBlock": (VARIABLE, {"dwrd": U4})},
     "AID-AOP": {"gnssId": U1, "svId": U1, "reserved1": U2, "data": U64},
     "AID-EPH": {
         "svid": U4,
         "how": U4,
         "sf_grp": (
-            "None",
+            VARIABLE,
             {
                 "sf1d1": U4,
                 "sf1d2": U4,
@@ -932,7 +933,7 @@ UBX_PAYLOADS_GET = {
                 "binary": U1,
             },
         ),
-        "data_grp": ("None", {"data": U1}),
+        "data_grp": (VARIABLE, {"data": U1}),
     },  # repeating group
     "CFG-RXM": {"reserved0": U1, "lpMode": U1},
     "CFG-SBAS": {
@@ -1198,7 +1199,7 @@ UBX_PAYLOADS_GET = {
         "version": U1,
         "layer": U1,
         "position": U2,
-        "data_grp": ("None", {"cfgData": U1}),  # repeating group
+        "data_grp": (VARIABLE, {"cfgData": U1}),  # repeating group
     },
     # ********************************************************************
     # External Sensor Fusion Messages: i.e. External Sensor Measurements and Status Information.
@@ -1232,7 +1233,7 @@ UBX_PAYLOADS_GET = {
         "reserved0": U3,
         "reserved1": U4,
         "data_grp": (  # variable by size repeating group
-            "None",
+            VARIABLE,
             {
                 "data": (
                     X4,
@@ -1281,7 +1282,7 @@ UBX_PAYLOADS_GET = {
         ),
         "id": U2,
         "data_grp": (
-            "None",
+            VARIABLE,
             {  # repeating group * numMeas
                 "data_bit": (
                     X4,
@@ -1296,7 +1297,7 @@ UBX_PAYLOADS_GET = {
     "ESF-RAW": {
         "reserved1": U4,
         "data_grp": (
-            "None",
+            VARIABLE,
             {  # repeating group
                 "data": X4,
                 "sTag": X4,
@@ -1605,7 +1606,7 @@ UBX_PAYLOADS_GET = {
     },
     "MGA-DBD": {
         "reserved1": U12,
-        "data_grp": ("None", {"data": U1}),
+        "data_grp": (VARIABLE, {"data": U1}),
     },  # repeating group
     "MGA-FLASH-ACK": {
         "type": U1,
@@ -2131,7 +2132,7 @@ UBX_PAYLOADS_GET = {
     "MON-VER": {
         "swVersion": C30,
         "hwVersion": C10,
-        "ext_grp": ("None", {"extension": C30}),  # repeating group
+        "ext_grp": (VARIABLE, {"extension": C30}),  # repeating group
     },
     # ********************************************************************
     # Navigation Results Messages: i.e. Position, Speed, Time, Acceleration, Heading, DOP, SVs used.
@@ -3274,7 +3275,7 @@ UBX_PAYLOADS_GET = {
     },
     "RXM-MEAS20": {
         "pay_grp": (
-            "None",
+            VARIABLE,
             {
                 "payload": U1,
             },
@@ -3282,7 +3283,7 @@ UBX_PAYLOADS_GET = {
     },
     "RXM-MEAS50": {
         "pay_grp": (
-            "None",
+            VARIABLE,
             {
                 "payload": U1,
             },
@@ -3290,7 +3291,7 @@ UBX_PAYLOADS_GET = {
     },
     "RXM-MEASC12": {
         "pay_grp": (
-            "None",
+            VARIABLE,
             {
                 "payload": U1,
             },
@@ -3298,7 +3299,7 @@ UBX_PAYLOADS_GET = {
     },
     "RXM-MEASD12": {
         "pay_grp": (
-            "None",
+            VARIABLE,
             {
                 "payload": U1,
             },
@@ -3560,7 +3561,7 @@ UBX_PAYLOADS_GET = {
             },
         ),
         "key2_grp": (  # repeating group * (numKeys * keyLengthBytes)
-            "None",
+            VARIABLE,
             {
                 "key": U1,
             },
@@ -3954,7 +3955,7 @@ UBX_PAYLOADS_GET = {
     # payload definition is available.
     "UBX-NOMINAL": {
         "data_grp": (
-            "None",
+            VARIABLE,
             {
                 "data": X1,
             },
