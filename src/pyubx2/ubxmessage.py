@@ -13,7 +13,6 @@ Created on 26 Sep 2020
 # pylint: disable=invalid-name, too-many-instance-attributes
 
 import struct
-from types import NoneType
 from typing import Literal
 
 from pyubx2.exceptions import UBXMessageError, UBXTypeError
@@ -684,7 +683,7 @@ class UBXMessage:
     @staticmethod
     def config_set(
         layers: int, transaction: int, cfgData: list[tuple[int | str, object]]
-    ) -> UBXMessage:  # pylint: disable=undefined-variable
+    ) -> "UBXMessage":  # PEP 484 forward references
         """
         Construct CFG-VALSET message from an array of
         configuration database (key, value) tuples. Keys
@@ -730,7 +729,7 @@ class UBXMessage:
     @staticmethod
     def config_del(
         layers: int, transaction: int, keys: list[int | str]
-    ) -> UBXMessage:  # pylint: disable=undefined-variable
+    ) -> "UBXMessage":  # PEP 484 forward references
         """
         Construct CFG-VALDEL message from an array of
         configuration database keys. Keys can be in int (keyID)
@@ -770,7 +769,7 @@ class UBXMessage:
     @staticmethod
     def config_poll(
         layer: int, position: int, keys: list[int | str]
-    ) -> UBXMessage:  # pylint: disable=undefined-variable
+    ) -> "UBXMessage":  # PEP 484 forward references
         """
         Construct CFG-VALGET message from an array of
         configuration database keys, which can be in int (keyID)
