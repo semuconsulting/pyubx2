@@ -71,8 +71,10 @@ from pyubx2.ubxtypes_core import (
     U7,
     U11,
     U12,
+    U32,
     U40,
     U64,
+    U67,
     VARIABLE,
     X1,
     X2,
@@ -602,6 +604,32 @@ UBX_PAYLOADS_SET = {
         "healthE5b": U1,
         "dataValidityE5b": U1,
         "reserved2": U4,
+    },
+    "MGA-GAL-OSNMA-MERKLE": {
+        "type": U1,  # 08
+        "version": U1,
+        "bitfield0_bit": (
+            X1,
+            {
+                "applicabilityTime": U1,
+            },
+        ),
+        "reserved0": U1,
+        "treeNode": U32,
+    },
+    "MGA-GAL-OSNMA-PUBKEY": {
+        "type": U1,  # 07
+        "version": U1,
+        "bitfield0_bit": (
+            X1,
+            {
+                "pubKeyId": U4,
+                "pubKeyType": U4,
+            },
+        ),
+        "reserved0": U1,
+        "pubKeyPoint": U67,
+        "reserved1": U1,
     },
     "MGA-GAL-TIMEOFFSET": {
         "type": U1,

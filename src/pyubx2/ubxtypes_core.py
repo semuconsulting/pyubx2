@@ -135,6 +135,7 @@ U27 = "U027"  # Unsigned Int 27 bytes
 U32 = "U032"  # Unsigned Int 32 bytes
 U40 = "U040"  # Unsigned Int 40 bytes
 U64 = "U064"  # Unsigned Int 64 bytes
+U67 = "U067"  # Unsigned Int 67 bytes
 U90 = "U090"  # Unsigned Int 90 bytes
 U462 = "U462"  # Unsigned Int 462 bytes
 X1 = "X001"  # Bitfield 1 byte
@@ -329,6 +330,8 @@ UBX_MSGIDS = {
     b"\x13\x21\x03": "MGA-FLASH-ACK",
     b"\x13\x02\x01": "MGA-GAL-EPH",
     b"\x13\x02\x02": "MGA-GAL-ALM",
+    b"\x13\x02\x08": "MGA-GAL-OSNMA-MERKLE",
+    b"\x13\x02\x07": "MGA-GAL-OSNMA-PUBKEY",
     b"\x13\x02\x03": "MGA-GAL-TIMEOFFSET",
     b"\x13\x02\x05": "MGA-GAL-UTC",
     b"\x13\x06\x01": "MGA-GLO-EPH",

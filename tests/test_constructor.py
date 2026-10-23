@@ -407,6 +407,42 @@ class FillTest(unittest.TestCase):
             # print(f'"{msg}",')
             self.assertEqual(str(res[i]), EXPECTED_RESULT[i])
 
+    def testMGAGALOSNMAMERKLE(self):
+        EXAMPLE =  "83 2E 15 ED E5 56 55 EA C6 E3 99 A5 39 47 7B 7C 03 4C CE 24 C3 C9 3F FC 90 4A CD 9B F8 42 F0 4E"
+        EXPECTED_RESULT = "<UBX(MGA-GAL-OSNMA-MERKLE, type=8, version=0, applicabilityTime=1, reserved0=0, treeNode=35704907702775109303480048185314323127241421991817266716659977429458403798659)>"
+        treenode = int.from_bytes(bytes.fromhex(EXAMPLE.replace(" ","")),"little")
+        res = UBXMessage(
+            "MGA",
+            "MGA-GAL-OSNMA-MERKLE",
+            SET,
+            type=0x08,
+            applicabilityTime=1,
+            treeNode=treenode
+        )
+        # print(f'"{res}"')
+        self.assertEqual(str(res), EXPECTED_RESULT)
+        self.assertEqual(int.to_bytes(res.treeNode,32,"little").hex().upper(),EXAMPLE.replace(" ",""))
+        res1 = UBXReader.parse(res.serialize(),msgmode=SET)
+        self.assertEqual(str(res1), EXPECTED_RESULT)
+
+    def testMGAGALOSNMAPUBKEY(self):
+        EXAMPLE =  "03 97 EB 43 78 9A A0 F6 D0 52 A6 38 46 8E CF 52 78 E6 F6 DF 84 65 EC B8 D8 B8 4B 8C 7A 35 01 F7 3B"
+        EXPECTED_RESULT = "<UBX(MGA-GAL-OSNMA-PUBKEY, type=7, version=0, pubKeyId=12, pubKeyType=1, reserved0=0, pubKeyPoint=6943456674545231850676523761781552856027589698663103296381454022679479586625283, reserved1=0)>"
+        pubkeypoint = int.from_bytes(bytes.fromhex(EXAMPLE.replace(" ","")),"little")
+        res = UBXMessage(
+            "MGA",
+            "MGA-GAL-OSNMA-PUBKEY",
+            SET,
+            type=0x07,
+            pubKeyId=12,
+            pubKeyType=1,
+            pubKeyPoint=pubkeypoint
+        )
+        # print(f'"{res}"')
+        self.assertEqual(str(res), EXPECTED_RESULT)
+        self.assertEqual(int.to_bytes(res.pubKeyPoint,67,"little").hex().upper()[0:66],EXAMPLE.replace(" ",""))
+        res1 = UBXReader.parse(res.serialize(),msgmode=SET)
+        self.assertEqual(str(res1), EXPECTED_RESULT)
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']

@@ -2,6 +2,8 @@
 
 ### RELEASE 1.4.0
 
+1. Add support for [GAL OSNMA configuration messages MGA-GAL-OSNMA-MERKLE and MGA-GAL-OSNMA-PUBKEY](
+   https://content.u-blox.com/sites/default/files/documents/OSNMA_configuration_using_u-center_AppNote_UBXDOC-963802114-12194.pdf) (Open Service Navigation Message Authentication)
 1. RXM-PMP (Point to Multipoint) payload definition simplified. Rather than a repeating group of single integers, the userData field is now rendered as a single long integer representing a segment of the incoming datastream (e.g. PointPerfect L-Band or MQTT datastream). To reconstruct the segment as bytes, use:
    ```python
    if hasattr(parsed, "numBytesUserData"): # V1
