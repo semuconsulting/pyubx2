@@ -36,6 +36,7 @@ from pyubx2.ubxtypes_core import (
     CH,
     GET,
     GROUP,
+    PMPLEN,
     POLL,
     SCALROUND,
     SET,
@@ -253,6 +254,9 @@ class UBXMessage:
         # determine attribute size (bytes)
         if adef == CH:  # variable length string
             asiz = len(self._payload)
+        elif adef == PMPLEN:  # variable length integer
+            asiz = self.numBytesUserData
+            adef = f"U{asiz:03}"
         else:
             asiz = attsiz(adef)
 
