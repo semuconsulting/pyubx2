@@ -1,5 +1,16 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.4.0
+
+1. RXM-PMP (Point to Multipoint) payload definition simplified. Rather than a repeating group of single integers, the userData field is now rendered as a single long integer representing a segment of the incoming datastream (e.g. PointPerfect L-Band or MQTT datastream). To reconstruct the segment as bytes, use:
+   ```python
+   if hasattr(parsed, "numBytesUserData"): # V1
+      datalen = parsed.numBytesUserData
+   else:
+      datalen = 504 #V0
+   userBytes = int.to_bytes(parsed.userData, datalen, "little")
+   ```
+
 ### RELEASE 1.3.9
 
 1. Interval refactoring to accommodate scaling of individual bitfield attributes.

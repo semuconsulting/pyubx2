@@ -241,12 +241,12 @@
             "problemMatcher": [],
             "dependsOrder": "sequence",
             "dependsOn": [
-                "Create Venv",
-                "Activate Venv",
-                "Upgrade pip",
-                "Install Deploy Dependencies",
-                "Install Optional Dependencies",
-                "Install dill 0.4.2.dev for Python 3.15",
+                // "Create Venv",
+                // "Activate Venv",
+                // "Upgrade pip",
+                // "Install Deploy Dependencies",
+                // "Install Optional Dependencies",
+                // "Install dill 0.4.2.dev for Python 3.15",
                 "Build",
                 "Install", // have to install before running pylint
                 "Pylint",

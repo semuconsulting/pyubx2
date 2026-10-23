@@ -40,6 +40,7 @@ from pyubx2.ubxtypes_core import (
     P2_N21,
     P2_N24,
     P2_N32,
+    PMPLEN,
     R4,
     R8,
     U1,
@@ -3353,12 +3354,7 @@ UBX_PAYLOADS_GET = {
         "serviceIdentifier": U2,
         "spare": U1,
         "uniqueWordBitErrors": U1,
-        "userData_grp": (
-            504,
-            {
-                "userData": U1,
-            },
-        ),  # repeating group * 504
+        "userData": "U504",
         "fecBits": U2,
         "ebno": (U1, 0.125),
         "reserved1": U1,
@@ -3376,12 +3372,7 @@ UBX_PAYLOADS_GET = {
         "fecBits": U2,
         "ebno": (U1, 0.125),
         "reserved1": U1,
-        "userData_grp": (
-            "numBytesUserData",
-            {  # repeating group * numBytesUserData
-                "userData": U1,
-            },
-        ),
+        "userData": PMPLEN,
     },
     "RXM-QZSSL6": {
         "version": U1,

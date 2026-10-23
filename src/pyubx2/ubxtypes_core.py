@@ -149,6 +149,7 @@ R8 = "R008"  # Float (IEEE 754) Double Precision 8 bytes
 BITFIELD = "_bit"
 GROUP = "_grp"
 VARIABLE = "None"
+PMPLEN = "UPMP"
 
 ATTTYPE = {
     "A": type([0, 1]),
