@@ -13,7 +13,7 @@ Created on 20 May 2024
 """
 
 from pyubx2.exceptions import UBXMessageError
-from pyubx2.ubxhelpers import val2bytes
+from pyubx2.ubxhelpers import bytes2val, val2bytes
 from pyubx2.ubxtypes_core import GET, POLL, SET, U1, UBX_MSGIDS
 from pyubx2.ubxtypes_get import UBX_PAYLOADS_GET
 from pyubx2.ubxtypes_poll import UBX_PAYLOADS_POLL
@@ -335,6 +335,29 @@ def get_daheading_dict(**kwargs) -> dict:
     return UBX_PAYLOADS_GET["NAV-DAHEADINGHP"]
 
 
+def get_monrf_dict(**kwargs) -> dict:
+    """
+    Select appropriate MON-RF GET payload definition by checking
+    length of repeating group.
+
+    :param kwargs: optional payload key/value pairs
+    :return: dictionary representing payload definition
+    :rtype: dict
+    """
+
+    if "payload" in kwargs:
+        nblocks = bytes2val(kwargs["payload"][1:2], U1)
+        plen = len(kwargs["payload"])
+    else:
+        raise UBXMessageError(
+            "MON-RF GET message definitions must include payload keyword"
+        )
+
+    if (plen - 4) / nblocks == 20:
+        return UBX_PAYLOADS_GET["MON-RF-V0"]
+    return UBX_PAYLOADS_GET["MON-RF"]
+
+
 VARIANTS = {
     POLL: {b"\x06\x31": get_cfgtp5_dict},  # CFG-TP5
     SET: {
@@ -356,6 +379,7 @@ VARIANTS = {
         b"\x13\x10": get_mga_dict,  # MGA SF
         b"\x13\x21": get_mga_dict,  # MGA FLASH
         b"\x13\x60": get_mga_dict,  # MGA ACK NAK
+        b"\x0a\x38": get_monrf_dict,  # MON-RF
         b"\x02\x72": get_rxmpmp_dict,  # RXM-PMP
         b"\x02\x59": get_rxmrlm_dict,  # RXM-RLM
         b"\x06\x17": get_cfgnmea_dict,  # CFG-NMEA
