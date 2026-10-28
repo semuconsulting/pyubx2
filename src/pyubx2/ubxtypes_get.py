@@ -1939,7 +1939,7 @@ UBX_PAYLOADS_GET = {
             },
         ),
         "reserved0": U1,
-        "block_grp": (  # repeating group * nBlocks
+        "block_grp": (  # repeating group * nBlocks (24 bytes long)
             "nBlocks",
             {
                 "blockId": U1,
@@ -1961,6 +1961,34 @@ UBX_PAYLOADS_GET = {
                 "ofsQ": I1,
                 "magQ": U1,
                 "reserved2": U3,
+            },
+        ),
+    },
+    "MON-RF-V0": {
+        "version": U1,
+        "nBlocks": U1,
+        "recInf_bit": (  # marked as reserved in this version
+            X1,
+            {
+                "msgSource": U2,
+            },
+        ),
+        "reserved0": U1,
+        "block_grp": (  # repeating group * nBlocks (20 bytes long)
+            "nBlocks",
+            {
+                "blockId": U1,
+                "antStatus": U1,
+                "antPower": U1,
+                "jamInd": U1,  # aka cwSuppression
+                "postStatus": U4,
+                "reserved1": U4,
+                "noisePerMS": U2,
+                "agcCnt": U2,
+                "ofsI": I1,
+                "magI": U1,
+                "ofsQ": I1,
+                "magQ": U1,
             },
         ),
     },

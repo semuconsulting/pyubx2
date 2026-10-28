@@ -455,6 +455,33 @@ class SpecialTest(unittest.TestCase):
         with self.assertRaisesRegex(UBXMessageError, "NAV-DAHEADING GET message definitions must include version or payload keyword"):
             msg = UBXMessage("NAV", "NAV-DAHEADING", GET, refStationId=1)
 
+    def testMONRFV0(self): # test HPS 1.30 version of MON-RF with 20-byte repeating group
+        EXPECTED_RESULT = "<UBX(MON-RF, version=0, nBlocks=2, msgSource=0, reserved0=0, blockId_01=0, antStatus_01=2, antPower_01=1, jamInd_01=8, postStatus_01=0, reserved1_01=0, noisePerMS_01=85, agcCnt_01=6318, ofsI_01=11, magI_01=175, ofsQ_01=3, magQ_01=167, blockId_02=1, antStatus_02=2, antPower_02=1, jamInd_02=8, postStatus_02=0, reserved1_02=0, noisePerMS_02=49, agcCnt_02=5265, ofsI_02=15, magI_02=162, ofsQ_02=1, magQ_02=163)>"
+        payload = bytes.fromhex(
+            "00 02 00 00 "
+            "00 02 01 08 00 00 00 00 00 00 00 00 55 00 ae 18 0b af 03 a7 "
+            "01 02 01 08 00 00 00 00 00 00 00 00 31 00 91 14 0f a2 01 a3"
+        )
+        msg1 = UBXMessage(
+            "MON",
+            "MON-RF",
+            GET,
+            payload=payload,
+        )
+        # print(f'"{msg1}"')
+        self.assertEqual(str(msg1), EXPECTED_RESULT)
+        msg2 = UBXReader.parse(msg1.serialize())
+        self.assertEqual(str(msg2), EXPECTED_RESULT)
+        with self.assertRaisesRegex(UBXMessageError, "MON-RF GET message definitions must include payload keyword"):
+            msg3 = UBXMessage(
+                "MON",
+                "MON-RF",
+                GET,
+                version=0,
+                nBlocks=2,
+            )
+
+
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
     unittest.main()
