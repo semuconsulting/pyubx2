@@ -1,5 +1,10 @@
 # pyubx2 Release Notes
 
+### RELEASE 1.4.1
+
+1. Cater for alternative MON-RF payload definition e.g. F9R HPS 1.30 (20-byte repeating group rather than 24-byte). Fixes #216
+1. Remove Python 3.10 from build and test workflows (now End of Life). pyubx2 will continue to work under 3.10 until otherwise advised.
+
 ### RELEASE 1.4.0
 
 1. Add support for [GAL OSNMA configuration messages MGA-GAL-OSNMA-MERKLE and MGA-GAL-OSNMA-PUBKEY](
