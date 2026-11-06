@@ -277,7 +277,7 @@ class FillTest(unittest.TestCase):
         self,
     ):  # double check that eval of repr(msg) reproduces original message
         res1 = UBXMessage("CFG", "CFG-MSG", POLL, msgClass=240, msgID=5)
-        res2 = eval(repr(res1))
+        res2 = eval(repr(res1))  #nosec
         self.assertEqual(str(res1), str(res2))
 
     def testEVAL2(
@@ -286,7 +286,7 @@ class FillTest(unittest.TestCase):
         res1 = UBXMessage(
             "CFG", "CFG-MSG", SET, msgClass=240, msgID=5, rateUART1=1, rateUSB=1
         )
-        res2 = eval(repr(res1))
+        res2 = eval(repr(res1))  #nosec
         self.assertEqual(str(res1), str(res2))
 
     def testFill_NAVSBAS(self):  #  test NAV-SBAS GET constructor with bit flags

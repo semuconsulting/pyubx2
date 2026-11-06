@@ -52,16 +52,16 @@ class GPSDataStub:
         dic = {
             "date": now.strftime("%Y-%m-%d"),
             "time": now.strftime("%H:%M:%S"),
-            "latitude": round(random.uniform(-90.0, 90.0), 5),
-            "longitude": round(random.uniform(-180.0, 180.0), 5),
-            "elevation": round(random.uniform(-50.0, 100.0), 2),
-            "speed": round(random.uniform(0, 100.0), 2),
-            "track": round(random.uniform(0, 360.0), 2),
-            "siv": random.randrange(0, 33),
-            "pdop": round(random.uniform(0, 99.0), 2),
-            "hdop": round(random.uniform(0, 99.0), 2),
-            "vdop": round(random.uniform(0, 99.0), 2),
-            "fix": random.randrange(1, 4),
+            "latitude": round(random.uniform(-90.0, 90.0), 5), #nosec
+            "longitude": round(random.uniform(-180.0, 180.0), 5), #nosec
+            "elevation": round(random.uniform(-50.0, 100.0), 2), #nosec
+            "speed": round(random.uniform(0, 100.0), 2), #nosec
+            "track": round(random.uniform(0, 360.0), 2), #nosec
+            "siv": random.randrange(0, 33), #nosec
+            "pdop": round(random.uniform(0, 99.0), 2), #nosec
+            "hdop": round(random.uniform(0, 99.0), 2), #nosec
+            "vdop": round(random.uniform(0, 99.0), 2), #nosec
+            "fix": random.randrange(1, 4), #nosec
         }
         return json.dumps(dic)
 
